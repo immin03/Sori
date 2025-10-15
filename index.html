@@ -1,0 +1,913 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<title>Sori - Korean Practice</title>
+<style>
+  * {
+    box-sizing: border-box;
+  }
+  
+  body { 
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; 
+    max-width: 720px; 
+    margin: 0 auto; 
+    padding: 16px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+  
+  h1 { 
+    font-size: 28px; 
+    margin: 0 0 8px 0; 
+    color: white;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
+  
+  .intro {
+    color: rgba(255,255,255,0.9);
+    font-size: 15px;
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+  
+  .card { 
+    border: none;
+    border-radius: 20px; 
+    padding: 24px; 
+    margin: 16px 0; 
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    background: white;
+  }
+  
+  .category-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  
+  .tab-button {
+    padding: 14px 20px;
+    border: 2px solid #e5e7eb;
+    border-radius: 16px;
+    background: white;
+    color: #6b7280;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 700;
+    transition: all 0.3s;
+    touch-action: manipulation;
+    -webkit-appearance: none;
+  }
+  
+  .tab-button:active {
+    transform: scale(0.97);
+  }
+  
+  .tab-button.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  }
+  
+  .drama-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    letter-spacing: 0.5px;
+  }
+  
+  .daily-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    letter-spacing: 0.5px;
+  }
+  
+  .target-display {
+    font-size: 32px;
+    font-weight: 700;
+    color: #111827;
+    margin: 16px 0;
+    text-align: center;
+    line-height: 1.4;
+    word-break: keep-all;
+  }
+  
+  .english-translation {
+    color: #374151;
+    font-size: 16px;
+    text-align: center;
+    margin-bottom: 16px;
+    font-style: italic;
+  }
+  
+  .pronunciation-hint {
+    color: #6b7280;
+    font-size: 15px;
+    font-style: italic;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  button { 
+    padding: 16px 24px; 
+    border: 0; 
+    border-radius: 16px; 
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white; 
+    cursor: pointer; 
+    font-size: 17px;
+    font-weight: 700;
+    transition: all 0.3s;
+    width: 100%;
+    touch-action: manipulation;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  }
+  
+  button:active {
+    transform: scale(0.97);
+  }
+  
+  button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  button.secondary {
+    background: #6b7280;
+    box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+  }
+  
+  .button-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 16px;
+  }
+  
+  .practice-tip {
+    background: #f0fdf4;
+    border-left: 4px solid #22c55e;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-top: 16px;
+    font-size: 14px;
+    color: #166534;
+    line-height: 1.6;
+  }
+  
+  .icon {
+    font-size: 22px;
+    margin-right: 6px;
+  }
+  
+  .progress {
+    text-align: center;
+    color: #6b7280;
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 12px;
+  }
+  
+  .scene-context {
+    background: #fef3c7;
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin: 16px 0;
+    font-size: 14px;
+    color: #92400e;
+    line-height: 1.5;
+  }
+  
+  .situation-context {
+    background: #fed7aa;
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin: 16px 0;
+    font-size: 14px;
+    color: #9a3412;
+    line-height: 1.5;
+  }
+  
+  /* Mobile optimization */
+  @media (max-width: 640px) {
+    body {
+      padding: 12px;
+    }
+    
+    h1 {
+      font-size: 24px;
+    }
+    
+    .card {
+      padding: 20px;
+      margin: 12px 0;
+    }
+    
+    .target-display {
+      font-size: 28px;
+    }
+    
+    button {
+      padding: 16px 20px;
+      font-size: 16px;
+    }
+  }
+  
+  @media (max-width: 400px) {
+    .target-display {
+      font-size: 24px;
+    }
+  }
+</style>
+</head>
+<body>
+  <h1>🎬 Sori - Korean Practice</h1>
+  <div class="intro">Learn Korean pronunciation with K-Drama lines and daily conversations!</div>
+
+  <div class="card">
+    <div class="category-tabs">
+      <button class="tab-button active" id="dramaTab">
+        <span class="icon">🎭</span>K-Drama
+      </button>
+      <button class="tab-button" id="dailyTab">
+        <span class="icon">💬</span>Daily Talk
+      </button>
+    </div>
+    
+    <div id="levelTabs" style="display: none;">
+      <div class="category-tabs" style="grid-template-columns: 1fr 1fr 1fr; margin-top: 12px;">
+        <button class="tab-button level-tab active" id="level1Tab">
+          <span class="icon">⭐</span>Level 1
+        </button>
+        <button class="tab-button level-tab" id="level2Tab">
+          <span class="icon">⭐⭐</span>Level 2
+        </button>
+        <button class="tab-button level-tab" id="level3Tab">
+          <span class="icon">⭐⭐⭐</span>Level 3
+        </button>
+      </div>
+      <div style="text-align: center; margin-top: 8px; font-size: 13px; color: rgba(255,255,255,0.8);" id="levelDesc">
+        Short & Simple
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div id="badgeContainer">
+      <div class="drama-badge" id="badge">Goblin</div>
+    </div>
+    
+    <div id="contextContainer">
+      <div class="scene-context" id="context">
+        Kim Shin to Eun-tak
+      </div>
+    </div>
+    
+    <div class="target-display" id="targetDisplay">
+      너는 내가 잃은 모든 날들이다
+    </div>
+    
+    <div class="english-translation" id="englishTranslation">
+      "You are all the days I lost"
+    </div>
+    
+    <div class="pronunciation-hint" id="pronunciationHint">
+      neoneun naega ireun modeun naldeulida
+    </div>
+    
+    <button id="speak"><span class="icon">🔊</span>Play & Listen</button>
+    
+    <div class="practice-tip">
+      💡 <strong>Practice Tip:</strong> Press the button to hear native pronunciation, then say it out loud several times. Focus on the rhythm and intonation!
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="button-group">
+      <button id="prevBtn" class="secondary"><span class="icon">◀</span>Previous</button>
+      <button id="nextBtn" class="secondary"><span class="icon">▶</span>Next</button>
+    </div>
+    <div class="progress" id="progress">1 / 15</div>
+  </div>
+
+<script>
+(function() {
+  'use strict';
+  
+  // Elements
+  const dramaTab = document.getElementById('dramaTab');
+  const dailyTab = document.getElementById('dailyTab');
+  const levelTabs = document.getElementById('levelTabs');
+  const level1Tab = document.getElementById('level1Tab');
+  const level2Tab = document.getElementById('level2Tab');
+  const level3Tab = document.getElementById('level3Tab');
+  const levelDesc = document.getElementById('levelDesc');
+  const badgeContainer = document.getElementById('badgeContainer');
+  const badge = document.getElementById('badge');
+  const contextContainer = document.getElementById('contextContainer');
+  const context = document.getElementById('context');
+  const targetDisplay = document.getElementById('targetDisplay');
+  const englishTranslation = document.getElementById('englishTranslation');
+  const pronunciationHint = document.getElementById('pronunciationHint');
+  const speakBtn = document.getElementById('speak');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const progress = document.getElementById('progress');
+
+  // K-Drama lines database
+  const dramaLines = [
+    {
+      category: 'drama',
+      drama: 'Goblin',
+      context: 'Kim Shin to Eun-tak',
+      line: '너는 내가 잃은 모든 날들이다',
+      translation: 'You are all the days I lost',
+      pronunciation: 'neoneun naega ireun modeun naldeulida'
+    },
+    {
+      category: 'drama',
+      drama: 'Goblin',
+      context: 'Eun-tak to Kim Shin',
+      line: '혼자였던 시간들이 다 필요했어요',
+      translation: 'I needed all those times I was alone',
+      pronunciation: 'honjayeotdeon sigandeuri da piryohaesseoyo'
+    },
+    {
+      category: 'drama',
+      drama: 'Crash Landing on You',
+      context: 'Ri Jeong-hyeok to Yoon Se-ri',
+      line: '내가 널 좋아했던 게 잘못이니?',
+      translation: 'Was it wrong for me to like you?',
+      pronunciation: 'naega neol joahaetdeon ge jalmosini?'
+    },
+    {
+      category: 'drama',
+      drama: 'Crash Landing on You',
+      context: "Yoon Se-ri's famous line",
+      line: '이 세상에 영원한 건 없어요',
+      translation: 'Nothing lasts forever in this world',
+      pronunciation: 'i sesange yeongwonhan geon eopseoyo'
+    },
+    {
+      category: 'drama',
+      drama: 'Itaewon Class',
+      context: "Park Sae-ro-yi's determination",
+      line: '난 내 방식대로 할 거야',
+      translation: "I'll do it my way",
+      pronunciation: 'nan nae bangsikdaero hal geoya'
+    },
+    {
+      category: 'drama',
+      drama: 'Itaewon Class',
+      context: "Jo Yi-seo's confession",
+      line: '너 때문에 웃고 너 때문에 울어',
+      translation: 'I laugh because of you and cry because of you',
+      pronunciation: 'neo ttaemune utgo neo ttaemune ureo'
+    },
+    {
+      category: 'drama',
+      drama: 'SKY Castle',
+      context: "Kim Joo-young's famous line",
+      line: '욕심이 과하면 화를 부른다',
+      translation: 'Excessive greed brings disaster',
+      pronunciation: 'yoksimi gwahamyeon hwarul bureunda'
+    },
+    {
+      category: 'drama',
+      drama: 'SKY Castle',
+      context: "Kang Ye-seo's plea",
+      line: '엄마, 나 숨 좀 쉬자',
+      translation: 'Mom, let me breathe',
+      pronunciation: 'eomma, na sum jom swija'
+    },
+    {
+      category: 'drama',
+      drama: 'Descendants of the Sun',
+      context: "Yoo Si-jin's pickup line",
+      line: '삐삐가 울려도 안 갈 거야',
+      translation: "I won't go even if my beeper rings",
+      pronunciation: 'ppippiga ullyeodo an gal geoya'
+    },
+    {
+      category: 'drama',
+      drama: 'Descendants of the Sun',
+      context: "Kang Mo-yeon's response",
+      line: '미쳤어요, 정말 미쳤어요',
+      translation: "You're crazy, really crazy",
+      pronunciation: 'michyeosseoyo, jeongmal michyeosseoyo'
+    },
+    {
+      category: 'drama',
+      drama: 'My Love from the Star',
+      context: "Cheon Song-yi's famous line",
+      line: '첫눈이 오는 날 고백하면 이루어진대',
+      translation: 'They say confessions on the first snow come true',
+      pronunciation: 'cheotnuni oneun nal gobaekhamyeon irueojindae'
+    },
+    {
+      category: 'drama',
+      drama: 'My Love from the Star',
+      context: 'Do Min-joon to Song-yi',
+      line: '나한테만은 웃지 마',
+      translation: "Don't smile at me",
+      pronunciation: 'nahanteman-eun utji ma'
+    },
+    {
+      category: 'drama',
+      drama: 'Mr. Sunshine',
+      context: 'Ae-shin to Eugene',
+      line: '슬픈 날엔 어깨를 쓰세요',
+      translation: 'Use my shoulder on sad days',
+      pronunciation: 'seulpeun naren eokkaereul sseuseyo'
+    },
+    {
+      category: 'drama',
+      drama: 'Mr. Sunshine',
+      context: 'Eugene to Ae-shin',
+      line: '그대, 아름답소',
+      translation: 'You are beautiful',
+      pronunciation: 'geudae, areumdapso'
+    },
+    {
+      category: 'drama',
+      drama: 'Goblin',
+      context: "Kim Shin's cry",
+      line: '나를 기억하라',
+      translation: 'Remember me',
+      pronunciation: 'nareul gieokara'
+    }
+  ];
+
+  // Daily conversation database - Level 1: Beginner (Short & Simple)
+  const dailyLevel1 = [
+    {
+      category: 'daily',
+      level: 1,
+      situation: 'Greeting',
+      context: 'Basic hello',
+      line: '안녕하세요',
+      translation: 'Hello',
+      pronunciation: 'annyeonghaseyo'
+    },
+    {
+      category: 'daily',
+      level: 1,
+      situation: 'Greeting',
+      context: 'Casual hi/bye',
+      line: '안녕',
+      translation: 'Hi / Bye',
+      pronunciation: 'annyeong'
+    },
+    {
+      category: 'daily',
+      level: 1,
+      situation: 'Gratitude',
+      context: 'Thank you',
+      line: '감사합니다',
+      translation: 'Thank you',
+      pronunciation: 'gamsahamnida'
+    },
+    {
+      category: 'daily',
+      level: 1,
+      situation: 'Gratitude',
+      context: 'Casual thanks',
+      line: '고마워요',
+      translation: 'Thanks',
+      pronunciation: 'gomawoyo'
+    },
+    {
+      category: 'daily',
+      level: 1,
+      situation: 'Apology',
+      context: 'Formal sorry',
+      line: '죄송합니다',
+      translation: "I'm sorry",
+      pronunciation: 'joesonghamnida'
+    },
+    {
+      category: 'daily',
+      level: 1,
+      situation: 'Response',
+      context: 'Yes',
+      line: '네',
+      translation: 'Yes',
+      pronunciation: 'ne'
+    },
+    {
+      category: 'daily',
+      level: 1,
+      situation: 'Response',
+      context: 'No',
+      line: '아니요',
+      translation: 'No',
+      pronunciation: 'aniyo'
+    },
+    {
+      category: 'daily',
+      level: 1,
+      situation: 'Food',
+      context: 'It tastes good',
+      line: '맛있어요',
+      translation: "It's delicious",
+      pronunciation: 'masisseoyo'
+    },
+    {
+      category: 'daily',
+      level: 1,
+      situation: 'Asking',
+      context: 'Excuse me',
+      line: '저기요',
+      translation: 'Excuse me',
+      pronunciation: 'jeogiyo'
+    },
+    {
+      category: 'daily',
+      level: 1,
+      situation: 'Common',
+      context: 'It\'s okay/fine',
+      line: '괜찮아요',
+      translation: "It's okay",
+      pronunciation: 'gwaenchanayo'
+    }
+  ];
+
+  // Daily conversation database - Level 2: Intermediate (Full Sentences)
+  const dailyLevel2 = [
+    {
+      category: 'daily',
+      level: 2,
+      situation: 'Greeting',
+      context: 'How are you',
+      line: '잘 지냈어요?',
+      translation: 'How have you been?',
+      pronunciation: 'jal jinaesseoyo?'
+    },
+    {
+      category: 'daily',
+      level: 2,
+      situation: 'Greeting',
+      context: 'Nice to meet you',
+      line: '만나서 반갑습니다',
+      translation: 'Nice to meet you',
+      pronunciation: 'mannaseo bangapseumnida'
+    },
+    {
+      category: 'daily',
+      level: 2,
+      situation: 'Food',
+      context: 'Before meal',
+      line: '잘 먹겠습니다',
+      translation: "I'll eat well",
+      pronunciation: 'jal meokgetseumnida'
+    },
+    {
+      category: 'daily',
+      level: 2,
+      situation: 'Food',
+      context: 'After meal',
+      line: '잘 먹었습니다',
+      translation: 'I ate well (thank you)',
+      pronunciation: 'jal meogeotseumnida'
+    },
+    {
+      category: 'daily',
+      level: 2,
+      situation: 'Asking',
+      context: 'Request help',
+      line: '도와주세요',
+      translation: 'Please help me',
+      pronunciation: 'dowajuseyo'
+    },
+    {
+      category: 'daily',
+      level: 2,
+      situation: 'Shopping',
+      context: 'Ask price',
+      line: '얼마예요?',
+      translation: 'How much is it?',
+      pronunciation: 'eolmayeyo?'
+    },
+    {
+      category: 'daily',
+      level: 2,
+      situation: 'Direction',
+      context: 'Find restroom',
+      line: '화장실이 어디예요?',
+      translation: 'Where is the bathroom?',
+      pronunciation: 'hwajangsiri eodiyeyo?'
+    },
+    {
+      category: 'daily',
+      level: 2,
+      situation: 'Response',
+      context: 'I understand',
+      line: '네, 알겠습니다',
+      translation: 'Yes, I understand',
+      pronunciation: 'ne, algetseumnida'
+    },
+    {
+      category: 'daily',
+      level: 2,
+      situation: 'Time',
+      context: 'What time',
+      line: '몇 시예요?',
+      translation: 'What time is it?',
+      pronunciation: 'myeot siyeyo?'
+    },
+    {
+      category: 'daily',
+      level: 2,
+      situation: 'Phone',
+      context: 'Phone number',
+      line: '전화번호가 뭐예요?',
+      translation: "What's your phone number?",
+      pronunciation: 'jeonhwabeonhoga mwoyeyo?'
+    }
+  ];
+
+  // Daily conversation database - Level 3: Advanced (Complex Sentences)
+  const dailyLevel3 = [
+    {
+      category: 'daily',
+      level: 3,
+      situation: 'Social',
+      context: 'Making plans',
+      line: '이번 주말에 시간 있으세요?',
+      translation: 'Do you have time this weekend?',
+      pronunciation: 'ibeon jumare sigan isseuseyo?'
+    },
+    {
+      category: 'daily',
+      level: 3,
+      situation: 'Restaurant',
+      context: 'Making reservation',
+      line: '예약하고 싶은데요',
+      translation: "I'd like to make a reservation",
+      pronunciation: 'yeyakago sipeundeyo'
+    },
+    {
+      category: 'daily',
+      level: 3,
+      situation: 'Shopping',
+      context: 'Trying on clothes',
+      line: '입어봐도 될까요?',
+      translation: 'May I try this on?',
+      pronunciation: 'ibeobwado doelkkayo?'
+    },
+    {
+      category: 'daily',
+      level: 3,
+      situation: 'Work',
+      context: 'Running late',
+      line: '죄송하지만 조금 늦을 것 같아요',
+      translation: "Sorry, but I think I'll be a bit late",
+      pronunciation: 'joesongajiman jogeum neujeul geot gatayo'
+    },
+    {
+      category: 'daily',
+      level: 3,
+      situation: 'Conversation',
+      context: 'Asking opinion',
+      line: '어떻게 생각하세요?',
+      translation: 'What do you think?',
+      pronunciation: 'eotteoke saenggakaseyo?'
+    },
+    {
+      category: 'daily',
+      level: 3,
+      situation: 'Problem',
+      context: 'Something wrong',
+      line: '무슨 문제가 있나요?',
+      translation: "What's the problem?",
+      pronunciation: 'museun munjega innayo?'
+    },
+    {
+      category: 'daily',
+      level: 3,
+      situation: 'Suggestion',
+      context: 'Making suggestion',
+      line: '같이 영화 보러 갈래요?',
+      translation: 'Would you like to go see a movie together?',
+      pronunciation: 'gachi yeonghwa boreo gallaeyo?'
+    },
+    {
+      category: 'daily',
+      level: 3,
+      situation: 'Request',
+      context: 'Asking favor',
+      line: '부탁 하나만 들어주실 수 있나요?',
+      translation: 'Could you do me a favor?',
+      pronunciation: 'butak hanaman deureojusil su innayo?'
+    },
+    {
+      category: 'daily',
+      level: 3,
+      situation: 'Explanation',
+      context: 'Explaining situation',
+      line: '제가 설명해 드릴게요',
+      translation: "I'll explain it to you",
+      pronunciation: 'jega seolmyeonghae deurilgeyo'
+    },
+    {
+      category: 'daily',
+      level: 3,
+      situation: 'Compliment',
+      context: 'Praising someone',
+      line: '정말 잘하시네요!',
+      translation: "You're really good at this!",
+      pronunciation: 'jeongmal jalhasineyo!'
+    }
+  ];
+  
+  let currentCategory = 'drama';
+  let currentLevel = 1;
+  let currentIndex = 0;
+  let currentLines = dramaLines;
+
+  // Get daily lines by level
+  function getDailyLinesByLevel(level) {
+    if (level === 1) return dailyLevel1;
+    if (level === 2) return dailyLevel2;
+    return dailyLevel3;
+  }
+
+  // Switch category
+  function switchCategory(category) {
+    currentCategory = category;
+    currentIndex = 0;
+    
+    if (category === 'drama') {
+      currentLines = dramaLines;
+      levelTabs.style.display = 'none';
+      dramaTab.classList.add('active');
+      dailyTab.classList.remove('active');
+    } else {
+      currentLines = getDailyLinesByLevel(currentLevel);
+      levelTabs.style.display = 'block';
+      dailyTab.classList.add('active');
+      dramaTab.classList.remove('active');
+    }
+    
+    updateDisplay();
+  }
+
+  // Switch level
+  function switchLevel(level) {
+    currentLevel = level;
+    currentIndex = 0;
+    currentLines = getDailyLinesByLevel(level);
+    
+    // Update level tabs
+    document.querySelectorAll('.level-tab').forEach(tab => tab.classList.remove('active'));
+    if (level === 1) {
+      level1Tab.classList.add('active');
+      levelDesc.textContent = 'Short & Simple - Basic words and phrases';
+    } else if (level === 2) {
+      level2Tab.classList.add('active');
+      levelDesc.textContent = 'Full Sentences - Common everyday expressions';
+    } else {
+      level3Tab.classList.add('active');
+      levelDesc.textContent = 'Complex Sentences - Natural conversations';
+    }
+    
+    updateDisplay();
+  }
+
+  // Update display
+  function updateDisplay() {
+    const current = currentLines[currentIndex];
+    
+    // Update badge and context styling based on category
+    if (currentCategory === 'drama') {
+      badgeContainer.innerHTML = `<div class="drama-badge" id="badge">${current.drama}</div>`;
+      contextContainer.innerHTML = `<div class="scene-context" id="context">${current.context}</div>`;
+    } else {
+      badgeContainer.innerHTML = `<div class="daily-badge" id="badge">${current.situation}</div>`;
+      contextContainer.innerHTML = `<div class="situation-context" id="context">${current.context}</div>`;
+    }
+    
+    targetDisplay.textContent = current.line;
+    englishTranslation.textContent = `"${current.translation}"`;
+    pronunciationHint.textContent = current.pronunciation;
+    
+    // Update button states
+    prevBtn.disabled = currentIndex === 0;
+    nextBtn.disabled = currentIndex === currentLines.length - 1;
+    
+    // Update progress
+    progress.textContent = `${currentIndex + 1} / ${currentLines.length}`;
+  }
+
+  // Tab click handlers
+  dramaTab.addEventListener('click', function() {
+    switchCategory('drama');
+  });
+
+  dailyTab.addEventListener('click', function() {
+    switchCategory('daily');
+  });
+
+  level1Tab.addEventListener('click', function() {
+    switchLevel(1);
+  });
+
+  level2Tab.addEventListener('click', function() {
+    switchLevel(2);
+  });
+
+  level3Tab.addEventListener('click', function() {
+    switchLevel(3);
+  });
+
+  // Navigation
+  prevBtn.addEventListener('click', function() {
+    if (currentIndex > 0) {
+      currentIndex--;
+      updateDisplay();
+    }
+  });
+
+  nextBtn.addEventListener('click', function() {
+    if (currentIndex < currentLines.length - 1) {
+      currentIndex++;
+      updateDisplay();
+    }
+  });
+
+  // TTS
+  let voices = [];
+  
+  function loadVoices() {
+    if (window.speechSynthesis) {
+      voices = window.speechSynthesis.getVoices();
+    }
+  }
+  
+  if (window.speechSynthesis) {
+    loadVoices();
+    if (window.speechSynthesis.onvoiceschanged !== undefined) {
+      window.speechSynthesis.onvoiceschanged = loadVoices;
+    }
+  }
+  
+  speakBtn.addEventListener('click', function() {
+    const text = currentLines[currentIndex].line;
+    
+    if (!window.speechSynthesis) {
+      alert('Your browser does not support voice playback');
+      return;
+    }
+    
+    try {
+      window.speechSynthesis.cancel();
+      
+      setTimeout(function() {
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.lang = 'ko-KR';
+        utter.rate = 0.85;
+        utter.pitch = 1.0;
+        utter.volume = 1.0;
+        
+        if (voices.length > 0) {
+          const koVoice = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('ko'));
+          if (koVoice) {
+            utter.voice = koVoice;
+          }
+        }
+        
+        window.speechSynthesis.speak(utter);
+      }, 100);
+      
+    } catch (e) {
+      alert('Error playing voice');
+    }
+  });
+
+  // Initialize
+  window.addEventListener('load', function() {
+    updateDisplay();
+  });
+  
+})();
+</script>
+</body>
+</html>
