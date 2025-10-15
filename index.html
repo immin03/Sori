@@ -548,6 +548,8 @@
     gap: 12px;
     transition: all 0.2s;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    pointer-events: auto;
+    user-select: none;
   }
   
   .google-login-btn:hover {
@@ -558,6 +560,7 @@
   
   .google-login-btn:active {
     transform: translateY(0);
+    background: #f3f4f6;
   }
   
   .user-profile {
@@ -737,7 +740,7 @@
     
     <div class="voice-speed">
       <label>Speed:</label>
-      <input type="range" id="speed" min="0.6" max="1.0" step="0.1" value="0.75">
+      <input type="range" id="speed" min="0.3" max="1.0" step="0.1" value="0.75">
       <span id="speedTxt">0.75x</span>
     </div>
     
@@ -767,13 +770,23 @@ const firebaseConfig = {
 
 // Initialize Firebase
 let auth, db, currentUser = null;
+let firebaseInitialized = false;
+
+console.log('Attempting Firebase initialization...');
 
 try {
-  firebase.initializeApp(firebaseConfig);
-  auth = firebase.auth();
-  db = firebase.firestore();
+  if (typeof firebase !== 'undefined') {
+    firebase.initializeApp(firebaseConfig);
+    auth = firebase.auth();
+    db = firebase.firestore();
+    firebaseInitialized = true;
+    console.log('✅ Firebase initialized successfully');
+  } else {
+    console.log('⚠️ Firebase SDK not loaded');
+  }
 } catch (e) {
-  console.log('Firebase initialization skipped - demo mode');
+  console.log('⚠️ Firebase initialization skipped - demo mode:', e.message);
+  // This is expected if Firebase config is not set up
 }
 
 // User Management
@@ -924,64 +937,103 @@ if (auth) {
   });
 }
 
-// Login button handler
-document.getElementById('loginBtn').addEventListener('click', () => {
-  document.getElementById('authModal').classList.remove('hidden');
-});
+// Wait for DOM to be fully loaded
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('DOM loaded, setting up event listeners...');
 
-// Close auth modal
-document.getElementById('authClose').addEventListener('click', () => {
-  document.getElementById('authModal').classList.add('hidden');
-});
-
-// Close modal when clicking outside
-document.getElementById('authModal').addEventListener('click', (e) => {
-  if (e.target.id === 'authModal') {
-    document.getElementById('authModal').classList.add('hidden');
+  // Login button handler
+  const loginBtn = document.getElementById('loginBtn');
+  if (loginBtn) {
+    loginBtn.addEventListener('click', () => {
+      console.log('Login button clicked');
+      document.getElementById('authModal').classList.remove('hidden');
+    });
   }
-});
 
-// Prevent closing when clicking inside the card
-document.querySelector('.auth-card').addEventListener('click', (e) => {
-  e.stopPropagation();
-});
+  // Close auth modal
+  const authClose = document.getElementById('authClose');
+  if (authClose) {
+    authClose.addEventListener('click', () => {
+      console.log('Close button clicked');
+      document.getElementById('authModal').classList.add('hidden');
+    });
+  }
 
-// My button handler
-document.getElementById('myBtn').addEventListener('click', () => {
-  if (currentUser) {
-    alert(`👤 Profile\n\nName: ${userState.name}\nLevel: ${userState.level} - ${getLevelName(userState.level)}\nTotal XP: ${userState.xp}\nTotal Days: ${userState.totalDays}\nCurrent Streak: ${userState.streak} 🔥`);
+  // Close modal when clicking outside
+  const authModal = document.getElementById('authModal');
+  if (authModal) {
+    authModal.addEventListener('click', (e) => {
+      if (e.target.id === 'authModal') {
+        console.log('Clicked outside modal');
+        document.getElementById('authModal').classList.add('hidden');
+      }
+    });
+  }
+
+  // Prevent closing when clicking inside the card
+  const authCard = document.querySelector('.auth-card');
+  if (authCard) {
+    authCard.addEventListener('click', (e) => {
+      e.stopPropagation();
+    });
+  }
+
+  // My button handler
+  const myBtn = document.getElementById('myBtn');
+  if (myBtn) {
+    myBtn.addEventListener('click', () => {
+      if (currentUser) {
+        alert(`👤 Profile\n\nName: ${userState.name}\nLevel: ${userState.level} - ${getLevelName(userState.level)}\nTotal XP: ${userState.xp}\nTotal Days: ${userState.totalDays}\nCurrent Streak: ${userState.streak} 🔥`);
+      } else {
+        alert('Please login first to view your profile!');
+        document.getElementById('authModal').classList.remove('hidden');
+      }
+    });
+  }
+
+  // Google Sign In
+  const googleLoginBtn = document.getElementById('googleLoginBtn');
+  if (googleLoginBtn) {
+    console.log('Google login button found!');
+    googleLoginBtn.addEventListener('click', async function(e) {
+      console.log('Google login button clicked!');
+      e.preventDefault();
+      e.stopPropagation();
+      
+      if (!auth) {
+        console.log('Firebase not configured');
+        alert('🔧 Demo Mode\n\nTo enable Google login:\n1. Create a Firebase project\n2. Enable Google Authentication\n3. Replace the firebaseConfig with your credentials');
+        document.getElementById('authModal').classList.add('hidden');
+        return;
+      }
+      
+      try {
+        console.log('Attempting Google sign in...');
+        const provider = new firebase.auth.GoogleAuthProvider();
+        const result = await auth.signInWithPopup(provider);
+        console.log('Login successful!', result.user);
+        document.getElementById('authModal').classList.add('hidden');
+      } catch (error) {
+        console.error('Login error:', error);
+        alert('⚠️ Login failed: ' + error.message);
+      }
+    });
   } else {
-    alert('Please login first to view your profile!');
-    document.getElementById('authModal').classList.remove('hidden');
+    console.error('Google login button not found!');
   }
-});
 
-// Google Sign In
-document.getElementById('googleLoginBtn').addEventListener('click', async () => {
-  if (!auth) {
-    alert('Firebase not configured. Please add your Firebase credentials.');
-    document.getElementById('authModal').classList.add('hidden');
-    return;
-  }
-  
-  try {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    await auth.signInWithPopup(provider);
-    document.getElementById('authModal').classList.add('hidden');
-  } catch (error) {
-    console.error('Login error:', error);
-    showError('⚠️ Login failed. Please try again.');
-  }
-});
-
-// Logout
-document.getElementById('logoutBtn').addEventListener('click', async () => {
-  if (!auth) return;
-  
-  try {
-    await auth.signOut();
-  } catch (error) {
-    console.error('Logout error:', error);
+  // Logout
+  const logoutBtn = document.getElementById('logoutBtn');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', async () => {
+      if (!auth) return;
+      
+      try {
+        await auth.signOut();
+      } catch (error) {
+        console.error('Logout error:', error);
+      }
+    });
   }
 });
 
