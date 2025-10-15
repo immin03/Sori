@@ -4,6 +4,12 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Sori - Learn Korean</title>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
 <style>
   * { box-sizing: border-box; }
   
@@ -11,30 +17,30 @@
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
     max-width: 680px; 
     margin: 0 auto; 
-    padding: 20px;
+    padding: 16px;
     background: #faf8ff;
     min-height: 100vh;
   }
   
   h1 { 
-    font-size: 32px; 
-    margin: 0 0 12px 0; 
+    font-size: 28px; 
+    margin: 0 0 8px 0; 
     color: #7c3aed;
     font-weight: 800;
   }
   
   .intro {
     color: #9ca3af;
-    font-size: 16px;
-    margin-bottom: 24px;
-    line-height: 1.6;
+    font-size: 14px;
+    margin-bottom: 16px;
+    line-height: 1.4;
     font-weight: 500;
   }
   
   .card { 
-    border-radius: 24px; 
-    padding: 28px; 
-    margin: 16px 0; 
+    border-radius: 20px; 
+    padding: 20px; 
+    margin: 12px 0; 
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
     background: white;
   }
@@ -42,18 +48,18 @@
   .category-tabs {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 20px;
+    gap: 8px;
+    margin-bottom: 12px;
   }
   
   .tab-button {
-    padding: 16px 24px;
+    padding: 12px 16px;
     border: 2px solid #f3f4f6;
-    border-radius: 20px;
+    border-radius: 16px;
     background: #f9fafb;
     color: #9ca3af;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 700;
     transition: all 0.2s;
   }
@@ -71,22 +77,22 @@
   
   .sub-filters {
     display: flex;
-    gap: 8px;
+    gap: 6px;
     flex-wrap: wrap;
-    margin-bottom: 20px;
-    padding: 16px;
+    margin-bottom: 12px;
+    padding: 12px;
     background: #f9fafb;
-    border-radius: 16px;
+    border-radius: 12px;
   }
   
   .filter-chip {
-    padding: 8px 16px;
-    border-radius: 20px;
+    padding: 6px 12px;
+    border-radius: 16px;
     background: white;
     border: 2px solid #e5e7eb;
     color: #6b7280;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     transition: all 0.2s;
   }
@@ -105,52 +111,52 @@
     display: inline-block;
     background: #7c3aed;
     color: white;
-    padding: 8px 16px;
-    border-radius: 16px;
-    font-size: 13px;
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 12px;
     font-weight: 800;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
   }
   
   .context-box {
     background: #f9fafb;
-    border-radius: 12px;
-    padding: 10px 16px;
-    margin-bottom: 20px;
-    font-size: 14px;
+    border-radius: 10px;
+    padding: 8px 12px;
+    margin-bottom: 12px;
+    font-size: 13px;
     color: #6b7280;
     font-weight: 600;
   }
   
   .korean-section {
     background: #f9fafb;
-    border-radius: 20px;
-    padding: 32px 24px;
-    margin: 20px 0;
+    border-radius: 16px;
+    padding: 20px 16px;
+    margin: 12px 0;
   }
   
   .target-display {
-    font-size: 40px;
+    font-size: 32px;
     font-weight: 900;
     color: #1f2937;
     text-align: center;
-    line-height: 1.4;
-    margin-bottom: 16px;
+    line-height: 1.3;
+    margin-bottom: 10px;
   }
   
   .pronunciation-hint {
     color: #9ca3af;
-    font-size: 19px;
+    font-size: 16px;
     font-weight: 600;
     text-align: center;
     letter-spacing: 0.5px;
-    margin-bottom: 20px;
+    margin-bottom: 12px;
     font-style: italic;
   }
   
   .english-translation {
     color: #9ca3af;
-    font-size: 19px;
+    font-size: 16px;
     text-align: center;
     margin-bottom: 0;
     font-weight: 600;
@@ -162,13 +168,13 @@
   }
   
   button { 
-    padding: 18px 28px; 
+    padding: 14px 20px; 
     border: 0; 
-    border-radius: 20px; 
+    border-radius: 16px; 
     background: #7c3aed;
     color: white; 
     cursor: pointer; 
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 800;
     width: 100%;
     box-shadow: 0 2px 8px rgba(124, 58, 237, 0.2);
@@ -198,104 +204,532 @@
   .button-group {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-top: 16px;
+    gap: 8px;
+    margin-top: 12px;
   }
   
   .practice-tip {
     background: #fffbeb;
     border-left: 4px solid #f59e0b;
-    padding: 16px 20px;
-    border-radius: 16px;
-    margin-top: 20px;
-    font-size: 14px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    margin-top: 12px;
+    font-size: 13px;
     color: #92400e;
-    line-height: 1.7;
+    line-height: 1.5;
     font-weight: 500;
+  }
+  
+  .repetition-tracker {
+    margin: 12px 0;
+    padding: 14px;
+    background: #f9fafb;
+    border-radius: 12px;
+  }
+  
+  .repetition-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #6b7280;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  
+  .repetition-dots {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    margin-bottom: 12px;
+  }
+  
+  .rep-dot {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 3px solid #e5e7eb;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    transition: all 0.3s;
+  }
+  
+  .rep-dot.completed {
+    background: #7c3aed;
+    border-color: #7c3aed;
+    transform: scale(1.1);
+  }
+  
+  .congratulations {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    padding: 16px;
+    border-radius: 12px;
+    text-align: center;
+    margin: 12px 0;
+    display: none;
+    animation: slideIn 0.5s ease-out;
+  }
+  
+  .congratulations.show {
+    display: block;
+  }
+  
+  .congratulations-emoji {
+    font-size: 40px;
+    margin-bottom: 6px;
+  }
+  
+  .congratulations-text {
+    font-size: 18px;
+    font-weight: 800;
+    color: #92400e;
+    margin-bottom: 2px;
+  }
+  
+  .congratulations-subtext {
+    font-size: 13px;
+    color: #92400e;
+    font-weight: 600;
+  }
+  
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
   
   .progress {
     text-align: center;
     color: #7c3aed;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 700;
-    margin-top: 12px;
+    margin-top: 10px;
   }
   
   .voice-speed {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 12px;
-    margin-top: 16px;
-    padding: 12px;
+    gap: 10px;
+    margin-top: 12px;
+    padding: 10px;
     background: #f9fafb;
-    border-radius: 12px;
+    border-radius: 10px;
   }
   
   .voice-speed label {
-    color: #6b7280;
-    font-size: 14px;
+    color: #7c3aed;
+    font-size: 13px;
     font-weight: 600;
   }
   
   .voice-speed input { 
-    width: 150px;
+    width: 120px;
     cursor: pointer;
   }
   
+  .voice-speed input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    background: #e5e7eb;
+    border-radius: 10px;
+    outline: none;
+  }
+  
+  .voice-speed input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: #7c3aed;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .voice-speed input[type="range"]::-webkit-slider-thumb:hover {
+    background: #6d28d9;
+    transform: scale(1.1);
+  }
+  
+  .voice-speed input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background: #7c3aed;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .voice-speed input[type="range"]::-moz-range-thumb:hover {
+    background: #6d28d9;
+    transform: scale(1.1);
+  }
+  
   .voice-speed span {
-    color: #6b7280;
+    color: #7c3aed;
     font-weight: 700;
-    font-size: 14px;
-    min-width: 60px;
+    font-size: 13px;
+    min-width: 50px;
   }
   
   .error-msg {
     background: #fee2e2;
     color: #991b1b;
-    padding: 12px 16px;
-    border-radius: 12px;
-    margin-top: 12px;
-    font-size: 13px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    margin-top: 10px;
+    font-size: 12px;
     font-weight: 600;
     display: none;
   }
   
   @media (max-width: 640px) {
-    body { padding: 16px; }
-    h1 { font-size: 28px; }
-    .card { padding: 24px; }
-    .target-display { font-size: 34px; }
-    .pronunciation-hint { font-size: 19px; }
+    body { padding: 12px; }
+    h1 { font-size: 24px; }
+    .card { padding: 16px; }
+    .target-display { font-size: 28px; }
+    .pronunciation-hint { font-size: 15px; }
     .category-tabs {
       grid-template-columns: 1fr;
     }
   }
+  
+  .auth-section {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 20px;
+  }
+  
+  .auth-section:not(.hidden) {
+    display: flex;
+  }
+  
+  .header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+  
+  .header-left {
+    flex: 1;
+  }
+  
+  .header-right {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .login-btn {
+    background: #7c3aed;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .login-btn:hover {
+    background: #6d28d9;
+  }
+  
+  .my-btn {
+    background: #f9fafb;
+    color: #6b7280;
+    border: 2px solid #e5e7eb;
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .my-btn:hover {
+    background: #f3f4f6;
+  }
+  
+  .auth-section.hidden {
+    display: none;
+  }
+  
+  .auth-card {
+    background: white;
+    padding: 40px;
+    border-radius: 24px;
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    position: relative;
+    pointer-events: auto;
+  }
+  
+  .auth-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: none;
+    border: none;
+    font-size: 28px;
+    color: #9ca3af;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    line-height: 1;
+    padding: 0;
+  }
+  
+  .auth-close:hover {
+    background: #f3f4f6;
+    color: #6b7280;
+  }
+  
+  .auth-card {
+    background: white;
+    padding: 40px;
+    border-radius: 24px;
+    text-align: center;
+    max-width: 400px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  }
+  
+  .auth-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: #7c3aed;
+    margin-bottom: 8px;
+  }
+  
+  .auth-subtitle {
+    font-size: 14px;
+    color: #9ca3af;
+    margin-bottom: 24px;
+  }
+  
+  .google-login-btn {
+    background: white;
+    border: 2px solid #e5e7eb;
+    padding: 14px 24px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1f2937;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    transition: all 0.2s;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  }
+  
+  .google-login-btn:hover {
+    background: #f9fafb;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+  }
+  
+  .google-login-btn:active {
+    transform: translateY(0);
+  }
+  
+  .user-profile {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  }
+  
+  .user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid #7c3aed;
+  }
+  
+  .user-info {
+    flex: 1;
+    text-align: left;
+  }
+  
+  .user-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1f2937;
+  }
+  
+  .user-level {
+    font-size: 11px;
+    color: #7c3aed;
+    font-weight: 600;
+  }
+  
+  .logout-btn {
+    background: #f9fafb;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #6b7280;
+    cursor: pointer;
+  }
+  
+  .logout-btn:hover {
+    background: #f3f4f6;
+  }
+  
+  .stats-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  
+  .stat-item {
+    background: #f9fafb;
+    padding: 12px;
+    border-radius: 12px;
+    text-align: center;
+  }
+  
+  .stat-value {
+    font-size: 20px;
+    font-weight: 800;
+    color: #7c3aed;
+  }
+  
+  .stat-label {
+    font-size: 11px;
+    color: #6b7280;
+    font-weight: 600;
+    margin-top: 4px;
+  }
 </style>
 </head>
 <body>
-  <h1>Sori - Learn Korean</h1>
-  <div class="intro">Master Korean with K-Drama lines and daily conversations 💕</div>
+  <!-- Auth Modal (Hidden) -->
+  <div class="auth-section hidden" id="authModal">
+    <div class="auth-card">
+      <button class="auth-close" id="authClose">×</button>
+      <div class="auth-title">Welcome to Sori! 💜</div>
+      <div class="auth-subtitle">Sign in to track your progress and level up</div>
+      <button class="google-login-btn" id="googleLoginBtn">
+        <svg width="20" height="20" viewBox="0 0 20 20">
+          <path fill="#4285F4" d="M19.6 10.23c0-.82-.1-1.42-.25-2.05H10v3.72h5.5c-.15.96-.74 2.31-2.04 3.22v2.45h3.16c1.89-1.73 2.98-4.3 2.98-7.34z"/>
+          <path fill="#34A853" d="M13.46 15.13c-.83.59-1.96 1-3.46 1-2.64 0-4.88-1.74-5.68-4.15H1.07v2.52C2.72 17.75 6.09 20 10 20c2.7 0 4.96-.89 6.62-2.42l-3.16-2.45z"/>
+          <path fill="#FBBC05" d="M3.99 10c0-.69.12-1.35.32-1.97V5.51H1.07A9.973 9.973 0 000 10c0 1.61.39 3.14 1.07 4.49l3.24-2.52c-.2-.62-.32-1.28-.32-1.97z"/>
+          <path fill="#EA4335" d="M10 3.88c1.88 0 3.13.81 3.85 1.48l2.84-2.76C14.96.99 12.7 0 10 0 6.09 0 2.72 2.25 1.07 5.51l3.24 2.52C5.12 5.62 7.36 3.88 10 3.88z"/>
+        </svg>
+        Continue with Google
+      </button>
+    </div>
+  </div>
+
+  <!-- Header with Login/My buttons -->
+  <div class="header-container">
+    <div class="header-left">
+      <h1>Sori - Learn Korean</h1>
+      <div class="intro">Master Korean with K-Drama lines and daily conversations 💕</div>
+    </div>
+    <div class="header-right">
+      <button class="login-btn" id="loginBtn">Login</button>
+      <button class="my-btn" id="myBtn">My</button>
+    </div>
+  </div>
+
+  <!-- User Profile (Hidden initially) -->
+  <div id="userSection" style="display:none;">
+    <div class="user-profile">
+      <img id="userAvatar" class="user-avatar" src="" alt="User">
+      <div class="user-info">
+        <div class="user-name" id="userName">User Name</div>
+        <div class="user-level" id="userLevel">Level 1 - Beginner</div>
+      </div>
+      <button class="logout-btn" id="logoutBtn">Logout</button>
+    </div>
+    
+    <div class="card stats-card">
+      <div class="stat-item">
+        <div class="stat-value" id="totalDays">0</div>
+        <div class="stat-label">Total Days</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="streak">0</div>
+        <div class="stat-label">Streak 🔥</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="xpPoints">0</div>
+        <div class="stat-label">XP Points</div>
+      </div>
+    </div>
+  </div>
 
   <div class="card">
     <div class="category-tabs">
-      <button class="tab-button" id="dailyBtn">💬 Daily</button>
+      <button class="tab-button active" id="dailyBtn">💬 Daily</button>
       <button class="tab-button" id="travelBtn">✈️ Travel</button>
-      <button class="tab-button active" id="dramaBtn">🎭 K-Drama</button>
+      <button class="tab-button" id="dramaBtn">🎭 K-Drama</button>
     </div>
     
     <div id="subFilters" style="display:none;"></div>
   </div>
 
   <div class="card">
-    <div class="badge" id="badge">Goblin</div>
-    <div class="context-box" id="context">Conversation: Kim Shin to Eun-tak</div>
+    <div class="badge" id="badge">Greeting</div>
+    <div class="context-box" id="context">Conversation: First meeting</div>
     
     <div class="korean-section">
-      <div class="target-display" id="korean">너는 내가 잃은 모든 날들이다</div>
-      <div class="pronunciation-hint" id="pronunciation">neoneun naega ireun modeun naldeulida</div>
-      <div class="english-translation" id="english">"You are all the days I lost"</div>
+      <div class="target-display" id="korean">안녕하세요.</div>
+      <div class="pronunciation-hint" id="pronunciation">annyeonghaseyo</div>
+      <div class="english-translation" id="english">"Hello"</div>
+    </div>
+    
+    <div class="repetition-tracker">
+      <div class="repetition-label">🎯 Practice Count: <span id="repCount">0</span> / 5</div>
+      <div class="repetition-dots" id="repDots">
+        <div class="rep-dot" id="dot1"></div>
+        <div class="rep-dot" id="dot2"></div>
+        <div class="rep-dot" id="dot3"></div>
+        <div class="rep-dot" id="dot4"></div>
+        <div class="rep-dot" id="dot5"></div>
+      </div>
+    </div>
+    
+    <div class="congratulations" id="congrats">
+      <div class="congratulations-emoji">🎉</div>
+      <div class="congratulations-text">참 잘했어요!</div>
+      <div class="congratulations-subtext">Great job! Ready for the next one?</div>
     </div>
     
     <button id="playBtn">🔊 Listen & Repeat</button>
@@ -317,10 +751,241 @@
       <button class="secondary" id="prevBtn">◀ Previous</button>
       <button class="secondary" id="nextBtn">▶ Next</button>
     </div>
-    <div class="progress" id="prog">1 / 67</div>
+    <div class="progress" id="prog">1 / 30</div>
   </div>
 
 <script>
+// Firebase Configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyBXxvK_your_api_key_here",
+  authDomain: "your-project.firebaseapp.com",
+  projectId: "your-project-id",
+  storageBucket: "your-project.appspot.com",
+  messagingSenderId: "123456789",
+  appId: "1:123456789:web:abcdef"
+};
+
+// Initialize Firebase
+let auth, db, currentUser = null;
+
+try {
+  firebase.initializeApp(firebaseConfig);
+  auth = firebase.auth();
+  db = firebase.firestore();
+} catch (e) {
+  console.log('Firebase initialization skipped - demo mode');
+}
+
+// User Management
+const userState = {
+  uid: null,
+  name: null,
+  email: null,
+  photoURL: null,
+  level: 1,
+  xp: 0,
+  totalDays: 0,
+  streak: 0,
+  lastVisit: null,
+  practiceCount: {}
+};
+
+function calculateLevel(xp) {
+  if (xp < 100) return 1;
+  if (xp < 300) return 2;
+  if (xp < 600) return 3;
+  if (xp < 1000) return 4;
+  if (xp < 1500) return 5;
+  return Math.floor(xp / 300) + 1;
+}
+
+function getLevelName(level) {
+  const levels = ['Beginner', 'Elementary', 'Intermediate', 'Advanced', 'Expert', 'Master'];
+  return levels[Math.min(level - 1, levels.length - 1)] || 'Master';
+}
+
+async function checkAndUpdateAttendance() {
+  if (!currentUser || !db) return;
+  
+  const today = new Date().toDateString();
+  const yesterday = new Date(Date.now() - 86400000).toDateString();
+  
+  if (userState.lastVisit !== today) {
+    const isConsecutive = userState.lastVisit === yesterday;
+    
+    userState.lastVisit = today;
+    userState.totalDays += 1;
+    userState.streak = isConsecutive ? userState.streak + 1 : 1;
+    userState.xp += 10; // Daily login bonus
+    
+    await db.collection('users').doc(currentUser.uid).set({
+      ...userState,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true });
+    
+    updateUserUI();
+    showError('🎉 Daily check-in complete! +10 XP');
+  }
+}
+
+async function loadUserData() {
+  if (!currentUser || !db) return;
+  
+  try {
+    const doc = await db.collection('users').doc(currentUser.uid).get();
+    
+    if (doc.exists) {
+      const data = doc.data();
+      userState.level = data.level || 1;
+      userState.xp = data.xp || 0;
+      userState.totalDays = data.totalDays || 0;
+      userState.streak = data.streak || 0;
+      userState.lastVisit = data.lastVisit || null;
+      userState.practiceCount = data.practiceCount || {};
+    } else {
+      // First time user
+      userState.lastVisit = new Date().toDateString();
+      userState.totalDays = 1;
+      userState.streak = 1;
+      userState.xp = 10;
+      
+      await db.collection('users').doc(currentUser.uid).set({
+        ...userState,
+        uid: currentUser.uid,
+        email: currentUser.email,
+        name: currentUser.displayName,
+        photoURL: currentUser.photoURL,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    }
+    
+    await checkAndUpdateAttendance();
+  } catch (error) {
+    console.error('Error loading user data:', error);
+  }
+}
+
+function updateUserUI() {
+  document.getElementById('userName').textContent = userState.name || 'User';
+  document.getElementById('userLevel').textContent = `Level ${userState.level} - ${getLevelName(userState.level)}`;
+  document.getElementById('totalDays').textContent = userState.totalDays;
+  document.getElementById('streak').textContent = userState.streak;
+  document.getElementById('xpPoints').textContent = userState.xp;
+  
+  if (userState.photoURL) {
+    document.getElementById('userAvatar').src = userState.photoURL;
+  }
+}
+
+async function updatePracticeStats() {
+  if (!currentUser || !db) return;
+  
+  const phraseId = st.filteredLines[st.i].k;
+  userState.practiceCount[phraseId] = (userState.practiceCount[phraseId] || 0) + 5;
+  userState.xp += 5; // XP for completing a phrase
+  
+  const newLevel = calculateLevel(userState.xp);
+  if (newLevel > userState.level) {
+    userState.level = newLevel;
+    showError(`🎊 Level Up! You are now Level ${newLevel} - ${getLevelName(newLevel)}!`);
+  }
+  
+  await db.collection('users').doc(currentUser.uid).update({
+    xp: userState.xp,
+    level: userState.level,
+    practiceCount: userState.practiceCount,
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
+  
+  updateUserUI();
+}
+
+// Auth state observer
+if (auth) {
+  auth.onAuthStateChanged(async (user) => {
+    if (user) {
+      currentUser = user;
+      userState.uid = user.uid;
+      userState.name = user.displayName;
+      userState.email = user.email;
+      userState.photoURL = user.photoURL;
+      
+      document.getElementById('authModal').classList.add('hidden');
+      document.getElementById('userSection').style.display = 'block';
+      document.getElementById('loginBtn').style.display = 'none';
+      
+      await loadUserData();
+      updateUserUI();
+    } else {
+      currentUser = null;
+      document.getElementById('userSection').style.display = 'none';
+      document.getElementById('loginBtn').style.display = 'block';
+    }
+  });
+}
+
+// Login button handler
+document.getElementById('loginBtn').addEventListener('click', () => {
+  document.getElementById('authModal').classList.remove('hidden');
+});
+
+// Close auth modal
+document.getElementById('authClose').addEventListener('click', () => {
+  document.getElementById('authModal').classList.add('hidden');
+});
+
+// Close modal when clicking outside
+document.getElementById('authModal').addEventListener('click', (e) => {
+  if (e.target.id === 'authModal') {
+    document.getElementById('authModal').classList.add('hidden');
+  }
+});
+
+// Prevent closing when clicking inside the card
+document.querySelector('.auth-card').addEventListener('click', (e) => {
+  e.stopPropagation();
+});
+
+// My button handler
+document.getElementById('myBtn').addEventListener('click', () => {
+  if (currentUser) {
+    alert(`👤 Profile\n\nName: ${userState.name}\nLevel: ${userState.level} - ${getLevelName(userState.level)}\nTotal XP: ${userState.xp}\nTotal Days: ${userState.totalDays}\nCurrent Streak: ${userState.streak} 🔥`);
+  } else {
+    alert('Please login first to view your profile!');
+    document.getElementById('authModal').classList.remove('hidden');
+  }
+});
+
+// Google Sign In
+document.getElementById('googleLoginBtn').addEventListener('click', async () => {
+  if (!auth) {
+    alert('Firebase not configured. Please add your Firebase credentials.');
+    document.getElementById('authModal').classList.add('hidden');
+    return;
+  }
+  
+  try {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    await auth.signInWithPopup(provider);
+    document.getElementById('authModal').classList.add('hidden');
+  } catch (error) {
+    console.error('Login error:', error);
+    showError('⚠️ Login failed. Please try again.');
+  }
+});
+
+// Logout
+document.getElementById('logoutBtn').addEventListener('click', async () => {
+  if (!auth) return;
+  
+  try {
+    await auth.signOut();
+  } catch (error) {
+    console.error('Logout error:', error);
+  }
+});
+
+// Data arrays
 const drama = [
   {t:'Goblin',c:'Kim Shin to Eun-tak',k:'너는, 내가 잃은 모든 날들이다.',e:'You are all the days I lost',p:'neoneun, naega ireun modeun naldeulida',sub:'Goblin'},
   {t:'Goblin',c:'Eun-tak reflection',k:'혼자였던 시간도, 나를 만들었어.',e:'Even my lonely days shaped me',p:'honjayotteon sigando, nareul mandeureosseo',sub:'Goblin'},
@@ -409,7 +1074,7 @@ const subIcons = {
   'Transport': '🚇', 'Emergency': '🆘'
 };
 
-let st = { cat:'drama', sub:null, i:0, spd:0.75, lines:drama, filteredLines:drama };
+let st = { cat:'daily', sub:null, i:0, spd:0.75, lines:daily, filteredLines:daily, repCount:0 };
 
 function getLines() {
   let base = st.cat === 'drama' ? drama : st.cat === 'daily' ? daily : travel;
@@ -443,9 +1108,32 @@ function updateSubFilters() {
 function filterSub(sub) {
   st.sub = sub;
   st.i = 0;
+  st.repCount = 0;
   st.filteredLines = getLines();
   updateSubFilters();
   show();
+}
+
+function updateRepetitionDisplay() {
+  document.getElementById('repCount').textContent = st.repCount;
+  
+  for (let i = 1; i <= 5; i++) {
+    const dot = document.getElementById('dot' + i);
+    if (i <= st.repCount) {
+      dot.classList.add('completed');
+      dot.textContent = '✓';
+    } else {
+      dot.classList.remove('completed');
+      dot.textContent = '';
+    }
+  }
+  
+  const congrats = document.getElementById('congrats');
+  if (st.repCount >= 5) {
+    congrats.classList.add('show');
+  } else {
+    congrats.classList.remove('show');
+  }
 }
 
 function show() {
@@ -459,6 +1147,8 @@ function show() {
   if (st.i >= st.filteredLines.length) st.i = 0;
   if (st.i < 0) st.i = 0;
   
+  st.repCount = 0;
+  
   const d = st.filteredLines[st.i];
   document.getElementById('badge').textContent = d.t;
   document.getElementById('context').textContent = 'Conversation: ' + d.c;
@@ -466,6 +1156,8 @@ function show() {
   document.getElementById('pronunciation').textContent = d.p;
   document.getElementById('english').textContent = '"' + d.e + '"';
   document.getElementById('prog').textContent = (st.i+1) + ' / ' + st.filteredLines.length;
+  
+  updateRepetitionDisplay();
 }
 
 function showError(msg) {
@@ -494,6 +1186,17 @@ function play() {
     };
   } else {
     speakText(txt, voices);
+  }
+  
+  // Increment repetition count when play is clicked
+  if (st.repCount < 5) {
+    st.repCount++;
+    updateRepetitionDisplay();
+    
+    // Auto-advance after completing 5 repetitions
+    if (st.repCount >= 5) {
+      autoNext();
+    }
   }
 }
 
@@ -539,15 +1242,34 @@ function speakText(txt, voices) {
 
 function prev() {
   if (st.i > 0) { 
-    st.i--; 
+    st.i--;
+    st.repCount = 0;
     show(); 
   }
 }
 
 function next() {
   if (st.i < st.filteredLines.length - 1) { 
-    st.i++; 
+    st.i++;
+    st.repCount = 0;
     show(); 
+  }
+}
+
+function autoNext() {
+  if (st.repCount >= 5) {
+    // Award XP for completing the phrase
+    if (currentUser && db) {
+      updatePracticeStats();
+    }
+    
+    setTimeout(() => {
+      if (st.i < st.filteredLines.length - 1) {
+        next();
+      } else {
+        showError('🎉 You completed all phrases! Great work!');
+      }
+    }, 2000);
   }
 }
 
@@ -555,6 +1277,7 @@ function switchCategory(cat) {
   st.cat = cat;
   st.sub = null;
   st.i = 0;
+  st.repCount = 0;
   
   document.getElementById('dramaBtn').classList.remove('active');
   document.getElementById('dailyBtn').classList.remove('active');
@@ -585,7 +1308,9 @@ document.getElementById('speed').addEventListener('input', (e) => {
   document.getElementById('speedTxt').textContent = st.spd + 'x';
 });
 
-// Initialize
+// Initialize with daily category
+document.getElementById('dailyBtn').classList.add('active');
+updateSubFilters();
 show();
 </script>
 </body>
