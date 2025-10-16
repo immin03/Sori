@@ -1,1 +1,87 @@
+// data/travel.js
+// Travel + TravelPlus 통합본
+export const travel = [
+  // --- 기본 travel ---
+  {t:'Airport',c:'Tourism',k:'관광하러 왔습니다.',e:'I am here for tourism',p:'gwangwanghareo wasseumnida',sub:'Airport'},
+  {t:'Airport',c:'One week',k:'일주일 머물 예정입니다.',e:'I will stay for one week',p:'iljuil meomul yejeongimnida',sub:'Airport'},
+  {t:'Airport',c:'Lost baggage',k:'수하물이 안 나왔어요.',e:'My baggage did not come out',p:'suhamuri an nawasseoyo',sub:'Airport'},
+  {t:'Airport',c:'Airport bus',k:'공항버스는 어디에서 타요?',e:'Where do I take the airport bus?',p:'gonghang beoseuneun eodieseo tayo',sub:'Airport'},
+  {t:'Airport',c:'Exchange',k:'환전은 어디서 해요?',e:'Where can I exchange money?',p:'hwanjeoneun eodiseo haeyo',sub:'Airport'},
 
+  {t:'Hotel',c:'Check in',k:'예약했어요. 체크인 하고 싶어요.',e:'I have a reservation. I want to check in',p:'yeyakhaesseoyo. chekeuinhago sipeoyo',sub:'Hotel'},
+  {t:'Hotel',c:'WiFi',k:'와이파이 비밀번호가 뭐예요?',e:'What is the WiFi password?',p:'waipai bimilbeonhoga mwoyeyo',sub:'Hotel'},
+  {t:'Hotel',c:'Towels',k:'수건을 더 가져다 주세요.',e:'Please bring more towels',p:'sugeoneul deo gajyeoda juseyo',sub:'Hotel'},
+  {t:'Hotel',c:'No hot water',k:'온수가 나오지 않아요.',e:'There is no hot water',p:'onsuga naoji anayo',sub:'Hotel'},
+  {t:'Hotel',c:'Check out',k:'체크아웃은 몇 시예요?',e:'What time is check out?',p:'chekeuauseun myeot siyeyo',sub:'Hotel'},
+
+  {t:'Transport',c:'Subway',k:'지하철역이 어디예요?',e:'Where is the subway station?',p:'jihacheol yeogi eodiyeyo',sub:'Transport'},
+  {t:'Transport',c:'Direction',k:'이쪽으로 쭉 가세요.',e:'Go straight this way',p:'ijjogeuro jjuk gaseyo',sub:'Transport'},
+  {t:'Transport',c:'Transfer',k:'여기서 갈아타야 해요.',e:'I need to transfer here',p:'yeogiseo garataya haeyo',sub:'Transport'},
+  {t:'Transport',c:'Last train',k:'막차가 몇 시예요?',e:'What time is the last train?',p:'makchaga myeot siyeyo',sub:'Transport'},
+  {t:'Transport',c:'Top up card',k:'교통카드 충전하고 싶어요.',e:'I want to top up my transit card',p:'gyotong kadeu chungjeonhago sipeoyo',sub:'Transport'},
+
+  {t:'Emergency',c:'Help',k:'도와주세요!',e:'Please help me!',p:'dowajuseyo',sub:'Emergency'},
+  {t:'Emergency',c:'Police',k:'경찰을 불러 주세요.',e:'Call the police, please',p:'gyeongchareul bulleo juseyo',sub:'Emergency'},
+  {t:'Emergency',c:'Hospital',k:'병원에 가야 해요.',e:'I need to go to a hospital',p:'byeongwone gaya haeyo',sub:'Emergency'},
+  {t:'Emergency',c:'Lost wallet',k:'지갑을 잃어버렸어요.',e:'I lost my wallet',p:'jigabeul ileobeoryeosseoyo',sub:'Emergency'},
+  {t:'Emergency',c:'Lost',k:'길을 잃었어요.',e:'I am lost',p:'gireul ilheosseoyo',sub:'Emergency'},
+
+  // --- travelPlus 확장 ---
+  {t:'Convenience',c:'Buy water',k:'생수 한 병 주세요.',e:'One bottle of water please',p:'saengsu han byeong juseyo',sub:'Convenience'},
+  {t:'Convenience',c:'Microwave',k:'이거 데워 주실 수 있어요?',e:'Can you heat this up?',p:'igeo dewo jusil su isseoyo',sub:'Convenience'},
+  {t:'Convenience',c:'T-money',k:'티머니 카드 여기서 살 수 있어요?',e:'Can I buy a T-money card here?',p:'timoni kadeu yeogiseo sal su isseoyo',sub:'Convenience'},
+  {t:'Convenience',c:'Top up',k:'충전도 가능해요?',e:'Can I top it up here?',p:'chungjeondo ganeunghaeyo',sub:'Convenience'},
+  {t:'Convenience',c:'Utensils',k:'일회용 수저 좀 주세요.',e:'Disposable spoon and chopsticks please',p:'ilhoyeong sujeo jom juseyo',sub:'Convenience'},
+
+  {t:'Street Food',c:'Order skewers',k:'어묵 두 꼬치 주세요.',e:'Two fish cake skewers please',p:'eomuk du kkochi juseyo',sub:'Street Food'},
+  {t:'Street Food',c:'Sugar level',k:'설탕은 적게 넣어 주세요.',e:'Please add less sugar',p:'seoltangeun jeokge neo-eo juseyo',sub:'Street Food'},
+  {t:'Street Food',c:'Spicy tteokbokki',k:'덜 매운 떡볶이 있어요?',e:'Do you have less spicy tteokbokki?',p:'deol maeun tteokbokki isseoyo',sub:'Street Food'},
+  {t:'Street Food',c:'To go pack',k:'포장 용기로 부탁해요.',e:'Please pack it to go',p:'pojang yonggiro butakaeyo',sub:'Street Food'},
+  {t:'Street Food',c:'Pay now',k:'지금 계산할게요.',e:'I will pay now',p:'jigeum gyesanhalgeyo',sub:'Street Food'},
+
+  {t:'Market',c:'Sample',k:'맛 좀 봐도 돼요?',e:'May I taste a sample?',p:'mat jom bwado dwaeyo',sub:'Market'},
+  {t:'Market',c:'Half kilo',k:'반 근만 주세요.',e:'Half a geun please',p:'ban geunman juseyo',sub:'Market'},
+  {t:'Market',c:'Fresh today',k:'오늘 들어온 건가요?',e:'Is this fresh today?',p:'oneul deureoon geongayo',sub:'Market'},
+  {t:'Market',c:'Bargain',k:'조금만 깎아 주실 수 있나요?',e:'Could you lower the price a little?',p:'jogeumman kkakka jusil su innayo',sub:'Market'},
+  {t:'Market',c:'Bag',k:'봉투 필요해요.',e:'I need a bag',p:'bongtu piryohaeyo',sub:'Market'},
+
+  {t:'Duty Free',c:'Passport check',k:'여권 보여드릴게요.',e:'I will show my passport',p:'yeogwon boyeodeurilgeyo',sub:'Duty Free'},
+  {t:'Duty Free',c:'Tax refund desk',k:'택스 리펀드는 어디에서 해요?',e:'Where is the tax refund desk?',p:'taekseu ripeondeuneun eodieseo haeyo',sub:'Duty Free'},
+
+  {t:'Department',c:'Cosmetics tester',k:'테스터 사용해 봐도 될까요?',e:'May I try the tester?',p:'teseuteo sayonghae bwado doelkkayo',sub:'Department'},
+  {t:'Department',c:'Exchange size',k:'사이즈 교환 가능해요?',e:'Can I exchange for a different size?',p:'saijeu gyohwan ganeunghaeyo',sub:'Department'},
+  {t:'Department',c:'Gift wrap',k:'선물 포장 가능할까요?',e:'Can you gift wrap it?',p:'seonmul pojang ganeunhalkkayo',sub:'Department'},
+
+  {t:'Food Court',c:'Find seat',k:'자리 먼저 잡고 주문하나요?',e:'Do we get seats first then order?',p:'jari meonjeo japgo jumunhanayo',sub:'Food Court'},
+  {t:'Food Court',c:'Buzzer',k:'진동벨 받았어요.',e:'I received the buzzer',p:'jindongbel badasseoyo',sub:'Food Court'},
+  {t:'Food Court',c:'Pick up',k:'어디서 받아가요?',e:'Where do I pick it up?',p:'eodiseo badagayo',sub:'Food Court'},
+
+  {t:'Restaurant',c:'Wait list',k:'웨이팅 명단에 올려 주세요.',e:'Please put me on the waiting list',p:'weiting myeongdane ollyeo juseyo',sub:'Restaurant'},
+  {t:'Restaurant',c:'Share dish',k:'이거 같이 나눠 먹어도 돼요?',e:'Can we share this dish?',p:'igeo gachi nanwo meogeodo dwaeyo',sub:'Restaurant'},
+  {t:'Restaurant',c:'Refill water',k:'물은 셀프인가요?',e:'Is water self serve?',p:'mureun selpeu ingayo',sub:'Restaurant'},
+  {t:'Restaurant',c:'Extra side',k:'김치 조금 더 주실 수 있나요?',e:'May I have a bit more kimchi?',p:'gimchi jogeum deo jusil su innayo',sub:'Restaurant'},
+  {t:'Restaurant',c:'No pork',k:'돼지고기 빼 주세요.',e:'Please remove pork',p:'dwaejigogi ppae juseyo',sub:'Restaurant'},
+  {t:'Restaurant',c:'Halal',k:'할랄 메뉴 있나요?',e:'Do you have halal menu?',p:'hallal menyu innayo',sub:'Restaurant'},
+  {t:'Restaurant',c:'Vegan',k:'비건 메뉴도 있나요?',e:'Do you have vegan menu?',p:'bigeon menyudo innayo',sub:'Restaurant'},
+  {t:'Restaurant',c:'Allergy check',k:'이 음식에 땅콩 들어가요?',e:'Does this dish contain peanuts?',p:'i eumsige ttangkong deureogayo',sub:'Restaurant'},
+  {t:'Restaurant',c:'Less salt',k:'짜지 않게 부탁해요.',e:'Please make it less salty',p:'jjaji anke butakaeyo',sub:'Restaurant'},
+  {t:'Restaurant',c:'Separate bill',k:'각자 계산할게요.',e:'We will pay separately',p:'gakja gyesanhalgeyo',sub:'Restaurant'},
+  {t:'Restaurant',c:'Take leftovers',k:'남은 음식 포장해 주세요.',e:'Please pack the leftovers',p:'nameun eumsik pojanghae juseyo',sub:'Restaurant'},
+
+  {t:'Cafe',c:'Less ice',k:'얼음은 조금만 넣어 주세요.',e:'Less ice please',p:'eoreumeun jogeumman neo-eo juseyo',sub:'Cafe'},
+  {t:'Cafe',c:'Syrup',k:'시럽은 빼 주세요.',e:'Please hold the syrup',p:'sireobeun ppae juseyo',sub:'Cafe'},
+  {t:'Cafe',c:'Milk choice',k:'두유로 바꿔 주세요.',e:'Please switch to soy milk',p:'duyuro bakkwo juseyo',sub:'Cafe'},
+  {t:'Cafe',c:'Name',k:'이름은 Lucia로 적어 주세요.',e:'Please write the name Lucia',p:'ireumeun Lucia-ro jeogeo juseyo',sub:'Cafe'},
+  {t:'Cafe',c:'Receipt need',k:'영수증 필요해요.',e:'I need the receipt',p:'yeongsujeung piryohaeyo',sub:'Cafe'},
+
+  {t:'Payment',c:'No tip',k:'팁 문화가 없죠?',e:'There is no tipping culture, right?',p:'tib munhwaga eopjyo',sub:'Payment'},
+  {t:'Payment',c:'Mobile pay',k:'간편결제 가능해요?',e:'Do you take mobile pay?',p:'ganpyeon gyeolje ganeunghaeyo',sub:'Payment'},
+  {t:'Payment',c:'Split evenly',k:'N분의 1로 계산해 주세요.',e:'Please split evenly',p:'en bune il-lo gyesanhae juseyo',sub:'Payment'},
+  {t:'Payment',c:'Prepay',k:'선결제해야 하나요?',e:'Do we pay first?',p:'seongyeolje haeya hanayo',sub:'Payment'},
+
+  {t:'Delivery',c:'App help',k:'배달 앱 주문 도와주실래요?',e:'Could you help me order on the delivery app?',p:'baedal aep jumun dowajusillaeyo',sub:'Delivery'},
+
+  {t:'Sightseeing',c:'Food alley',k:'맛집 골목이 어디예요?',e:'Where is the food alley?',p:'matjib golmogi eodiyeyo',sub:'Sightseeing'},
+  {t:'Sightseeing',c:'Opening day',k:'오늘 영업하나요?',e:'Are you open today?',p:'oneul yeongeop hanayo',sub:'Sightseeing'},
+  {t:'Sightseeing',c:'Queue time',k:'대기 시간이 얼마나 걸려요?',e:'How long is the wait?',p:'daegi sigani eolmana geollyeoyo',sub:'Sightseeing'}
+];
