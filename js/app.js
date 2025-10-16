@@ -3,17 +3,24 @@ import { st, showError } from './state.js';
 import { speakKo, ensureKoVoiceReady } from './tts.js';
 import { dailyAll, dramaAll, travelAll, subCategories, subIcons } from '../data/dataIndex.js';
 
+console.log('[Sori] app.js loaded');
+
+// ====== 데이터 접근 ======
 function getLines() {
-  const base = st.cat === 'drama' ? dramaAll : st.cat === 'daily' ? dailyAll : travelAll;
+  const base = st.cat === 'drama' ? dramaAll : (st.cat === 'daily' ? dailyAll : travelAll);
   return st.sub ? base.filter(item => item.sub === st.sub) : base;
 }
 
 function updateSubFilters() {
   const container = document.getElementById('subFilters');
   if (!container) return;
-  if (st.cat === 'drama') { container.style.display = 'none'; return; }
-  container.style.display = 'block';
 
+  if (st.cat === 'drama') {
+    container.style.display = 'none';
+    return;
+  }
+
+  container.style.display = 'block';
   const cats = subCategories[st.cat] || [];
   container.innerHTML =
     '<div class="sub-filters">' +
@@ -38,15 +45,16 @@ function updateRepetitionDisplay() {
 
   const congrats = document.getElementById('congrats');
   if (congrats) {
-    if ((st.repCount || 0) >= 5) congrats.classList.add('show');
-    else congrats.classList.remove('show');
+    if ((st.repCount || 0) >= 5) congrats.style.display = 'block';
+    else congrats.style.display = 'none';
   }
 }
 
 function show() {
   st.filteredLines = getLines();
+
   if (st.filteredLines.length === 0) {
-    st.filteredLines = st.cat === 'drama' ? dramaAll : st.cat === 'daily' ? dailyAll : travelAll;
+    st.filteredLines = st.cat === 'drama' ? dramaAll : (st.cat === 'daily' ? dailyAll : travelAll);
     st.i = 0;
   }
   if (st.i >= st.filteredLines.length) st.i = 0;
@@ -55,18 +63,31 @@ function show() {
   st.repCount = 0;
   const d = st.filteredLines[st.i];
 
-  document.getElementById('badge').textContent = d.t;
-  document.getElementById('context').textContent = 'Conversation: ' + d.c;
-  document.getElementById('korean').textContent = d.k;
-  document.getElementById('pronunciation').textContent = d.p;
-  document.getElementById('english').textContent = `"${d.e}"`;
-  document.getElementById('prog').textContent = (st.i + 1) + ' / ' + st.filteredLines.length;
+  const badgeEl = document.getElementById('badge');
+  const contextEl = document.getElementById('context');
+  const koreanEl = document.getElementById('korean');
+  const pronEl = document.getElementById('pronunciation');
+  const engEl = document.getElementById('english');
+  const progEl = document.getElementById('prog');
+
+  if (badgeEl)  badgeEl.textContent = d.t;
+  if (contextEl)contextEl.textContent = 'Conversation: ' + d.c;
+  if (koreanEl) koreanEl.textContent = d.k;
+  if (pronEl)  pronEl.textContent = d.p;
+  if (engEl)   engEl.textContent = `"${d.e}"`;
+  if (progEl)  progEl.textContent = (st.i + 1) + ' / ' + st.filteredLines.length;
 
   updateRepetitionDisplay();
 }
 
-// 전역에서 호출될 함수 등록 (onclick에서 사용)
-window.filterSub = (sub) => { st.sub = sub; st.i = 0; st.filteredLines = getLines(); updateSubFilters(); show(); };
+// 전역(HTML onclick에서 씀)
+window.filterSub = (sub) => {
+  st.sub = sub;
+  st.i = 0;
+  st.filteredLines = getLines();
+  updateSubFilters();
+  show();
+};
 
 function play() {
   const current = st.filteredLines[st.i];
@@ -106,20 +127,22 @@ function switchCategory(cat) {
   if (cat === 'drama') document.getElementById('dramaBtn')?.classList.add('active');
   else if (cat === 'daily') document.getElementById('dailyBtn')?.classList.add('active');
   else if (cat === 'travel') document.getElementById('travelBtn')?.classList.add('active');
-  updateSubFilters(); show();
+  updateSubFilters();
+  show();
 }
 
 // 이벤트 바인딩
-document.getElementById('dramaBtn').addEventListener('click', () => switchCategory('drama'));
-document.getElementById('dailyBtn').addEventListener('click', () => switchCategory('daily'));
-document.getElementById('travelBtn').addEventListener('click', () => switchCategory('travel'));
-document.getElementById('playBtn').addEventListener('click', play);
-document.getElementById('prevBtn').addEventListener('click', prev);
-document.getElementById('nextBtn').addEventListener('click', next);
+document.getElementById('dramaBtn')?.addEventListener('click', () => switchCategory('drama'));
+document.getElementById('dailyBtn')?.addEventListener('click', () => switchCategory('daily'));
+document.getElementById('travelBtn')?.addEventListener('click', () => switchCategory('travel'));
+document.getElementById('playBtn')?.addEventListener('click', play);
+document.getElementById('prevBtn')?.addEventListener('click', prev);
+document.getElementById('nextBtn')?.addEventListener('click', next);
 
-document.getElementById('speed').addEventListener('input', (e) => {
+document.getElementById('speed')?.addEventListener('input', (e) => {
   st.spd = parseFloat(e.target.value);
-  document.getElementById('speedTxt').textContent = st.spd + 'x';
+  const speedTxt = document.getElementById('speedTxt');
+  if (speedTxt) speedTxt.textContent = st.spd + 'x';
 });
 
 // 초기화
@@ -127,3 +150,5 @@ st.filteredLines = getLines();
 document.getElementById('dailyBtn')?.classList.add('active');
 updateSubFilters();
 show();
+console.log('[Sori] init complete');
+
