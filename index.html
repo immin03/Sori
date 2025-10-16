@@ -12,635 +12,85 @@
 
 <style>
   * { box-sizing: border-box; }
-  
-  body { 
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
-    max-width: 680px; 
-    margin: 0 auto; 
-    padding: 12px;
-    background: #faf8ff;
-    min-height: 100vh;
-  }
-  
-  h1 { 
-    font-size: 24px; 
-    margin: 0 0 4px 0; 
-    color: #7c3aed;
-    font-weight: 800;
-  }
-  
-  .intro {
-    color: #9ca3af;
-    font-size: 12px;
-    margin-bottom: 10px;
-    line-height: 1.3;
-    font-weight: 500;
-  }
-  
-  .card { 
-    border-radius: 16px; 
-    padding: 16px; 
-    margin: 8px 0; 
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
-    background: white;
-  }
-  
-  .category-tabs {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 6px;
-    margin-bottom: 8px;
-  }
-  
-  .tab-button {
-    padding: 10px 14px;
-    border: 2px solid #f3f4f6;
-    border-radius: 14px;
-    background: #f9fafb;
-    color: #9ca3af;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 700;
-    transition: all 0.2s;
-  }
-  
-  .tab-button:hover {
-    background: #f3f4f6;
-  }
-  
-  .tab-button.active {
-    background: #7c3aed;
-    color: white;
-    border-color: #7c3aed;
-    box-shadow: 0 2px 8px rgba(124, 58, 237, 0.2);
-  }
-  
-  .sub-filters {
-    display: flex;
-    gap: 5px;
-    flex-wrap: wrap;
-    margin-bottom: 8px;
-    padding: 10px;
-    background: #f9fafb;
-    border-radius: 10px;
-  }
-  
-  .filter-chip {
-    padding: 5px 10px;
-    border-radius: 14px;
-    background: white;
-    border: 2px solid #e5e7eb;
-    color: #6b7280;
-    cursor: pointer;
-    font-size: 12px;
-    font-weight: 600;
-    transition: all 0.2s;
-  }
-  
-  .filter-chip:hover {
-    background: #f9fafb;
-  }
-  
-  .filter-chip.active {
-    background: #7c3aed;
-    color: white;
-    border-color: #7c3aed;
-  }
-  
-  .badge {
-    display: inline-block;
-    background: #7c3aed;
-    color: white;
-    padding: 5px 10px;
-    border-radius: 10px;
-    font-size: 11px;
-    font-weight: 800;
-    margin-bottom: 5px;
-  }
-  
-  .context-box {
-    background: #f9fafb;
-    border-radius: 8px;
-    padding: 6px 10px;
-    margin-bottom: 10px;
-    font-size: 12px;
-    color: #6b7280;
-    font-weight: 600;
-  }
-  
-  .korean-section {
-    background: #f9fafb;
-    border-radius: 14px;
-    padding: 16px 12px;
-    margin: 8px 0;
-  }
-  
-  .target-display {
-    font-size: 28px;
-    font-weight: 900;
-    color: #1f2937;
-    text-align: center;
-    line-height: 1.2;
-    margin-bottom: 6px;
-  }
-  
-  .english-translation {
-    color: #6b7280;
-    font-size: 16px;
-    text-align: center;
-    margin-bottom: 10px;
-    font-weight: 600;
-  }
-  
-  .pronunciation-hint {
-    color: #9ca3af;
-    font-size: 13px;
-    font-weight: 600;
-    text-align: center;
-    letter-spacing: 0.3px;
-    margin-bottom: 0;
-    font-style: italic;
-  }
-  
-  .pronunciation-section {
-    display: none;
-  }
-  
-  button { 
-    padding: 12px 18px; 
-    border: 0; 
-    border-radius: 14px; 
-    background: #7c3aed;
-    color: white; 
-    cursor: pointer; 
-    font-size: 15px;
-    font-weight: 800;
-    width: 100%;
-    box-shadow: 0 2px 8px rgba(124, 58, 237, 0.2);
-    transition: all 0.2s;
-  }
-  
-  button:hover {
-    background: #6d28d9;
-    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.25);
-  }
-  
-  button:disabled { 
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
-  
-  button.secondary {
-    background: #f9fafb;
-    color: #6b7280;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  }
-  
-  button.secondary:hover {
-    background: #f3f4f6;
-  }
-  
-  .button-group {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 6px;
-    margin-top: 8px;
-  }
-  
-  .practice-tip {
-    background: #fffbeb;
-    border-left: 3px solid #f59e0b;
-    padding: 8px 12px;
-    border-radius: 10px;
-    margin-top: 8px;
-    font-size: 12px;
-    color: #92400e;
-    line-height: 1.4;
-    font-weight: 500;
-  }
-  
-  .repetition-tracker {
-    margin: 8px 0;
-    padding: 10px;
-    background: #f9fafb;
-    border-radius: 10px;
-  }
-  
-  .repetition-label {
-    font-size: 12px;
-    font-weight: 600;
-    color: #6b7280;
-    margin-bottom: 8px;
-    text-align: center;
-  }
-  
-  .repetition-dots {
-    display: flex;
-    gap: 5px;
-    justify-content: center;
-    margin-bottom: 8px;
-  }
-  
-  .rep-dot {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    border: 2px solid #e5e7eb;
-    background: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    transition: all 0.3s;
-  }
-  
-  .rep-dot.completed {
-    background: #7c3aed;
-    border-color: #7c3aed;
-    transform: scale(1.1);
-  }
-  
-  .congratulations {
-    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-    padding: 12px;
-    border-radius: 10px;
-    text-align: center;
-    margin: 8px 0;
-    display: none;
-    animation: slideIn 0.5s ease-out;
-  }
-  
-  .congratulations.show {
-    display: block;
-  }
-  
-  .congratulations-emoji {
-    font-size: 36px;
-    margin-bottom: 4px;
-  }
-  
-  .congratulations-text {
-    font-size: 16px;
-    font-weight: 800;
-    color: #92400e;
-    margin-bottom: 2px;
-  }
-  
-  .congratulations-subtext {
-    font-size: 12px;
-    color: #92400e;
-    font-weight: 600;
-  }
-  
-  @keyframes slideIn {
-    from {
-      opacity: 0;
-      transform: translateY(-20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
-  .progress {
-    text-align: center;
-    color: #7c3aed;
-    font-size: 13px;
-    font-weight: 700;
-    margin-top: 8px;
-  }
-  
-  .voice-speed {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    margin-top: 8px;
-    padding: 8px;
-    background: #f9fafb;
-    border-radius: 8px;
-  }
-  
-  .voice-speed label {
-    color: #7c3aed;
-    font-size: 12px;
-    font-weight: 600;
-  }
-  
-  .voice-speed input { 
-    width: 110px;
-    cursor: pointer;
-  }
-  
-  .voice-speed input[type="range"] {
-    -webkit-appearance: none;
-    appearance: none;
-    height: 5px;
-    background: #e5e7eb;
-    border-radius: 10px;
-    outline: none;
-  }
-  
-  .voice-speed input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 16px;
-    height: 16px;
-    background: #7c3aed;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  
-  .voice-speed input[type="range"]::-webkit-slider-thumb:hover {
-    background: #6d28d9;
-    transform: scale(1.1);
-  }
-  
-  .voice-speed input[type="range"]::-moz-range-thumb {
-    width: 16px;
-    height: 16px;
-    background: #7c3aed;
-    border: none;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  
-  .voice-speed input[type="range"]::-moz-range-thumb:hover {
-    background: #6d28d9;
-    transform: scale(1.1);
-  }
-  
-  .voice-speed span {
-    color: #7c3aed;
-    font-weight: 700;
-    font-size: 12px;
-    min-width: 45px;
-  }
-  
-  .error-msg {
-    background: #fee2e2;
-    color: #991b1b;
-    padding: 8px 12px;
-    border-radius: 8px;
-    margin-top: 8px;
-    font-size: 11px;
-    font-weight: 600;
-    display: none;
-  }
-  
-  @media (max-width: 640px) {
-    body { padding: 12px; }
-    h1 { font-size: 24px; }
-    .card { padding: 16px; }
-    .target-display { font-size: 28px; }
-    .pronunciation-hint { font-size: 15px; }
-    .category-tabs {
-      grid-template-columns: 1fr;
-    }
-  }
-  
-  .auth-section {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.6);
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-    padding: 20px;
-  }
-  
-  .auth-section:not(.hidden) {
-    display: flex;
-  }
-  
-  .header-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-    position: relative;
-    z-index: 1;
-  }
-  
-  .header-left {
-    flex: 1;
-  }
-  
-  .header-right {
-    display: flex;
-    gap: 8px;
-  }
-  
-  .login-btn {
-    background: #7c3aed;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 12px;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  
-  .login-btn:hover {
-    background: #6d28d9;
-  }
-  
-  .my-btn {
-    background: #f9fafb;
-    color: #6b7280;
-    border: 2px solid #e5e7eb;
-    padding: 8px 16px;
-    border-radius: 12px;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  
-  .my-btn:hover {
-    background: #f3f4f6;
-  }
-  
-  .auth-section.hidden {
-    display: none;
-  }
-  
-  .auth-card {
-    background: white;
-    padding: 40px;
-    border-radius: 24px;
-    text-align: center;
-    max-width: 400px;
-    width: 100%;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    position: relative;
-    pointer-events: auto;
-  }
-  
-  .auth-close {
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    background: none;
-    border: none;
-    font-size: 28px;
-    color: #9ca3af;
-    cursor: pointer;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 8px;
-    line-height: 1;
-    padding: 0;
-  }
-  
-  .auth-close:hover {
-    background: #f3f4f6;
-    color: #6b7280;
-  }
-  
-  .auth-card {
-    background: white;
-    padding: 40px;
-    border-radius: 24px;
-    text-align: center;
-    max-width: 400px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  }
-  
-  .auth-title {
-    font-size: 28px;
-    font-weight: 800;
-    color: #7c3aed;
-    margin-bottom: 8px;
-  }
-  
-  .auth-subtitle {
-    font-size: 14px;
-    color: #9ca3af;
-    margin-bottom: 24px;
-  }
-  
-  .google-login-btn {
-    background: white;
-    border: 2px solid #e5e7eb;
-    padding: 14px 24px;
-    border-radius: 12px;
-    font-size: 16px;
-    font-weight: 600;
-    color: #1f2937;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    transition: all 0.2s;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-    pointer-events: auto;
-    user-select: none;
-  }
-  
-  .google-login-btn svg {
-    pointer-events: none;
-  }
-  
-  .google-login-btn:hover {
-    background: #f9fafb;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    transform: translateY(-1px);
-  }
-  
-  .google-login-btn:active {
-    transform: translateY(0);
-    background: #f3f4f6;
-  }
-  
-  .user-profile {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 12px;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  }
-  
-  .user-avatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    border: 2px solid #7c3aed;
-  }
-  
-  .user-info {
-    flex: 1;
-    text-align: left;
-  }
-  
-  .user-name {
-    font-size: 13px;
-    font-weight: 700;
-    color: #1f2937;
-  }
-  
-  .user-level {
-    font-size: 11px;
-    color: #7c3aed;
-    font-weight: 600;
-  }
-  
-  .logout-btn {
-    background: #f9fafb;
-    border: none;
-    padding: 6px 10px;
-    border-radius: 8px;
-    font-size: 11px;
-    font-weight: 600;
-    color: #6b7280;
-    cursor: pointer;
-  }
-  
-  .logout-btn:hover {
-    background: #f3f4f6;
-  }
-  
-  .stats-card {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 6px;
-    margin-bottom: 8px;
-  }
-  
-  .stat-item {
-    background: #f9fafb;
-    padding: 10px;
-    border-radius: 10px;
-    text-align: center;
-  }
-  
-  .stat-value {
-    font-size: 18px;
-    font-weight: 800;
-    color: #7c3aed;
-  }
-  
-  .stat-label {
-    font-size: 10px;
-    color: #6b7280;
-    font-weight: 600;
-    margin-top: 3px;
-  }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 680px; margin: 0 auto; padding: 12px; background: #faf8ff; min-height: 100vh; }
+  h1 { font-size: 24px; margin: 0 0 4px 0; color: #7c3aed; font-weight: 800; }
+  .intro { color: #9ca3af; font-size: 12px; margin-bottom: 10px; line-height: 1.3; font-weight: 500; }
+  .card { border-radius: 16px; padding: 16px; margin: 8px 0; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04); background: white; }
+  .category-tabs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 8px; }
+  .tab-button { padding: 10px 14px; border: 2px solid #f3f4f6; border-radius: 14px; background: #f9fafb; color: #9ca3af; cursor: pointer; font-size: 13px; font-weight: 700; transition: all 0.2s; }
+  .tab-button:hover { background: #f3f4f6; }
+  .tab-button.active { background: #7c3aed; color: white; border-color: #7c3aed; box-shadow: 0 2px 8px rgba(124, 58, 237, 0.2); }
+  .sub-filters { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 8px; padding: 10px; background: #f9fafb; border-radius: 10px; }
+  .filter-chip { padding: 5px 10px; border-radius: 14px; background: white; border: 2px solid #e5e7eb; color: #6b7280; cursor: pointer; font-size: 12px; font-weight: 600; transition: all 0.2s; }
+  .filter-chip:hover { background: #f9fafb; }
+  .filter-chip.active { background: #7c3aed; color: white; border-color: #7c3aed; }
+  .badge { display: inline-block; background: #7c3aed; color: white; padding: 5px 10px; border-radius: 10px; font-size: 11px; font-weight: 800; margin-bottom: 5px; }
+  .context-box { background: #f9fafb; border-radius: 8px; padding: 6px 10px; margin-bottom: 10px; font-size: 12px; color: #6b7280; font-weight: 600; }
+  .korean-section { background: #f9fafb; border-radius: 14px; padding: 16px 12px; margin: 8px 0; }
+  .target-display { font-size: 28px; font-weight: 900; color: #1f2937; text-align: center; line-height: 1.2; margin-bottom: 6px; }
+  .english-translation { color: #6b7280; font-size: 16px; text-align: center; margin-bottom: 10px; font-weight: 600; }
+  .pronunciation-hint { color: #9ca3af; font-size: 13px; font-weight: 600; text-align: center; letter-spacing: 0.3px; margin-bottom: 0; font-style: italic; }
+  .pronunciation-section { display: none; }
+  button { padding: 12px 18px; border: 0; border-radius: 14px; background: #7c3aed; color: white; cursor: pointer; font-size: 15px; font-weight: 800; width: 100%; box-shadow: 0 2px 8px rgba(124, 58, 237, 0.2); transition: all 0.2s; }
+  button:hover { background: #6d28d9; box-shadow: 0 4px 12px rgba(124, 58, 237, 0.25); }
+  button:disabled { opacity: 0.4; cursor: not-allowed; }
+  button.secondary { background: #f9fafb; color: #6b7280; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); }
+  button.secondary:hover { background: #f3f4f6; }
+  .button-group { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
+  .practice-tip { background: #fffbeb; border-left: 3px solid #f59e0b; padding: 8px 12px; border-radius: 10px; margin-top: 8px; font-size: 12px; color: #92400e; line-height: 1.4; font-weight: 500; }
+  .repetition-tracker { margin: 8px 0; padding: 10px; background: #f9fafb; border-radius: 10px; }
+  .repetition-label { font-size: 12px; font-weight: 600; color: #6b7280; margin-bottom: 8px; text-align: center; }
+  .repetition-dots { display: flex; gap: 5px; justify-content: center; margin-bottom: 8px; }
+  .rep-dot { width: 32px; height: 32px; border-radius: 50%; border: 2px solid #e5e7eb; background: white; display: flex; align-items: center; justify-content: center; font-size: 14px; transition: all 0.3s; }
+  .rep-dot.completed { background: #7c3aed; border-color: #7c3aed; transform: scale(1.1); }
+  .congratulations { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); padding: 12px; border-radius: 10px; text-align: center; margin: 8px 0; display: none; animation: slideIn 0.5s ease-out; }
+  .congratulations.show { display: block; }
+  .congratulations-emoji { font-size: 36px; margin-bottom: 4px; }
+  .congratulations-text { font-size: 16px; font-weight: 800; color: #92400e; margin-bottom: 2px; }
+  .congratulations-subtext { font-size: 12px; color: #92400e; font-weight: 600; }
+  @keyframes slideIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+  .progress { text-align: center; color: #7c3aed; font-size: 13px; font-weight: 700; margin-top: 8px; }
+  .voice-speed { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 8px; padding: 8px; background: #f9fafb; border-radius: 8px; }
+  .voice-speed label { color: #7c3aed; font-size: 12px; font-weight: 600; }
+  .voice-speed input { width: 110px; cursor: pointer; }
+  .voice-speed input[type="range"] { -webkit-appearance: none; appearance: none; height: 5px; background: #e5e7eb; border-radius: 10px; outline: none; }
+  .voice-speed input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 16px; height: 16px; background: #7c3aed; border-radius: 50%; cursor: pointer; transition: all 0.2s; }
+  .voice-speed input[type="range"]::-webkit-slider-thumb:hover { background: #6d28d9; transform: scale(1.1); }
+  .voice-speed input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; background: #7c3aed; border: none; border-radius: 50%; cursor: pointer; transition: all 0.2s; }
+  .voice-speed input[type="range"]::-moz-range-thumb:hover { background: #6d28d9; transform: scale(1.1); }
+  .voice-speed span { color: #7c3aed; font-weight: 700; font-size: 12px; min-width: 45px; }
+  .error-msg { background: #fee2e2; color: #991b1b; padding: 8px 12px; border-radius: 8px; margin-top: 8px; font-size: 11px; font-weight: 600; display: none; }
+  @media (max-width: 640px) { body { padding: 12px; } h1 { font-size: 24px; } .card { padding: 16px; } .target-display { font-size: 28px; } .pronunciation-hint { font-size: 15px; } .category-tabs { grid-template-columns: 1fr; } }
+  .auth-section { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.6); align-items: center; justify-content: center; z-index: 9999; padding: 20px; }
+  .auth-section:not(.hidden) { display: flex; }
+  .header-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; position: relative; z-index: 1; }
+  .header-left { flex: 1; }
+  .header-right { display: flex; gap: 8px; }
+  .login-btn { background: #7c3aed; color: white; border: none; padding: 8px 16px; border-radius: 12px; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+  .login-btn:hover { background: #6d28d9; }
+  .my-btn { background: #f9fafb; color: #6b7280; border: 2px solid #e5e7eb; padding: 8px 16px; border-radius: 12px; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+  .my-btn:hover { background: #f3f4f6; }
+  .auth-section.hidden { display: none; }
+  .auth-card { background: white; padding: 40px; border-radius: 24px; text-align: center; max-width: 400px; width: 100%; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); position: relative; pointer-events: auto; }
+  .auth-close { position: absolute; top: 16px; right: 16px; background: none; border: none; font-size: 28px; color: #9ca3af; cursor: pointer; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 8px; line-height: 1; padding: 0; }
+  .auth-close:hover { background: #f3f4f6; color: #6b7280; }
+  .auth-title { font-size: 28px; font-weight: 800; color: #7c3aed; margin-bottom: 8px; }
+  .auth-subtitle { font-size: 14px; color: #9ca3af; margin-bottom: 24px; }
+  .google-login-btn { background: white; border: 2px solid #e5e7eb; padding: 14px 24px; border-radius: 12px; font-size: 16px; font-weight: 600; color: #1f2937; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 12px; transition: all 0.2s; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); pointer-events: auto; user-select: none; }
+  .google-login-btn svg { pointer-events: none; }
+  .google-login-btn:hover { background: #f9fafb; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); transform: translateY(-1px); }
+  .google-login-btn:active { transform: translateY(0); background: #f3f4f6; }
+  .user-profile { display: flex; align-items: center; gap: 8px; padding: 6px 12px; background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); }
+  .user-avatar { width: 32px; height: 32px; border-radius: 50%; border: 2px solid #7c3aed; }
+  .user-info { flex: 1; text-align: left; }
+  .user-name { font-size: 13px; font-weight: 700; color: #1f2937; }
+  .user-level { font-size: 11px; color: #7c3aed; font-weight: 600; }
+  .logout-btn { background: #f9fafb; border: none; padding: 6px 10px; border-radius: 8px; font-size: 11px; font-weight: 600; color: #6b7280; cursor: pointer; }
+  .logout-btn:hover { background: #f3f4f6; }
+  .stats-card { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 8px; }
+  .stat-item { background: #f9fafb; padding: 10px; border-radius: 10px; text-align: center; }
+  .stat-value { font-size: 18px; font-weight: 800; color: #7c3aed; }
+  .stat-label { font-size: 10px; color: #6b7280; font-weight: 600; margin-top: 3px; }
 </style>
 </head>
 <body>
@@ -658,20 +108,19 @@
       <button class="tab-button" id="travelBtn">✈️ Travel</button>
       <button class="tab-button" id="dramaBtn">🎭 K-Drama</button>
     </div>
-    
     <div id="subFilters" style="display:none;"></div>
   </div>
 
   <div class="card">
     <div class="badge" id="badge">Greeting</div>
     <div class="context-box" id="context">Conversation: First meeting</div>
-    
+
     <div class="korean-section">
       <div class="target-display" id="korean">안녕하세요.</div>
       <div class="english-translation" id="english">"Hello"</div>
       <div class="pronunciation-hint" id="pronunciation">annyeonghaseyo</div>
     </div>
-    
+
     <div class="repetition-tracker">
       <div class="repetition-label">🎯 Practice Count: <span id="repCount">0</span> / 5</div>
       <div class="repetition-dots" id="repDots">
@@ -682,22 +131,22 @@
         <div class="rep-dot" id="dot5"></div>
       </div>
     </div>
-    
+
     <div class="congratulations" id="congrats">
       <div class="congratulations-emoji">🎉</div>
       <div class="congratulations-text">참 잘했어요!</div>
       <div class="congratulations-subtext">Great job! Ready for the next one?</div>
     </div>
-    
+
     <button id="playBtn">🔊 Listen & Repeat</button>
     <div class="error-msg" id="errorMsg"></div>
-    
+
     <div class="voice-speed">
       <label>Speed:</label>
       <input type="range" id="speed" min="0.3" max="1.0" step="0.1" value="0.75">
       <span id="speedTxt">0.75x</span>
     </div>
-    
+
     <div class="practice-tip">
       💡 <strong>Tip:</strong> Listen carefully and repeat multiple times. Consistency is key!
     </div>
@@ -712,7 +161,7 @@
   </div>
 
 <script>
-// Firebase Configuration
+// ===================== Firebase (demo-safe) =====================
 const firebaseConfig = {
   apiKey: "AIzaSyBXxvK_your_api_key_here",
   authDomain: "your-project.firebaseapp.com",
@@ -722,12 +171,10 @@ const firebaseConfig = {
   appId: "1:123456789:web:abcdef"
 };
 
-// Initialize Firebase
 let auth, db, currentUser = null;
 let firebaseInitialized = false;
 
 console.log('Attempting Firebase initialization...');
-
 try {
   if (typeof firebase !== 'undefined') {
     firebase.initializeApp(firebaseConfig);
@@ -740,20 +187,12 @@ try {
   }
 } catch (e) {
   console.log('⚠️ Firebase initialization skipped - demo mode:', e.message);
-  // This is expected if Firebase config is not set up
 }
 
-// User Management
+// ===================== User State =====================
 const userState = {
-  uid: null,
-  name: null,
-  email: null,
-  photoURL: null,
-  level: 1,
-  xp: 0,
-  totalDays: 0,
-  streak: 0,
-  lastVisit: null,
+  uid: null, name: null, email: null, photoURL: null,
+  level: 1, xp: 0, totalDays: 0, streak: 0, lastVisit: null,
   practiceCount: {}
 };
 
@@ -765,31 +204,24 @@ function calculateLevel(xp) {
   if (xp < 1500) return 5;
   return Math.floor(xp / 300) + 1;
 }
-
 function getLevelName(level) {
-  const levels = ['Beginner', 'Elementary', 'Intermediate', 'Advanced', 'Expert', 'Master'];
+  const levels = ['Beginner','Elementary','Intermediate','Advanced','Expert','Master'];
   return levels[Math.min(level - 1, levels.length - 1)] || 'Master';
 }
 
 async function checkAndUpdateAttendance() {
   if (!currentUser || !db) return;
-  
   const today = new Date().toDateString();
   const yesterday = new Date(Date.now() - 86400000).toDateString();
-  
   if (userState.lastVisit !== today) {
     const isConsecutive = userState.lastVisit === yesterday;
-    
     userState.lastVisit = today;
     userState.totalDays += 1;
     userState.streak = isConsecutive ? userState.streak + 1 : 1;
-    userState.xp += 10; // Daily login bonus
-    
+    userState.xp += 10;
     await db.collection('users').doc(currentUser.uid).set({
-      ...userState,
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      ...userState, updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     }, { merge: true });
-    
     updateUserUI();
     showError('🎉 Daily check-in complete! +10 XP');
   }
@@ -797,10 +229,8 @@ async function checkAndUpdateAttendance() {
 
 async function loadUserData() {
   if (!currentUser || !db) return;
-  
   try {
     const doc = await db.collection('users').doc(currentUser.uid).get();
-    
     if (doc.exists) {
       const data = doc.data();
       userState.level = data.level || 1;
@@ -810,81 +240,51 @@ async function loadUserData() {
       userState.lastVisit = data.lastVisit || null;
       userState.practiceCount = data.practiceCount || {};
     } else {
-      // First time user
       userState.lastVisit = new Date().toDateString();
       userState.totalDays = 1;
       userState.streak = 1;
       userState.xp = 10;
-      
       await db.collection('users').doc(currentUser.uid).set({
         ...userState,
-        uid: currentUser.uid,
-        email: currentUser.email,
-        name: currentUser.displayName,
-        photoURL: currentUser.photoURL,
+        uid: currentUser.uid, email: currentUser.email,
+        name: currentUser.displayName, photoURL: currentUser.photoURL,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
     }
-    
     await checkAndUpdateAttendance();
-  } catch (error) {
-    console.error('Error loading user data:', error);
-  }
+  } catch (error) { console.error('Error loading user data:', error); }
 }
 
 function updateUserUI() {
-  document.getElementById('userName').textContent = userState.name || 'User';
-  document.getElementById('userLevel').textContent = `Level ${userState.level} - ${getLevelName(userState.level)}`;
-  document.getElementById('totalDays').textContent = userState.totalDays;
-  document.getElementById('streak').textContent = userState.streak;
-  document.getElementById('xpPoints').textContent = userState.xp;
-  
-  if (userState.photoURL) {
-    document.getElementById('userAvatar').src = userState.photoURL;
-  }
+  const nameEl   = document.getElementById('userName');
+  const levelEl  = document.getElementById('userLevel');
+  const daysEl   = document.getElementById('totalDays');
+  const streakEl = document.getElementById('streak');
+  const xpEl     = document.getElementById('xpPoints');
+  const avatarEl = document.getElementById('userAvatar');
+  if (nameEl)  nameEl.textContent  = userState.name || 'User';
+  if (levelEl) levelEl.textContent = `Level ${userState.level} - ${getLevelName(userState.level)}`;
+  if (daysEl)  daysEl.textContent  = userState.totalDays;
+  if (streakEl)streakEl.textContent= userState.streak;
+  if (xpEl)    xpEl.textContent    = userState.xp;
+  if (avatarEl && userState.photoURL) avatarEl.src = userState.photoURL;
 }
 
-async function updatePracticeStats() {
-  if (!currentUser || !db) return;
-  
-  const phraseId = st.filteredLines[st.i].k;
-  userState.practiceCount[phraseId] = (userState.practiceCount[phraseId] || 0) + 5;
-  userState.xp += 5; // XP for completing a phrase
-  
-  const newLevel = calculateLevel(userState.xp);
-  if (newLevel > userState.level) {
-    userState.level = newLevel;
-    showError(`🎊 Level Up! You are now Level ${newLevel} - ${getLevelName(newLevel)}!`);
-  }
-  
-  await db.collection('users').doc(currentUser.uid).update({
-    xp: userState.xp,
-    level: userState.level,
-    practiceCount: userState.practiceCount,
-    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-  });
-  
-  updateUserUI();
-}
-
-// Standalone functions for inline onclick handlers (must be global)
+// Login helpers (guarded)
 window.handleGoogleLogin = function() {
   console.log('🔘 Google login button clicked!');
-  
   if (!auth) {
-    console.log('⚠️ Firebase not configured');
-    alert('🔧 Demo Mode - Firebase Not Configured\n\nTo enable real Google login:\n\n1. Go to firebase.google.com\n2. Create a new project\n3. Enable Google Authentication\n4. Get your config and replace firebaseConfig in the code\n\nFor now, you can test the app without login!');
-    document.getElementById('authModal').classList.add('hidden');
+    const authModal = document.getElementById('authModal');
+    if (authModal) authModal.classList.add('hidden');
+    alert('🔧 Demo Mode - Firebase Not Configured\n\nTo enable real Google login...\n(You can test without login)');
     return;
   }
-  
-  console.log('✅ Firebase configured, attempting login...');
   const provider = new firebase.auth.GoogleAuthProvider();
-  
   auth.signInWithPopup(provider)
     .then((result) => {
       console.log('✅ Login successful!', result.user);
-      document.getElementById('authModal').classList.add('hidden');
+      const authModal = document.getElementById('authModal');
+      if (authModal) authModal.classList.add('hidden');
       alert('✅ Login successful! Welcome ' + result.user.displayName);
     })
     .catch((error) => {
@@ -894,8 +294,6 @@ window.handleGoogleLogin = function() {
 };
 
 window.handleMyButton = function() {
-  console.log('👤 My button clicked');
-  
   if (currentUser) {
     const msg = `👤 Your Profile\n\n` +
       `Name: ${userState.name}\n` +
@@ -907,57 +305,48 @@ window.handleMyButton = function() {
     alert(msg);
   } else {
     alert('⚠️ Please login first to view your profile!');
-    document.getElementById('authModal').classList.remove('hidden');
+    const authModal = document.getElementById('authModal');
+    if (authModal) authModal.classList.remove('hidden');
   }
 };
 
-// Auth state observer
 if (auth) {
   auth.onAuthStateChanged(async (user) => {
+    const authModal   = document.getElementById('authModal');
+    const userSection = document.getElementById('userSection');
+    const loginBtn    = document.getElementById('loginBtn');
     if (user) {
       currentUser = user;
       userState.uid = user.uid;
       userState.name = user.displayName;
       userState.email = user.email;
       userState.photoURL = user.photoURL;
-      
-      document.getElementById('authModal').classList.add('hidden');
-      document.getElementById('userSection').style.display = 'block';
-      document.getElementById('loginBtn').style.display = 'none';
-      
+      if (authModal)   authModal.classList.add('hidden');
+      if (userSection) userSection.style.display = 'block';
+      if (loginBtn)    loginBtn.style.display = 'none';
       await loadUserData();
       updateUserUI();
     } else {
       currentUser = null;
-      document.getElementById('userSection').style.display = 'none';
-      document.getElementById('loginBtn').style.display = 'block';
+      if (userSection) userSection.style.display = 'none';
+      if (loginBtn)    loginBtn.style.display = 'block';
     }
   });
 }
 
-// Wait for DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
   console.log('✅ DOM loaded successfully');
-
-  // Logout button (still needs event listener since it's in userSection which may not exist initially)
   const logoutBtn = document.getElementById('logoutBtn');
-  if (logoutBtn) {
+  if (logoutBtn && auth) {
     logoutBtn.addEventListener('click', async () => {
-      if (!auth) return;
-      
-      try {
-        await auth.signOut();
-        console.log('✅ Logged out successfully');
-      } catch (error) {
-        console.error('❌ Logout error:', error);
-      }
+      try { await auth.signOut(); console.log('✅ Logged out successfully'); }
+      catch (error) { console.error('❌ Logout error:', error); }
     });
   }
-  
   console.log('✅ All event listeners set up');
 });
 
-// Data arrays
+// ===================== Data =====================
 const drama = [
   {t:'Goblin',c:'Kim Shin to Eun-tak',k:'너는, 내가 잃은 모든 날들이다.',e:'You are all the days I lost',p:'neoneun, naega ireun modeun naldeulida',sub:'Goblin'},
   {t:'Goblin',c:'Eun-tak reflection',k:'혼자였던 시간도, 나를 만들었어.',e:'Even my lonely days shaped me',p:'honjayotteon sigando, nareul mandeureosseo',sub:'Goblin'},
@@ -1035,43 +424,140 @@ const travel = [
   {t:'Emergency',c:'Lost',k:'길을 잃었어요.',e:'I am lost',p:'gireul ilheosseoyo',sub:'Emergency'}
 ];
 
+// --- Plus data (extended) ---
+const dramaPlus = [
+  {t:'Romance',c:'Secret Garden',k:'네가 누군지 알기도 전에, 좋아했어.',e:'I liked you before knowing who you were',p:'nega nugunji algido jeone, joahaesseo',sub:'Romance'},
+  {t:'Romance',c:'Hotel Del Luna',k:'천 년을 기다렸어, 너를.',e:'I waited a thousand years for you',p:'cheon nyeoneul gidaryeosseo, neoreul',sub:'Romance'},
+  {t:'Romance',c:'What is Love',k:'사랑이 뭔데? 먹는 거야?',e:'What is love? Can you eat it?',p:'sarangi mwonde? meongneun geoya',sub:'Romance'},
+  {t:'Romance',c:'Vincenzo',k:'악당도 사랑할 수 있나요?',e:'Can villains love too?',p:'akdangdo saranghal su innayo',sub:'Romance'},
+  {t:'Romance',c:'Business Proposal',k:'가짜 연애가 진짜가 됐어.',e:'Fake dating became real',p:'gajja yeonaega jinjjaga dwaesseo',sub:'Romance'},
+  {t:'Life',c:'Life wisdom',k:'인생은 속도가 아니라 방향이야.',e:'Life is about direction not speed',p:'insaengeun sokdoga anira banghyangiya',sub:'Life'},
+  {t:'Life',c:'Decision',k:'선택은 내가 하는 거야.',e:'The choice is mine to make',p:'seontaegeun naega haneun geoya',sub:'Life'},
+  {t:'Life',c:'Growth',k:'어제의 나보다 나아지면 돼.',e:'Just be better than yesterday',p:'eojeui naboda naajimyeon dwae',sub:'Life'},
+  {t:'Life',c:'Present',k:'오늘이 선물이야.',e:'Today is a gift',p:'oneuri seonmuriya',sub:'Life'},
+  {t:'Life',c:'Journey',k:'가는 길이 꽃길이면 좋겠어.',e:'Hope your path is filled with flowers',p:'ganeun giri kkotgirimyeon jokesseo',sub:'Life'},
+  {t:'Support',c:'Cheer up',k:'넌 충분히 잘하고 있어.',e:'You are doing well enough',p:'neon chungbunhi jalhago isseo',sub:'Support'},
+  {t:'Support',c:'Comfort',k:'울어도 괜찮아.',e:'It is okay to cry',p:'ureodo gwaenchana',sub:'Support'},
+  {t:'Support',c:'Belief',k:'난 네가 할 수 있다고 믿어.',e:'I believe you can do it',p:'nan nega hal su itdago mideo',sub:'Support'},
+  {t:'Support',c:'Together',k:'혼자가 아니야.',e:'You are not alone',p:'honjaga aniya',sub:'Support'},
+  {t:'Support',c:'Rest',k:'쉬어도 괜찮아.',e:'It is okay to rest',p:'swieodo gwaenchana',sub:'Support'}
+];
+
+const dailyPlus = [
+  {t:'Work',c:'Meeting',k:'회의는 몇 시에 시작해요?',e:'What time does the meeting start?',p:'hoeuineun myeot sie sijakaeyo',sub:'Work'},
+  {t:'Work',c:'Deadline',k:'마감일이 언제예요?',e:'When is the deadline?',p:'magamiri eonjeyeyo',sub:'Work'},
+  {t:'Work',c:'Break',k:'잠시 쉬었다 할게요.',e:'I will take a short break',p:'jamsi swieotda halgeyo',sub:'Work'},
+  {t:'Work',c:'Overtime',k:'오늘 야근해야 해요.',e:'I have to work overtime today',p:'oneul yageunhaeya haeyo',sub:'Work'},
+  {t:'Work',c:'Weekend',k:'주말에도 일해야 해요?',e:'Do we have to work on weekends?',p:'jumaredo ilhaeya haeyo',sub:'Work'},
+  {t:'Tech',c:'WiFi issue',k:'와이파이가 안 돼요.',e:'WiFi is not working',p:'waipaiga an dwaeyo',sub:'Tech'},
+  {t:'Tech',c:'Charging',k:'충전기 좀 빌릴 수 있을까요?',e:'May I borrow a charger?',p:'chungjeongi jom billil su isseulkkayo',sub:'Tech'},
+  {t:'Tech',c:'Password',k:'비밀번호를 잊어버렸어요.',e:'I forgot the password',p:'bimilbeonhoreul ijeobeoryeosseoyo',sub:'Tech'},
+  {t:'Tech',c:'App',k:'어플을 다운받아야 해요.',e:'I need to download the app',p:'eopeureul daunbadaya haeyo',sub:'Tech'},
+  {t:'Tech',c:'Update',k:'업데이트가 필요해요.',e:'It needs an update',p:'eopdeiteuga piryohaeyo',sub:'Tech'},
+  {t:'Exercise',c:'Gym',k:'헬스장은 몇 시까지 해요?',e:'Until what time is the gym open?',p:'helseujang-eun myeot sikkaji haeyo',sub:'Exercise'},
+  {t:'Exercise',c:'Running',k:'같이 달리기 할래요?',e:'Want to go running together?',p:'gachi dalligi hallaeyo',sub:'Exercise'},
+  {t:'Exercise',c:'Yoga',k:'요가 수업 신청했어요.',e:'I signed up for yoga class',p:'yoga sueop sincheonghaesseoyo',sub:'Exercise'},
+  {t:'Exercise',c:'Diet',k:'다이어트 중이에요.',e:'I am on a diet',p:'daieoteu jung-ieyo',sub:'Exercise'},
+  {t:'Exercise',c:'Healthy',k:'건강이 최고예요.',e:'Health is the best',p:'geongangi choegoyeyo',sub:'Exercise'}
+];
+
+const travelPlus = [
+  {t:'Convenience',c:'Buy water',k:'생수 한 병 주세요.',e:'One bottle of water please',p:'saengsu han byeong juseyo',sub:'Convenience'},
+  {t:'Convenience',c:'Microwave',k:'이거 데워 주실 수 있어요?',e:'Can you heat this up?',p:'igeo dewo jusil su isseoyo',sub:'Convenience'},
+  {t:'Convenience',c:'T-money',k:'티머니 카드 여기서 살 수 있어요?',e:'Can I buy a T-money card here?',p:'timoni kadeu yeogiseo sal su isseoyo',sub:'Convenience'},
+  {t:'Convenience',c:'Top up',k:'충전도 가능해요?',e:'Can I top it up here?',p:'chungjeondo ganeunghaeyo',sub:'Convenience'},
+  {t:'Convenience',c:'Utensils',k:'일회용 수저 좀 주세요.',e:'Disposable spoon and chopsticks please',p:'ilhoyeong sujeo jom juseyo',sub:'Convenience'},
+  {t:'Street Food',c:'Order skewers',k:'어묵 두 꼬치 주세요.',e:'Two fish cake skewers please',p:'eomuk du kkochi juseyo',sub:'Street Food'},
+  {t:'Street Food',c:'Sugar level',k:'설탕은 적게 넣어 주세요.',e:'Please add less sugar',p:'seoltangeun jeokge neo-eo juseyo',sub:'Street Food'},
+  {t:'Street Food',c:'Spicy tteokbokki',k:'덜 매운 떡볶이 있어요?',e:'Do you have less spicy tteokbokki?',p:'deol maeun tteokbokki isseoyo',sub:'Street Food'},
+  {t:'Street Food',c:'To go pack',k:'포장 용기로 부탁해요.',e:'Please pack it to go',p:'pojang yonggiro butakaeyo',sub:'Street Food'},
+  {t:'Street Food',c:'Pay now',k:'지금 계산할게요.',e:'I will pay now',p:'jigeum gyesanhalgeyo',sub:'Street Food'},
+  {t:'Market',c:'Sample',k:'맛 좀 봐도 돼요?',e:'May I taste a sample?',p:'mat jom bwado dwaeyo',sub:'Market'},
+  {t:'Market',c:'Half kilo',k:'반 근만 주세요.',e:'Half a geun please',p:'ban geunman juseyo',sub:'Market'},
+  {t:'Market',c:'Fresh today',k:'오늘 들어온 건가요?',e:'Is this fresh today?',p:'oneul deureoon geongayo',sub:'Market'},
+  {t:'Market',c:'Bargain',k:'조금만 깎아 주실 수 있나요?',e:'Could you lower the price a little?',p:'jogeumman kkakka jusil su innayo',sub:'Market'},
+  {t:'Market',c:'Bag',k:'봉투 필요해요.',e:'I need a bag',p:'bongtu piryohaeyo',sub:'Market'},
+  {t:'Duty Free',c:'Passport check',k:'여권 보여드릴게요.',e:'I will show my passport',p:'yeogwon boyeodeurilgeyo',sub:'Duty Free'},
+  {t:'Duty Free',c:'Tax refund desk',k:'택스 리펀드는 어디에서 해요?',e:'Where is the tax refund desk?',p:'taekseu ripeondeuneun eodieseo haeyo',sub:'Duty Free'},
+  {t:'Department',c:'Cosmetics tester',k:'테스터 사용해 봐도 될까요?',e:'May I try the tester?',p:'teseuteo sayonghae bwado doelkkayo',sub:'Department'},
+  {t:'Department',c:'Exchange size',k:'사이즈 교환 가능해요?',e:'Can I exchange for a different size?',p:'saijeu gyohwan ganeunghaeyo',sub:'Department'},
+  {t:'Department',c:'Gift wrap',k:'선물 포장 가능할까요?',e:'Can you gift wrap it?',p:'seonmul pojang ganeunhalkkayo',sub:'Department'},
+  {t:'Food Court',c:'Find seat',k:'자리 먼저 잡고 주문하나요?',e:'Do we get seats first then order?',p:'jari meonjeo japgo jumunhanayo',sub:'Food Court'},
+  {t:'Food Court',c:'Buzzer',k:'진동벨 받았어요.',e:'I received the buzzer',p:'jindongbel badasseoyo',sub:'Food Court'},
+  {t:'Food Court',c:'Pick up',k:'어디서 받아가요?',e:'Where do I pick it up?',p:'eodiseo badagayo',sub:'Food Court'},
+  {t:'Restaurant',c:'Wait list',k:'웨이팅 명단에 올려 주세요.',e:'Please put me on the waiting list',p:'weiting myeongdane ollyeo juseyo',sub:'Restaurant'},
+  {t:'Restaurant',c:'Share dish',k:'이거 같이 나눠 먹어도 돼요?',e:'Can we share this dish?',p:'igeo gachi nanwo meogeodo dwaeyo',sub:'Restaurant'},
+  {t:'Restaurant',c:'Refill water',k:'물은 셀프인가요?',e:'Is water self serve?',p:'mureun selpeu ingayo',sub:'Restaurant'},
+  {t:'Restaurant',c:'Extra side',k:'김치 조금 더 주실 수 있나요?',e:'May I have a bit more kimchi?',p:'gimchi jogeum deo jusil su innayo',sub:'Restaurant'},
+  {t:'Restaurant',c:'No pork',k:'돼지고기 빼 주세요.',e:'Please remove pork',p:'dwaejigogi ppae juseyo',sub:'Restaurant'},
+  {t:'Restaurant',c:'Halal',k:'할랄 메뉴 있나요?',e:'Do you have halal menu?',p:'hallal menyu innayo',sub:'Restaurant'},
+  {t:'Restaurant',c:'Vegan',k:'비건 메뉴도 있나요?',e:'Do you have vegan menu?',p:'bigeon menyudo innayo',sub:'Restaurant'},
+  {t:'Restaurant',c:'Allergy check',k:'이 음식에 땅콩 들어가요?',e:'Does this dish contain peanuts?',p:'i eumsige ttangkong deureogayo',sub:'Restaurant'},
+  {t:'Restaurant',c:'Less salt',k:'짜지 않게 부탁해요.',e:'Please make it less salty',p:'jjaji anke butakaeyo',sub:'Restaurant'},
+  {t:'Restaurant',c:'Separate bill',k:'각자 계산할게요.',e:'We will pay separately',p:'gakja gyesanhalgeyo',sub:'Restaurant'},
+  {t:'Restaurant',c:'Take leftovers',k:'남은 음식 포장해 주세요.',e:'Please pack the leftovers',p:'nameun eumsik pojanghae juseyo',sub:'Restaurant'},
+  {t:'Cafe',c:'Less ice',k:'얼음은 조금만 넣어 주세요.',e:'Less ice please',p:'eoreumeun jogeumman neo-eo juseyo',sub:'Cafe'},
+  {t:'Cafe',c:'Syrup',k:'시럽은 빼 주세요.',e:'Please hold the syrup',p:'sireobeun ppae juseyo',sub:'Cafe'},
+  {t:'Cafe',c:'Milk choice',k:'두유로 바꿔 주세요.',e:'Please switch to soy milk',p:'duyuro bakkwo juseyo',sub:'Cafe'},
+  {t:'Cafe',c:'Name',k:'이름은 Lucia로 적어 주세요.',e:'Please write the name Lucia',p:'ireumeun Lucia-ro jeogeo juseyo',sub:'Cafe'},
+  {t:'Cafe',c:'Receipt need',k:'영수증 필요해요.',e:'I need the receipt',p:'yeongsujeung piryohaeyo',sub:'Cafe'},
+  {t:'Payment',c:'No tip',k:'팁 문화가 없죠?',e:'There is no tipping culture, right?',p:'tib munhwaga eopjyo',sub:'Payment'},
+  {t:'Payment',c:'Mobile pay',k:'간편결제 가능해요?',e:'Do you take mobile pay?',p:'ganpyeon gyeolje ganeunghaeyo',sub:'Payment'},
+  {t:'Payment',c:'Split evenly',k:'N분의 1로 계산해 주세요.',e:'Please split evenly',p:'en bune il-lo gyesanhae juseyo',sub:'Payment'},
+  {t:'Payment',c:'Prepay',k:'선결제해야 하나요?',e:'Do we pay first?',p:'seongyeolje haeya hanayo',sub:'Payment'},
+  {t:'Delivery',c:'App help',k:'배달 앱 주문 도와주실래요?',e:'Could you help me order on the delivery app?',p:'baedal aep jumun dowajusillaeyo',sub:'Delivery'},
+  {t:'Sightseeing',c:'Food alley',k:'맛집 골목이 어디예요?',e:'Where is the food alley?',p:'matjib golmogi eodiyeyo',sub:'Sightseeing'},
+  {t:'Sightseeing',c:'Opening day',k:'오늘 영업하나요?',e:'Are you open today?',p:'oneul yeongeop hanayo',sub:'Sightseeing'},
+  {t:'Sightseeing',c:'Queue time',k:'대기 시간이 얼마나 걸려요?',e:'How long is the wait?',p:'daegi sigani eolmana geollyeoyo',sub:'Sightseeing'}
+];
+
+// --- Merged arrays for app ---
+const dramaAll  = [...drama, ...dramaPlus];
+const dailyAll  = [...daily, ...dailyPlus];
+const travelAll = [...travel, ...travelPlus];
+
+// Subcategory & Icons (extended)
 const subCategories = {
-  daily: ['Greeting', 'Cafe', 'Restaurant', 'Shopping', 'Health', 'Social'],
-  travel: ['Airport', 'Hotel', 'Transport', 'Emergency']
+  daily: ['Greeting','Cafe','Restaurant','Shopping','Health','Social','Work','Tech','Exercise'],
+  travel: ['Airport','Hotel','Transport','Emergency','Convenience','Street Food','Market','Duty Free','Department','Food Court','Payment','Delivery','Sightseeing']
+  // drama는 현재 UI에서 서브필터 비노출 (원하면 'Romance','Life','Support' 추가 후 아래 숨김 해제)
 };
 
 const subIcons = {
-  'Greeting': '👋', 'Cafe': '☕', 'Restaurant': '🍽️', 'Shopping': '🛍️', 
-  'Health': '💊', 'Social': '👥', 'Airport': '✈️', 'Hotel': '🏨', 
-  'Transport': '🚇', 'Emergency': '🆘'
+  'Greeting':'👋','Cafe':'☕','Restaurant':'🍽️','Shopping':'🛍️','Health':'💊','Social':'👥',
+  'Work':'💼','Tech':'🖥️','Exercise':'🏃',
+  'Airport':'✈️','Hotel':'🏨','Transport':'🚇','Emergency':'🆘',
+  'Convenience':'🏪','Street Food':'🌭','Market':'🧺','Duty Free':'🛂','Department':'🏬',
+  'Food Court':'🥢','Payment':'💳','Delivery':'📦','Sightseeing':'📍'
 };
 
-let st = { cat:'daily', sub:null, i:0, spd:0.75, lines:daily, filteredLines:daily, repCount:0 };
+// ===================== App State & Logic =====================
+let st = { cat:'daily', sub:null, i:0, spd:0.75, filteredLines:[] };
 
 function getLines() {
-  let base = st.cat === 'drama' ? drama : st.cat === 'daily' ? daily : travel;
-  if (st.sub) {
-    return base.filter(item => item.sub === st.sub);
-  }
-  return base;
+  const base = st.cat === 'drama' ? dramaAll : st.cat === 'daily' ? dailyAll : travelAll;
+  return st.sub ? base.filter(item => item.sub === st.sub) : base;
 }
 
 function updateSubFilters() {
   const container = document.getElementById('subFilters');
-  
+  if (!container) return;
+
+  // drama는 숨김 (원하면 이 블록 제거하고 subCategories.drama 추가)
   if (st.cat === 'drama') {
     container.style.display = 'none';
     return;
   }
-  
+
   container.style.display = 'block';
   const cats = subCategories[st.cat] || [];
-  
-  container.innerHTML = '<div class="sub-filters">' +
+
+  container.innerHTML =
+    '<div class="sub-filters">' +
     '<div class="filter-chip ' + (!st.sub ? 'active' : '') + '" onclick="filterSub(null)">All</div>' +
-    cats.map(cat => 
+    cats.map(cat =>
       '<div class="filter-chip ' + (st.sub === cat ? 'active' : '') + '" onclick="filterSub(\'' + cat + '\')">' +
-      subIcons[cat] + ' ' + cat +
+      (subIcons[cat] ? subIcons[cat] + ' ' : '🏷️ ') + cat +
       '</div>'
     ).join('') +
     '</div>';
@@ -1080,18 +566,19 @@ function updateSubFilters() {
 function filterSub(sub) {
   st.sub = sub;
   st.i = 0;
-  st.repCount = 0;
   st.filteredLines = getLines();
   updateSubFilters();
   show();
 }
 
 function updateRepetitionDisplay() {
-  document.getElementById('repCount').textContent = st.repCount;
-  
+  const repCountEl = document.getElementById('repCount');
+  if (repCountEl) repCountEl.textContent = st.repCount || 0;
+
   for (let i = 1; i <= 5; i++) {
     const dot = document.getElementById('dot' + i);
-    if (i <= st.repCount) {
+    if (!dot) continue;
+    if (i <= (st.repCount || 0)) {
       dot.classList.add('completed');
       dot.textContent = '✓';
     } else {
@@ -1099,57 +586,82 @@ function updateRepetitionDisplay() {
       dot.textContent = '';
     }
   }
-  
+
   const congrats = document.getElementById('congrats');
-  if (st.repCount >= 5) {
-    congrats.classList.add('show');
-  } else {
-    congrats.classList.remove('show');
+  if (congrats) {
+    if ((st.repCount || 0) >= 5) congrats.classList.add('show');
+    else congrats.classList.remove('show');
   }
 }
 
 function show() {
   st.filteredLines = getLines();
-  
+
   if (st.filteredLines.length === 0) {
-    st.filteredLines = st.cat === 'drama' ? drama : st.cat === 'daily' ? daily : travel;
+    st.filteredLines = st.cat === 'drama' ? dramaAll : st.cat === 'daily' ? dailyAll : travelAll;
     st.i = 0;
   }
-  
   if (st.i >= st.filteredLines.length) st.i = 0;
   if (st.i < 0) st.i = 0;
-  
+
   st.repCount = 0;
-  
+
   const d = st.filteredLines[st.i];
-  document.getElementById('badge').textContent = d.t;
-  document.getElementById('context').textContent = 'Conversation: ' + d.c;
-  document.getElementById('korean').textContent = d.k;
-  document.getElementById('pronunciation').textContent = d.p;
-  document.getElementById('english').textContent = '"' + d.e + '"';
-  document.getElementById('prog').textContent = (st.i+1) + ' / ' + st.filteredLines.length;
-  
+  const badgeEl = document.getElementById('badge');
+  const contextEl = document.getElementById('context');
+  const koreanEl = document.getElementById('korean');
+  const pronEl = document.getElementById('pronunciation');
+  const engEl = document.getElementById('english');
+  const progEl = document.getElementById('prog');
+
+  if (badgeEl)   badgeEl.textContent = d.t;
+  if (contextEl) contextEl.textContent = 'Conversation: ' + d.c;
+  if (koreanEl)  koreanEl.textContent = d.k;
+  if (pronEl)    pronEl.textContent = d.p;
+  if (engEl)     engEl.textContent = '"' + d.e + '"';
+  if (progEl)    progEl.textContent = (st.i + 1) + ' / ' + st.filteredLines.length;
+
   updateRepetitionDisplay();
 }
 
 function showError(msg) {
   const err = document.getElementById('errorMsg');
+  if (!err) return;
   err.textContent = msg;
   err.style.display = 'block';
   setTimeout(() => { err.style.display = 'none'; }, 5000);
 }
 
+function speakText(txt, voices) {
+  const synth = window.speechSynthesis;
+  setTimeout(() => {
+    const u = new SpeechSynthesisUtterance(txt);
+    u.lang = 'ko-KR';
+    u.rate = st.spd;
+    u.pitch = 1.0;
+    u.volume = 1.0;
+    const koVoice = voices.find(v =>
+      v.lang && (v.lang === 'ko-KR' || v.lang === 'ko_KR' || v.lang.startsWith('ko-') || v.name.includes('Korean') || v.name.includes('한국'))
+    );
+    if (koVoice) u.voice = koVoice;
+    u.onerror = (e) => { console.error('Speech error:', e); showError('⚠️ Speech failed. Please try again.'); };
+    u.onend = () => { /* noop */ };
+    synth.speak(u);
+  }, 200);
+}
+
 function play() {
-  const txt = st.filteredLines[st.i].k;
-  
+  const current = st.filteredLines[st.i];
+  const txt = current.k;
+
   if (!('speechSynthesis' in window)) {
     showError('⚠️ Your browser does not support text-to-speech. Try Chrome, Safari, or Edge.');
     return;
   }
-  
+
   const synth = window.speechSynthesis;
   synth.cancel();
-  
+
   let voices = synth.getVoices();
   if (voices.length === 0) {
     synth.onvoiceschanged = () => {
@@ -1159,88 +671,54 @@ function play() {
   } else {
     speakText(txt, voices);
   }
-  
-  // Increment repetition count when play is clicked
-  if (st.repCount < 5) {
-    st.repCount++;
+
+  // repetition
+  if ((st.repCount || 0) < 5) {
+    st.repCount = (st.repCount || 0) + 1;
     updateRepetitionDisplay();
-    
-    // Auto-advance after completing 5 repetitions
-    if (st.repCount >= 5) {
-      autoNext();
-    }
+    if (st.repCount >= 5) autoNext();
   }
 }
 
-function speakText(txt, voices) {
-  const synth = window.speechSynthesis;
-  
-  setTimeout(() => {
-    const u = new SpeechSynthesisUtterance(txt);
-    u.lang = 'ko-KR';
-    u.rate = st.spd;
-    u.pitch = 1.0;
-    u.volume = 1.0;
-    
-    const koVoice = voices.find(v => 
-      v.lang && (
-        v.lang === 'ko-KR' || 
-        v.lang === 'ko_KR' || 
-        v.lang.startsWith('ko-') ||
-        v.name.includes('Korean') ||
-        v.name.includes('한국')
-      )
-    );
-    
-    if (koVoice) {
-      u.voice = koVoice;
-      console.log('Using Korean voice:', koVoice.name);
-    } else {
-      console.log('No Korean voice found, using default');
-    }
-    
-    u.onerror = (e) => {
-      console.error('Speech error:', e);
-      showError('⚠️ Speech failed. Please try again.');
-    };
-    
-    u.onend = () => {
-      console.log('Speech completed');
-    };
-    
-    synth.speak(u);
-  }, 200);
-}
-
 function prev() {
-  if (st.i > 0) { 
+  if (st.i > 0) {
     st.i--;
     st.repCount = 0;
-    show(); 
+    show();
   }
 }
 
 function next() {
-  if (st.i < st.filteredLines.length - 1) { 
+  if (st.i < st.filteredLines.length - 1) {
     st.i++;
     st.repCount = 0;
-    show(); 
+    show();
   }
+}
+
+async function updatePracticeStats() {
+  if (!currentUser || !db) return;
+  const phraseId = st.filteredLines[st.i].k;
+  userState.practiceCount[phraseId] = (userState.practiceCount[phraseId] || 0) + 5;
+  userState.xp += 5;
+  const newLevel = calculateLevel(userState.xp);
+  if (newLevel > userState.level) {
+    userState.level = newLevel;
+    showError(`🎊 Level Up! You are now Level ${newLevel} - ${getLevelName(newLevel)}!`);
+  }
+  await db.collection('users').doc(currentUser.uid).update({
+    xp: userState.xp, level: userState.level, practiceCount: userState.practiceCount,
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
+  updateUserUI();
 }
 
 function autoNext() {
   if (st.repCount >= 5) {
-    // Award XP for completing the phrase
-    if (currentUser && db) {
-      updatePracticeStats();
-    }
-    
+    if (currentUser && db) { updatePracticeStats(); }
     setTimeout(() => {
-      if (st.i < st.filteredLines.length - 1) {
-        next();
-      } else {
-        showError('🎉 You completed all phrases! Great work!');
-      }
+      if (st.i < st.filteredLines.length - 1) next();
+      else showError('🎉 You completed all phrases! Great work!');
     }, 2000);
   }
 }
@@ -1250,24 +728,20 @@ function switchCategory(cat) {
   st.sub = null;
   st.i = 0;
   st.repCount = 0;
-  
-  document.getElementById('dramaBtn').classList.remove('active');
-  document.getElementById('dailyBtn').classList.remove('active');
-  document.getElementById('travelBtn').classList.remove('active');
-  
-  if (cat === 'drama') {
-    document.getElementById('dramaBtn').classList.add('active');
-  } else if (cat === 'daily') {
-    document.getElementById('dailyBtn').classList.add('active');
-  } else if (cat === 'travel') {
-    document.getElementById('travelBtn').classList.add('active');
-  }
-  
+
+  document.getElementById('dramaBtn')?.classList.remove('active');
+  document.getElementById('dailyBtn')?.classList.remove('active');
+  document.getElementById('travelBtn')?.classList.remove('active');
+
+  if (cat === 'drama') document.getElementById('dramaBtn')?.classList.add('active');
+  else if (cat === 'daily') document.getElementById('dailyBtn')?.classList.add('active');
+  else if (cat === 'travel') document.getElementById('travelBtn')?.classList.add('active');
+
   updateSubFilters();
   show();
 }
 
-// Event listeners
+// ===================== Events =====================
 document.getElementById('dramaBtn').addEventListener('click', () => switchCategory('drama'));
 document.getElementById('dailyBtn').addEventListener('click', () => switchCategory('daily'));
 document.getElementById('travelBtn').addEventListener('click', () => switchCategory('travel'));
@@ -1277,10 +751,12 @@ document.getElementById('nextBtn').addEventListener('click', next);
 
 document.getElementById('speed').addEventListener('input', (e) => {
   st.spd = parseFloat(e.target.value);
-  document.getElementById('speedTxt').textContent = st.spd + 'x';
+  const speedTxt = document.getElementById('speedTxt');
+  if (speedTxt) speedTxt.textContent = st.spd + 'x';
 });
 
-// Initialize with daily category
+// Init
+st.filteredLines = getLines(); // initial compute
 document.getElementById('dailyBtn').classList.add('active');
 updateSubFilters();
 show();
