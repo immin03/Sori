@@ -1,70 +1,24 @@
-// data/dataIndex.js
-// 모든 데이터 파일을 불러와서 하나로 합치고, 서브 카테고리/아이콘을 정의합니다.
+// data/dataindex.js
+(function(){
+  // drama.js, daily.js, travel.js define globals: window.__DRAMA_BASE, window.__DRAMA_PLUS, etc.
+  const dramaAll  = [...(window.__DRAMA_BASE || []), ...(window.__DRAMA_PLUS || [])];
+  const dailyAll  = [...(window.__DAILY_BASE || []), ...(window.__DAILY_PLUS || [])];
+  const travelAll = [...(window.__TRAVEL_BASE || []), ...(window.__TRAVEL_PLUS || [])];
 
-import { daily } from './daily.js';
-import { drama } from './drama.js';
-import { travel } from './travel.js';
+  const subCategories = {
+    daily: ['Greeting','Cafe','Restaurant','Shopping','Health','Social','Work','Tech','Exercise'],
+    travel: ['Airport','Hotel','Transport','Emergency','Convenience','Street Food','Market','Duty Free','Department','Food Court','Payment','Delivery','Sightseeing']
+    // drama: currently no subfilters shown in UI. If needed, add keys and enable in app.js.
+  };
 
-// 메인 배열
-export const dailyAll = daily;
-export const dramaAll = drama;
-export const travelAll = travel;
+  const subIcons = {
+    'Greeting':'👋','Cafe':'☕','Restaurant':'🍽️','Shopping':'🛍️','Health':'💊','Social':'👥',
+    'Work':'💼','Tech':'🖥️','Exercise':'🏃',
+    'Airport':'✈️','Hotel':'🏨','Transport':'🚇','Emergency':'🆘',
+    'Convenience':'🏪','Street Food':'🌭','Market':'🧺','Duty Free':'🛂','Department':'🏬',
+    'Food Court':'🥢','Payment':'💳','Delivery':'📦','Sightseeing':'📍'
+  };
 
-// 카테고리별 세부 주제
-export const subCategories = {
-  daily: [
-    'Greeting',
-    'Cafe',
-    'Restaurant',
-    'Shopping',
-    'Health',
-    'Social',
-    'Work',
-    'Tech',
-    'Exercise'
-  ],
-  travel: [
-    'Airport',
-    'Hotel',
-    'Transport',
-    'Emergency',
-    'Convenience',
-    'Street Food',
-    'Market',
-    'Duty Free',
-    'Department',
-    'Food Court',
-    'Payment',
-    'Delivery',
-    'Sightseeing'
-  ]
-};
+  window.SoriData = { dramaAll, dailyAll, travelAll, subCategories, subIcons };
+})();
 
-// 각 세부 주제에 표시할 아이콘
-export const subIcons = {
-  // Daily
-  'Greeting': '👋',
-  'Cafe': '☕',
-  'Restaurant': '🍽️',
-  'Shopping': '🛍️',
-  'Health': '💊',
-  'Social': '👥',
-  'Work': '💼',
-  'Tech': '🖥️',
-  'Exercise': '🏃',
-
-  // Travel
-  'Airport': '✈️',
-  'Hotel': '🏨',
-  'Transport': '🚇',
-  'Emergency': '🆘',
-  'Convenience': '🏪',
-  'Street Food': '🌭',
-  'Market': '🧺',
-  'Duty Free': '🛂',
-  'Department': '🏬',
-  'Food Court': '🥢',
-  'Payment': '💳',
-  'Delivery': '📦',
-  'Sightseeing': '📍'
-};
