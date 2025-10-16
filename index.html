@@ -212,16 +212,18 @@
     <div class="progress" id="prog">1 / 30</div>
   </div>
 
-  <!-- Data scripts -->
-  <script src="data/daily.js"></script>
-  <script src="data/drama.js"></script>
-  <script src="data/travel.js"></script>
-  <script src="data/dataindex.js"></script>
+  <!-- Data scripts: 순서 중요 (data 폴더) -->
+  <script src="data/daily.js" defer></script>
+  <script src="data/drama.js" defer></script>
+  <script src="data/travel.js" defer></script>
+  <script src="data/dataindex.js" defer></script>
 
-  <!-- Core scripts -->
-  <script src="state.js"></script>
-  <script src="tts.js"></script>
-  <script src="app.js"></script>
+  <!-- Core scripts: 루트 경로 (js 폴더 아님) -->
+  <script src="state.js" defer></script>
+  <script src="tts.js" defer></script>
+  <script src="app.js" defer></script>
+
 </body>
 </html>
+
 
