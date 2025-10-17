@@ -2,9 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Sori - Learn Korean</title>
 
   <!-- (선택) Google Analytics -->
@@ -16,90 +14,79 @@
     gtag('config', 'G-X1909BBKR5');
   </script>
 
-  <!-- Firebase compat SDK들 (state.js가 compat 기반을 사용하므로 동일 버전 유지) -->
+  <!-- Firebase compat (state.js가 compat 기준) -->
   <script defer src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script defer src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
   <script defer src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
   <style>
-    *{ box-sizing: border-box; }
+    *{ box-sizing:border-box }
     body{
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      max-width: 680px; margin: 0 auto; padding: 12px;
-      background: #faf8ff; min-height: 100vh;
+      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+      max-width:680px;margin:0 auto;padding:12px;background:#faf8ff;min-height:100vh
     }
-    h1{ font-size: 24px; margin: 0 0 4px; color: #7c3aed; font-weight: 800; }
-    .intro{ color:#9ca3af; font-size:12px; margin-bottom:10px; line-height:1.3; font-weight:500; }
+    h1{font-size:24px;margin:0 0 4px;color:#7c3aed;font-weight:800}
+    .intro{color:#9ca3af;font-size:12px;margin-bottom:10px;line-height:1.3;font-weight:500}
 
     /* header */
-    .header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
-    .top-btn{ padding:6px 12px; border-radius:10px; font-size:12px; font-weight:700; border:0; cursor:pointer; }
-    .top-btn.primary{ background:#7c3aed; color:#fff; }
+    .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+    .top-btn{padding:6px 12px;border-radius:10px;font-size:12px;font-weight:700;border:0;cursor:pointer}
+    .top-btn.primary{background:#7c3aed;color:#fff}
 
-    /* cards / tabs */
-    .card{ background:#fff; border-radius:16px; padding:16px; margin:8px 0; box-shadow:0 2px 12px rgba(0,0,0,.05); }
-    .category-tabs{ display:grid; grid-template-columns:repeat(4,1fr); gap:6px; }
-    .tab-button{
-      padding:10px 14px; border:2px solid #f3f4f6; border-radius:14px; background:#f9fafb;
-      color:#9ca3af; font-size:13px; font-weight:700; cursor:pointer; transition:.2s;
-    }
-    .tab-button:hover{ background:#f3f4f6; }
-    .tab-button.active{ background:#7c3aed; color:#fff; border-color:#7c3aed; box-shadow:0 2px 8px rgba(124,58,237,.2); }
-
-    .sub-filters{ display:none; margin-top:8px; }
+    /* cards/tabs */
+    .card{background:#fff;border-radius:16px;padding:16px;margin:8px 0;box-shadow:0 2px 12px rgba(0,0,0,.05)}
+    .category-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+    .tab-button{padding:10px 14px;border:2px solid #f3f4f6;border-radius:14px;background:#f9fafb;color:#9ca3af;font-size:13px;font-weight:700;cursor:pointer;transition:.2s}
+    .tab-button:hover{background:#f3f4f6}
+    .tab-button.active{background:#7c3aed;color:#fff;border-color:#7c3aed;box-shadow:0 2px 8px rgba(124,58,237,.2)}
+    .sub-filters{display:none;margin-top:8px}
 
     /* badge / star */
-    .row-between{ display:flex; justify-content:space-between; align-items:center; gap:8px; }
-    .badge{ display:inline-block; background:#7c3aed; color:#fff; font-size:11px; font-weight:800; padding:5px 10px; border-radius:10px; }
-    .icon-btn{
-      border:none; background:transparent; width:32px; height:32px;
-      display:inline-flex; align-items:center; justify-content:center;
-      font-size:20px; line-height:1; color:#9ca3af; cursor:pointer; border-radius:8px;
-    }
-    .icon-btn:hover{ background:#f3f4f6; }
-    .icon-btn.active{ color:#d97706; } /* 저장된 별 */
+    .row-between{display:flex;justify-content:space-between;align-items:center;gap:8px}
+    .badge{display:inline-block;background:#7c3aed;color:#fff;font-size:11px;font-weight:800;padding:5px 10px;border-radius:10px}
+    .icon-btn{border:none;background:transparent;width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;font-size:20px;line-height:1;color:#9ca3af;cursor:pointer;border-radius:8px}
+    .icon-btn:hover{background:#f3f4f6}
+    .icon-btn.active{color:#d97706}
 
-    .context{ background:#f9fafb; border-radius:8px; padding:6px 10px; margin-top:8px; color:#6b7280; font-size:12px; font-weight:600; }
+    .context{background:#f9fafb;border-radius:8px;padding:6px 10px;margin-top:8px;color:#6b7280;font-size:12px;font-weight:600}
 
     /* main text */
-    .kbox{ background:#f9fafb; border-radius:14px; padding:16px 12px; margin:12px 0; }
-    .ko{ font-size:28px; font-weight:900; color:#1f2937; text-align:center; margin:0 0 6px; }
-    .en{ color:#6b7280; font-size:16px; text-align:center; margin:0 0 10px; font-weight:600; }
-    .pr{ color:#9ca3af; font-size:13px; font-style:italic; text-align:center; margin:0; }
+    .kbox{background:#f9fafb;border-radius:14px;padding:16px 12px;margin:12px 0}
+    .ko{font-size:28px;font-weight:900;color:#1f2937;text-align:center;margin:0 0 6px}
+    .en{color:#6b7280;font-size:16px;text-align:center;margin:0 0 10px;font-weight:600}
+    .pr{color:#9ca3af;font-size:13px;font-style:italic;text-align:center;margin:0}
 
     /* practice */
-    .practice{ background:#f9fafb; border-radius:10px; padding:10px; }
-    .practice-label{ font-size:12px; font-weight:600; color:#6b7280; text-align:center; margin:0 0 8px; }
-    .dots{ display:flex; gap:6px; justify-content:center; margin-bottom:8px; }
-    .rep-dot{ width:32px; height:32px; border-radius:50%; border:2px solid #e5e7eb; background:#fff; display:flex; align-items:center; justify-content:center; }
-    .rep-dot.completed{ background:#7c3aed; border-color:#7c3aed; }
+    .practice{background:#f9fafb;border-radius:10px;padding:10px}
+    .practice-label{font-size:12px;font-weight:600;color:#6b7280;text-align:center;margin:0 0 8px}
+    .dots{display:flex;gap:6px;justify-content:center;margin-bottom:8px}
+    .rep-dot{width:32px;height:32px;border-radius:50%;border:2px solid #e5e7eb;background:#fff;display:flex;align-items:center;justify-content:center}
+    .rep-dot.completed{background:#7c3aed;border-color:#7c3aed}
 
     /* buttons */
-    button.big{ width:100%; padding:12px 18px; border-radius:14px; border:0; cursor:pointer; font-weight:800; font-size:15px; background:#7c3aed; color:#fff; box-shadow:0 2px 8px rgba(124,58,237,.2); }
-    button.big:hover{ background:#6d28d9; }
-    .error{ display:none; background:#fee2e2; color:#991b1b; font-size:11px; font-weight:600; padding:8px 12px; border-radius:8px; margin-top:8px; }
+    button.big{width:100%;padding:12px 18px;border-radius:14px;border:0;cursor:pointer;font-weight:800;font-size:15px;background:#7c3aed;color:#fff;box-shadow:0 2px 8px rgba(124,58,237,.2)}
+    button.big:hover{background:#6d28d9}
+    .error{display:none;background:#fee2e2;color:#991b1b;font-size:11px;font-weight:600;padding:8px 12px;border-radius:8px;margin-top:8px}
 
-    .row{ display:flex; align-items:center; justify-content:center; gap:8px; background:#f9fafb; border-radius:8px; padding:8px; margin-top:8px; }
-    .row label{ color:#7c3aed; font-size:12px; font-weight:600; }
-    .row span{ color:#7c3aed; font-size:12px; font-weight:700; min-width:42px; text-align:right; }
+    .row{display:flex;align-items:center;justify-content:center;gap:8px;background:#f9fafb;border-radius:8px;padding:8px;margin-top:8px}
+    .row label{color:#7c3aed;font-size:12px;font-weight:600}
+    .row span{color:#7c3aed;font-size:12px;font-weight:700;min-width:42px;text-align:right}
 
-    .nav{ display:grid; grid-template-columns:1fr 1fr; gap:6px; }
-    .secondary{ background:#f9fafb; color:#6b7280; border:0; padding:12px 18px; border-radius:14px; font-weight:800; }
-    .secondary:hover{ background:#f3f4f6; }
-    .progress{ text-align:center; color:#7c3aed; font-size:13px; font-weight:700; margin-top:8px; }
+    .nav{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+    .secondary{background:#f9fafb;color:#6b7280;border:0;padding:12px 18px;border-radius:14px;font-weight:800}
+    .secondary:hover{background:#f3f4f6}
+    .progress{text-align:center;color:#7c3aed;font-size:13px;font-weight:700;margin-top:8px}
 
-    /* congrats */
-    .cong{ display:none; margin:8px 0; text-align:center; background:linear-gradient(135deg,#fef3c7 0%,#fde68a 100%); border-radius:10px; padding:12px; }
-    .cong.show{ display:block; }
+    .cong{display:none;margin:8px 0;text-align:center;background:linear-gradient(135deg,#fef3c7 0%,#fde68a 100%);border-radius:10px;padding:12px}
+    .cong.show{display:block}
 
     /* auth modal */
-    .auth{ display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); align-items:center; justify-content:center; z-index:9999; padding:16px; }
-    .auth:not(.hidden){ display:flex; }
-    .auth-card{ background:#fff; width:100%; max-width:360px; border-radius:18px; padding:24px; box-shadow:0 18px 50px rgba(0,0,0,.35); text-align:center; position:relative; }
-    .auth-close{ position:absolute; top:10px; right:10px; background:none; border:none; font-size:22px; color:#9ca3af; cursor:pointer; }
-    .gbtn{ background:#fff; border:2px solid #e5e7eb; border-radius:12px; padding:12px 16px; font-weight:600; cursor:pointer; }
+    .auth{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);align-items:center;justify-content:center;z-index:9999;padding:16px}
+    .auth:not(.hidden){display:flex}
+    .auth-card{background:#fff;width:100%;max-width:360px;border-radius:18px;padding:24px;box-shadow:0 18px 50px rgba(0,0,0,.35);text-align:center;position:relative}
+    .auth-close{position:absolute;top:10px;right:10px;background:none;border:none;font-size:22px;color:#9ca3af;cursor:pointer}
 
-    @media (max-width:640px){ .category-tabs{ grid-template-columns:1fr; } }
+    @media (max-width:640px){ .category-tabs{grid-template-columns:1fr} }
   </style>
 </head>
 <body>
@@ -129,7 +116,7 @@
   <section class="card">
     <div class="row-between">
       <div id="badge" class="badge">Greeting</div>
-      <button id="scrapBtn" class="icon-btn" title="Save this phrase">☆</button>
+      <button id="scrapBtn" class="icon-btn" title="Save this phrase" aria-label="Save">☆</button>
     </div>
 
     <div id="context" class="context">Conversation: First meeting</div>
@@ -182,38 +169,38 @@
   <div id="authModal" class="auth hidden">
     <div class="auth-card">
       <button id="authClose" class="auth-close" aria-label="Close">×</button>
-      <div style="font-size:24px; font-weight:800; color:#7c3aed; margin-bottom:6px;">Sign in</div>
-      <div style="font-size:13px; color:#9ca3af; margin-bottom:18px;">Use your Google account</div>
+      <div style="font-size:24px;font-weight:800;color:#7c3aed;margin-bottom:6px;">Sign in</div>
+      <div style="font-size:13px;color:#9ca3af;margin-bottom:18px;">Use your Google account</div>
       <button class="gbtn" onclick="window.handleGoogleLogin && window.handleGoogleLogin()">Continue with Google</button>
     </div>
   </div>
 
-  <!-- DATA (반드시 앱 로직보다 먼저) -->
-  <script defer src="data/daily.js"></script>
-  <script defer src="data/travel.js"></script>
-  <script defer src="data/drama.js"></script>
-  <script defer src="data/dataindex.js"></script>
+  <!-- DATA (무조건 앱 로직보다 먼저) -->
+  <script defer src="data/daily.js?v=20251017"></script>
+  <script defer src="data/travel.js?v=20251017"></script>
+  <script defer src="data/drama.js?v=20251017"></script>
+  <script defer src="data/dataindex.js?v=20251017"></script>
 
   <!-- APP SCRIPTS (순서 중요: state -> tts -> app) -->
-  <script defer src="js/state.js"></script>
-  <script defer src="js/tts.js"></script>
-  <script defer src="js/app.js"></script>
+  <script defer src="js/state.js?v=20251017"></script>
+  <script defer src="js/tts.js?v=20251017"></script>
+  <script defer src="js/app.js?v=20251017"></script>
 
-  <!-- Header 버튼/모달만 담당 -->
+  <!-- 헤더: 로그인/모달만 -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const modal = document.getElementById('authModal');
       const loginBtn = document.getElementById('loginBtn');
 
       loginBtn?.addEventListener('click', async () => {
-        try{
+        try {
           const u = (window.firebase?.auth && firebase.auth().currentUser) || null;
           if (u && window.SoriUser?.logout) {
             await window.SoriUser.logout();
           } else {
             modal?.classList.remove('hidden');
           }
-        }catch(e){ console.warn(e); }
+        } catch (e) { console.warn(e); }
       });
 
       document.getElementById('authClose')?.addEventListener('click', () => {
