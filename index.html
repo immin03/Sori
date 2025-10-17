@@ -119,16 +119,16 @@
 </head>
 <body>
   <!-- Header -->
-  <div class="header-container">
-    <div class="header-left">
-      <h1>Sori <span style="font-size: 14px; color: #9ca3af; font-weight: 600;">(beta)</span></h1>
-      <div class="intro">Master Korean with K-Drama lines and daily conversations</div>
-    </div>
-    <div class="header-right">
-      <button class="login-btn" id="loginBtn">Login</button>
-      <button class="my-btn" id="myBtn" onclick="handleMyButton && handleMyButton()">My</button>
-    </div>
+  <div class="header-container" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+  <div class="header-left">
+    <h1>Sori <span style="font-size: 14px; color: #9ca3af; font-weight: 600;">(beta)</span></h1>
+    <div class="intro">Master Korean with K-Drama lines and daily conversations</div>
   </div>
+  <div class="header-right">
+    <button id="loginBtn" class="top-btn primary">Login</button>
+    <button id="myBtn" class="top-btn">My</button>
+  </div>
+</div>
 
   <div class="card">
     <div class="category-tabs">
@@ -231,3 +231,4 @@
   </script>
 </body>
 </html>
+
