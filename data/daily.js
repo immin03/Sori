@@ -1,52 +1,59 @@
-// daily base
-const daily = [
-  {t:'Greeting',c:'First meeting',k:'안녕하세요.',e:'Hello',p:'annyeonghaseyo',sub:'Greeting'},
-  {t:'Greeting',c:'Casual hi',k:'안녕!',e:'Hi',p:'annyeong',sub:'Greeting'},
-  {t:'Greeting',c:'Long time',k:'오랜만이에요!',e:'Long time no see!',p:'oraenmanieyo',sub:'Greeting'},
-  {t:'Greeting',c:'How are you',k:'잘 지냈어요?',e:'Have you been well?',p:'jal jinaesseoyo',sub:'Greeting'},
-  {t:'Greeting',c:'Introduction',k:'저는 민우예요.',e:'I am Minwoo',p:'jeoneun minuyeyo',sub:'Greeting'},
-  {t:'Cafe',c:'Order',k:'아메리카노 한 잔, 주세요.',e:'One americano, please',p:'amerikano han jan, juseyo',sub:'Cafe'},
-  {t:'Cafe',c:'Size',k:'라지로 부탁드립니다.',e:'Large, please',p:'rajiro butakdeurimnida',sub:'Cafe'},
-  {t:'Cafe',c:'To go',k:'포장할게요.',e:'To go, please',p:'pojanghalgeyo',sub:'Cafe'},
-  {t:'Cafe',c:'No ice',k:'얼음은 빼 주세요.',e:'No ice, please',p:'eoreumeun ppae juseyo',sub:'Cafe'},
-  {t:'Cafe',c:'Compliment',k:'커피가 정말 맛있네요!',e:'The coffee is really good',p:'keopiga jeongmal masinneyo',sub:'Cafe'},
-  {t:'Restaurant',c:'Table',k:'두 명이에요.',e:'Table for two',p:'du myeongieyo',sub:'Restaurant'},
-  {t:'Restaurant',c:'Recommendation',k:'추천 메뉴가 있나요?',e:'Do you have a recommendation?',p:'chucheon menyuga innayo',sub:'Restaurant'},
-  {t:'Restaurant',c:'Not spicy',k:'안 매운 걸로, 주세요.',e:'Not spicy, please',p:'an maeun geollo, juseyo',sub:'Restaurant'},
-  {t:'Restaurant',c:'More water',k:'물 좀 더 주시겠어요?',e:'Could I get more water?',p:'mul jom deo jusigesseoyo',sub:'Restaurant'},
-  {t:'Restaurant',c:'Check',k:'계산서 부탁드려요.',e:'Check, please',p:'gyesanseo butakdeuryeoyo',sub:'Restaurant'},
-  {t:'Shopping',c:'Price',k:'얼마예요?',e:'How much is it?',p:'eolmayeyo',sub:'Shopping'},
-  {t:'Shopping',c:'Try on',k:'입어봐도 될까요?',e:'May I try this on?',p:'ibeobwado doelkkayo',sub:'Shopping'},
-  {t:'Shopping',c:'Other color',k:'다른 색, 있어요?',e:'Do you have another color?',p:'dareun saek, isseoyo',sub:'Shopping'},
-  {t:'Shopping',c:'Discount',k:'할인 가능할까요?',e:'Is a discount possible?',p:'halin ganeunhalkkayo',sub:'Shopping'},
-  {t:'Shopping',c:'Card payment',k:'카드로 결제할게요.',e:'I will pay by card',p:'kadeuro gyeoljehalgeyo',sub:'Shopping'},
-  {t:'Health',c:'Headache',k:'머리가 아파요.',e:'I have a headache',p:'meoriga apayo',sub:'Health'},
-  {t:'Health',c:'Cold medicine',k:'감기약, 있어요?',e:'Do you have cold medicine?',p:'gamgiyak, isseoyo',sub:'Health'},
-  {t:'Health',c:'Allergy',k:'땅콩 알레르기가 있어요.',e:'I have a peanut allergy',p:'ttangkong allerugiga isseoyo',sub:'Health'},
-  {t:'Health',c:'Where hurts',k:'어디가 아프세요?',e:'Where does it hurt?',p:'eodiga apeuseyo',sub:'Health'},
-  {t:'Health',c:'After meals',k:'식후에 드세요.',e:'Take it after meals',p:'sikhue deuseyo',sub:'Health'},
-  {t:'Social',c:'Compliment',k:'정말 잘하시네요!',e:'You are really good!',p:'jeongmal jalhasineyo',sub:'Social'},
-  {t:'Social',c:'Movie invite',k:'같이 영화 보러 갈래요?',e:'Do you want to see a movie?',p:'gachi yeonghwa boreo gallaeyo',sub:'Social'},
-  {t:'Social',c:'Decline',k:'미안하지만, 오늘은 어려워요.',e:'Sorry, but today is difficult',p:'mianhajiman, oneureun eoryeowoyo',sub:'Social'},
-  {t:'Social',c:'Tomorrow',k:'내일 시간, 괜찮으세요?',e:'Are you free tomorrow?',p:'naeil sigan, gwaenchanseuseyo',sub:'Social'},
-  {t:'Social',c:'Thank you',k:'도와주셔서 감사합니다.',e:'Thank you for your help',p:'dowajusyeoseo gamsahamnida',sub:'Social'}
-];
+<script>
+(function () {
+  window.SORI_DATA = window.SORI_DATA || {};
+  // 기본 Daily
+  const daily = [
+    {t:'Greeting',c:'First meeting',k:'안녕하세요.',e:'Hello',p:'annyeonghaseyo',sub:'Greeting'},
+    {t:'Greeting',c:'Casual hi',k:'안녕!',e:'Hi',p:'annyeong',sub:'Greeting'},
+    {t:'Greeting',c:'Long time',k:'오랜만이에요!',e:'Long time no see!',p:'oraenmanieyo',sub:'Greeting'},
+    {t:'Greeting',c:'How are you',k:'잘 지냈어요?',e:'Have you been well?',p:'jal jinaesseoyo',sub:'Greeting'},
+    {t:'Greeting',c:'Introduction',k:'저는 민우예요.',e:'I am Minwoo',p:'jeoneun minuyeyo',sub:'Greeting'},
+    {t:'Cafe',c:'Order',k:'아메리카노 한 잔, 주세요.',e:'One americano, please',p:'amerikano han jan, juseyo',sub:'Cafe'},
+    {t:'Cafe',c:'Size',k:'라지로 부탁드립니다.',e:'Large, please',p:'rajiro butakdeurimnida',sub:'Cafe'},
+    {t:'Cafe',c:'To go',k:'포장할게요.',e:'To go, please',p:'pojanghalgeyo',sub:'Cafe'},
+    {t:'Cafe',c:'No ice',k:'얼음은 빼 주세요.',e:'No ice, please',p:'eoreumeun ppae juseyo',sub:'Cafe'},
+    {t:'Cafe',c:'Compliment',k:'커피가 정말 맛있네요!',e:'The coffee is really good',p:'keopiga jeongmal masinneyo',sub:'Cafe'},
+    {t:'Restaurant',c:'Table',k:'두 명이에요.',e:'Table for two',p:'du myeongieyo',sub:'Restaurant'},
+    {t:'Restaurant',c:'Recommendation',k:'추천 메뉴가 있나요?',e:'Do you have a recommendation?',p:'chucheon menyuga innayo',sub:'Restaurant'},
+    {t:'Restaurant',c:'Not spicy',k:'안 매운 걸로, 주세요.',e:'Not spicy, please',p:'an maeun geollo, juseyo',sub:'Restaurant'},
+    {t:'Restaurant',c:'More water',k:'물 좀 더 주시겠어요?',e:'Could I get more water?',p:'mul jom deo jusigesseoyo',sub:'Restaurant'},
+    {t:'Restaurant',c:'Check',k:'계산서 부탁드려요.',e:'Check, please',p:'gyesanseo butakdeuryeoyo',sub:'Restaurant'},
+    {t:'Shopping',c:'Price',k:'얼마예요?',e:'How much is it?',p:'eolmayeyo',sub:'Shopping'},
+    {t:'Shopping',c:'Try on',k:'입어봐도 될까요?',e:'May I try this on?',p:'ibeobwado doelkkayo',sub:'Shopping'},
+    {t:'Shopping',c:'Other color',k:'다른 색, 있어요?',e:'Do you have another color?',p:'dareun saek, isseoyo',sub:'Shopping'},
+    {t:'Shopping',c:'Discount',k:'할인 가능할까요?',e:'Is a discount possible?',p:'halin ganeunhalkkayo',sub:'Shopping'},
+    {t:'Shopping',c:'Card payment',k:'카드로 결제할게요.',e:'I will pay by card',p:'kadeuro gyeoljehalgeyo',sub:'Shopping'},
+    {t:'Health',c:'Headache',k:'머리가 아파요.',e:'I have a headache',p:'meoriga apayo',sub:'Health'},
+    {t:'Health',c:'Cold medicine',k:'감기약, 있어요?',e:'Do you have cold medicine?',p:'gamgiyak, isseoyo',sub:'Health'},
+    {t:'Health',c:'Allergy',k:'땅콩 알레르기가 있어요.',e:'I have a peanut allergy',p:'ttangkong allerugiga isseoyo',sub:'Health'},
+    {t:'Health',c:'Where hurts',k:'어디가 아프세요?',e:'Where does it hurt?',p:'eodiga apeuseyo',sub:'Health'},
+    {t:'Health',c:'After meals',k:'식후에 드세요.',e:'Take it after meals',p:'sikhue deuseyo',sub:'Health'},
+    {t:'Social',c:'Compliment',k:'정말 잘하시네요!',e:'You are really good!',p:'jeongmal jalhasineyo',sub:'Social'},
+    {t:'Social',c:'Movie invite',k:'같이 영화 보러 갈래요?',e:'Do you want to see a movie?',p:'gachi yeonghwa boreo gallaeyo',sub:'Social'},
+    {t:'Social',c:'Decline',k:'미안하지만, 오늘은 어려워요.',e:'Sorry, but today is difficult',p:'mianhajiman, oneureun eoryeowoyo',sub:'Social'},
+    {t:'Social',c:'Tomorrow',k:'내일 시간, 괜찮으세요?',e:'Are you free tomorrow?',p:'naeil sigan, gwaenchanseuseyo',sub:'Social'},
+    {t:'Social',c:'Thank you',k:'도와주셔서 감사합니다.',e:'Thank you for your help',p:'dowajusyeoseo gamsahamnida',sub:'Social'}
+  ];
 
-// daily plus
-const dailyPlus = [
-  {t:'Work',c:'Meeting',k:'회의는 몇 시에 시작해요?',e:'What time does the meeting start?',p:'hoeuineun myeot sie sijakaeyo',sub:'Work'},
-  {t:'Work',c:'Deadline',k:'마감일이 언제예요?',e:'When is the deadline?',p:'magamiri eonjeyeyo',sub:'Work'},
-  {t:'Work',c:'Break',k:'잠시 쉬었다 할게요.',e:'I will take a short break',p:'jamsi swieotda halgeyo',sub:'Work'},
-  {t:'Work',c:'Overtime',k:'오늘 야근해야 해요.',e:'I have to work overtime today',p:'oneul yageunhaeya haeyo',sub:'Work'},
-  {t:'Work',c:'Weekend',k:'주말에도 일해야 해요?',e:'Do we have to work on weekends?',p:'jumaredo ilhaeya haeyo',sub:'Work'},
-  {t:'Tech',c:'WiFi issue',k:'와이파이가 안 돼요.',e:'WiFi is not working',p:'waipaiga an dwaeyo',sub:'Tech'},
-  {t:'Tech',c:'Charging',k:'충전기 좀 빌릴 수 있을까요?',e:'May I borrow a charger?',p:'chungjeongi jom billil su isseulkkayo',sub:'Tech'},
-  {t:'Tech',c:'Password',k:'비밀번호를 잊어버렸어요.',e:'I forgot the password',p:'bimilbeonhoreul ijeobeoryeosseoyo',sub:'Tech'},
-  {t:'Tech',c:'App',k:'어플을 다운받아야 해요.',e:'I need to download the app',p:'eopeureul daunbadaya haeyo',sub:'Tech'},
-  {t:'Tech',c:'Update',k:'업데이트가 필요해요.',e:'It needs an update',p:'eopdeiteuga piryohaeyo',sub:'Tech'},
-  {t:'Exercise',c:'Gym',k:'헬스장은 몇 시까지 해요?',e:'Until what time is the gym open?',p:'helseujang-eun myeot sikkaji haeyo',sub:'Exercise'},
-  {t:'Exercise',c:'Running',k:'같이 달리기 할래요?',e:'Want to go running together?',p:'gachi dalligi hallaeyo',sub:'Exercise'},
-  {t:'Exercise',c:'Yoga',k:'요가 수업 신청했어요.',e:'I signed up for yoga class',p:'yoga sueop sincheonghaesseoyo',sub:'Exercise'},
-  {t:'Exercise',c:'Diet',k:'다이어트 중이에요.',e:'I am on a diet',p:'daieoteu jung-ieyo',sub:'Exercise'},
-  {t:'Exercise',c:'Healthy',k:'건강이 최고예요.',e:'Health is the best',p:'geongangi choegoyeyo',sub:'Exercise'}
-];
+  // 확장 Daily
+  const dailyPlus = [
+    {t:'Work',c:'Meeting',k:'회의는 몇 시에 시작해요?',e:'What time does the meeting start?',p:'hoeuineun myeot sie sijakaeyo',sub:'Work'},
+    {t:'Work',c:'Deadline',k:'마감일이 언제예요?',e:'When is the deadline?',p:'magamiri eonjeyeyo',sub:'Work'},
+    {t:'Work',c:'Break',k:'잠시 쉬었다 할게요.',e:'I will take a short break',p:'jamsi swieotda halgeyo',sub:'Work'},
+    {t:'Work',c:'Overtime',k:'오늘 야근해야 해요.',e:'I have to work overtime today',p:'oneul yageunhaeya haeyo',sub:'Work'},
+    {t:'Work',c:'Weekend',k:'주말에도 일해야 해요?',e:'Do we have to work on weekends?',p:'jumaredo ilhaeya haeyo',sub:'Work'},
+    {t:'Tech',c:'WiFi issue',k:'와이파이가 안 돼요.',e:'WiFi is not working',p:'waipaiga an dwaeyo',sub:'Tech'},
+    {t:'Tech',c:'Charging',k:'충전기 좀 빌릴 수 있을까요?',e:'May I borrow a charger?',p:'chungjeongi jom billil su isseulkkayo',sub:'Tech'},
+    {t:'Tech',c:'Password',k:'비밀번호를 잊어버렸어요.',e:'I forgot the password',p:'bimilbeonhoreul ijeobeoryeosseoyo',sub:'Tech'},
+    {t:'Tech',c:'App',k:'어플을 다운받아야 해요.',e:'I need to download the app',p:'eopeureul daunbadaya haeyo',sub:'Tech'},
+    {t:'Tech',c:'Update',k:'업데이트가 필요해요.',e:'It needs an update',p:'eopdeiteuga piryohaeyo',sub:'Tech'},
+    {t:'Exercise',c:'Gym',k:'헬스장은 몇 시까지 해요?',e:'Until what time is the gym open?',p:'helseujang-eun myeot sikkaji haeyo',sub:'Exercise'},
+    {t:'Exercise',c:'Running',k:'같이 달리기 할래요?',e:'Want to go running together?',p:'gachi dalligi hallaeyo',sub:'Exercise'},
+    {t:'Exercise',c:'Yoga',k:'요가 수업 신청했어요.',e:'I signed up for yoga class',p:'yoga sueop sincheonghaesseoyo',sub:'Exercise'},
+    {t:'Exercise',c:'Diet',k:'다이어트 중이에요.',e:'I am on a diet',p:'daieoteu jung-ieyo',sub:'Exercise'},
+    {t:'Exercise',c:'Healthy',k:'건강이 최고예요.',e:'Health is the best',p:'geongangi choegoyeyo',sub:'Exercise'}
+  ];
+
+  SORI_DATA.daily = { base: daily, plus: dailyPlus };
+})();
+</script>
