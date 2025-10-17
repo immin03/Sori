@@ -1,63 +1,48 @@
-/* js/tts.js — Web Speech API wrapper (ko-KR) */
+/* js/tts.js – robust Web Speech wrapper */
 (function () {
   if (!window.SORI) window.SORI = {};
-  const synth = window.speechSynthesis;
-
-  async function waitForVoices() {
-    if (!("speechSynthesis" in window)) return [];
-    const have = synth.getVoices();
-    if (have && have.length) return have;
-    return new Promise((resolve) => {
-      const on = () => {
-        synth.onvoiceschanged = null;
-        resolve(synth.getVoices() || []);
-      };
-      synth.onvoiceschanged = on;
-      // 보이스 이벤트가 안 오는 브라우저 대비 타임아웃
-      setTimeout(() => resolve(synth.getVoices() || []), 800);
-    });
-  }
-
-  async function pickKoreanVoice() {
-    const voices = await waitForVoices();
-    // ko 우선, 다음은 이름에 korean/한국 포함
-    return (
-      voices.find(v => v.lang?.toLowerCase().startsWith("ko")) ||
-      voices.find(v => (v.name || "").toLowerCase().includes("korean")) ||
-      voices.find(v => (v.name || "").includes("한국")) ||
-      null
-    );
-  }
-
-  window.SORI.TTS = {
-    /** speak(text, { rate }) -> Promise<void> */
-    speak: async (text, opts = {}) => {
-      return new Promise(async (resolve, reject) => {
+  const TTS = {
+    speak(text, { rate } = {}) {
+      return new Promise((resolve, reject) => {
         try {
           if (!("speechSynthesis" in window)) {
-            return reject(new Error("speechSynthesis not supported"));
+            return reject(new Error("No speechSynthesis"));
           }
-          const rate = typeof opts.rate === "number" ? opts.rate : 0.75;
-
-          // 중복 재생 방지
+          const synth = window.speechSynthesis;
           try { synth.cancel(); } catch {}
-
           const u = new SpeechSynthesisUtterance(String(text || ""));
           u.lang = "ko-KR";
-          u.rate = rate;
-
-          const v = await pickKoreanVoice();
-          if (v) u.voice = v;
-
-          u.onerror = (e) => reject(e?.error || e);
+          u.rate = rate || 0.75;
+          u.onerror = (e) => reject(e.error || e);
           u.onend = () => resolve();
 
-          synth.speak(u);
+          const speakNow = () => {
+            const vs = synth.getVoices();
+            const ko = vs.find(v =>
+              (v.lang || "").toLowerCase().startsWith("ko") ||
+              (v.name || "").toLowerCase().includes("korean") ||
+              (v.name || "").includes("한국")
+            );
+            if (ko) u.voice = ko;
+            synth.speak(u);
+          };
+
+          // 보이스가 늦게 로드되는 브라우저 대응
+          if (synth.getVoices().length === 0) {
+            synth.onvoiceschanged = () => {
+              speakNow();
+              synth.onvoiceschanged = null;
+            };
+            // 일부 브라우저에서 이벤트가 안 오는 경우 대비
+            setTimeout(speakNow, 0);
+          } else {
+            speakNow();
+          }
         } catch (e) {
           reject(e);
         }
       });
     },
-    cancel: () => { try { synth.cancel(); } catch {} }
   };
+  window.SORI.TTS = TTS;
 })();
