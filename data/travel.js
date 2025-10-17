@@ -1,4 +1,3 @@
-<script>
 (function () {
   window.SORI_DATA = window.SORI_DATA || {};
   const travel = [
@@ -76,4 +75,3 @@
 
   SORI_DATA.travel = { base: travel, plus: travelPlus };
 })();
-</script>
