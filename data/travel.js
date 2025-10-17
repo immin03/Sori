@@ -1,6 +1,7 @@
 (function () {
   window.SORI_DATA = window.SORI_DATA || {};
-  window.SORI_DATA.travel = [
+  window.SORI_DATA.travel = (window.SORI_DATA.travel || []).concat(travelPlus);
+})();
     {t:'Airport',c:'Tourism',k:'관광하러 왔습니다.',e:'I am here for tourism',p:'gwangwanghareo wasseumnida',sub:'Airport'},
     {t:'Airport',c:'One week',k:'일주일 머물 예정입니다.',e:'I will stay for one week',p:'iljuil meomul yejeongimnida',sub:'Airport'},
     {t:'Airport',c:'Lost baggage',k:'수하물이 안 나왔어요.',e:'My baggage did not come out',p:'suhamuri an nawasseoyo',sub:'Airport'},
@@ -21,9 +22,6 @@
     {t:'Emergency',c:'Hospital',k:'병원에 가야 해요.',e:'I need to go to a hospital',p:'byeongwone gaya haeyo',sub:'Emergency'},
     {t:'Emergency',c:'Lost wallet',k:'지갑을 잃어버렸어요.',e:'I lost my wallet',p:'jigabeul ileobeoryeosseoyo',sub:'Emergency'},
     {t:'Emergency',c:'Lost',k:'길을 잃었어요.',e:'I am lost',p:'gireul ilheosseoyo',sub:'Emergency'}
-  ];
-
-  const travelPlus = [
     {t:'Convenience',c:'Buy water',k:'생수 한 병 주세요.',e:'One bottle of water please',p:'saengsu han byeong juseyo',sub:'Convenience'},
     {t:'Convenience',c:'Microwave',k:'이거 데워 주실 수 있어요?',e:'Can you heat this up?',p:'igeo dewo jusil su isseoyo',sub:'Convenience'},
     {t:'Convenience',c:'T-money',k:'티머니 카드 여기서 살 수 있어요?',e:'Can I buy a T-money card here?',p:'timoni kadeu yeogiseo sal su isseoyo',sub:'Convenience'},
