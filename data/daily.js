@@ -1,7 +1,5 @@
-<script>
 (function () {
   window.SORI_DATA = window.SORI_DATA || {};
-  // 기본 Daily
   const daily = [
     {t:'Greeting',c:'First meeting',k:'안녕하세요.',e:'Hello',p:'annyeonghaseyo',sub:'Greeting'},
     {t:'Greeting',c:'Casual hi',k:'안녕!',e:'Hi',p:'annyeong',sub:'Greeting'},
@@ -35,7 +33,6 @@
     {t:'Social',c:'Thank you',k:'도와주셔서 감사합니다.',e:'Thank you for your help',p:'dowajusyeoseo gamsahamnida',sub:'Social'}
   ];
 
-  // 확장 Daily
   const dailyPlus = [
     {t:'Work',c:'Meeting',k:'회의는 몇 시에 시작해요?',e:'What time does the meeting start?',p:'hoeuineun myeot sie sijakaeyo',sub:'Work'},
     {t:'Work',c:'Deadline',k:'마감일이 언제예요?',e:'When is the deadline?',p:'magamiri eonjeyeyo',sub:'Work'},
@@ -56,4 +53,4 @@
 
   SORI_DATA.daily = { base: daily, plus: dailyPlus };
 })();
-</script>
+
