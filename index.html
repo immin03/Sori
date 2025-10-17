@@ -5,19 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Sori - Learn Korean</title>
 
-  <!-- head 안: 기존 GA 스니펫을 아래로 교체 -->
+  <!-- Google Analytics (GA4) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-X1909BBKR5"></script>
   <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){ dataLayer.push(arguments); }
+
   gtag('js', new Date());
 
-  // SPA에서는 자동 page_view를 끄고 시작
-  gtag('config', 'G-X1909BBKR5', { send_page_view: false });
-
-  // 디버그가 필요하면 주석 해제
-  // gtag('config', 'G-X1909BBKR5', { debug_mode: true, send_page_view: false });
+  // SPA: 자동 page_view 비활성화 + 디버그 ON + 쿠키 설정( github.io )
+  gtag('config', 'G-X1909BBKR5', {
+    send_page_view: false,
+    debug_mode: true,
+    cookie_domain: 'github.io',
+    cookie_flags: 'SameSite=None;Secure'
+  });
 </script>
+
 
 
   <!-- Firebase compat (state.js가 compat 기준) -->
@@ -379,14 +383,14 @@
 
 <script>
 (function(){
-  // Helper: 현재 상태에서 page_path 생성
+  // --------- Helpers ----------
   function buildPath(){
     const activeTab = document.querySelector('.tab-button.active')?.id || 'dailyBtn';
     const catMap = { dailyBtn:'daily', travelBtn:'travel', dramaBtn:'kdrama', savedBtn:'saved' };
     const cat = catMap[activeTab] || 'daily';
 
-    const sub = (document.getElementById('badge')?.textContent || 'default').trim()
-                 .replace(/\s+/g,'-').toLowerCase();
+    const sub = (document.getElementById('badge')?.textContent || 'default')
+      .trim().replace(/\s+/g,'-').toLowerCase();
 
     const progText = document.getElementById('prog')?.textContent || '1 / 1';
     const m = progText.match(/(\d+)\s*\/\s*(\d+)/);
@@ -395,36 +399,45 @@
     return `/${cat}/${sub}/${idx}`;
   }
 
-  // Helper: page_view 전송
   function sendPV(title){
     try{
       const path = buildPath();
       gtag('event', 'page_view', {
         page_title: title || document.title,
         page_location: location.href,
-        page_path: path
+        page_path: path,
+        send_to: 'G-X1909BBKR5'
       });
       // console.log('[GA] page_view', path);
-    }catch(e){ /* no-op */ }
+    }catch(e){}
   }
 
-  // 최초 진입 1회
+  // 권장: 세션 시작 이벤트(초기 1회)
+  function sendSessionStart(){
+    try{
+      gtag('event', 'session_start', { send_to: 'G-X1909BBKR5' });
+    }catch(e){}
+  }
+
+  // --------- Wiring ----------
+  // 최초 진입: session_start + page_view (렌더 완료 후 한 틱 지연)
   document.addEventListener('DOMContentLoaded', function(){
-    // 데이터와 렌더 이후를 보장하기 위해 한 틱 지연
-    setTimeout(()=> sendPV('Sori'), 0);
+    setTimeout(()=> {
+      sendSessionStart();
+      sendPV('Sori');
+    }, 0);
   });
 
-  // 탭 전환 시
+  // 탭 전환
   ['dailyBtn','travelBtn','dramaBtn','savedBtn'].forEach(id=>{
     const el = document.getElementById(id);
     if(!el) return;
     el.addEventListener('click', ()=> {
-      // 렌더가 끝난 뒤 경로 갱신
       setTimeout(()=> sendPV(`Sori - ${el.textContent.trim()}`), 0);
     });
   });
 
-  // 서브칩 전환 시: sub-filters 컨테이너에 위임
+  // 서브칩 전환
   const subFilters = document.getElementById('subFilters');
   if(subFilters){
     subFilters.addEventListener('click', (e)=>{
@@ -434,24 +447,31 @@
     });
   }
 
-  // Next/Prev 시: 아이템 인덱스 변경을 page_view로 기록
+  // Next / Prev
   const nextBtn = document.getElementById('nextBtn');
   const prevBtn = document.getElementById('prevBtn');
   nextBtn?.addEventListener('click', ()=> setTimeout(()=> sendPV('Sori - Next'), 0), true);
   prevBtn?.addEventListener('click', ()=> setTimeout(()=> sendPV('Sori - Prev'), 0), true);
 
-  // 속도 변경 등 사용자 행동은 event로 기록하고 싶으면 아래 예시처럼
-  const speed = document.getElementById('speed');
-  speed?.addEventListener('change', ()=>{
-    gtag('event', 'change_speed', { value: speed.value });
+  // (선택) 포커스 복귀 시도 시 한 번 더 page_view
+  document.addEventListener('visibilitychange', ()=>{
+    if(document.visibilityState === 'visible'){
+      setTimeout(()=> sendPV('Sori - resume'), 0);
+    }
   });
 
+  // 속도 변경 예시(커스텀 이벤트)
+  const speed = document.getElementById('speed');
+  speed?.addEventListener('change', ()=>{
+    gtag('event', 'change_speed', { value: speed.value, send_to: 'G-X1909BBKR5' });
+  });
 })();
 </script>
 
   
 </body>
 </html>
+
 
 
 
