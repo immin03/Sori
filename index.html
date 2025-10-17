@@ -14,7 +14,7 @@
   gtag('js', new Date());
 
   // SPA: 자동 page_view 비활성화 + 디버그 ON + 쿠키 설정( github.io )
-  gtag('config', 'G-X1909BBKR5', {
+  gtag('config', 'G-X1Q98DBKR5', {
     send_page_view: false,
     debug_mode: true,
     cookie_domain: 'github.io',
@@ -406,7 +406,7 @@
         page_title: title || document.title,
         page_location: location.href,
         page_path: path,
-        send_to: 'G-X1909BBKR5'
+        send_to: 'G-X1Q98DBKR5'
       });
       // console.log('[GA] page_view', path);
     }catch(e){}
@@ -415,7 +415,7 @@
   // 권장: 세션 시작 이벤트(초기 1회)
   function sendSessionStart(){
     try{
-      gtag('event', 'session_start', { send_to: 'G-X1909BBKR5' });
+      gtag('event', 'session_start', { send_to: 'G-X1Q98DBKR5' });
     }catch(e){}
   }
 
@@ -463,7 +463,7 @@
   // 속도 변경 예시(커스텀 이벤트)
   const speed = document.getElementById('speed');
   speed?.addEventListener('change', ()=>{
-    gtag('event', 'change_speed', { value: speed.value, send_to: 'G-X1909BBKR5' });
+    gtag('event', 'change_speed', { value: speed.value, send_to: 'G-X1Q98DBKR5' });
   });
 })();
 </script>
@@ -471,6 +471,7 @@
   
 </body>
 </html>
+
 
 
 
