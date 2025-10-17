@@ -39,7 +39,45 @@
     .tab-button{padding:10px 14px;border:2px solid #f3f4f6;border-radius:14px;background:#f9fafb;color:#9ca3af;font-size:13px;font-weight:700;cursor:pointer;transition:.2s}
     .tab-button:hover{background:#f3f4f6}
     .tab-button.active{background:#7c3aed;color:#fff;border-color:#7c3aed;box-shadow:0 2px 8px rgba(124,58,237,.2)}
-    .sub-filters{display:none;margin-top:8px}
+
+    /* === Sub filters (chips) === */
+    .sub-filters{
+      display:none;             /* 기본은 숨김, app.js에서 필요 시 표시 */
+      margin-top:8px;
+      padding:8px;
+      background:#f9fafb;
+      border-radius:10px;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .sub-chip{
+      display:inline-flex;      /* 아이콘-텍스트 한 줄 정렬 */
+      align-items:center;       /* 수직 센터 */
+      gap:6px;
+      padding:6px 12px;
+      border-radius:14px;
+      background:#fff;
+      border:2px solid #e5e7eb;
+      color:#374151;
+      font-size:12px;
+      font-weight:600;
+      cursor:pointer;
+      user-select:none;
+      line-height:1;            /* 아이콘 들썩임 방지 */
+      transition:background .15s, border-color .15s, color .15s;
+    }
+    .sub-chip:hover{ background:#f3f4f6; }
+    .sub-chip.active{
+      background:#7c3aed;
+      border-color:#7c3aed;
+      color:#fff;
+    }
+    .sub-chip .sub-icon{
+      font-size:14px;           /* 아이콘 크기 통일 */
+      line-height:1;
+      transform: translateY(0.5px); /* 미세 보정 */
+    }
+    .sub-chip .sub-label{ line-height:1; }
 
     /* badge / star */
     .row-between{display:flex;justify-content:space-between;align-items:center;gap:8px}
@@ -103,12 +141,13 @@
 
   <!-- TABS -->
   <section class="card">
-    <div class="category-tabs">
-      <button id="dailyBtn"  class="tab-button active">Daily</button>
-      <button id="travelBtn" class="tab-button">Travel</button>
-      <button id="dramaBtn"  class="tab-button">K-Drama</button>
-      <button id="savedBtn"  class="tab-button">★ Saved</button>
+    <div class="category-tabs" role="tablist" aria-label="Categories">
+      <button id="dailyBtn"  class="tab-button active" role="tab" aria-selected="true">Daily</button>
+      <button id="travelBtn" class="tab-button" role="tab" aria-selected="false">Travel</button>
+      <button id="dramaBtn"  class="tab-button" role="tab" aria-selected="false">K-Drama</button>
+      <button id="savedBtn"  class="tab-button" role="tab" aria-selected="false">★ Saved</button>
     </div>
+    <!-- app.js가 여기에 .sub-chip 버튼들을 주입 -->
     <div id="subFilters" class="sub-filters"></div>
   </section>
 
