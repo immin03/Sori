@@ -1,9 +1,9 @@
-/* js/app.js — 2025.10 Stable + Subfilters */
+/* js/app.js — 2025.10 Stable + Subfilters (fixed) */
 (function () {
   // ---------- 로컬 상태 ----------
   let currentCategory = "daily";
   let currentIndex = 0;
-  let currentSub = null;         // ← 서브필터 상태
+  let currentSub = null;         // 서브필터 상태
   let phrases = [];
   let savedList = [];            // phrase.id 배열
 
@@ -52,6 +52,9 @@
     'Food Court':'🥢', Payment:'💳', Delivery:'📦', Sightseeing:'📍'
   };
 
+  // 소문자+트림 정규화
+  const norm = (v) => (v ?? "").toString().trim().toLowerCase();
+
   // ---------- 데이터 로딩/필터 ----------
   function rawFor(cat) {
     const all = getAllData();
@@ -61,10 +64,24 @@
   function applyFilter() {
     // Saved는 별도 처리에서 phrases 세팅
     if (currentCategory === "saved") return;
-    const raw  = rawFor(currentCategory) || []; const base = Array.isArray(raw) ? raw.slice()            : (raw && Array.isArray(raw.data)) ? raw.data.slice()            : [];
-    phrases = currentSub ? base.filter(p => p.sub === currentSub) : base.slice();
+
+    // 원본 배열 확보 (어떤 포맷이어도 방어)
+    const raw = rawFor(currentCategory) || [];
+    const base = Array.isArray(raw)
+      ? raw.slice()
+      : (raw && Array.isArray(raw.data))
+      ? raw.data.slice()
+      : [];
+
+    if (!currentSub) {
+      phrases = base;
+    } else {
+      const want = norm(currentSub);
+      phrases = base.filter(p => norm(p.sub) === want);
+    }
+
+    // 현재 인덱스 정리
     currentIndex = Math.min(currentIndex, Math.max(0, phrases.length - 1));
-renderPhrase(); // ← 필터 적용 후 화면 갱신
   }
 
   function loadData() {
@@ -78,10 +95,17 @@ renderPhrase(); // ← 필터 적용 후 화면 갱신
         return;
       }
       phrases = savedList.map(id => findPhraseById(id)).filter(Boolean);
-      if (phrases.length === 0) showMessage("No saved phrases yet.");
       currentIndex = 0;
+      if (phrases.length === 0) {
+        showMessage("No saved phrases yet.");
+        return;
+      }
     } else {
       applyFilter();
+      if (phrases.length === 0) {
+        showMessage("No items in this subcategory yet.");
+        return;
+      }
     }
     renderPhrase();
   }
@@ -105,7 +129,7 @@ renderPhrase(); // ← 필터 적용 후 화면 갱신
     const chips = ["All", ...list];
     const html = chips.map(lbl => {
       const value = lbl === "All" ? "" : lbl;
-      const active = (value ? value === currentSub : currentSub == null);
+      const active = (value ? norm(value) === norm(currentSub) : currentSub == null);
       const icon = lbl !== "All" && ICONS[lbl] ? ICONS[lbl] + " " : "";
       return `<div class="sub-chip ${active ? "active" : ""}" data-sub="${value}">${icon}${lbl}</div>`;
     }).join("");
@@ -123,8 +147,7 @@ renderPhrase(); // ← 필터 적용 후 화면 갱신
   function handleTab(tab) {
     currentCategory = tab;
     currentIndex = 0;
-    // 탭 바꿀 때 서브필터 초기화
-    currentSub = null;
+    currentSub = null;           // 탭 바꿀 때 서브필터 초기화
     rebuildSubFilters();
     loadData();
     setActiveTab(tab);
