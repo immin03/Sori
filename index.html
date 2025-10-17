@@ -5,14 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Sori - Learn Korean</title>
 
-  <!-- (선택) Google Analytics -->
+  <!-- head 안: 기존 GA 스니펫을 아래로 교체 -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-X1909BBKR5"></script>
   <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-X1909BBKR5');
-  </script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+  gtag('js', new Date());
+
+  // SPA에서는 자동 page_view를 끄고 시작
+  gtag('config', 'G-X1909BBKR5', { send_page_view: false });
+
+  // 디버그가 필요하면 주석 해제
+  // gtag('config', 'G-X1909BBKR5', { debug_mode: true, send_page_view: false });
+</script>
+
 
   <!-- Firebase compat (state.js가 compat 기준) -->
   <script defer src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -371,9 +377,81 @@
 })();
 </script>
 
+<script>
+(function(){
+  // Helper: 현재 상태에서 page_path 생성
+  function buildPath(){
+    const activeTab = document.querySelector('.tab-button.active')?.id || 'dailyBtn';
+    const catMap = { dailyBtn:'daily', travelBtn:'travel', dramaBtn:'kdrama', savedBtn:'saved' };
+    const cat = catMap[activeTab] || 'daily';
+
+    const sub = (document.getElementById('badge')?.textContent || 'default').trim()
+                 .replace(/\s+/g,'-').toLowerCase();
+
+    const progText = document.getElementById('prog')?.textContent || '1 / 1';
+    const m = progText.match(/(\d+)\s*\/\s*(\d+)/);
+    const idx = m ? parseInt(m[1],10) : 1;
+
+    return `/${cat}/${sub}/${idx}`;
+  }
+
+  // Helper: page_view 전송
+  function sendPV(title){
+    try{
+      const path = buildPath();
+      gtag('event', 'page_view', {
+        page_title: title || document.title,
+        page_location: location.href,
+        page_path: path
+      });
+      // console.log('[GA] page_view', path);
+    }catch(e){ /* no-op */ }
+  }
+
+  // 최초 진입 1회
+  document.addEventListener('DOMContentLoaded', function(){
+    // 데이터와 렌더 이후를 보장하기 위해 한 틱 지연
+    setTimeout(()=> sendPV('Sori'), 0);
+  });
+
+  // 탭 전환 시
+  ['dailyBtn','travelBtn','dramaBtn','savedBtn'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.addEventListener('click', ()=> {
+      // 렌더가 끝난 뒤 경로 갱신
+      setTimeout(()=> sendPV(`Sori - ${el.textContent.trim()}`), 0);
+    });
+  });
+
+  // 서브칩 전환 시: sub-filters 컨테이너에 위임
+  const subFilters = document.getElementById('subFilters');
+  if(subFilters){
+    subFilters.addEventListener('click', (e)=>{
+      const chip = e.target.closest('.sub-chip');
+      if(!chip) return;
+      setTimeout(()=> sendPV(`Sori - ${chip.textContent.trim()}`), 0);
+    });
+  }
+
+  // Next/Prev 시: 아이템 인덱스 변경을 page_view로 기록
+  const nextBtn = document.getElementById('nextBtn');
+  const prevBtn = document.getElementById('prevBtn');
+  nextBtn?.addEventListener('click', ()=> setTimeout(()=> sendPV('Sori - Next'), 0), true);
+  prevBtn?.addEventListener('click', ()=> setTimeout(()=> sendPV('Sori - Prev'), 0), true);
+
+  // 속도 변경 등 사용자 행동은 event로 기록하고 싶으면 아래 예시처럼
+  const speed = document.getElementById('speed');
+  speed?.addEventListener('change', ()=>{
+    gtag('event', 'change_speed', { value: speed.value });
+  });
+
+})();
+</script>
 
   
 </body>
 </html>
+
 
 
