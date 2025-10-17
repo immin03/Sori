@@ -1,16 +1,12 @@
 // js/app.js
-// UI wiring + rendering (self-contained, safe fallbacks)
+// UI wiring + rendering (Saved 탭 + 스크랩 고정 + 로그인 게이팅)
 (function () {
   // ---------- Helpers ----------
   const $ = (id) => document.getElementById(id);
-
-  // 안전 폴백: 전역 네임스페이스
   if (!window.SORI) window.SORI = {};
-
-  // 데이터 접근자 (dataindex.js가 있으면 그걸 사용)
   const D = () => (window.SORI_DATA || {});
 
-  // 안전한 서브필터/아이콘 폴백
+  // 안전 폴백: 서브필터
   window.subCategories = window.subCategories || {
     daily: ['Greeting','Cafe','Restaurant','Shopping','Health','Social','Work','Tech','Exercise'],
     travel: ['Airport','Hotel','Transport','Emergency','Convenience','Street Food','Market','Duty Free','Department','Food Court','Payment','Delivery','Sightseeing'],
@@ -25,7 +21,7 @@
 
   // ---------- Local App State ----------
   const st = {
-    cat: 'daily',
+    cat: 'daily',     // 'daily' | 'travel' | 'drama' | 'saved'
     sub: null,
     i: 0,
     repCount: 0,
@@ -33,16 +29,27 @@
     filteredLines: []
   };
 
-  // 스크랩(☆) - 로컬 기본값, 로그인 시 state.js가 클라우드와 병합
+  // 스크랩(☆) 로컬 기본, 로그인 시 state.js가 클라우드와 병합해줌
   const SCRAP_KEY = 'sori_scraps_v1';
-  const getLocalScraps = () => {
-    try { return JSON.parse(localStorage.getItem(SCRAP_KEY) || '[]'); } catch { return []; }
-  };
+  const getLocalScraps = () => { try { return JSON.parse(localStorage.getItem(SCRAP_KEY) || '[]'); } catch { return []; } };
   const setLocalScraps = (arr) => { try { localStorage.setItem(SCRAP_KEY, JSON.stringify(arr)); } catch {} };
   let scrapSet = new Set(getLocalScraps());
 
-  // 라인 소스 얻기
+  // 라인 합치기
+  const allLines = () =>
+    [].concat(D().dailyAll || D().daily || [])
+      .concat(D().travelAll || D().travel || [])
+      .concat(D().dramaAll || D().drama || []);
+
+  // 카테고리별 라인
   function getLinesForCat() {
+    if (st.cat === 'saved') {
+      // Saved 탭은 특별 처리 (로그인 필요)
+      if (!window.SoriUser?.isLoggedIn?.()) return []; // 로그인 안 했으면 비워둠(메시지는 show()에서 처리)
+      const map = new Map(allLines().map(x => [x.k, x]));
+      return [...scrapSet].map(id => map.get(id)).filter(Boolean);
+    }
+
     const data = D();
     const all = st.cat === 'drama' ? (data.dramaAll || data.drama || [])
              : st.cat === 'daily' ? (data.dailyAll || data.daily || [])
@@ -50,18 +57,16 @@
     return st.sub ? all.filter(x => x.sub === st.sub) : all;
   }
 
-  // 최초/카테고리 변경시 재계산
+  // 재계산
   function recomputeFiltered() {
     let lines = getLinesForCat();
-    if (!Array.isArray(lines) || lines.length === 0) {
-      lines = [];
-    }
+    if (!Array.isArray(lines)) lines = [];
     st.filteredLines = lines;
     if (st.i >= lines.length) st.i = Math.max(0, lines.length - 1);
     if (st.i < 0) st.i = 0;
   }
 
-  // 외부에서 쓰던 API 노출
+  // 외부 API 노출
   const StateAPI = {
     get: () => st,
     setCat: (cat) => { st.cat = cat; st.sub = null; st.i = 0; st.repCount = 0; recomputeFiltered(); },
@@ -74,7 +79,7 @@
   };
   window.SORI.State = window.SORI.State || StateAPI;
 
-  // ---------- TTS (SORI.TTS 없으면 브라우저 폴백) ----------
+  // ---------- TTS ----------
   async function speakKorean(text, rate) {
     if (window.SORI?.TTS?.speak) return window.SORI.TTS.speak(text, { rate });
     return new Promise((resolve, reject) => {
@@ -105,52 +110,59 @@
     el.dailyBtn = $('dailyBtn');
     el.travelBtn = $('travelBtn');
     el.dramaBtn = $('dramaBtn');
+    el.savedBtn = $('savedBtn');   // ⬅️ 추가
     el.subFilters = $('subFilters');
+
     el.badge = $('badge');
     el.context = $('context');
     el.korean = $('korean');
     el.pron = $('pronunciation');
     el.english = $('english');
+
     el.repCount = $('repCount');
     el.dots = [ $('dot1'), $('dot2'), $('dot3'), $('dot4'), $('dot5') ];
     el.congrats = $('congrats');
+
     el.playBtn = $('playBtn');
     el.prevBtn = $('prevBtn');
     el.nextBtn = $('nextBtn');
     el.prog = $('prog');
     el.err = $('errorMsg');
+
     el.speed = $('speed');
     el.speedTxt = $('speedTxt');
 
-    // 추가 캐시
     el.scrapBtn = $('scrapBtn');
-    el.myBtn = $('myBtn');
-    el.myModal = $('myModal');
-    el.myList = $('myList');
   }
 
   function setActiveTab() {
     el.dramaBtn?.classList.remove('active');
     el.dailyBtn?.classList.remove('active');
     el.travelBtn?.classList.remove('active');
+    el.savedBtn?.classList.remove('active');
+
     const cat = st.cat;
     if (cat === 'drama') el.dramaBtn?.classList.add('active');
     else if (cat === 'daily') el.dailyBtn?.classList.add('active');
     else if (cat === 'travel') el.travelBtn?.classList.add('active');
+    else if (cat === 'saved') el.savedBtn?.classList.add('active');
   }
 
   function updateSubFilters() {
-    const map = window.subCategories || {};
-    const icons = window.subIcons || {};
-    if (!el.subFilters) return;
-
-    if (st.cat === 'drama' || !Array.isArray(map[st.cat]) || map[st.cat].length === 0) {
-      el.subFilters.style.display = 'none';
-      el.subFilters.innerHTML = '';
+    // Saved 탭은 서브필터 숨김
+    if (st.cat === 'drama' || st.cat === 'saved') {
+      if (el.subFilters) { el.subFilters.style.display = 'none'; el.subFilters.innerHTML = ''; }
       return;
     }
-    el.subFilters.style.display = 'block';
 
+    const map = window.subCategories || {};
+    const icons = window.subIcons || {};
+    if (!el.subFilters || !Array.isArray(map[st.cat]) || map[st.cat].length === 0) {
+      if (el.subFilters) { el.subFilters.style.display = 'none'; el.subFilters.innerHTML = ''; }
+      return;
+    }
+
+    el.subFilters.style.display = 'block';
     const chips = ['All', ...map[st.cat]];
     const active = st.sub;
 
@@ -207,95 +219,51 @@
     setLocalScraps(arr);
     try { if (window.SoriUser?.setScraps) await window.SoriUser.setScraps(arr); } catch {}
     updateScrapUI();
+
+    // Saved 탭을 보고 있었다면 리스트 재계산
+    if (st.cat === 'saved') { recomputeFiltered(); setActiveTab(); show(); }
   }
 
-  // My 모달 리스트 렌더
-  function renderMyList() {
-    if (!el.myList) return;
-
-    // 최신 스크랩 가져오기 (로그인 시 클라우드 반영)
-    (async () => {
-      try {
-        if (window.SoriUser?.getScraps) {
-          const arr = await window.SoriUser.getScraps();
-          scrapSet = new Set(arr);
-        } else {
-          scrapSet = new Set(getLocalScraps());
-        }
-      } catch { /* noop */ }
-
-      const all = []
-        .concat(D().dailyAll || D().daily || [])
-        .concat(D().travelAll || D().travel || [])
-        .concat(D().dramaAll || D().drama || []);
-      const map = new Map(all.map(x => [x.k, x]));
-      const items = [...scrapSet].map(id => map.get(id)).filter(Boolean);
-
-      if (items.length === 0) {
-        el.myList.innerHTML = '<div style="color:#6b7280;font-size:14px;">아직 스크랩한 문구가 없습니다. ☆ 버튼을 눌러 추가해보세요.</div>';
-      } else {
-        el.myList.innerHTML = items.map((d) => `
-          <div class="card" style="margin:8px 0;">
-            <div style="display:flex;justify-content:space-between;align-items:center;">
-              <div class="badge">${d.t}</div>
-              <button class="icon-btn" data-unscrap="${d.k}" title="삭제">★</button>
-            </div>
-            <div style="font-weight:800;color:#1f2937;font-size:18px;">${d.k}</div>
-            <div style="color:#6b7280;font-size:14px;">"${d.e}"</div>
-            <button class="secondary" data-jump="${d.k}" style="margin-top:8px;">Go to phrase</button>
-          </div>
-        `).join('');
-      }
-
-      // 삭제/이동 이벤트 위임
-      el.myList.onclick = async (e) => {
-        const del = e.target.closest('[data-unscrap]');
-        const jump = e.target.closest('[data-jump]');
-        if (del) {
-          const id = del.getAttribute('data-unscrap');
-          scrapSet.delete(id);
-          const arr = [...scrapSet];
-          setLocalScraps(arr);
-          try { if (window.SoriUser?.setScraps) await window.SoriUser.setScraps(arr); } catch {}
-          renderMyList();
-          updateScrapUI();
-          return;
-        }
-        if (jump) {
-          const id = jump.getAttribute('data-jump');
-          const inDaily  = (D().dailyAll || D().daily || []).some(x => x.k === id);
-          const inTravel = (D().travelAll || D().travel || []).some(x => x.k === id);
-          const cat = inDaily ? 'daily' : inTravel ? 'travel' : 'drama';
-          StateAPI.setCat(cat);
-
-          // 해당 서브필터 설정 + 인덱스로 이동
-          const allCat = getLinesForCat(); // cat 설정 후 재계산 필요
-          const entry = (D().dailyAll || D().daily || [])
-            .concat(D().travelAll || D().travel || [])
-            .concat(D().dramaAll || D().drama || [])
-            .find(x => x.k === id);
-
-          StateAPI.setSub(entry?.sub || null);
-          const arrNow = StateAPI.get().filteredLines;
-          const idx = arrNow.findIndex(x => x.k === id);
-          if (idx >= 0) StateAPI.get().i = idx;
-
-          setActiveTab(); updateSubFilters(); show();
-          $('myModal')?.classList.add('hidden');
-        }
-      };
-    })();
-  }
-
+  // ----- 메인 렌더 -----
   function show() {
+    // 로그인 상태에 따라 Saved 탭 처리
+    if (st.cat === 'saved' && !window.SoriUser?.isLoggedIn?.()) {
+      st.filteredLines = [];
+      st.i = 0;
+      // 안내 메시지
+      if (el.badge) el.badge.textContent = 'Saved';
+      if (el.context) el.context.textContent = 'Please login to check your scraps.';
+      if (el.korean) el.korean.textContent = '';
+      if (el.pron) el.pron.textContent = '';
+      if (el.english) el.english.textContent = '';
+      if (el.prog) el.prog.textContent = '0 / 0';
+
+      // 조작 버튼은 비활성 느낌만 (완전 비활성 필요시 disabled 처리 가능)
+      updateRepetitionDisplay();
+      updateScrapUI(); // 이 문맥에서는 별 표시 의미 없음
+      return;
+    }
+
+    // 일반 렌더
     if (!st.filteredLines || st.filteredLines.length === 0) {
       recomputeFiltered();
     }
     const arr = st.filteredLines;
+
     if (!arr || arr.length === 0) {
+      if (el.badge) el.badge.textContent = (st.cat === 'saved') ? 'Saved' : '';
+      if (el.context) el.context.textContent = (st.cat === 'saved')
+        ? 'No saved phrases yet. Tap ☆ to save phrases.'
+        : '';
+      if (el.korean) el.korean.textContent = '';
+      if (el.pron) el.pron.textContent = '';
+      if (el.english) el.english.textContent = '';
       if (el.prog) el.prog.textContent = '0 / 0';
+      updateRepetitionDisplay();
+      updateScrapUI();
       return;
     }
+
     const d = arr[st.i];
     if (el.badge) el.badge.textContent = d.t;
     if (el.context) el.context.textContent = 'Conversation: ' + d.c;
@@ -306,7 +274,7 @@
 
     st.repCount = 0;
     updateRepetitionDisplay();
-    updateScrapUI(); // ☆ 상태 갱신
+    updateScrapUI();
   }
 
   function showError(msg) {
@@ -328,7 +296,7 @@
         updateRepetitionDisplay();
 
         if (st.repCount >= 5) {
-          // Firestore 저장 훅 (있으면 호출)
+          // Firestore 저장 훅
           try {
             const phraseId = txt;
             if (window.SoriState?.onPracticeComplete) {
@@ -364,6 +332,18 @@
     el.dramaBtn?.addEventListener('click', () => {
       StateAPI.setCat('drama'); setActiveTab(); updateSubFilters(); show();
     });
+    el.savedBtn?.addEventListener('click', async () => {
+      // 로그인 상태면 클라우드 스크랩 동기화 후 표시
+      try {
+        if (window.SoriUser?.isLoggedIn?.() && window.SoriUser?.getScraps) {
+          const arr = await window.SoriUser.getScraps();
+          scrapSet = new Set(arr);
+        } else {
+          scrapSet = new Set(getLocalScraps());
+        }
+      } catch {}
+      StateAPI.setCat('saved'); setActiveTab(); updateSubFilters(); show();
+    });
 
     // sub filter delegation
     el.subFilters?.addEventListener('click', (e) => {
@@ -386,9 +366,6 @@
 
     // ☆ 스크랩 토글
     el.scrapBtn?.addEventListener('click', toggleScrap);
-
-    // My 모달 열릴 때 목록 렌더 (index에서 모달 open 처리함)
-    el.myBtn?.addEventListener('click', renderMyList);
   }
 
   function init() {
