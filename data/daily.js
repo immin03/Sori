@@ -1,6 +1,6 @@
 (function () {
   window.SORI_DATA = window.SORI_DATA || {};
-  const daily = [
+  window.SORI_DATA.daily = [
     {t:'Greeting',c:'First meeting',k:'안녕하세요.',e:'Hello',p:'annyeonghaseyo',sub:'Greeting'},
     {t:'Greeting',c:'Casual hi',k:'안녕!',e:'Hi',p:'annyeong',sub:'Greeting'},
     {t:'Greeting',c:'Long time',k:'오랜만이에요!',e:'Long time no see!',p:'oraenmanieyo',sub:'Greeting'},
