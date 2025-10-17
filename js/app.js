@@ -1,3 +1,4 @@
+// js/app.js
 // UI wiring + rendering (self-contained, safe fallbacks)
 (function () {
   // ---------- Helpers ----------
@@ -22,7 +23,7 @@
     'Food Court':'🥢','Payment':'💳','Delivery':'📦','Sightseeing':'📍'
   };
 
-  // ---------- Local App State (이 파일이 스스로 관리) ----------
+  // ---------- Local App State ----------
   const st = {
     cat: 'daily',
     sub: null,
@@ -31,6 +32,14 @@
     spd: 0.75,
     filteredLines: []
   };
+
+  // 스크랩(☆) - 로컬 기본값, 로그인 시 state.js가 클라우드와 병합
+  const SCRAP_KEY = 'sori_scraps_v1';
+  const getLocalScraps = () => {
+    try { return JSON.parse(localStorage.getItem(SCRAP_KEY) || '[]'); } catch { return []; }
+  };
+  const setLocalScraps = (arr) => { try { localStorage.setItem(SCRAP_KEY, JSON.stringify(arr)); } catch {} };
+  let scrapSet = new Set(getLocalScraps());
 
   // 라인 소스 얻기
   function getLinesForCat() {
@@ -45,7 +54,6 @@
   function recomputeFiltered() {
     let lines = getLinesForCat();
     if (!Array.isArray(lines) || lines.length === 0) {
-      // 데이터가 아직 안 들어온 경우도 대비
       lines = [];
     }
     st.filteredLines = lines;
@@ -53,7 +61,7 @@
     if (st.i < 0) st.i = 0;
   }
 
-  // 외부에서 쓰던 API 모사해서 노출 (기존 코드/다른 파일 호환)
+  // 외부에서 쓰던 API 노출
   const StateAPI = {
     get: () => st,
     setCat: (cat) => { st.cat = cat; st.sub = null; st.i = 0; st.repCount = 0; recomputeFiltered(); },
@@ -64,17 +72,11 @@
     next: () => { if (st.i < st.filteredLines.length - 1) { st.i++; st.repCount = 0; } },
     prev: () => { if (st.i > 0) { st.i--; st.repCount = 0; } }
   };
-
-  // 전역으로도 노출(다른 파일이 기대할 수 있으니)
   window.SORI.State = window.SORI.State || StateAPI;
 
   // ---------- TTS (SORI.TTS 없으면 브라우저 폴백) ----------
   async function speakKorean(text, rate) {
-    // SORI.TTS가 있다면 우선 사용
-    if (window.SORI?.TTS?.speak) {
-      return window.SORI.TTS.speak(text, { rate });
-    }
-    // 폴백: Web Speech API
+    if (window.SORI?.TTS?.speak) return window.SORI.TTS.speak(text, { rate });
     return new Promise((resolve, reject) => {
       try {
         if (!('speechSynthesis' in window)) return reject(new Error('No speechSynthesis'));
@@ -83,7 +85,6 @@
         const u = new SpeechSynthesisUtterance(text);
         u.lang = 'ko-KR';
         u.rate = rate || 0.75;
-        // 한국어 보이스 선택
         const pick = () => {
           const vs = synth.getVoices();
           const ko = vs.find(v => v.lang?.toLowerCase().startsWith('ko') || v.name?.toLowerCase().includes('korean') || v.name?.includes('한국'));
@@ -92,14 +93,9 @@
         };
         u.onerror = (e) => reject(e.error || e);
         u.onend = () => resolve();
-        if (synth.getVoices().length === 0) {
-          synth.onvoiceschanged = () => pick();
-        } else {
-          pick();
-        }
-      } catch (e) {
-        reject(e);
-      }
+        if (synth.getVoices().length === 0) synth.onvoiceschanged = () => pick();
+        else pick();
+      } catch (e) { reject(e); }
     });
   }
 
@@ -125,6 +121,12 @@
     el.err = $('errorMsg');
     el.speed = $('speed');
     el.speedTxt = $('speedTxt');
+
+    // 추가 캐시
+    el.scrapBtn = $('scrapBtn');
+    el.myBtn = $('myBtn');
+    el.myModal = $('myModal');
+    el.myList = $('myList');
   }
 
   function setActiveTab() {
@@ -182,14 +184,115 @@
     }
   }
 
+  // ----- 스크랩(☆) -----
+  const currentPhraseId = () => {
+    const arr = st.filteredLines;
+    if (!arr || arr.length === 0) return null;
+    return arr[st.i]?.k || null; // 한국어 문구 자체를 ID로 사용
+  };
+
+  function updateScrapUI() {
+    if (!el.scrapBtn) return;
+    const id = currentPhraseId();
+    const saved = id ? scrapSet.has(id) : false;
+    el.scrapBtn.textContent = saved ? '★' : '☆';
+    el.scrapBtn.classList.toggle('active', saved);
+  }
+
+  async function toggleScrap() {
+    const id = currentPhraseId();
+    if (!id) return;
+    if (scrapSet.has(id)) scrapSet.delete(id); else scrapSet.add(id);
+    const arr = [...scrapSet];
+    setLocalScraps(arr);
+    try { if (window.SoriUser?.setScraps) await window.SoriUser.setScraps(arr); } catch {}
+    updateScrapUI();
+  }
+
+  // My 모달 리스트 렌더
+  function renderMyList() {
+    if (!el.myList) return;
+
+    // 최신 스크랩 가져오기 (로그인 시 클라우드 반영)
+    (async () => {
+      try {
+        if (window.SoriUser?.getScraps) {
+          const arr = await window.SoriUser.getScraps();
+          scrapSet = new Set(arr);
+        } else {
+          scrapSet = new Set(getLocalScraps());
+        }
+      } catch { /* noop */ }
+
+      const all = []
+        .concat(D().dailyAll || D().daily || [])
+        .concat(D().travelAll || D().travel || [])
+        .concat(D().dramaAll || D().drama || []);
+      const map = new Map(all.map(x => [x.k, x]));
+      const items = [...scrapSet].map(id => map.get(id)).filter(Boolean);
+
+      if (items.length === 0) {
+        el.myList.innerHTML = '<div style="color:#6b7280;font-size:14px;">아직 스크랩한 문구가 없습니다. ☆ 버튼을 눌러 추가해보세요.</div>';
+      } else {
+        el.myList.innerHTML = items.map((d) => `
+          <div class="card" style="margin:8px 0;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div class="badge">${d.t}</div>
+              <button class="icon-btn" data-unscrap="${d.k}" title="삭제">★</button>
+            </div>
+            <div style="font-weight:800;color:#1f2937;font-size:18px;">${d.k}</div>
+            <div style="color:#6b7280;font-size:14px;">"${d.e}"</div>
+            <button class="secondary" data-jump="${d.k}" style="margin-top:8px;">Go to phrase</button>
+          </div>
+        `).join('');
+      }
+
+      // 삭제/이동 이벤트 위임
+      el.myList.onclick = async (e) => {
+        const del = e.target.closest('[data-unscrap]');
+        const jump = e.target.closest('[data-jump]');
+        if (del) {
+          const id = del.getAttribute('data-unscrap');
+          scrapSet.delete(id);
+          const arr = [...scrapSet];
+          setLocalScraps(arr);
+          try { if (window.SoriUser?.setScraps) await window.SoriUser.setScraps(arr); } catch {}
+          renderMyList();
+          updateScrapUI();
+          return;
+        }
+        if (jump) {
+          const id = jump.getAttribute('data-jump');
+          const inDaily  = (D().dailyAll || D().daily || []).some(x => x.k === id);
+          const inTravel = (D().travelAll || D().travel || []).some(x => x.k === id);
+          const cat = inDaily ? 'daily' : inTravel ? 'travel' : 'drama';
+          StateAPI.setCat(cat);
+
+          // 해당 서브필터 설정 + 인덱스로 이동
+          const allCat = getLinesForCat(); // cat 설정 후 재계산 필요
+          const entry = (D().dailyAll || D().daily || [])
+            .concat(D().travelAll || D().travel || [])
+            .concat(D().dramaAll || D().drama || [])
+            .find(x => x.k === id);
+
+          StateAPI.setSub(entry?.sub || null);
+          const arrNow = StateAPI.get().filteredLines;
+          const idx = arrNow.findIndex(x => x.k === id);
+          if (idx >= 0) StateAPI.get().i = idx;
+
+          setActiveTab(); updateSubFilters(); show();
+          $('myModal')?.classList.add('hidden');
+        }
+      };
+    })();
+  }
+
   function show() {
-    // 데이터 재계산 (데이터 파일이 늦게 로드되는 경우 대비)
     if (!st.filteredLines || st.filteredLines.length === 0) {
       recomputeFiltered();
     }
     const arr = st.filteredLines;
     if (!arr || arr.length === 0) {
-      // 데이터가 아직 없으면 UI만 유지
       if (el.prog) el.prog.textContent = '0 / 0';
       return;
     }
@@ -203,6 +306,7 @@
 
     st.repCount = 0;
     updateRepetitionDisplay();
+    updateScrapUI(); // ☆ 상태 갱신
   }
 
   function showError(msg) {
@@ -230,10 +334,7 @@
             if (window.SoriState?.onPracticeComplete) {
               await window.SoriState.onPracticeComplete(phraseId, 5);
             }
-          } catch (e) {
-            // 저장 실패는 UI 진행에 영향 주지 않음
-            console.warn('onPracticeComplete failed (non-fatal):', e);
-          }
+          } catch (e) { console.warn('onPracticeComplete failed (non-fatal):', e); }
 
           // 자동 다음
           setTimeout(() => {
@@ -282,6 +383,12 @@
       StateAPI.setSpeed(val);
       if (el.speedTxt) el.speedTxt.textContent = val.toFixed(2).replace(/\.?0+$/,'') + 'x';
     });
+
+    // ☆ 스크랩 토글
+    el.scrapBtn?.addEventListener('click', toggleScrap);
+
+    // My 모달 열릴 때 목록 렌더 (index에서 모달 open 처리함)
+    el.myBtn?.addEventListener('click', renderMyList);
   }
 
   function init() {
@@ -299,4 +406,3 @@
     init();
   }
 })();
-
