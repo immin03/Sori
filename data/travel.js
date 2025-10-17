@@ -1,9 +1,8 @@
-<!-- travel.js (고쳐 쓴 최종판) -->
+<!-- travel.js -->
 (function () {
-  // 전역 네임스페이스 보장
   window.SORI_DATA = window.SORI_DATA || {};
 
-  // 1) 기본 travel 항목
+  // 기본 세트
   const travelBase = [
     {t:'Airport',c:'Tourism',k:'관광하러 왔습니다.',e:'I am here for tourism',p:'gwangwanghareo wasseumnida',sub:'Airport'},
     {t:'Airport',c:'One week',k:'일주일 머물 예정입니다.',e:'I will stay for one week',p:'iljuil meomul yejeongimnida',sub:'Airport'},
@@ -27,7 +26,7 @@
     {t:'Emergency',c:'Police',k:'경찰을 불러 주세요.',e:'Call the police, please',p:'gyeongchareul bulleo juseyo',sub:'Emergency'},
     {t:'Emergency',c:'Hospital',k:'병원에 가야 해요.',e:'I need to go to a hospital',p:'byeongwone gaya haeyo',sub:'Emergency'},
     {t:'Emergency',c:'Lost wallet',k:'지갑을 잃어버렸어요.',e:'I lost my wallet',p:'jigabeul ileobeoryeosseoyo',sub:'Emergency'},
-    {t:'Emergency',c:'Lost',k:'길을 잃었어요.',e:'I am lost',p:'gireul ilheosseoyo',sub:'Emergency'}, /* ← 쉼표 중요! */
+    {t:'Emergency',c:'Lost',k:'길을 잃었어요.',e:'I am lost',p:'gireul ilheosseoyo',sub:'Emergency'}, /* ← 쉼표 잊지마! */
 
     {t:'Convenience',c:'Buy water',k:'생수 한 병 주세요.',e:'One bottle of water please',p:'saengsu han byeong juseyo',sub:'Convenience'},
     {t:'Convenience',c:'Microwave',k:'이거 데워 주실 수 있어요?',e:'Can you heat this up?',p:'igeo dewo jusil su isseoyo',sub:'Convenience'},
@@ -88,11 +87,11 @@
     {t:'Sightseeing',c:'Queue time',k:'대기 시간이 얼마나 걸려요?',e:'How long is the wait?',p:'daegi sigani eolmana geollyeoyo',sub:'Sightseeing'}
   ];
 
-  // 2) 추가 travelPlus (필요하면 계속 늘리세요)
+  // 추가 세트 (필요 시 확장)
   const travelPlus = [
-    // 예시) {t:'Transport', c:'Bike', k:'자전거 대여소 어디예요?', e:'Where is the bike rental?', p:'jajeongeo daeyeoso eodiyeyo', sub:'Transport'},
+    // 예: {t:'Transport', c:'Bike', k:'자전거 대여소 어디예요?', e:'Where is the bike rental?', p:'jajeongeo daeyeoso eodiyeyo', sub:'Transport'},
   ];
 
-  // 3) 합치기 – 기존에 있던 배열에 이어 붙입니다.
+  // 합치기
   window.SORI_DATA.travel = (window.SORI_DATA.travel || []).concat(travelBase, travelPlus);
 })();
