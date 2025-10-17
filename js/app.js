@@ -1,278 +1,197 @@
-/* js/app.js
-   Sori main UI logic
-   Requires: window.SORI_DATA (from dataindex.js), window.SoriTTS (from tts.js), optional window.SoriState
-*/
+// UI wiring + rendering
 (function () {
-  // ---------- Guards ----------
-  if (!window.SORI_DATA) {
-    console.error("SORI_DATA is not loaded. Make sure data/*.js and dataindex.js are included before app.js");
-    return;
-  }
+  const $ = (id) => document.getElementById(id);
+  const S = () => window.SORI.State.get();
+  const D = () => window.SORI_DATA || {};
 
-  const {
-    dailyAll,
-    travelAll,
-    dramaAll,
-    subCategories,
-    subIcons
-  } = window.SORI_DATA;
+  // UI elements
+  let el = {};
 
-  const hasState = !!window.SoriState;
-  const hasTTS = !!window.SoriTTS;
+  function cacheEls() {
+    el.dailyBtn = $('dailyBtn');
+    el.travelBtn = $('travelBtn');
+    el.dramaBtn = $('dramaBtn');
 
-  // ---------- App State ----------
-  const st = {
-    cat: "daily",     // daily | travel | drama
-    sub: null,        // subcategory name or null
-    i: 0,             // index within current list
-    spd: 0.75,        // 0.3 ~ 1.5
-    repCount: 0,      // 0 ~ 5
-    filteredLines: [] // current list
-  };
+    el.subFilters = $('subFilters');
 
-  // ---------- DOM ----------
-  const els = {
-    // tabs
-    dailyBtn:   document.getElementById("dailyBtn"),
-    travelBtn:  document.getElementById("travelBtn"),
-    dramaBtn:   document.getElementById("dramaBtn"),
-    subFilters: document.getElementById("subFilters"),
+    el.badge = $('badge');
+    el.context = $('context');
+    el.korean = $('korean');
+    el.pron = $('pronunciation');
+    el.english = $('english');
 
-    // main card
-    badge:   document.getElementById("badge"),
-    context: document.getElementById("context"),
-    korean:  document.getElementById("korean"),
-    english: document.getElementById("english"),
-    pron:    document.getElementById("pronunciation"),
-    prog:    document.getElementById("prog"),
+    el.repCount = $('repCount');
+    el.dots = [ $('dot1'), $('dot2'), $('dot3'), $('dot4'), $('dot5') ];
+    el.congrats = $('congrats');
 
-    // repetition
-    repCount: document.getElementById("repCount"),
-    dots: [1,2,3,4,5].map(n => document.getElementById("dot"+n)),
-    congrats: document.getElementById("congrats"),
+    el.playBtn = $('playBtn');
+    el.prevBtn = $('prevBtn');
+    el.nextBtn = $('nextBtn');
+    el.prog = $('prog');
+    el.err = $('errorMsg');
 
-    // controls
-    playBtn:  document.getElementById("playBtn"),
-    prevBtn:  document.getElementById("prevBtn"),
-    nextBtn:  document.getElementById("nextBtn"),
-    speed:    document.getElementById("speed"),
-    speedTxt: document.getElementById("speedTxt"),
-
-    // misc
-    err: document.getElementById("errorMsg")
-  };
-
-  // ---------- Helpers ----------
-  function baseByCat() {
-    if (st.cat === "drama") return dramaAll;
-    if (st.cat === "travel") return travelAll;
-    return dailyAll;
-  }
-
-  function computeLines() {
-    const base = baseByCat();
-    return st.sub ? base.filter(item => item.sub === st.sub) : base;
-  }
-
-  function showError(msg) {
-    if (!els.err) return;
-    els.err.textContent = msg;
-    els.err.style.display = "block";
-    setTimeout(() => { els.err.style.display = "none"; }, 4000);
+    el.speed = $('speed');
+    el.speedTxt = $('speedTxt');
   }
 
   function setActiveTab() {
-    els.dailyBtn?.classList.remove("active");
-    els.travelBtn?.classList.remove("active");
-    els.dramaBtn?.classList.remove("active");
-    if (st.cat === "daily") els.dailyBtn?.classList.add("active");
-    else if (st.cat === "travel") els.travelBtn?.classList.add("active");
-    else if (st.cat === "drama") els.dramaBtn?.classList.add("active");
+    el.dramaBtn?.classList.remove('active');
+    el.dailyBtn?.classList.remove('active');
+    el.travelBtn?.classList.remove('active');
+    const cat = S().cat;
+    if (cat === 'drama') el.dramaBtn?.classList.add('active');
+    else if (cat === 'daily') el.dailyBtn?.classList.add('active');
+    else if (cat === 'travel') el.travelBtn?.classList.add('active');
   }
 
   function updateSubFilters() {
-    const c = els.subFilters;
-    if (!c) return;
+    const cat = S().cat;
+    const map = D().subCategories || {};
+    const icons = D().subIcons || {};
+    if (!el.subFilters) return;
 
-    // drama: hide sub-filter by default
-    if (st.cat === "drama") {
-      c.style.display = "none";
-      c.innerHTML = "";
+    // drama는 현재 서브필터 숨김
+    if (cat === 'drama' || !map[cat] || map[cat].length === 0) {
+      el.subFilters.style.display = 'none';
+      el.subFilters.innerHTML = '';
       return;
     }
 
-    const cats = subCategories[st.cat] || [];
-    c.style.display = "block";
+    el.subFilters.style.display = 'block';
+    const chips = ['All', ...map[cat]];
+    const active = S().sub;
 
-    const chips = [
-      `<div class="sub-filters">`,
-      `<div class="filter-chip ${!st.sub ? "active":""}" data-sub="">All</div>`,
-      ...cats.map(cat => {
-        const icon = subIcons[cat] ? `${subIcons[cat]} ` : "";
-        const active = st.sub === cat ? "active" : "";
-        return `<div class="filter-chip ${active}" data-sub="${cat}">${icon}${cat}</div>`;
-      }),
-      `</div>`
-    ].join("");
-
-    c.innerHTML = chips;
-
-    // delegate clicks
-    c.querySelectorAll(".filter-chip").forEach(chip => {
-      chip.addEventListener("click", () => {
-        const sub = chip.getAttribute("data-sub");
-        filterSub(sub || null);
-      });
-    });
+    el.subFilters.innerHTML =
+      `<div class="sub-filters">` +
+      chips.map(label => {
+        const val = label === 'All' ? null : label;
+        const selected = (val === active) || (label === 'All' && active == null);
+        const icon = label !== 'All' && icons[label] ? icons[label] + ' ' : '';
+        return `<div class="filter-chip ${selected ? 'active' : ''}" data-sub="${val ?? ''}">${icon}${label}</div>`;
+      }).join('') +
+      `</div>`;
   }
 
-  function updateRepetitionUI() {
-    if (els.repCount) els.repCount.textContent = st.repCount || 0;
-    els.dots.forEach((dot, idx) => {
-      if (!dot) return;
-      const done = idx < (st.repCount || 0);
-      dot.classList.toggle("completed", done);
-      dot.textContent = done ? "✓" : "";
+  function updateRepetitionDisplay() {
+    if (el.repCount) el.repCount.textContent = S().repCount || 0;
+    el.dots.forEach((d, i) => {
+      if (!d) return;
+      const done = i < (S().repCount || 0);
+      d.classList.toggle('completed', done);
+      d.textContent = done ? '✓' : '';
     });
-
-    if (els.congrats) {
-      if ((st.repCount || 0) >= 5) els.congrats.classList.add("show");
-      else els.congrats.classList.remove("show");
+    if (el.congrats) {
+      if ((S().repCount || 0) >= 5) el.congrats.classList.add('show');
+      else el.congrats.classList.remove('show');
     }
   }
 
-  function render() {
-    st.filteredLines = computeLines();
-    if (st.filteredLines.length === 0) {
-      // fallback to base
-      st.sub = null;
-      st.filteredLines = baseByCat();
-      st.i = 0;
-    }
-    if (st.i < 0) st.i = 0;
-    if (st.i >= st.filteredLines.length) st.i = 0;
+  function show() {
+    const st = S();
+    const arr = st.filteredLines;
+    if (!arr || arr.length === 0) return;
 
-    st.repCount = 0;
+    const d = arr[st.i];
+    if (el.badge) el.badge.textContent = d.t;
+    if (el.context) el.context.textContent = 'Conversation: ' + d.c;
+    if (el.korean) el.korean.textContent = d.k;
+    if (el.pron) el.pron.textContent = d.p;
+    if (el.english) el.english.textContent = `"${d.e}"`;
 
-    const d = st.filteredLines[st.i];
-    if (els.badge)   els.badge.textContent   = d.t;
-    if (els.context) els.context.textContent = "Conversation: " + d.c;
-    if (els.korean)  els.korean.textContent  = d.k;
-    if (els.pron)    els.pron.textContent    = d.p;
-    if (els.english) els.english.textContent = `"${d.e}"`;
-    if (els.prog)    els.prog.textContent    = `${st.i + 1} / ${st.filteredLines.length}`;
+    if (el.prog) el.prog.textContent = (st.i + 1) + ' / ' + arr.length;
 
-    updateRepetitionUI();
+    window.SORI.State.resetRep();
+    updateRepetitionDisplay();
   }
 
-  function speakCurrent() {
-    const d = st.filteredLines[st.i];
-    if (!d) return;
+  function showError(msg) {
+    if (!el.err) return;
+    el.err.textContent = msg;
+    el.err.style.display = 'block';
+    setTimeout(() => { el.err.style.display = 'none'; }, 4000);
+  }
 
-    if (!hasTTS || !window.SoriTTS.isSupported()) {
-      showError("Your browser does not support text-to-speech. Try Chrome, Safari, or Edge.");
-      return;
-    }
+  async function play() {
+    const st = S();
+    const arr = st.filteredLines;
+    if (!arr || arr.length === 0) return;
 
-    // ensure speed
-    window.SoriTTS.setRate(st.spd);
+    const txt = arr[st.i].k;
 
-    // Safari quirk: cancel before speak
-    window.SoriTTS.cancel();
-    window.SoriTTS.speakKo(d.k, {
-      onError: () => showError("Speech failed. Please try again.")
-    });
-
-    // repetition progress
-    if (st.repCount < 5) {
-      st.repCount += 1;
-      updateRepetitionUI();
-      if (st.repCount >= 5) {
-        // award + move to next
-        if (hasState) {
-          try {
-            const phraseId = d.k; // simple id
-            window.SoriState.onPracticeComplete?.(phraseId, 5);
-          } catch (e) {
-            // non-fatal
-          }
+    try {
+      await window.SORI.TTS.speak(txt, { rate: st.spd });
+      if (S().repCount < 5) {
+        window.SORI.State.incRep();
+        updateRepetitionDisplay();
+        if (S().repCount >= 5) {
+          setTimeout(() => {
+            // 자동 다음
+            if (S().i < S().filteredLines.length - 1) {
+              window.SORI.State.next();
+              show();
+            } else {
+              showError('You completed all phrases in this set!');
+            }
+          }, 1000);
         }
-        setTimeout(autoNext, 1500);
       }
+    } catch (e) {
+      showError('Speech failed. Try again or check browser settings.');
     }
   }
 
-  function prev() {
-    if (st.i > 0) {
-      st.i -= 1;
-      st.repCount = 0;
-      render();
-    }
+  function bindEvents() {
+    el.dailyBtn?.addEventListener('click', () => {
+      window.SORI.State.setCat('daily');
+      setActiveTab();
+      updateSubFilters();
+      show();
+    });
+    el.travelBtn?.addEventListener('click', () => {
+      window.SORI.State.setCat('travel');
+      setActiveTab();
+      updateSubFilters();
+      show();
+    });
+    el.dramaBtn?.addEventListener('click', () => {
+      window.SORI.State.setCat('drama');
+      setActiveTab();
+      updateSubFilters();
+      show();
+    });
+
+    // sub filter delegation
+    el.subFilters?.addEventListener('click', (e) => {
+      const chip = e.target.closest('.filter-chip');
+      if (!chip) return;
+      const v = chip.getAttribute('data-sub') || null;
+      window.SORI.State.setSub(v || null);
+      updateSubFilters();
+      show();
+    });
+
+    el.playBtn?.addEventListener('click', play);
+    el.prevBtn?.addEventListener('click', () => { window.SORI.State.prev(); show(); });
+    el.nextBtn?.addEventListener('click', () => { window.SORI.State.next(); show(); });
+
+    el.speed?.addEventListener('input', (e) => {
+      const val = parseFloat(e.target.value);
+      window.SORI.State.setSpeed(val);
+      if (el.speedTxt) el.speedTxt.textContent = val.toFixed(2).replace(/\.?0+$/,'') + 'x';
+    });
   }
 
-  function next() {
-    if (st.i < st.filteredLines.length - 1) {
-      st.i += 1;
-      st.repCount = 0;
-      render();
-    }
-  }
-
-  function autoNext() {
-    if (st.i < st.filteredLines.length - 1) {
-      next();
-    } else {
-      showError("You completed all phrases! Great work!");
-    }
-  }
-
-  function filterSub(sub) {
-    st.sub = sub;
-    st.i = 0;
-    st.repCount = 0;
-    st.filteredLines = computeLines();
-    updateSubFilters();
-    render();
-  }
-
-  function switchCat(cat) {
-    if (st.cat === cat) return;
-    st.cat = cat;
-    st.sub = null;
-    st.i = 0;
-    st.repCount = 0;
+  function init() {
+    cacheEls();
     setActiveTab();
     updateSubFilters();
-    render();
+    show();
+    bindEvents();
   }
 
-  // ---------- Wire events ----------
-  els.dailyBtn?.addEventListener("click", () => switchCat("daily"));
-  els.travelBtn?.addEventListener("click", () => switchCat("travel"));
-  els.dramaBtn?.addEventListener("click", () => switchCat("drama"));
-
-  els.playBtn?.addEventListener("click", speakCurrent);
-  els.prevBtn?.addEventListener("click", prev);
-  els.nextBtn?.addEventListener("click", next);
-
-  els.speed?.addEventListener("input", (e) => {
-    const v = parseFloat(e.target.value || "0.75");
-    st.spd = Math.max(0.3, Math.min(1.5, v));
-    if (els.speedTxt) els.speedTxt.textContent = st.spd + "x";
-    if (hasTTS) window.SoriTTS.setRate(st.spd);
-  });
-
-  // ---------- Init ----------
-  st.filteredLines = computeLines();
-  setActiveTab();
-  updateSubFilters();
-
-  // if TTS present, wait for voices then render once to be safe
-  const start = () => render();
-
-  if (hasTTS && window.SoriTTS.ready) {
-    window.SoriTTS.ready.then(() => start());
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
   } else {
-    start();
+    init();
   }
 })();
