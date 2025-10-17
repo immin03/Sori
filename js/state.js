@@ -1,12 +1,6 @@
-/* js/state.js
-   Firebase 10.x compat SDK 기반
-   - 로그인/로그아웃
-   - 프로필/진행도 저장
-   - 스크랩 클라우드 동기화 (Firestore + localStorage)
-*/
-
+/* js/state.js - auth + saved + 진행상태 */
 (function () {
-  // === Firebase 설정 ===
+  // --- Firebase 초기화(compat) ---
   const firebaseConfig = {
     apiKey: "AIzaSyBZsIN5q3wc_uglLODnzho-MSfqAACBlu4",
     authDomain: "sori-533fc.firebaseapp.com",
@@ -17,215 +11,142 @@
     measurementId: "G-JD752VQ54Z"
   };
 
-  let auth = null, db = null, currentUser = null;
-  const SCRAP_KEY = 'sori_scraps_v1';
-
-  const userState = {
-    uid: null, name: null, email: null, photoURL: null,
-    level: 1, xp: 0, totalDays: 0, streak: 0, lastVisit: null,
-    practiceCount: {},
-    scraps: [] // 클라우드 보관용
-  };
-
-  // === Firebase 초기화 ===
+  let auth = null, db = null;
   try {
-    if (typeof firebase !== "undefined") {
+    if (typeof firebase !== "undefined" && !firebase.apps.length) {
       firebase.initializeApp(firebaseConfig);
       auth = firebase.auth();
       db = firebase.firestore();
-      console.log("✅ Firebase initialized");
-    } else {
-      console.error("❌ Firebase SDK not found (check script order)");
     }
-  } catch (e) {
-    console.error("❌ Firebase init error:", e);
+  } catch(e){ console.warn(e); }
+
+  // --- 상단 버튼 토글 helper ---
+  const loginBtn = () => document.getElementById('loginBtn');
+  function setLoginButton(isIn){
+    const b = loginBtn();
+    if (!b) return;
+    b.textContent = isIn ? 'Logout' : 'Login';
+    b.classList.toggle('primary', !isIn);
   }
 
-  // === 유틸 ===
-  function calcLevel(xp) {
-    if (xp < 100) return 1;
-    if (xp < 300) return 2;
-    if (xp < 600) return 3;
-    if (xp < 1000) return 4;
-    if (xp < 1500) return 5;
-    return Math.floor(xp / 300) + 1;
+  // --- Saved 관리 (로컬 우선, 로그인 시 Firestore 동기화) ---
+  function keyFor(uid){ return `sori_saved_${uid||'anon'}`; }
+  function readLocal(uid){
+    try { return new Set(JSON.parse(localStorage.getItem(keyFor(uid))||'[]')); }
+    catch{ return new Set(); }
+  }
+  function writeLocal(uid, set){
+    try { localStorage.setItem(keyFor(uid), JSON.stringify(Array.from(set))); } catch{}
   }
 
-  const getLocalScraps = () => {
-    try { return JSON.parse(localStorage.getItem(SCRAP_KEY) || '[]'); }
-    catch { return []; }
-  };
-  const setLocalScraps = (arr) => {
-    try { localStorage.setItem(SCRAP_KEY, JSON.stringify(arr)); } catch {}
-  };
+  // 현재 로그인 사용자
+  let currentUser = null;
+  // 메모리 캐시
+  let savedSet = readLocal(null);
 
-  function refreshLoginButtonUI() {
-    const btn = document.getElementById('loginBtn');
-    if (!btn) return;
-    const isIn = !!currentUser;
-    btn.textContent = isIn ? 'Logout' : 'Login';
-    // 보라색은 로그인 전(유도), 로그인 후엔 회색 버튼 느낌
-    if (isIn) btn.classList.remove('primary'); else btn.classList.add('primary');
-  }
-
-  // === 사용자 데이터 로드/저장 ===
-  async function loadUserData() {
+  async function syncFromCloud(){
     if (!db || !currentUser) return;
-    const ref = db.collection("users").doc(currentUser.uid);
-    const snap = await ref.get();
-    if (snap.exists) {
-      const data = snap.data();
-      Object.assign(userState, {
-        level: 1, xp: 0, totalDays: 0, streak: 0, lastVisit: null,
-        practiceCount: {}, scraps: [], ...data
-      });
-    } else {
-      Object.assign(userState, {
-        uid: currentUser.uid,
-        name: currentUser.displayName,
-        email: currentUser.email,
-        photoURL: currentUser.photoURL,
-        lastVisit: new Date().toDateString(),
-        totalDays: 1,
-        streak: 1,
-        xp: 10,
-        level: 1,
-        practiceCount: {},
-        scraps: getLocalScraps()
-      });
-      await ref.set(userState, { merge: true });
-    }
-    console.log("✅ User data loaded");
+    const snap = await db.collection('users').doc(currentUser.uid).collection('saved').get();
+    const cloud = new Set();
+    snap.forEach(doc => cloud.add(doc.id));
+    // 로컬과 합치기
+    const merged = new Set([...savedSet, ...cloud]);
+    savedSet = merged;
+    writeLocal(currentUser.uid, savedSet);
   }
 
-  async function savePractice(phraseId, incXp) {
+  async function pushOneToCloud(id, data){
     if (!db || !currentUser) return;
-    const ref = db.collection("users").doc(currentUser.uid);
-    userState.practiceCount[phraseId] = (userState.practiceCount[phraseId] || 0) + incXp;
-    userState.xp += incXp;
-    userState.level = calcLevel(userState.xp);
-    await ref.set({
-      practiceCount: userState.practiceCount,
-      xp: userState.xp,
-      level: userState.level
-    }, { merge: true });
+    await db.collection('users').doc(currentUser.uid)
+      .collection('saved').doc(id).set(data || {saved:true});
+  }
+  async function removeOneFromCloud(id){
+    if (!db || !currentUser) return;
+    await db.collection('users').doc(currentUser.uid)
+      .collection('saved').doc(id).delete().catch(()=>{});
   }
 
-  // 스크랩 병합/동기화 (로그인 시 호출)
-  async function syncScrapsWithCloud() {
-    const local = new Set(getLocalScraps());
-    const cloudArr = Array.isArray(userState.scraps) ? userState.scraps : [];
-    cloudArr.forEach(s => local.add(s));
-    const merged = Array.from(local);
-    setLocalScraps(merged);
-    userState.scraps = merged;
-    try {
-      if (db && currentUser) {
-        await db.collection('users').doc(currentUser.uid).set({ scraps: merged }, { merge: true });
+  // --- 전역 사용자 API ---
+  const SoriUser = {
+    isLoggedIn: () => !!(auth && auth.currentUser),
+    getUid: () => (auth && auth.currentUser ? auth.currentUser.uid : null),
+
+    // 저장 토글
+    async toggleSave(phrase){
+      if (!phrase || !phrase.id) return {saved:false};
+      const id = phrase.id;
+      // 로그인 확인은 밖에서 해도 되지만 안전망
+      const loggedIn = SoriUser.isLoggedIn();
+      if (savedSet.has(id)) {
+        savedSet.delete(id);
+        writeLocal(SoriUser.getUid()||null, savedSet);
+        if (loggedIn) await removeOneFromCloud(id);
+        return {saved:false};
+      } else {
+        savedSet.add(id);
+        writeLocal(SoriUser.getUid()||null, savedSet);
+        if (loggedIn) await pushOneToCloud(id, phrase);
+        return {saved:true};
       }
-    } catch (e) {
-      console.warn('scrap sync failed (non-fatal):', e);
-    }
-  }
+    },
 
-  // === 전역: 로그인 / 로그아웃 ===
-  window.handleGoogleLogin = function handleGoogleLogin() {
-    if (!auth) {
-      alert("Firebase Auth not initialized. Check SDK order.");
-      return;
+    isSaved: (id) => savedSet.has(id),
+
+    // 저장된 id 리스트
+    getSavedIds: () => Array.from(savedSet),
+
+    async logout(){
+      if (!auth) return;
+      await auth.signOut();
+      currentUser = null;
+      // 익명 키로 저장 이동
+      savedSet = readLocal(null);
+      setLoginButton(false);
     }
-    const provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithPopup(provider)
-      .then(async (res) => {
-        currentUser = res.user;
-        document.getElementById("authModal")?.classList.add("hidden");
-        await loadUserData();
-        await syncScrapsWithCloud();
-        refreshLoginButtonUI();
-        alert("✅ Logged in as " + (currentUser.displayName || "user"));
-      })
-      .catch((err) => {
-        alert("❌ Login failed: " + err.message);
-      });
   };
 
-  // My 버튼에서 쓰일 수도 있으니 유지
-  window.handleMyButton = function handleMyButton() {
-    if (!currentUser) {
-      alert("⚠️ Please login first!");
-      document.getElementById("authModal")?.classList.remove("hidden");
-      return;
+  window.SoriUser = SoriUser; // 전역 노출
+
+  // --- 구글 로그인 핸들러(모달에서 호출) ---
+  window.handleGoogleLogin = async function handleGoogleLogin(){
+    if (!auth) return alert('Auth 준비 중입니다. 잠시 후 다시 시도해주세요.');
+    try{
+      const provider = new firebase.auth.GoogleAuthProvider();
+      await auth.signInWithPopup(provider);
+      document.getElementById('authModal')?.classList.add('hidden');
+    }catch(e){
+      alert('Login failed: ' + (e?.message||e));
     }
-    alert(
-      `👤 Profile\n` +
-      `Name: ${userState.name || currentUser.displayName}\n` +
-      `Email: ${userState.email || currentUser.email}\n` +
-      `Level: ${userState.level}\n` +
-      `XP: ${userState.xp}\n` +
-      `Streak: ${userState.streak} days`
-    );
   };
 
-  // === 인증 상태 변화 ===
-  if (auth) {
+  // --- 인증 상태 변경 시 처리 ---
+  if (auth){
     auth.onAuthStateChanged(async (user) => {
       currentUser = user || null;
       if (currentUser) {
-        console.log("👋 Logged in:", currentUser.email);
-        await loadUserData();
-        await syncScrapsWithCloud();
+        // 로그인 후: 저장 합치기(로컬 anon + 클라우드)
+        const before = new Set(savedSet);
+        await syncFromCloud();
+        // anon 로컬에 있던 걸 클라우드로 업로드
+        const diff = [...before].filter(x => !savedSet.has(x));
+        for (const id of diff) {
+          await pushOneToCloud(id, {saved:true});
+          savedSet.add(id);
+        }
+        writeLocal(currentUser.uid, savedSet);
+        setLoginButton(true);
       } else {
-        console.log("🚪 Logged out");
+        // 로그아웃 후: anon 로컬 셋으로
+        savedSet = readLocal(null);
+        setLoginButton(false);
       }
-      refreshLoginButtonUI();
+      // 별 표시 업데이트 요청
+      window.dispatchEvent(new CustomEvent('sori-auth-changed'));
     });
   }
 
-  // === 외부에서 사용할 유저 헬퍼 (app.js에서 사용) ===
-  window.SoriUser = {
-    isLoggedIn: () => !!currentUser,
-    logout: async () => {
-      try {
-        if (auth) await auth.signOut();
-      } catch (e) {
-        console.error('Logout error:', e);
-      } finally {
-        refreshLoginButtonUI();
-        // 로그인 모달은 닫힌 상태 유지
-      }
-    },
-    getScraps: async () => {
-      // 로그인 상태면 클라우드 우선, 실패 시 로컬
-      if (db && currentUser) {
-        try {
-          const snap = await db.collection('users').doc(currentUser.uid).get();
-          const arr = (snap.exists && Array.isArray(snap.data().scraps)) ? snap.data().scraps : [];
-          setLocalScraps(arr);
-          return arr;
-        } catch (e) { console.warn(e); }
-      }
-      return getLocalScraps();
-    },
-    setScraps: async (arr) => {
-      setLocalScraps(arr);
-      if (db && currentUser) {
-        try {
-          await db.collection('users').doc(currentUser.uid).set({ scraps: arr }, { merge: true });
-        } catch (e) { console.warn(e); }
-      }
-    }
-  };
-
-  // === 학습 완료시 XP 반영 (app.js에서 호출) ===
+  // ---- 학습 XP 훅(선택) ----
   window.SoriState = {
-    onPracticeComplete: async (phraseId, xpGain = 5) => {
-      try {
-        if (!currentUser) return;
-        await savePractice(phraseId, xpGain);
-      } catch (e) {
-        console.warn("⚠️ onPracticeComplete error:", e);
-      }
-    }
+    onPracticeComplete: async ()=>{}
   };
 })();
-
