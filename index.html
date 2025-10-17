@@ -5,22 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Sori - Learn Korean</title>
 
-  <!-- Google Analytics (GA4) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-X1Q98DBKR5"></script>
-  <script>
+  <!-- head -->
+<script>
+  window.GA_ID = 'G-X1Q98DBKR5';           /* << 한 곳에서 관리 */
+</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-X1Q98DBKR5"></script>
+<script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){ dataLayer.push(arguments); }
-
   gtag('js', new Date());
-
-  // SPA: 자동 page_view 비활성화 + 디버그 ON + 쿠키 설정( github.io )
-  gtag('config', 'G-X1Q98DBKR5', {
-    send_page_view: false,
-    debug_mode: true,
-    cookie_domain: 'github.io',
-    cookie_flags: 'SameSite=None;Secure'
-  });
+  gtag('config', window.GA_ID, { send_page_view: false });
 </script>
+
 
 
 
@@ -471,6 +467,7 @@
   
 </body>
 </html>
+
 
 
 
