@@ -1,5 +1,4 @@
-<!-- data/daily.js -->
-<script>
+// data/daily.js  (❌ <script> 태그 넣지 마세요)
 (function () {
   window.SORI_DATA = window.SORI_DATA || {};
 
@@ -46,22 +45,21 @@
     {t:'Social',c:'Tomorrow',k:'내일 시간, 괜찮으세요?',e:'Are you free tomorrow?',p:'naeil sigan, gwaenchanseuseyo',sub:'Social'},
     {t:'Social',c:'Thank you',k:'도와주셔서 감사합니다.',e:'Thank you for your help',p:'dowajusyeoseo gamsahamnida',sub:'Social'},
 
-    /* ---- 여기부터 기존 dailyPlus 통합 ---- */
-    // Work
+    // Work (dailyPlus 통합)
     {t:'Work',c:'Meeting',k:'회의는 몇 시에 시작해요?',e:'What time does the meeting start?',p:'hoeuineun myeot sie sijakaeyo',sub:'Work'},
     {t:'Work',c:'Deadline',k:'마감일이 언제예요?',e:'When is the deadline?',p:'magamiri eonjeyeyo',sub:'Work'},
     {t:'Work',c:'Break',k:'잠시 쉬었다 할게요.',e:'I will take a short break',p:'jamsi swieotda halgeyo',sub:'Work'},
     {t:'Work',c:'Overtime',k:'오늘 야근해야 해요.',e:'I have to work overtime today',p:'oneul yageunhaeya haeyo',sub:'Work'},
     {t:'Work',c:'Weekend',k:'주말에도 일해야 해요?',e:'Do we have to work on weekends?',p:'jumaredo ilhaeya haeyo',sub:'Work'},
 
-    // Tech
+    // Tech (dailyPlus 통합)
     {t:'Tech',c:'WiFi issue',k:'와이파이가 안 돼요.',e:'WiFi is not working',p:'waipaiga an dwaeyo',sub:'Tech'},
     {t:'Tech',c:'Charging',k:'충전기 좀 빌릴 수 있을까요?',e:'May I borrow a charger?',p:'chungjeongi jom billil su isseulkkayo',sub:'Tech'},
     {t:'Tech',c:'Password',k:'비밀번호를 잊어버렸어요.',e:'I forgot the password',p:'bimilbeonhoreul ijeobeoryeosseoyo',sub:'Tech'},
     {t:'Tech',c:'App',k:'어플을 다운받아야 해요.',e:'I need to download the app',p:'eopeureul daunbadaya haeyo',sub:'Tech'},
     {t:'Tech',c:'Update',k:'업데이트가 필요해요.',e:'It needs an update',p:'eopdeiteuga piryohaeyo',sub:'Tech'},
 
-    // Exercise
+    // Exercise (dailyPlus 통합)
     {t:'Exercise',c:'Gym',k:'헬스장은 몇 시까지 해요?',e:'Until what time is the gym open?',p:'helseujang-eun myeot sikkaji haeyo',sub:'Exercise'},
     {t:'Exercise',c:'Running',k:'같이 달리기 할래요?',e:'Want to go running together?',p:'gachi dalligi hallaeyo',sub:'Exercise'},
     {t:'Exercise',c:'Yoga',k:'요가 수업 신청했어요.',e:'I signed up for yoga class',p:'yoga sueop sincheonghaesseoyo',sub:'Exercise'},
@@ -69,5 +67,3 @@
     {t:'Exercise',c:'Healthy',k:'건강이 최고예요.',e:'Health is the best',p:'geongangi choegoyeyo',sub:'Exercise'}
   ];
 })();
-</script>
-
