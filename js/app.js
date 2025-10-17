@@ -61,9 +61,10 @@
   function applyFilter() {
     // Saved는 별도 처리에서 phrases 세팅
     if (currentCategory === "saved") return;
-    const base = rawFor(currentCategory);
+    const raw  = rawFor(currentCategory) || []; const base = Array.isArray(raw) ? raw.slice()            : (raw && Array.isArray(raw.data)) ? raw.data.slice()            : [];
     phrases = currentSub ? base.filter(p => p.sub === currentSub) : base.slice();
     currentIndex = Math.min(currentIndex, Math.max(0, phrases.length - 1));
+renderPhrase(); // ← 필터 적용 후 화면 갱신
   }
 
   function loadData() {
