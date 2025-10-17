@@ -1,6 +1,6 @@
 (function () {
   window.SORI_DATA = window.SORI_DATA || {};
-  const travel = [
+  window.SORI_DATA.travel = [
     {t:'Airport',c:'Tourism',k:'관광하러 왔습니다.',e:'I am here for tourism',p:'gwangwanghareo wasseumnida',sub:'Airport'},
     {t:'Airport',c:'One week',k:'일주일 머물 예정입니다.',e:'I will stay for one week',p:'iljuil meomul yejeongimnida',sub:'Airport'},
     {t:'Airport',c:'Lost baggage',k:'수하물이 안 나왔어요.',e:'My baggage did not come out',p:'suhamuri an nawasseoyo',sub:'Airport'},
