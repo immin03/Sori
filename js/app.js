@@ -1,59 +1,81 @@
-/* js/app.js — 2025.10 Stable
-   탭 이동 · 스크랩 · 연습 진행 · 음성 재생
+/* js/app.js — 2025-10 Stable
+   탭 이동 · 스크랩 · 연습 진행 · 음성 재생 (방어코드/오프라인 폴백 강화)
 */
 (function () {
-  // ---------- 로컬 상태 ----------
+  // ============ 유틸 ============
+  const $ = (id) => document.getElementById(id);
+  const getAuthUser = () =>
+    (window.firebase && firebase.auth && firebase.auth().currentUser) || null;
+
+  // 데이터 인덱스 가져오기 (여러 전역 키 폴백)
+  function getAllData() {
+    return (
+      window.SoriDataIndex ||
+      window.SORI_DATA ||
+      window.SORI?.DATA ||
+      {} // 없으면 빈 객체
+    );
+  }
+
+  // phrase.id가 없을 때를 대비해 안정적인 ID 생성
+  function ensureId(p) {
+    if (p.id) return p.id;
+    // 같은 문장을 각 카테고리에서 구분할 수 있도록 t/k/c 조합
+    p.id = [p.t || "", p.k || "", p.c || ""].join("|");
+    return p.id;
+  }
+
+  // ============ 로컬 상태 ============
   let currentCategory = "daily";
   let currentIndex = 0;
   let phrases = [];
   let savedList = []; // phrase.id 배열
 
-  // ---------- 엘리먼트 캐시 ----------
-  const $ = (id) => document.getElementById(id);
+  // ============ 엘리먼트 캐시 ============
+  // (defer 로드 전제. 방어적으로 Optional Chaining 사용)
   const els = {
     dailyBtn: $("dailyBtn"),
     travelBtn: $("travelBtn"),
     dramaBtn: $("dramaBtn"),
     savedBtn: $("savedBtn"),
     scrapBtn: $("scrapBtn"),
+
     badge: $("badge"),
     context: $("context"),
     korean: $("korean"),
     english: $("english"),
     pronunciation: $("pronunciation"),
+
     repDots: [...document.querySelectorAll(".rep-dot")],
     repCount: $("repCount"),
+    congrats: $("congrats"),
+
     playBtn: $("playBtn"),
     nextBtn: $("nextBtn"),
     prevBtn: $("prevBtn"),
     prog: $("prog"),
     errorMsg: $("errorMsg"),
+
     speed: $("speed"),
     speedTxt: $("speedTxt"),
-    congrats: $("congrats"),
   };
 
-  const getAuthUser = () =>
-    (window.firebase && firebase.auth && firebase.auth().currentUser) || null;
-
-  // ---------- 데이터 로딩 ----------
-  function getAllData() {
-    // dataindex.js에서 노출한 전역
-    return window.SoriDataIndex || window.SORI_DATA || {};
-  }
-
+  // ============ 데이터 로딩 ============
   function loadPhrasesFor(cat) {
     const all = getAllData();
-    return all?.[cat] || [];
+    const arr = all?.[cat] || [];
+    // id 보정
+    arr.forEach(ensureId);
+    return arr;
   }
 
   function loadData() {
     phrases = loadPhrasesFor(currentCategory);
-    currentIndex = Math.min(currentIndex, Math.max(0, phrases.length - 1));
+    currentIndex = 0;
     renderPhrase();
   }
 
-  // ---------- 탭 ----------
+  // ============ 탭 ============
   function setActiveTab(tab) {
     ["daily", "travel", "drama", "saved"].forEach((id) => {
       const b = $(id + "Btn");
@@ -66,54 +88,62 @@
     currentIndex = 0;
 
     if (tab === "saved") {
-      // Saved는 로그인한 사용자만
       if (!getAuthUser()) {
-        showMessage('Please login to check your scraps.');
+        showMessage("Please login to check your scraps.");
         phrases = [];
         setActiveTab(tab);
         return;
       }
+      // 저장 목록을 실제 문장 배열로 변환
+      const all = getAllData();
+      const pool = ["daily", "travel", "drama"]
+        .flatMap((c) => (all[c] || []).map((p) => ({ ...p, id: ensureId(p) })));
       phrases = savedList
-        .map((id) => findPhraseById(id))
+        .map((id) => pool.find((p) => p.id === id))
         .filter(Boolean);
+
       if (phrases.length === 0) {
         showMessage("No saved phrases yet.");
       } else {
         renderPhrase();
       }
-    } else {
-      loadData();
+      setActiveTab(tab);
+      return;
     }
+
+    // 일반 탭
+    loadData();
     setActiveTab(tab);
   }
 
-  // ---------- 렌더링 ----------
+  // ============ 렌더링 ============
   function renderPhrase() {
     if (!phrases || phrases.length === 0) {
-      els.korean.textContent = "";
-      els.english.textContent = "";
-      els.pronunciation.textContent = "";
-      els.badge.textContent = "";
-      els.context.textContent = "";
-      els.prog.textContent = "";
+      // 비어있을 때는 UI를 초기화
+      els.korean && (els.korean.textContent = "");
+      els.english && (els.english.textContent = "");
+      els.pronunciation && (els.pronunciation.textContent = "");
+      els.badge && (els.badge.textContent = "");
+      els.context && (els.context.textContent = "");
+      els.prog && (els.prog.textContent = "");
       updateScrapBtn(null);
       resetDots(true);
       return;
     }
 
-    const p = phrases[currentIndex];
-    els.korean.textContent = p.k || "";
-    els.english.textContent = p.e ? `"${p.e}"` : "";
-    els.pronunciation.textContent = p.p || "";
-    els.badge.textContent = p.t || "";
-    els.context.textContent = p.c || "";
-    els.prog.textContent = `${currentIndex + 1} / ${phrases.length}`;
+    const p = phrases[currentIndex] || {};
+    els.korean && (els.korean.textContent = p.k || "");
+    els.english && (els.english.textContent = p.e ? `"${p.e}"` : "");
+    els.pronunciation && (els.pronunciation.textContent = p.p || "");
+    els.badge && (els.badge.textContent = p.t || "");
+    els.context && (els.context.textContent = p.c || "");
+    els.prog && (els.prog.textContent = `${currentIndex + 1} / ${phrases.length}`);
 
-    updateScrapBtn(p.id);
+    updateScrapBtn(ensureId(p));
     resetDots(true);
   }
 
-  // ---------- 별(스크랩) ----------
+  // ============ 스크랩 ============
   function updateScrapBtn(id) {
     if (!els.scrapBtn) return;
     const active = id && savedList.includes(id);
@@ -130,7 +160,7 @@
     const p = phrases[currentIndex];
     if (!p) return;
 
-    const id = p.id;
+    const id = ensureId(p);
     const i = savedList.indexOf(id);
     if (i >= 0) savedList.splice(i, 1);
     else savedList.push(id);
@@ -143,60 +173,58 @@
         await db.collection("users").doc(user.uid).set({ savedList }, { merge: true });
       }
     } catch (e) {
-      console.warn("cloud save failed, fallback to local", e);
+      console.warn("[savedList] cloud save failed:", e);
     }
     // 로컬 동기화
-    localStorage.setItem("soriSaved", JSON.stringify(savedList));
+    try {
+      localStorage.setItem("soriSaved", JSON.stringify(savedList));
+    } catch {}
   }
 
-  function findPhraseById(id) {
-    const all = getAllData();
-    for (const cat of ["daily", "travel", "drama"]) {
-      const hit = (all[cat] || []).find((p) => p.id === id);
-      if (hit) return hit;
-    }
-    return null;
-  }
-
-  // ---------- 연습/음성 ----------
+  // ============ 연습/음성 ============
   function resetDots(hideCongrats = false) {
     els.repDots.forEach((d) => d.classList.remove("completed"));
-    if (els.repCount) els.repCount.textContent = 0;
+    if (els.repCount) els.repCount.textContent = "0";
     if (hideCongrats && els.congrats) els.congrats.classList.remove("show");
   }
 
+  // Web Speech API + TTS 폴백
   async function speak(text, rate) {
-    // SORI.TTS가 있으면 우선 사용
+    // 커스텀 TTS 있으면 우선 사용
     if (window.SORI?.TTS?.speak) {
       await window.SORI.TTS.speak(text, { rate });
       return;
     }
-    // Web Speech API 폴백
-    return new Promise((resolve, reject) => {
+    // 브라우저 TTS
+    await new Promise((resolve, reject) => {
       try {
         if (!("speechSynthesis" in window)) return reject(new Error("No speechSynthesis"));
         const synth = window.speechSynthesis;
-        synth.cancel(); // 중복 방지
+        synth.cancel(); // 이전 발화 취소
         const u = new SpeechSynthesisUtterance(text);
         u.lang = "ko-KR";
         u.rate = rate || 0.75;
-        const pickVoice = () => {
+
+        const startSpeak = () => synth.speak(u);
+        const setVoice = () => {
           const vs = synth.getVoices();
-          const ko = vs.find(
-            (v) =>
-              v.lang?.toLowerCase().startsWith("ko") ||
-              v.name?.toLowerCase().includes("korean") ||
-              v.name?.includes("한국")
-          );
+          const ko =
+            vs.find((v) => v.lang?.toLowerCase().startsWith("ko")) ||
+            vs.find((v) => v.name?.toLowerCase().includes("korean")) ||
+            vs[0];
           if (ko) u.voice = ko;
-          synth.speak(u);
         };
+
+        u.onend = resolve;
         u.onerror = (e) => reject(e.error || e);
-        u.onend = () => resolve();
         if (synth.getVoices().length === 0) {
-          synth.onvoiceschanged = () => pickVoice();
+          synth.onvoiceschanged = () => {
+            setVoice();
+            startSpeak();
+          };
         } else {
-          pickVoice();
+          setVoice();
+          startSpeak();
         }
       } catch (e) {
         reject(e);
@@ -208,37 +236,37 @@
     const p = phrases[currentIndex];
     if (!p) return;
     try {
-      const rate = parseFloat(els.speed.value || "0.75");
-      await speak(p.k, rate);
-      markDotAndAward();
+      const rate = parseFloat(els.speed?.value || "0.75");
+      await speak(p.k || "", rate);
+      markDotAndAward(p);
     } catch (e) {
       console.warn(e);
       showError("Audio playback failed.");
     }
   }
 
-  function markDotAndAward() {
-    let n = parseInt(els.repCount.textContent || "0", 10);
+  function markDotAndAward(p) {
+    let n = parseInt(els.repCount?.textContent || "0", 10);
     if (n < 5) {
       n++;
-      els.repCount.textContent = String(n);
+      if (els.repCount) els.repCount.textContent = String(n);
       if (els.repDots[n - 1]) els.repDots[n - 1].classList.add("completed");
       if (n === 5 && els.congrats) {
         els.congrats.classList.add("show");
         setTimeout(() => els.congrats.classList.remove("show"), 1800);
       }
     }
-    // 진행 저장 (있으면)
+    // 진행 리포트(선택)
     try {
-      if (window.SoriState?.onPracticeComplete) {
-        window.SoriState.onPracticeComplete(p.id, 5);
+      if (p && window.SoriState?.onPracticeComplete) {
+        window.SoriState.onPracticeComplete(ensureId(p), 5);
       }
     } catch (e) {
-      console.warn("onPracticeComplete failed", e);
+      console.warn("onPracticeComplete failed:", e);
     }
   }
 
-  // ---------- Next / Prev ----------
+  // ============ Next / Prev ============
   function nextPhrase() {
     if (currentIndex < phrases.length - 1) {
       currentIndex++;
@@ -252,7 +280,7 @@
     }
   }
 
-  // ---------- Helpers ----------
+  // ============ 메시지 & 에러 ============
   function showError(msg) {
     if (!els.errorMsg) return;
     els.errorMsg.style.display = "block";
@@ -260,17 +288,17 @@
     setTimeout(() => (els.errorMsg.style.display = "none"), 2200);
   }
   function showMessage(msg) {
-    els.korean.textContent = msg;
-    els.english.textContent = "";
-    els.pronunciation.textContent = "";
-    els.badge.textContent = "";
-    els.context.textContent = "";
-    els.prog.textContent = "";
+    els.korean && (els.korean.textContent = msg);
+    els.english && (els.english.textContent = "");
+    els.pronunciation && (els.pronunciation.textContent = "");
+    els.badge && (els.badge.textContent = "");
+    els.context && (els.context.textContent = "");
+    els.prog && (els.prog.textContent = "");
     updateScrapBtn(null);
     resetDots(true);
   }
 
-  // ---------- 이벤트 ----------
+  // ============ 이벤트 바인딩 ============
   function bindEvents() {
     els.dailyBtn?.addEventListener("click", () => handleTab("daily"));
     els.travelBtn?.addEventListener("click", () => handleTab("travel"));
@@ -283,35 +311,34 @@
     els.prevBtn?.addEventListener("click", prevPhrase);
 
     els.speed?.addEventListener("input", () => {
-      const v = parseFloat(els.speed.value || "0.75");
-      els.speedTxt.textContent = (Math.round(v * 100) / 100).toString() + "x";
+      const v = Number(els.speed?.value || 0.75);
+      if (els.speedTxt) els.speedTxt.textContent = `${v.toFixed(2).replace(/\.?0+$/,"")}x`;
     });
 
-    // 로그인 상태 변화 → Saved 탭/별 상태 동기화
+    // 로그인 상태 동기화(저장목록/버튼 텍스트 등은 state.js가 처리)
     if (window.firebase?.auth) {
       firebase.auth().onAuthStateChanged(async (user) => {
-        // state.js에서 loginBtn 텍스트/모달 처리는 해주고 있음
         if (user && window.db) {
           try {
             const ref = db.collection("users").doc(user.uid);
             const snap = await ref.get();
             if (snap.exists && snap.data().savedList) {
               savedList = snap.data().savedList || [];
-              localStorage.setItem("soriSaved", JSON.stringify(savedList));
+              try { localStorage.setItem("soriSaved", JSON.stringify(savedList)); } catch {}
             }
           } catch (e) {
-            console.warn("load savedList error", e);
+            console.warn("load savedList error:", e);
           }
         }
-        // Saved 탭을 보고 있었다면 다시 그려주기
         if (currentCategory === "saved") handleTab("saved");
+        else updateScrapBtn(phrases[currentIndex]?.id);
       });
     }
   }
 
-  // ---------- 초기화 ----------
+  // ============ 초기화 ============
   window.addEventListener("DOMContentLoaded", () => {
-    // 로컬 saved 복구 (게스트 모드에서도 유지)
+    // 로컬 저장 스크랩 불러오기(게스트용)
     try {
       const local = localStorage.getItem("soriSaved");
       if (local) savedList = JSON.parse(local) || [];
