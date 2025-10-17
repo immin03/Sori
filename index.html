@@ -20,101 +20,90 @@
   <script defer src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
   <style>
-    * { box-sizing: border-box; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      max-width: 680px; margin: 0 auto; padding: 12px;
-      background: #faf8ff; min-height: 100vh;
+    *{box-sizing:border-box}
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+      max-width:680px;margin:0 auto;padding:12px;background:#faf8ff;min-height:100vh;
     }
-    h1 { font-size: 24px; margin: 0 0 4px 0; color: #7c3aed; font-weight: 800; }
-    .intro { color: #9ca3af; font-size: 12px; margin-bottom: 10px; line-height: 1.3; font-weight: 500; }
+    h1{font-size:24px;margin:0 0 4px 0;color:#7c3aed;font-weight:800}
+    .intro{color:#9ca3af;font-size:12px;margin-bottom:10px;line-height:1.3;font-weight:500}
 
-    .header-container { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
-    .top-btn{ padding:6px 12px; border-radius:10px; font-size:12px; font-weight:700; cursor:pointer; border:0; }
-    .top-btn.primary{ background:#7c3aed; color:#fff; }
+    .header-container{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+    .top-btn{padding:6px 12px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;border:0}
+    .top-btn.primary{background:#7c3aed;color:#fff}
 
-    .card { border-radius: 16px; padding: 16px; margin: 8px 0;
-      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04); background: white; }
+    .card{border-radius:16px;padding:16px;margin:8px 0;box-shadow:0 2px 12px rgba(0,0,0,.04);background:#fff}
 
-    .category-tabs {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 6px; margin-bottom: 8px;
+    .category-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px}
+    .tab-button{padding:10px 14px;border:2px solid #f3f4f6;border-radius:14px;background:#f9fafb;color:#9ca3af;cursor:pointer;font-size:13px;font-weight:700;transition:.2s}
+    .tab-button:hover{background:#f3f4f6}
+    .tab-button.active{background:#7c3aed;color:#fff;border-color:#7c3aed;box-shadow:0 2px 8px rgba(124,58,237,.2)}
+
+    .sub-filters{display:none} /* app.js에서 필요 시 표시 */
+
+    .badge{display:inline-block;background:#7c3aed;color:#fff;padding:5px 10px;border-radius:10px;font-size:11px;font-weight:800}
+    .context-box{background:#f9fafb;border-radius:8px;padding:6px 10px;margin-bottom:10px;font-size:12px;color:#6b7280;font-weight:600}
+
+    .star-wrap{display:flex;justify-content:space-between;align-items:center}
+    .icon-btn{
+      border:none;background:transparent;width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;
+      font-size:20px;line-height:1;padding:0;color:#9ca3af;cursor:pointer;border-radius:8px;
     }
-    .tab-button {
-      padding: 10px 14px; border: 2px solid #f3f4f6;
-      border-radius: 14px; background: #f9fafb; color: #9ca3af;
-      cursor: pointer; font-size: 13px; font-weight: 700; transition: all 0.2s;
-    }
-    .tab-button:hover { background: #f3f4f6; }
-    .tab-button.active {
-      background: #7c3aed; color: white; border-color: #7c3aed;
-      box-shadow: 0 2px 8px rgba(124,58,237,0.2);
-    }
+    .icon-btn:hover{background:#f3f4f6}
+    .icon-btn.active{color:#d97706}
 
-    .badge { display: inline-block; background: #7c3aed; color: white;
-      padding: 5px 10px; border-radius: 10px; font-size: 11px; font-weight: 800; }
+    .korean-section{background:#f9fafb;border-radius:14px;padding:16px 12px;margin:8px 0}
+    .target-display{font-size:28px;font-weight:900;color:#1f2937;text-align:center;line-height:1.2;margin-bottom:6px}
+    .english-translation{color:#6b7280;font-size:16px;text-align:center;margin-bottom:10px;font-weight:600}
+    .pronunciation-hint{color:#9ca3af;font-size:13px;font-weight:600;text-align:center;letter-spacing:.3px;font-style:italic}
 
-    .icon-btn {
-      border:none; background:transparent; width:28px; height:28px;
-      display:inline-flex; align-items:center; justify-content:center;
-      font-size:18px; line-height:1; padding:0; color:#9ca3af; cursor:pointer;
-    }
-    .icon-btn.active{ color:#d97706; }
+    button{padding:12px 18px;border:0;border-radius:14px;background:#7c3aed;color:#fff;cursor:pointer;font-size:15px;font-weight:800;width:100%;
+      box-shadow:0 2px 8px rgba(124,58,237,.2);transition:.2s}
+    button:hover{background:#6d28d9;box-shadow:0 4px 12px rgba(124,58,237,.25)}
+    button.secondary{background:#f9fafb;color:#6b7280;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+    button.secondary:hover{background:#f3f4f6}
 
-    .context-box { background:#f9fafb; border-radius:8px; padding:6px 10px;
-      margin-bottom:10px; font-size:12px; color:#6b7280; font-weight:600; }
+    .button-group{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
 
-    .korean-section { background:#f9fafb; border-radius:14px; padding:16px 12px; margin:8px 0; }
-    .target-display { font-size:28px; font-weight:900; text-align:center; margin-bottom:6px; }
-    .english-translation { color:#6b7280; font-size:16px; text-align:center; font-weight:600; }
-    .pronunciation-hint { color:#9ca3af; font-size:13px; font-weight:600; text-align:center; font-style:italic; }
+    .repetition-tracker{margin:8px 0;padding:10px;background:#f9fafb;border-radius:10px}
+    .repetition-label{font-size:12px;font-weight:600;color:#6b7280;margin-bottom:8px;text-align:center}
+    .repetition-dots{display:flex;gap:5px;justify-content:center;margin-bottom:8px}
+    .rep-dot{width:32px;height:32px;border-radius:50%;border:2px solid #e5e7eb;background:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;transition:.3s}
+    .rep-dot.completed{background:#7c3aed;border-color:#7c3aed;transform:scale(1.1)}
 
-    button { padding: 12px 18px; border: 0; border-radius: 14px;
-      background: #7c3aed; color: white; cursor: pointer; font-size: 15px; font-weight: 800;
-      width: 100%; box-shadow: 0 2px 8px rgba(124, 58, 237, 0.2); transition: all 0.2s;
-    }
-    button:hover { background: #6d28d9; box-shadow: 0 4px 12px rgba(124,58,237,0.25); }
+    .voice-speed{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:8px;padding:8px;background:#f9fafb;border-radius:8px}
+    .voice-speed label{color:#7c3aed;font-size:12px;font-weight:600}
+    .voice-speed input{width:110px;cursor:pointer}
+    .voice-speed span{color:#7c3aed;font-weight:700;font-size:12px;min-width:45px}
 
-    .secondary { background: #f9fafb; color:#6b7280; }
-    .secondary:hover { background:#f3f4f6; }
-
-    .repetition-dots { display:flex; gap:5px; justify-content:center; margin-bottom:8px; }
-    .rep-dot { width:32px; height:32px; border-radius:50%; border:2px solid #e5e7eb;
-      display:flex; align-items:center; justify-content:center; font-size:14px; transition:all .3s; }
-    .rep-dot.completed { background:#7c3aed; border-color:#7c3aed; transform:scale(1.1); }
-
-    .progress { text-align:center; color:#7c3aed; font-size:13px; font-weight:700; margin-top:8px; }
+    .practice-tip{background:#fffbeb;border-left:3px solid #f59e0b;padding:8px 12px;border-radius:10px;margin-top:8px;font-size:12px;color:#92400e;line-height:1.4;font-weight:500}
+    .progress{text-align:center;color:#7c3aed;font-size:13px;font-weight:700;margin-top:8px}
+    .error-msg{background:#fee2e2;color:#991b1b;padding:8px 12px;border-radius:8px;margin-top:8px;font-size:11px;font-weight:600;display:none}
 
     /* 로그인 모달 */
-    .auth-section {
-      display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45);
-      align-items:center; justify-content:center; z-index:9999; padding:16px;
-    }
-    .auth-section:not(.hidden){ display:flex; }
-    .auth-card{
-      max-width:360px; width:100%; padding:24px; border-radius:18px;
-      background:white; box-shadow:0 18px 50px rgba(0,0,0,0.35);
-      text-align:center; position:relative;
-    }
-    .auth-close {
-      position:absolute; top:10px; right:10px;
-      background:none; border:none; font-size:22px; color:#9ca3af; cursor:pointer;
+    .auth-section{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);align-items:center;justify-content:center;z-index:9999;padding:16px}
+    .auth-section:not(.hidden){display:flex}
+    .auth-card{max-width:360px;width:100%;padding:24px;border-radius:18px;background:#fff;box-shadow:0 18px 50px rgba(0,0,0,.35);position:relative;text-align:center}
+    .auth-close{position:absolute;top:10px;right:10px;background:none;border:none;font-size:22px;color:#9ca3af;cursor:pointer}
+
+    @media (max-width:640px){
+      .category-tabs{grid-template-columns:1fr}
     }
   </style>
 </head>
 <body>
   <!-- Header -->
   <div class="header-container">
-    <div class="header-left">
-      <h1>Sori <span style="font-size: 14px; color:#9ca3af;">(beta)</span></h1>
+    <div>
+      <h1>Sori <span style="font-size:14px;color:#9ca3af;font-weight:600;">(beta)</span></h1>
       <div class="intro">Master Korean with K-Drama lines and daily conversations</div>
     </div>
-    <div class="header-right">
+    <div>
       <button id="loginBtn" class="top-btn primary">Login</button>
     </div>
   </div>
 
+  <!-- Tabs -->
   <div class="card">
     <div class="category-tabs">
       <button class="tab-button active" id="dailyBtn">Daily</button>
@@ -122,13 +111,16 @@
       <button class="tab-button" id="dramaBtn">K-Drama</button>
       <button class="tab-button" id="savedBtn">★ Saved</button>
     </div>
+    <div id="subFilters" class="sub-filters"></div>
   </div>
 
+  <!-- Lesson card -->
   <div class="card">
-    <div style="display:flex;justify-content:space-between;align-items:center;">
+    <div class="star-wrap">
       <div class="badge" id="badge">Greeting</div>
       <button id="scrapBtn" class="icon-btn" title="Save this phrase">☆</button>
     </div>
+
     <div class="context-box" id="context">Conversation: First meeting</div>
 
     <div class="korean-section">
@@ -137,58 +129,79 @@
       <div class="pronunciation-hint" id="pronunciation">annyeonghaseyo</div>
     </div>
 
-    <div class="repetition-dots">
-      <div class="rep-dot" id="dot1"></div>
-      <div class="rep-dot" id="dot2"></div>
-      <div class="rep-dot" id="dot3"></div>
-      <div class="rep-dot" id="dot4"></div>
-      <div class="rep-dot" id="dot5"></div>
+    <div class="repetition-tracker">
+      <div class="repetition-label">Practice Count: <span id="repCount">0</span> / 5</div>
+      <div class="repetition-dots" id="repDots">
+        <div class="rep-dot" id="dot1"></div>
+        <div class="rep-dot" id="dot2"></div>
+        <div class="rep-dot" id="dot3"></div>
+        <div class="rep-dot" id="dot4"></div>
+        <div class="rep-dot" id="dot5"></div>
+      </div>
     </div>
 
     <button id="playBtn">Listen & Repeat</button>
-    <div class="progress" id="prog">1 / 30</div>
-  </div>
+    <div class="error-msg" id="errorMsg"></div>
 
-  <!-- 로그인 모달 -->
-  <div class="auth-section hidden" id="authModal">
-    <div class="auth-card">
-      <button class="auth-close" id="authClose" aria-label="Close">×</button>
-      <div class="auth-title" style="font-weight:800; color:#7c3aed;">Sign in</div>
-      <div class="auth-subtitle" style="font-size:13px; color:#9ca3af;">Use your Google account</div>
-      <button class="google-login-btn" onclick="handleGoogleLogin && handleGoogleLogin()" style="border:2px solid #e5e7eb; background:white; border-radius:12px; padding:12px 16px; font-weight:600; cursor:pointer;">
-        Continue with Google
-      </button>
+    <div class="voice-speed">
+      <label>Speed:</label>
+      <input type="range" id="speed" min="0.3" max="1.0" step="0.1" value="0.75">
+      <span id="speedTxt">0.75x</span>
+    </div>
+
+    <div class="practice-tip">
+      Tip: Listen carefully and repeat multiple times. Consistency is key.
     </div>
   </div>
 
-  <!-- 데이터 -->
+  <!-- Navigation -->
+  <div class="card">
+    <div class="button-group">
+      <button class="secondary" id="prevBtn">◀ Previous</button>
+      <button class="secondary" id="nextBtn">▶ Next</button>
+    </div>
+    <div class="progress" id="prog">1 / 30</div>
+  </div>
+
+  <!-- Login modal -->
+  <div class="auth-section hidden" id="authModal">
+    <div class="auth-card">
+      <button class="auth-close" id="authClose" aria-label="Close">×</button>
+      <div class="auth-title" style="font-weight:800;color:#7c3aed;">Sign in</div>
+      <div class="auth-subtitle" style="font-size:13px;color:#9ca3af;">Use your Google account</div>
+      <button class="google-login-btn" onclick="handleGoogleLogin && handleGoogleLogin()" style="border:2px solid #e5e7eb;background:#fff;border-radius:12px;padding:12px 16px;font-weight:600;cursor:pointer;">Continue with Google</button>
+    </div>
+  </div>
+
+  <!-- Data -->
   <script defer src="data/daily.js"></script>
   <script defer src="data/drama.js"></script>
   <script defer src="data/travel.js"></script>
   <script defer src="data/dataindex.js"></script>
 
-  <!-- 기능 -->
+  <!-- App -->
   <script defer src="js/state.js"></script>
   <script defer src="js/tts.js"></script>
   <script defer src="js/app.js"></script>
 
+  <!-- Header controls -->
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const authModal = document.getElementById("authModal");
-      const loginBtn = document.getElementById("loginBtn");
+    document.addEventListener('DOMContentLoaded', () => {
+      const authModal = document.getElementById('authModal');
+      const loginBtn = document.getElementById('loginBtn');
 
-      loginBtn?.addEventListener("click", async () => {
-        try {
+      loginBtn?.addEventListener('click', async () => {
+        try{
           const u = (window.firebase?.auth && firebase.auth().currentUser) || null;
-          if (u && window.SoriUser?.logout) {
+          if(u && window.SoriUser?.logout){
             await window.SoriUser.logout();
-          } else {
-            authModal?.classList.remove("hidden");
+          }else{
+            authModal?.classList.remove('hidden');
           }
-        } catch(e){ console.warn(e); }
+        }catch(e){ console.warn(e); }
       });
-      document.getElementById("authClose")?.addEventListener("click", () => {
-        authModal?.classList.add("hidden");
+      document.getElementById('authClose')?.addEventListener('click', () => {
+        authModal?.classList.add('hidden');
       });
     });
   </script>
