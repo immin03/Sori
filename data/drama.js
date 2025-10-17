@@ -1,4 +1,3 @@
-<script>
 (function () {
   window.SORI_DATA = window.SORI_DATA || {};
   const drama = [
@@ -42,4 +41,3 @@
 
   SORI_DATA.drama = { base: drama, plus: dramaPlus };
 })();
-</script>
