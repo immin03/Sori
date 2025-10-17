@@ -1,32 +1,27 @@
-/* js/app.js — 2025.10 Stabilized: tabs + subfilters + TTS + saved */
+/* js/app.js — 2025.10 Stable + Subfilters */
 (function () {
-  // ====== 상태 ======
+  // ---------- 로컬 상태 ----------
   let currentCategory = "daily";
-  let currentSub = null;          // <- 서브필터 (null = All)
   let currentIndex = 0;
-  let phrases = [];               // 필터링 후 목록
-  let savedList = [];             // [phrase.id]
+  let currentSub = null;         // ← 서브필터 상태
+  let phrases = [];
+  let savedList = [];            // phrase.id 배열
 
+  // ---------- 엘리먼트 캐시 ----------
   const $ = (id) => document.getElementById(id);
   const els = {
-    // 탭
     dailyBtn: $("dailyBtn"),
     travelBtn: $("travelBtn"),
     dramaBtn: $("dramaBtn"),
     savedBtn: $("savedBtn"),
-    // 서브필터
-    subFilters: $("subFilters"),
-    // 본문
+    scrapBtn: $("scrapBtn"),
     badge: $("badge"),
     context: $("context"),
     korean: $("korean"),
     english: $("english"),
     pronunciation: $("pronunciation"),
-    // 연습
-    repDots: Array.from(document.querySelectorAll(".rep-dot")),
+    repDots: [...document.querySelectorAll(".rep-dot")],
     repCount: $("repCount"),
-    congrats: $("congrats"),
-    // 컨트롤
     playBtn: $("playBtn"),
     nextBtn: $("nextBtn"),
     prevBtn: $("prevBtn"),
@@ -34,94 +29,89 @@
     errorMsg: $("errorMsg"),
     speed: $("speed"),
     speedTxt: $("speedTxt"),
-    // 스크랩
-    scrapBtn: $("scrapBtn"),
+    congrats: $("congrats"),
+    subFilters: $("subFilters"),
   };
 
-  const getUser = () =>
+  // ---------- 유틸 ----------
+  const getAuthUser = () =>
     (window.firebase && firebase.auth && firebase.auth().currentUser) || null;
 
-  // ====== 데이터 ======
-  function getAllData() {
-    // dataindex.js 가 보통 window.SoriDataIndex 로 내보냄
-    return window.SoriDataIndex || window.SORI_DATA || {};
-  }
+  const getAllData = () => window.SoriDataIndex || window.SORI_DATA || {};
 
-  function rawListFor(cat) {
+  // 서브 카테고리 매핑(데이터에 없을 때 폴백)
+  const SUBS = window.SoriSubCategories || {
+    daily: ['Greeting','Cafe','Restaurant','Shopping','Health','Social','Work','Tech','Exercise'],
+    travel:['Airport','Hotel','Transport','Emergency','Convenience','Street Food','Market','Duty Free','Department','Food Court','Payment','Delivery','Sightseeing']
+  };
+  const ICONS = window.SoriSubIcons || {
+    Greeting:'👋', Cafe:'☕', Restaurant:'🍽️', Shopping:'🛍️', Health:'💊', Social:'👥',
+    Work:'💼', Tech:'🖥️', Exercise:'🏃',
+    Airport:'✈️', Hotel:'🏨', Transport:'🚇', Emergency:'🆘',
+    Convenience:'🏪', 'Street Food':'🌭', Market:'🧺', 'Duty Free':'🛂', Department:'🏬',
+    'Food Court':'🥢', Payment:'💳', Delivery:'📦', Sightseeing:'📍'
+  };
+
+  // ---------- 데이터 로딩/필터 ----------
+  function rawFor(cat) {
     const all = getAllData();
-    return Array.isArray(all[cat]) ? all[cat] : [];
+    return all?.[cat] || [];
   }
 
-  function recomputeFiltered() {
-    let base = rawListFor(currentCategory);
-    if (currentCategory === "saved") {
-      // Saved 탭
-      base = savedList
-        .map((id) => findPhraseById(id))
-        .filter(Boolean);
-    } else if (currentSub) {
-      base = base.filter((x) => x.sub === currentSub);
-    }
-    phrases = base;
+  function applyFilter() {
+    // Saved는 별도 처리에서 phrases 세팅
+    if (currentCategory === "saved") return;
+    const base = rawFor(currentCategory);
+    phrases = currentSub ? base.filter(p => p.sub === currentSub) : base.slice();
     currentIndex = Math.min(currentIndex, Math.max(0, phrases.length - 1));
   }
 
-  // ====== 서브필터 UI ======
-  function renderSubFilters() {
-    // Saved/Drama 는 서브필터 숨김(원하면 drama도 켤 수 있음)
-    if (
-      currentCategory === "saved" ||
-      currentCategory === "drama" ||
-      !els.subFilters
-    ) {
-      els.subFilters.style.display = "none";
-      els.subFilters.innerHTML = "";
-      return;
-    }
-    const map = window.subCategories || {};
-    const icons = window.subIcons || {};
-    const list = map[currentCategory] || [];
-    if (list.length === 0) {
-      els.subFilters.style.display = "none";
-      els.subFilters.innerHTML = "";
-      return;
-    }
-
-    els.subFilters.style.display = "block";
-    const chips = ["All", ...list]
-      .map((label) => {
-        const val = label === "All" ? "" : label;
-        const selected =
-          (label === "All" && !currentSub) || (currentSub === label);
-        const icon =
-          label !== "All" && icons[label] ? icons[label] + " " : "";
-        return `<div class="filter-chip ${selected ? "active" : ""}" data-sub="${val}">${icon}${label}</div>`;
-      })
-      .join("");
-
-    els.subFilters.innerHTML = `
-      <div class="sub-filters" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;padding:10px;background:#f9fafb;border-radius:10px;">
-        ${chips}
-      </div>
-    `;
-  }
-
-  function bindSubFilterEvents() {
-    if (!els.subFilters) return;
-    els.subFilters.addEventListener("click", (e) => {
-      const chip = e.target.closest(".filter-chip");
-      if (!chip) return;
-      const v = chip.getAttribute("data-sub") || "";
-      currentSub = v || null;
+  function loadData() {
+    if (currentCategory === "saved") {
+      const u = getAuthUser();
+      if (!u) {
+        showMessage("Please login to check your scraps.");
+        phrases = [];
+        setActiveTab("saved");
+        renderScrapStar(null);
+        return;
+      }
+      phrases = savedList.map(id => findPhraseById(id)).filter(Boolean);
+      if (phrases.length === 0) showMessage("No saved phrases yet.");
       currentIndex = 0;
-      recomputeFiltered();
-      renderSubFilters();
-      renderPhrase();
-      setActiveTab(currentCategory);
-    });
+    } else {
+      applyFilter();
+    }
+    renderPhrase();
   }
 
-  // ====== 탭 ======
+  // ---------- 서브필터 UI ----------
+  function rebuildSubFilters() {
+    // saved/drama는 서브필터 비표시
+    if (currentCategory === "saved" || currentCategory === "drama") {
+      els.subFilters.style.display = "none";
+      els.subFilters.innerHTML = "";
+      return;
+    }
+    const list = SUBS[currentCategory] || [];
+    if (!list.length) {
+      els.subFilters.style.display = "none";
+      els.subFilters.innerHTML = "";
+      return;
+    }
+    els.subFilters.style.display = "flex";
+
+    const chips = ["All", ...list];
+    const html = chips.map(lbl => {
+      const value = lbl === "All" ? "" : lbl;
+      const active = (value ? value === currentSub : currentSub == null);
+      const icon = lbl !== "All" && ICONS[lbl] ? ICONS[lbl] + " " : "";
+      return `<div class="sub-chip ${active ? "active" : ""}" data-sub="${value}">${icon}${lbl}</div>`;
+    }).join("");
+    els.subFilters.innerHTML = html;
+  }
+
+  // ---------- 탭 ----------
   function setActiveTab(tab) {
     ["daily", "travel", "drama", "saved"].forEach((id) => {
       const b = $(id + "Btn");
@@ -129,28 +119,24 @@
     });
   }
 
-  function switchTab(tab) {
+  function handleTab(tab) {
     currentCategory = tab;
-    currentSub = null;
     currentIndex = 0;
-
-    if (tab === "saved") {
-      if (!getUser()) {
-        // 로그인 전 안내
-        phrases = [];
-        renderSubFilters(); // 숨김
-        showMessage("Please login to check your scraps.");
-        setActiveTab(tab);
-        return;
-      }
-    }
-    recomputeFiltered();
-    renderSubFilters();
-    renderPhrase();
+    // 탭 바꿀 때 서브필터 초기화
+    currentSub = null;
+    rebuildSubFilters();
+    loadData();
     setActiveTab(tab);
   }
 
-  // ====== 렌더 ======
+  // ---------- 렌더링 ----------
+  function renderScrapStar(id) {
+    if (!els.scrapBtn) return;
+    const active = !!(id && savedList.includes(id));
+    els.scrapBtn.classList.toggle("active", active);
+    els.scrapBtn.textContent = active ? "★" : "☆";
+  }
+
   function renderPhrase() {
     if (!phrases || phrases.length === 0) {
       els.korean.textContent = "";
@@ -159,113 +145,101 @@
       els.badge.textContent = "";
       els.context.textContent = "";
       els.prog.textContent = "";
-      updateScrapBtn(null);
+      renderScrapStar(null);
       resetDots(true);
       return;
     }
-    const p = phrases[currentIndex] || {};
+    const p = phrases[currentIndex];
     els.korean.textContent = p.k || "";
     els.english.textContent = p.e ? `"${p.e}"` : "";
     els.pronunciation.textContent = p.p || "";
     els.badge.textContent = p.t || "";
     els.context.textContent = p.c || "";
     els.prog.textContent = `${currentIndex + 1} / ${phrases.length}`;
-    updateScrapBtn(p.id);
+    renderScrapStar(p.id);
     resetDots(true);
   }
 
-  // ====== 스크랩 ======
-  function updateScrapBtn(id) {
-    if (!els.scrapBtn) return;
-    const active = id && savedList.includes(id);
-    els.scrapBtn.classList.toggle("active", !!active);
-    els.scrapBtn.textContent = active ? "★" : "☆";
-  }
-
+  // ---------- 별(스크랩) ----------
   async function toggleScrap() {
-    const user = getUser();
-    if (!user) {
-      alert("Please login to save phrases.");
-      return;
-    }
+    const user = getAuthUser();
+    if (!user) { alert("Please login to save phrases."); return; }
     const p = phrases[currentIndex];
     if (!p) return;
     const id = p.id;
     const i = savedList.indexOf(id);
     if (i >= 0) savedList.splice(i, 1);
     else savedList.push(id);
-    updateScrapBtn(id);
+    renderScrapStar(id);
 
     try {
       if (window.db) {
         await db.collection("users").doc(user.uid).set({ savedList }, { merge: true });
       }
     } catch (e) {
-      console.warn("cloud save failed", e);
+      console.warn("cloud save failed, fallback to local", e);
     }
-    try {
-      localStorage.setItem("soriSaved", JSON.stringify(savedList));
-    } catch {}
+    localStorage.setItem("soriSaved", JSON.stringify(savedList));
   }
 
   function findPhraseById(id) {
     const all = getAllData();
     for (const cat of ["daily", "travel", "drama"]) {
-      const arr = all[cat] || [];
-      const hit = arr.find((x) => x.id === id);
+      const hit = (all[cat] || []).find(p => p.id === id);
       if (hit) return hit;
     }
     return null;
   }
 
-  // ====== 연습/음성 ======
+  // ---------- 연습/음성 ----------
   function resetDots(hideCongrats = false) {
     els.repDots.forEach((d) => d.classList.remove("completed"));
-    if (els.repCount) els.repCount.textContent = "0";
+    if (els.repCount) els.repCount.textContent = 0;
     if (hideCongrats && els.congrats) els.congrats.classList.remove("show");
   }
 
   async function speak(text, rate) {
-    // 1) 커스텀 TTS 있으면 우선
-    if (window.SORI?.TTS?.speak) {
-      return window.SORI.TTS.speak(text, { rate });
-    }
-    // 2) 폴백 (혹시 tts.js를 못 읽은 경우)
+    if (window.SORI?.TTS?.speak) { await window.SORI.TTS.speak(text, { rate }); return; }
     return new Promise((resolve, reject) => {
       try {
         if (!("speechSynthesis" in window)) return reject(new Error("No speechSynthesis"));
         const synth = window.speechSynthesis;
-        try { synth.cancel(); } catch {}
-        const u = new SpeechSynthesisUtterance(String(text || ""));
+        synth.cancel();
+        const u = new SpeechSynthesisUtterance(text);
         u.lang = "ko-KR";
         u.rate = rate || 0.75;
+        const pick = () => {
+          const vs = synth.getVoices();
+          const ko = vs.find(v =>
+            v.lang?.toLowerCase().startsWith("ko") ||
+            v.name?.toLowerCase().includes("korean") ||
+            v.name?.includes("한국")
+          );
+          if (ko) u.voice = ko;
+          synth.speak(u);
+        };
         u.onerror = (e) => reject(e.error || e);
         u.onend = () => resolve();
-        const go = () => synth.speak(u);
-        if (synth.getVoices().length === 0) {
-          synth.onvoiceschanged = () => { go(); synth.onvoiceschanged = null; };
-          setTimeout(go, 0);
-        } else {
-          go();
-        }
+        if (synth.getVoices().length === 0) synth.onvoiceschanged = () => pick();
+        else pick();
       } catch (e) { reject(e); }
     });
   }
 
   async function playAudio() {
     const p = phrases[currentIndex];
-    if (!p || !p.k) return;
+    if (!p) return;
     try {
       const rate = parseFloat(els.speed.value || "0.75");
       await speak(p.k, rate);
-      awardRep(p.id);
+      markDotAndAward(p);
     } catch (e) {
       console.warn(e);
       showError("Audio playback failed.");
     }
   }
 
-  function awardRep(phraseId) {
+  function markDotAndAward(p) {
     let n = parseInt(els.repCount.textContent || "0", 10);
     if (n < 5) {
       n++;
@@ -273,30 +247,17 @@
       if (els.repDots[n - 1]) els.repDots[n - 1].classList.add("completed");
       if (n === 5 && els.congrats) {
         els.congrats.classList.add("show");
-        setTimeout(() => els.congrats.classList.remove("show"), 1600);
+        setTimeout(() => els.congrats.classList.remove("show"), 1800);
       }
     }
-    try {
-      if (window.SoriState?.onPracticeComplete) {
-        window.SoriState.onPracticeComplete(phraseId, 5);
-      }
-    } catch {}
+    try { window.SoriState?.onPracticeComplete?.(p.id, 5); } catch {}
   }
 
-  function nextPhrase() {
-    if (currentIndex < phrases.length - 1) {
-      currentIndex++;
-      renderPhrase();
-    }
-  }
-  function prevPhrase() {
-    if (currentIndex > 0) {
-      currentIndex--;
-      renderPhrase();
-    }
-  }
+  // ---------- Next / Prev ----------
+  function nextPhrase() { if (currentIndex < phrases.length - 1) { currentIndex++; renderPhrase(); } }
+  function prevPhrase() { if (currentIndex > 0) { currentIndex--; renderPhrase(); } }
 
-  // ====== 헬퍼 ======
+  // ---------- Helpers ----------
   function showError(msg) {
     if (!els.errorMsg) return;
     els.errorMsg.style.display = "block";
@@ -310,18 +271,26 @@
     els.badge.textContent = "";
     els.context.textContent = "";
     els.prog.textContent = "";
-    updateScrapBtn(null);
+    renderScrapStar(null);
     resetDots(true);
   }
 
-  // ====== 이벤트 바인딩 ======
+  // ---------- 이벤트 ----------
   function bindEvents() {
-    els.dailyBtn?.addEventListener("click", () => switchTab("daily"));
-    els.travelBtn?.addEventListener("click", () => switchTab("travel"));
-    els.dramaBtn?.addEventListener("click", () => switchTab("drama"));
-    els.savedBtn?.addEventListener("click", () => switchTab("saved"));
+    els.dailyBtn?.addEventListener("click", () => handleTab("daily"));
+    els.travelBtn?.addEventListener("click", () => handleTab("travel"));
+    els.dramaBtn?.addEventListener("click", () => handleTab("drama"));
+    els.savedBtn?.addEventListener("click", () => handleTab("saved"));
 
-    bindSubFilterEvents();
+    // 서브필터 델리게이션
+    els.subFilters?.addEventListener("click", (e) => {
+      const chip = e.target.closest(".sub-chip");
+      if (!chip) return;
+      const v = chip.getAttribute("data-sub") || "";
+      currentSub = v || null;
+      rebuildSubFilters();
+      loadData();
+    });
 
     els.scrapBtn?.addEventListener("click", toggleScrap);
     els.playBtn?.addEventListener("click", playAudio);
@@ -333,38 +302,33 @@
       els.speedTxt.textContent = (Math.round(v * 100) / 100) + "x";
     });
 
-    // 로그인 변경 → savedList 로드 & Saved 탭 재렌더
+    // 로그인 상태 변화 → savedList 동기화
     if (window.firebase?.auth) {
       firebase.auth().onAuthStateChanged(async (user) => {
         if (user && window.db) {
           try {
-            const snap = await db.collection("users").doc(user.uid).get();
-            if (snap.exists && Array.isArray(snap.data().savedList)) {
-              savedList = snap.data().savedList;
+            const ref = db.collection("users").doc(user.uid);
+            const snap = await ref.get();
+            if (snap.exists && snap.data().savedList) {
+              savedList = snap.data().savedList || [];
               localStorage.setItem("soriSaved", JSON.stringify(savedList));
             }
-          } catch (e) { console.warn("saved load error", e); }
+          } catch (e) { console.warn("load savedList error", e); }
         }
-        if (currentCategory === "saved") switchTab("saved");
+        if (currentCategory === "saved") handleTab("saved");
       });
     }
   }
 
-  // ====== 초기화 ======
+  // ---------- 초기화 ----------
   window.addEventListener("DOMContentLoaded", () => {
     try {
       const local = localStorage.getItem("soriSaved");
       if (local) savedList = JSON.parse(local) || [];
     } catch {}
     bindEvents();
-    recomputeFiltered();
-    renderSubFilters();
-    renderPhrase();
-    setActiveTab(currentCategory);
-    // 디버그 로그
-    const all = getAllData();
-    console.log("[Sori] boot",
-      { daily: (all.daily||[]).length, travel: (all.travel||[]).length, drama: (all.drama||[]).length }
-    );
+    rebuildSubFilters();
+    loadData();
+    console.log("[Sori] boot", getAllData());
   });
 })();
