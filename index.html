@@ -15,7 +15,9 @@
     </svg>'/>
 
   <!-- GA -->
-  <script> window.GA_ID = 'G-X1Q98DBKR5'; </script>
+  <script>
+    window.GA_ID = 'G-X1Q98DBKR5';
+  </script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-X1Q98DBKR5"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -46,7 +48,7 @@
     /* cards/tabs */
     .card{background:#fff;border-radius:16px;padding:16px;margin:8px 0;box-shadow:0 2px 12px rgba(0,0,0,.05)}
 
-    /* === CATEGORY PICKER (dropdown-style, 3-rows viewport) === */
+    /* === CATEGORY PICKER (click open, 3-rows viewport) === */
     .category-bar{display:flex;align-items:center;gap:12px}
     .picker-wrap{position:relative}
     .picker-trigger{
@@ -55,14 +57,10 @@
     }
     .picker-menu{
       position:absolute;top:100%;left:0;right:0;margin-top:6px;background:#fff;border-radius:12px;
-      box-shadow:0 10px 30px rgba(0,0,0,.15);overflow:hidden;max-height:0;transition:max-height .2s ease;z-index:20
+      box-shadow:0 10px 30px rgba(0,0,0,.15);overflow:hidden;max-height:0;transition:max-height .25s ease;z-index:50
     }
-    .picker-wrap:hover .picker-menu,
-    .picker-wrap:focus-within .picker-menu{ max-height:156px; } /* 3 rows * (44 + margin) 근사치 */
-    .picker-list{
-      max-height:150px;overflow-y:auto;padding:6px;
-      scrollbar-width:thin
-    }
+    .picker-menu.open{ max-height:156px; } /* 3 rows */
+    .picker-list{ max-height:150px; overflow-y:auto; padding:6px; scrollbar-width:thin }
     .picker-item{
       height:44px;line-height:44px;border-radius:12px;margin:6px 4px;text-align:center;
       background:#f6f6ff;color:#5b5b72;font-weight:700;cursor:pointer;user-select:none
@@ -126,6 +124,12 @@
 
     /* 호환용 숨김 탭 (app.js 기존 의존성) */
     .hidden-tabs{display:none}
+
+    /* Auth modal: 항상 fixed 중앙 */
+    .auth{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:9999;background:rgba(0,0,0,.45);padding:16px}
+    .auth.open{display:flex}
+    .auth-card{background:#fff;width:100%;max-width:360px;border-radius:18px;padding:24px;box-shadow:0 18px 50px rgba(0,0,0,.35);text-align:center;position:relative}
+    .auth-close{position:absolute;top:10px;right:10px;background:none;border:none;font-size:22px;color:#9ca3af;cursor:pointer}
   </style>
 </head>
 <body>
@@ -161,7 +165,7 @@
       <button id="dailyBtn"  class="tab-button active">Daily</button>
       <button id="travelBtn" class="tab-button">Travel</button>
       <button id="dramaBtn"  class="tab-button">K-Drama</button>
-      <button id="savedBtnHidden" class="tab-button">Saved</button>
+      <button id="savedBtnHidden"  class="tab-button">Saved</button>
     </div>
 
     <!-- app.js가 여기에 .sub-chip 버튼들을 주입 -->
@@ -218,7 +222,7 @@
   </section>
 
   <!-- AUTH MODAL -->
-  <div id="authModal" class="auth hidden">
+  <div id="authModal" class="auth">
     <div class="auth-card">
       <button id="authClose" class="auth-close" aria-label="Close">×</button>
       <div style="font-size:24px;font-weight:800;color:#7c3aed;margin-bottom:6px;">Sign in</div>
@@ -238,11 +242,15 @@
   <script defer src="js/tts.js?v=20251017"></script>
   <script defer src="js/app.js?v=20251017"></script>
 
-  <!-- Header auth wiring -->
+  <!-- Header auth wiring (모달 중앙 고정/열고닫기) -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const modal = document.getElementById('authModal');
       const loginBtn = document.getElementById('loginBtn');
+      const closeBtn = document.getElementById('authClose');
+
+      function openModal(){ modal?.classList.add('open'); }
+      function closeModal(){ modal?.classList.remove('open'); }
 
       loginBtn?.addEventListener('click', async () => {
         try {
@@ -250,14 +258,13 @@
           if (u && window.SoriUser?.logout) {
             await window.SoriUser.logout();
           } else {
-            modal?.classList.remove('hidden');
+            openModal();
           }
         } catch (e) { console.warn(e); }
       });
 
-      document.getElementById('authClose')?.addEventListener('click', () => {
-        modal?.classList.add('hidden');
-      });
+      closeBtn?.addEventListener('click', closeModal);
+      modal?.addEventListener('click', (e)=>{ if(e.target===modal) closeModal(); });
     });
   </script>
 
@@ -297,8 +304,7 @@
       function selectCategory(name, el){
         setActive(el);
         trigger.textContent = name;
-        trigger.setAttribute('aria-expanded','false');
-        menu.style.maxHeight = '0';
+        menu.classList.remove('open');
 
         // 레거시 탭 가상 클릭(서브칩/컨텐츠 렌더를 기존 로직대로)
         const key = name.toLowerCase();
@@ -310,11 +316,9 @@
         changeTip();
       }
 
-      trigger.addEventListener('click', ()=>{
-        const expanded = trigger.getAttribute('aria-expanded') === 'true';
-        trigger.setAttribute('aria-expanded', String(!expanded));
-        // CSS가 열고 닫는 건 hover/focus가 담당, 클릭은 접근성 보조
-      });
+      // 클릭으로 열고 닫기 (hover X)
+      trigger.addEventListener('click', (e)=>{ e.stopPropagation(); menu.classList.toggle('open'); });
+      document.addEventListener('click', ()=> menu.classList.remove('open'));
 
       // Saved 버튼 → 기존 saved 동작 유지
       document.getElementById('savedBtn')?.addEventListener('click', () => {
@@ -341,12 +345,12 @@
         tipEl.textContent = tips[Math.floor(Math.random()*tips.length)];
       }
 
-      // 최초 진입은 Daily로 맞추고 Tip 한 번만 세팅
+      // 최초 진입 한 번만 세팅
       changeTip();
     })();
   </script>
 
-  <!-- Navigation rewrite (기존 코드 유지) -->
+  <!-- Navigation rewrite (네가 쓰던 기존 동작 100% 유지) -->
   <script>
   (function(){
     const btn = {
@@ -357,20 +361,32 @@
       drama: document.getElementById('dramaBtn'),
     };
     const progEl  = document.getElementById('prog');
-    const badgeEl = document.getElementById('badge');
+    const badgeEl = document.getElementById('badge');     // 서브카테고리 이름 표시(Greeting 등)
     const tabs = [btn.daily, btn.travel, btn.drama].filter(Boolean);
 
-    const CAT_KEY = { dailyBtn:'daily', travelBtn:'travel', dramaBtn:'drama' };
+    // 상위 카테고리 id → SORI_DATA 키 매핑
+    const CAT_KEY = {
+      dailyBtn:  'daily',
+      travelBtn: 'travel',
+      dramaBtn:  'drama'
+    };
 
-    function getActiveTab(){ return tabs.find(t => t.classList.contains('active')) || btn.daily; }
-    function getActiveCatKey(){ return CAT_KEY[getActiveTab().id]; }
+    function getActiveTab(){
+      return tabs.find(t => t.classList.contains('active')) || btn.daily;
+    }
+    function getActiveCatKey(){
+      const tab = getActiveTab();
+      return CAT_KEY[tab.id];
+    }
 
     function getProgress(){
+      // "3 / 5" → {i:3,total:5}
       const m = (progEl?.textContent || '').match(/(\d+)\s*\/\s*(\d+)/);
       if(!m) return {i:1,total:1};
       return { i: parseInt(m[1],10), total: parseInt(m[2],10) };
     }
 
+    // 현재 카테고리의 서브카테고리 순서를 데이터에서 산출
     function subOrderOf(catKey){
       const arr = (window.SORI_DATA && window.SORI_DATA[catKey]) || [];
       const order = [];
@@ -381,25 +397,34 @@
       return order;
     }
 
-    function currentSubName(){ return (badgeEl?.textContent || '').trim(); }
+    // 현재 화면의 서브카테고리 이름
+    function currentSubName(){
+      return (badgeEl?.textContent || '').trim();
+    }
 
+    // 렌더 후 첫 아이템으로 이동하는 보정
     function goFirstItem(){
+      // 현재 페이지 i를 읽어 i>1이면 prev를 i-1번 눌러 1/로 맞춘다
       const {i} = getProgress();
       for(let k=1; k<i; k++) btn.prev?.click();
+      // 렌더 타이밍 보정
       setTimeout(()=>{
         const again = getProgress().i;
         for(let k=1; k<again; k++) btn.prev?.click();
       }, 0);
     }
 
+    // 서브칩 클릭 유틸
     function clickSubChipByName(name){
       const chips = Array.from(document.querySelectorAll('#subFilters .sub-chip'));
       const target = chips.find(c => (c.textContent || '').trim() === name)
-               || chips.find(c => (c.textContent || '').includes(name));
+                  || chips.find(c => (c.textContent || '').includes(name));
       if(target) target.click();
     }
 
+    // 현재 카테고리의 "첫 서브칩 → 첫 아이템"으로 이동
     function goFirstSubAndItem(){
+      // 서브칩이 렌더되기 직후를 고려해 두 단계로 보정
       setTimeout(()=>{
         const firstChip = document.querySelector('#subFilters .sub-chip');
         if(firstChip) firstChip.click();
@@ -407,10 +432,12 @@
       }, 0);
     }
 
+    // 1) Next 버튼 재정의: 아이템 끝 → 다음 서브 → 다음 카테고리
     btn.next?.addEventListener('click', function onNext(e){
       const {i, total} = getProgress();
-      if(i < total) return;
+      if(i < total) return; // 아직 서브 내 아이템 남아있으면 기본 동작
 
+      // 여기 도달하면 "서브의 마지막 아이템" 상태
       e.preventDefault();
       e.stopImmediatePropagation();
 
@@ -419,6 +446,7 @@
       const curSub = currentSubName();
       const curSubIdx = Math.max(0, subs.indexOf(curSub));
 
+      // 다음 서브가 있으면 그걸로
       if(curSubIdx > -1 && curSubIdx < subs.length - 1){
         const nextSubName = subs[curSubIdx + 1];
         clickSubChipByName(nextSubName);
@@ -426,20 +454,26 @@
         return;
       }
 
+      // 서브도 마지막이면 다음 상위 카테고리로
       const curTab = getActiveTab();
       const idx = tabs.indexOf(curTab);
       const nextIdx = (idx + 1) % tabs.length;
       tabs[nextIdx].click();
+      // 새 카테고리에서 첫 서브의 첫 아이템
       goFirstSubAndItem();
-    }, true);
+    }, true); // capture로 등록해 기존 핸들러보다 우선
 
+    // 2) 사용자가 탭을 직접 눌러도 항상 첫 서브 1/부터
     tabs.forEach(t=>{
-      t?.addEventListener('click', ()=>{ goFirstSubAndItem(); });
+      t?.addEventListener('click', ()=>{
+        goFirstSubAndItem();
+      });
     });
+
   })();
   </script>
 
-  <!-- Analytics wiring -->
+  <!-- Analytics wiring (기존) -->
   <script>
   (function(){
     function buildPath(){
@@ -508,7 +542,7 @@
   })();
   </script>
 
-  <!-- TTS patch -->
+  <!-- TTS patch (그대로 유지) -->
   <script>
   (function(){
     const ENDPOINT = "https://asia-northeast3-sori-tts.cloudfunctions.net/tts";
@@ -525,23 +559,32 @@
       if(!res.ok) throw new Error("TTS HTTP "+res.status);
       const blob=await res.blob();
       const url=URL.createObjectURL(blob); lastUrl=url; sharedAudio.src=url;
+
+      // 시작/끝 이벤트는 기존 utter 핸들러로 전달
       safeCall(utter.onstart,new Event("start"));
       sharedAudio.onended=()=>{ safeCall(utter.onend,new Event("end")); try{ URL.revokeObjectURL(url); }catch(_){} if(lastUrl===url) lastUrl=null; };
       sharedAudio.onerror=()=>{ safeCall(utter.onerror,new Event("error")); };
+
       await sharedAudio.play();
     }
     speechSynthesis.speak=function(utter){
       try{
         if(!isKorean(utter)) return originalSpeak(utter);
-        playViaApi(utter).catch(err=>{ console.warn("[Sori TTS] API failed, fallback:", err); originalSpeak(utter); });
+        playViaApi(utter).catch(err => {
+          console.warn("[Sori TTS] API failed, fallback to WebSpeech:", err);
+          originalSpeak(utter);
+        });
         return;
-      }catch(e){ console.warn("[Sori TTS] patch error, fallback:", e); return originalSpeak(utter); }
+      } catch (e) {
+        console.warn("[Sori TTS] patch error, fallback:", e);
+        return originalSpeak(utter);
+      }
     };
     window.SoriTTSApi={ useWebSpeechOnce(utter){ originalSpeak(utter); } };
   })();
   </script>
 
-  <!-- Layout fix: keep context as English, en as pronunciation; DO NOT rotate tips here -->
+  <!-- Layout fix: 위=영어 뜻, 아래(en)=발음, pr 숨김. 카테고리/다음/이전에도 안정적 동작 -->
   <script>
     (function(){
       function applyLayoutOnce(){
@@ -550,23 +593,33 @@
         const pr  = document.getElementById('pronunciation');
         if(!ctx || !en) return;
 
-        // ctx = 영어 뜻 (따옴표 유지)
-        // en  = 발음
-        if(pr){ pr.style.display='none'; }
+        // 1) context ← 현재 #english(따옴표 포함)
+        const englishText = (en.textContent || '').trim();
+        if(englishText) ctx.textContent = englishText;
+
+        // 2) 아래(en) ← 발음
+        const pron = (pr?.textContent || '').trim();
+        if(pron) en.textContent = pron;
+
+        // 3) 발음 원본 숨김
+        if(pr) pr.style.display = 'none';
       }
 
+      // 초기 1회
       document.addEventListener('DOMContentLoaded', applyLayoutOnce);
 
-      // Next/Prev/서브 전환 시에도 영어/발음 구조 깨지지 않도록 보정
+      // DOM 갱신 시 한 번만 보정
+      let rafId = 0;
       const mo = new MutationObserver(()=>{
-        clearTimeout(window.__soriFixTimer);
-        window.__soriFixTimer = setTimeout(applyLayoutOnce, 30);
+        cancelAnimationFrame(rafId);
+        rafId = requestAnimationFrame(applyLayoutOnce);
       });
       mo.observe(document.body, { childList:true, subtree:true, characterData:true });
 
+      // 버튼 상호작용 시에도 보정
       ['nextBtn','prevBtn','dailyBtn','travelBtn','dramaBtn','savedBtnHidden'].forEach(id=>{
         const el = document.getElementById(id);
-        el && el.addEventListener('click', ()=> setTimeout(applyLayoutOnce, 0), true);
+        el && el.addEventListener('click', ()=> requestAnimationFrame(applyLayoutOnce), true);
       });
     })();
   </script>
