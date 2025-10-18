@@ -4,31 +4,51 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Sori - Learn Korean by Sound</title>
-   
-<!-- Favicon -->
-<link rel="icon" type="image/svg+xml"
-  href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiIgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIj4KICA8Y2lyY2xlIGN4PSIxNiIgY3k9IjE2IiByPSIxNSIgZmlsbD0iIzdjM2FlZCIgc3Ryb2tlPSIjNmQyOGQ5IiBzdHJva2Utd2lkdGg9IjEiLz4KICA8dGV4dCB4PSI4IiB5PSIyMiIgZmlsbD0id2hpdGUiIGZvbnQtZmFtaWx5PSJzZXJpZiIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9ImJvbGQiPu2KpA==</textPjwvc3ZnPg==" />
 
-<!-- Apple Touch Icon -->
-<link rel="apple-touch-icon"
-  href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxODAgMTgwIiB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCI+CiAgPGNpcmNsZSBjeD0iOTAiIGN5PSI5MCIgcj0iODUiIGZpbGw9IiM3YzNhZWQiIHN0cm9rZT0iIzZkMjhkOSIgc3Ryb2tlLXdpZHRoPSI1Ii8+CiAgPHRleHQgeD0iNDAiIHk9IjExMCIgZmlsbD0id2hpdGUiIGZvbnQtZmFtaWx5PSJzZXJpZiIgZm9udC1zaXplPSI3MCIgZm9udC13ZWlnaHQ9ImJvbGQiPu2KpA==</textPjwvc3ZnPg==" />
+  <meta name="theme-color" content="#7c3aed"/>
 
-  <!-- head -->
-<script>
-  window.GA_ID = 'G-X1Q98DBKR5';           /* << 한 곳에서 관리 */
-</script>
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-X1Q98DBKR5"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){ dataLayer.push(arguments); }
-  gtag('js', new Date());
-  gtag('config', window.GA_ID, { send_page_view: false });
-</script>
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml"
+    href='data:image/svg+xml;utf8,
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+      <defs>
+        <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#7c3aed"/>
+          <stop offset="1" stop-color="#6d28d9"/>
+        </linearGradient>
+      </defs>
+      <circle cx="32" cy="32" r="30" fill="url(%23g)" stroke="%236d28d9" stroke-width="2"/>
+      <path d="M42 22c0-4-4-7-10-7s-10 3-10 7c0 7 20 4 20 12 0 4-4 7-10 7s-10-3-10-7"
+            fill="none" stroke="white" stroke-width="5" stroke-linecap="round"/>
+    </svg>'/>
 
+  <!-- Apple Touch Icon -->
+  <link rel="apple-touch-icon"
+    href='data:image/svg+xml;utf8,
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180">
+      <defs>
+        <linearGradient id="ga" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#7c3aed"/>
+          <stop offset="1" stop-color="#6d28d9"/>
+        </linearGradient>
+      </defs>
+      <rect width="180" height="180" rx="36" fill="url(%23ga)"/>
+      <path d="M126 62c0-12-12-21-30-21s-30 9-30 21c0 21 60 12 60 36 0 12-12 21-30 21s-30-9-30-21"
+            fill="none" stroke="white" stroke-width="14" stroke-linecap="round"/>
+    </svg>'/>
 
+  <script>
+    window.GA_ID = 'G-X1Q98DBKR5';
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-X1Q98DBKR5"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', window.GA_ID, { send_page_view: false });
+  </script>
 
-
-  <!-- Firebase compat (state.js가 compat 기준) -->
+  <!-- Firebase compat -->
   <script defer src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script defer src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
   <script defer src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
@@ -42,80 +62,69 @@
     h1{font-size:24px;margin:0 0 4px;color:#7c3aed;font-weight:800}
     .intro{color:#9ca3af;font-size:12px;margin-bottom:10px;line-height:1.3;font-weight:500}
 
-    /* header */
     .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
     .top-btn{padding:6px 12px;border-radius:10px;font-size:12px;font-weight:700;border:0;cursor:pointer}
     .top-btn.primary{background:#7c3aed;color:#fff}
 
-    /* cards/tabs */
     .card{background:#fff;border-radius:16px;padding:16px;margin:8px 0;box-shadow:0 2px 12px rgba(0,0,0,.05)}
-    .category-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-    .tab-button{padding:10px 14px;border:2px solid #f3f4f6;border-radius:14px;background:#f9fafb;color:#9ca3af;font-size:13px;font-weight:700;cursor:pointer;transition:.2s}
-    .tab-button:hover{background:#f3f4f6}
-    .tab-button.active{background:#7c3aed;color:#fff;border-color:#7c3aed;box-shadow:0 2px 8px rgba(124,58,237,.2)}
 
-    /* === Sub filters (chips) === */
-    .sub-filters{
-      display:none;             /* 기본은 숨김, app.js에서 필요 시 표시 */
-      margin-top:8px;
-      padding:8px;
-      background:#f9fafb;
-      border-radius:10px;
-      gap:8px;
-      flex-wrap:wrap;
-    }
-    .sub-chip{
-      display:inline-flex;      /* 아이콘-텍스트 한 줄 정렬 */
-      align-items:center;       /* 수직 센터 */
-      gap:6px;
-      padding:6px 12px;
-      border-radius:14px;
-      background:#fff;
-      border:2px solid #e5e7eb;
-      color:#374151;
-      font-size:12px;
-      font-weight:600;
-      cursor:pointer;
-      user-select:none;
-      line-height:1;            /* 아이콘 들썩임 방지 */
-      transition:background .15s, border-color .15s, color .15s;
-    }
-    .sub-chip:hover{ background:#f3f4f6; }
-    .sub-chip.active{
-      background:#7c3aed;
-      border-color:#7c3aed;
-      color:#fff;
-    }
-    .sub-chip .sub-icon{
-      font-size:14px;           /* 아이콘 크기 통일 */
-      line-height:1;
-      transform: translateY(0.5px); /* 미세 보정 */
-    }
-    .sub-chip .sub-label{ line-height:1; }
+    /* Picker row */
+    .row-flex{display:flex;align-items:center;gap:12px}
 
-    /* badge / star */
+    /* Wheel picker */
+    .picker-wrap{position:relative;width:220px;height:180px}
+    .picker{position:absolute;inset:0;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none;outline:none;scroll-snap-type:y mandatory}
+    .picker::-webkit-scrollbar{display:none}
+    .picker-item{height:44px;line-height:44px;text-align:center;border-radius:12px;margin:6px 8px;background:#f6f6ff;color:#5b5b72;font-weight:700;scroll-snap-align:center;user-select:none}
+    .picker-item.active{background:#7c3aed;color:#fff;transform:scale(1.03)}
+    .picker-item.spacer{background:transparent;pointer-events:none}
+    .picker-focus{position:absolute;top:50%;left:6px;right:6px;height:44px;margin-top:-22px;border-radius:12px;border:2px solid rgba(124,58,237,.35);pointer-events:none}
+
+    /* Saved fixed */
+    .saved-btn{height:44px;padding:0 16px;border-radius:12px;background:#ffffff;color:#7c3aed;border:2px solid #e9defd;font-weight:800;cursor:pointer;white-space:nowrap}
+    .saved-btn:hover{background:#f7f2ff}
+
+    /* 숨김 탭: 기존 app.js 호환용 */
+    .hidden-tabs{display:none}
+
+    /* Sub filters (chips) */
+    .sub-filters{display:none;margin-top:8px;padding:8px;background:#f9fafb;border-radius:10px;gap:8px;flex-wrap:wrap}
+    .sub-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:14px;background:#fff;border:2px solid #e5e7eb;color:#374151;font-size:12px;font-weight:600;cursor:pointer;user-select:none;line-height:1;transition:background .15s,border-color .15s,color .15s}
+    .sub-chip:hover{background:#f3f4f6}
+    .sub-chip.active{background:#7c3aed;border-color:#7c3aed;color:#fff}
+    .sub-chip .sub-icon{font-size:14px;line-height:1;transform:translateY(.5px)}
+    .sub-chip .sub-label{line-height:1}
+
     .row-between{display:flex;justify-content:space-between;align-items:center;gap:8px}
     .badge{display:inline-block;background:#7c3aed;color:#fff;font-size:11px;font-weight:800;padding:5px 10px;border-radius:10px}
+
+    /* Star color: red-pink */
     .icon-btn{border:none;background:transparent;width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;font-size:20px;line-height:1;color:#9ca3af;cursor:pointer;border-radius:8px}
     .icon-btn:hover{background:#f3f4f6}
-    .icon-btn.active{color:#d97706}
+    .icon-btn.active{color:#e11d48} /* was #d97706 */
 
-    .context{background:#f9fafb;border-radius:8px;padding:6px 10px;margin-top:8px;color:#6b7280;font-size:12px;font-weight:600}
+    /* Context: will be re-used to show English meaning with big style */
+    .context{
+      background:#f9fafb;border-radius:8px;padding:6px 10px;margin-top:8px;
+      color:#6b7280;font-size:12px;font-weight:600
+    }
+    /* When we turn it into English meaning, match .en style and remove background look */
+    .context.en-mode{
+      background:transparent;border-radius:0;padding:0;margin-top:8px;
+      color:#6b7280;font-size:16px;font-weight:600;text-align:center
+    }
 
-    /* main text */
     .kbox{background:#f9fafb;border-radius:14px;padding:16px 12px;margin:12px 0}
     .ko{font-size:28px;font-weight:900;color:#1f2937;text-align:center;margin:0 0 6px}
     .en{color:#6b7280;font-size:16px;text-align:center;margin:0 0 10px;font-weight:600}
     .pr{color:#9ca3af;font-size:13px;font-style:italic;text-align:center;margin:0}
 
-    /* practice */
     .practice{background:#f9fafb;border-radius:10px;padding:10px}
     .practice-label{font-size:12px;font-weight:600;color:#6b7280;text-align:center;margin:0 0 8px}
     .dots{display:flex;gap:6px;justify-content:center;margin-bottom:8px}
     .rep-dot{width:32px;height:32px;border-radius:50%;border:2px solid #e5e7eb;background:#fff;display:flex;align-items:center;justify-content:center}
     .rep-dot.completed{background:#7c3aed;border-color:#7c3aed}
 
-    /* buttons */
     button.big{width:100%;padding:12px 18px;border-radius:14px;border:0;cursor:pointer;font-weight:800;font-size:15px;background:#7c3aed;color:#fff;box-shadow:0 2px 8px rgba(124,58,237,.2)}
     button.big:hover{background:#6d28d9}
     .error{display:none;background:#fee2e2;color:#991b1b;font-size:11px;font-weight:600;padding:8px 12px;border-radius:8px;margin-top:8px}
@@ -129,16 +138,22 @@
     .secondary:hover{background:#f3f4f6}
     .progress{text-align:center;color:#7c3aed;font-size:13px;font-weight:700;margin-top:8px}
 
-    .cong{display:none;margin:8px 0;text-align:center;background:linear-gradient(135deg,#fef3c7 0%,#fde68a 100%);border-radius:10px;padding:12px}
+    .cong{display:none;margin:8px 0;text-align:center;background:linear-gradient(135deg,#ffe4e6 0%,#fecdd3 100%);border-radius:10px;padding:12px}
     .cong.show{display:block}
 
-    /* auth modal */
+    /* Tip box: pink theme */
+    .tip-card{margin-top:10px;background:#fff1f2;border-left:3px solid #e11d48;border-radius:10px;padding:10px}
+    .tip-text{font-size:12px;color:#9f1239;font-weight:600}
+
     .auth{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);align-items:center;justify-content:center;z-index:9999;padding:16px}
     .auth:not(.hidden){display:flex}
     .auth-card{background:#fff;width:100%;max-width:360px;border-radius:18px;padding:24px;box-shadow:0 18px 50px rgba(0,0,0,.35);text-align:center;position:relative}
     .auth-close{position:absolute;top:10px;right:10px;background:none;border:none;font-size:22px;color:#9ca3af;cursor:pointer}
 
-    @media (max-width:640px){ .category-tabs{grid-template-columns:1fr} }
+    @media (max-width:640px){
+      .picker-wrap{width:100%}
+      .kbox{padding:14px 10px}
+    }
   </style>
 </head>
 <body>
@@ -153,15 +168,24 @@
     </div>
   </header>
 
-  <!-- TABS -->
+  <!-- CATEGORY -->
   <section class="card">
-    <div class="category-tabs" role="tablist" aria-label="Categories">
-      <button id="dailyBtn"  class="tab-button active" role="tab" aria-selected="true">Daily</button>
-      <button id="travelBtn" class="tab-button" role="tab" aria-selected="false">Travel</button>
-      <button id="dramaBtn"  class="tab-button" role="tab" aria-selected="false">K-Drama</button>
-      <button id="savedBtn"  class="tab-button" role="tab" aria-selected="false">★ Saved</button>
+    <div class="row-flex">
+      <div class="picker-wrap">
+        <div id="categoryPicker" class="picker"></div>
+        <div class="picker-focus"></div>
+      </div>
+      <button id="savedBtn" class="saved-btn">★ Saved</button>
     </div>
-    <!-- app.js가 여기에 .sub-chip 버튼들을 주입 -->
+
+    <!-- 호환용 숨김 탭 -->
+    <div class="hidden-tabs" aria-hidden="true">
+      <button id="dailyBtn"  class="tab-button active">Daily</button>
+      <button id="travelBtn" class="tab-button">Travel</button>
+      <button id="dramaBtn"  class="tab-button">K-Drama</button>
+      <button id="savedBtnHidden" class="tab-button">Saved</button>
+    </div>
+
     <div id="subFilters" class="sub-filters"></div>
   </section>
 
@@ -172,6 +196,7 @@
       <button id="scrapBtn" class="icon-btn" title="Save this phrase" aria-label="Save">☆</button>
     </div>
 
+    <!-- 여기엔 영어 뜻을 크게 넣기 위해 JS가 en-mode를 추가 -->
     <div id="context" class="context">Conversation: First meeting</div>
 
     <div class="kbox">
@@ -183,15 +208,11 @@
     <div class="practice">
       <p class="practice-label">Practice Count: <span id="repCount">0</span> / 5</p>
       <div class="dots">
-        <div class="rep-dot"></div>
-        <div class="rep-dot"></div>
-        <div class="rep-dot"></div>
-        <div class="rep-dot"></div>
-        <div class="rep-dot"></div>
+        <div class="rep-dot"></div><div class="rep-dot"></div><div class="rep-dot"></div><div class="rep-dot"></div><div class="rep-dot"></div>
       </div>
     </div>
 
-    <div id="congrats" class="cong">🎉 Great job!</div>
+    <div id="congrats" class="cong">Great job!</div>
 
     <button id="playBtn" class="big">Listen & Repeat</button>
     <div id="errorMsg" class="error"></div>
@@ -202,10 +223,9 @@
       <span id="speedTxt">0.75x</span>
     </div>
 
-    <div class="card" style="margin-top:10px; background:#fffbeb; border-left:3px solid #f59e0b;">
-      <div style="font-size:12px; color:#92400e; font-weight:500;">
-        Tip: Listen carefully and repeat multiple times. Consistency is key.
-      </div>
+    <!-- Tip: 랜덤 문구 -->
+    <div id="tipBox" class="tip-card">
+      <div id="tipText" class="tip-text">Tip: Listen carefully and repeat multiple times. Consistency is key.</div>
     </div>
   </section>
 
@@ -228,18 +248,18 @@
     </div>
   </div>
 
-  <!-- DATA (무조건 앱 로직보다 먼저) -->
+  <!-- DATA -->
   <script defer src="data/daily.js?v=20251017"></script>
   <script defer src="data/travel.js?v=20251017"></script>
   <script defer src="data/drama.js?v=20251017"></script>
   <script defer src="data/dataindex.js?v=20251017"></script>
 
-  <!-- APP SCRIPTS (순서 중요: state -> tts -> app) -->
+  <!-- APP SCRIPTS -->
   <script defer src="js/state.js?v=20251017"></script>
   <script defer src="js/tts.js?v=20251017"></script>
   <script defer src="js/app.js?v=20251017"></script>
 
-  <!-- 헤더: 로그인/모달만 -->
+  <!-- Header auth wiring -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const modal = document.getElementById('authModal');
@@ -262,327 +282,367 @@
     });
   </script>
 
- <script>
-/* ===== Sori Navigation Rewrite: items → sub → category ===== */
-(function(){
-  const btn = {
-    next: document.getElementById('nextBtn'),
-    prev: document.getElementById('prevBtn'),
-    daily: document.getElementById('dailyBtn'),
-    travel: document.getElementById('travelBtn'),
-    drama: document.getElementById('dramaBtn'),
-  };
-  const progEl  = document.getElementById('prog');
-  const badgeEl = document.getElementById('badge');     // 서브카테고리 이름 표시(Greeting 등)
-  const tabs = [btn.daily, btn.travel, btn.drama].filter(Boolean);
+  <!-- Wheel Picker logic + legacy compatibility -->
+  <script>
+    (function(){
+      const CATEGORIES = ["Daily","Travel","K-Drama","Food","Shopping","Cafe","Numbers","Phrases"];
 
-  // 상위 카테고리 id → SORI_DATA 키 매핑
-  const CAT_KEY = {
-    dailyBtn:  'daily',
-    travelBtn: 'travel',
-    dramaBtn:  'drama'
-  };
+      const legacy = {
+        daily:  document.getElementById('dailyBtn'),
+        travel: document.getElementById('travelBtn'),
+        drama:  document.getElementById('dramaBtn')
+      };
 
-  function getActiveTab(){
-    return tabs.find(t => t.classList.contains('active')) || btn.daily;
-  }
-  function getActiveCatKey(){
-    const tab = getActiveTab();
-    return CAT_KEY[tab.id];
-  }
+      document.getElementById('savedBtn')?.addEventListener('click', () => {
+        const savedHidden = document.getElementById('savedBtnHidden');
+        savedHidden && savedHidden.click();
+      });
 
-  function getProgress(){
-    // "3 / 5" → {i:3,total:5}
-    const m = (progEl?.textContent || '').match(/(\d+)\s*\/\s*(\d+)/);
-    if(!m) return {i:1,total:1};
-    return { i: parseInt(m[1],10), total: parseInt(m[2],10) };
-  }
+      const picker = document.getElementById('categoryPicker');
+      const itemHeight = 44, padItems = 3;
 
-  // 현재 카테고리의 서브카테고리 순서를 데이터에서 산출
-  function subOrderOf(catKey){
-    const arr = (window.SORI_DATA && window.SORI_DATA[catKey]) || [];
-    const order = [];
-    for(const x of arr){
-      const s = x?.sub || 'Default';
-      if(!order.includes(s)) order.push(s);
+      function addItem(text, spacer=false){
+        const el = document.createElement('div');
+        el.className = 'picker-item' + (spacer ? ' spacer' : '');
+        el.textContent = text;
+        if(!spacer){
+          el.addEventListener('click', () => {
+            const idx = [...picker.children].indexOf(el);
+            snapToIndex(idx);
+          });
+        }
+        picker.appendChild(el);
+      }
+
+      function renderPicker(){
+        for(let i=0;i<padItems;i++) addItem('', true);
+        CATEGORIES.forEach(c => addItem(c));
+        for(let i=0;i<padItems;i++) addItem('', true);
+
+        picker.tabIndex = 0;
+        snapToIndex(padItems);
+        fireLegacyClick("Daily");
+      }
+
+      let scrollTimer;
+      picker.addEventListener('scroll', () => {
+        clearTimeout(scrollTimer);
+        scrollTimer = setTimeout(() => {
+          const index = Math.round(picker.scrollTop / itemHeight);
+          snapToIndex(index);
+        }, 80);
+      });
+
+      picker.addEventListener('keydown', e => {
+        const cur = Math.round(picker.scrollTop / itemHeight);
+        if(e.key === 'ArrowUp') snapToIndex(cur - 1);
+        if(e.key === 'ArrowDown') snapToIndex(cur + 1);
+      });
+
+      function snapToIndex(i){
+        const max = picker.children.length - 1;
+        const clamped = Math.max(0, Math.min(max, i));
+        picker.scrollTo({ top: clamped * itemHeight, behavior: 'smooth' });
+
+        [...picker.querySelectorAll('.picker-item')].forEach(el => el.classList.remove('active'));
+        const el = picker.children[clamped];
+        if(el && !el.classList.contains('spacer')){
+          el.classList.add('active');
+          const logicalIndex = clamped - padItems;
+          const selected = CATEGORIES[logicalIndex];
+          if(selected) fireLegacyClick(selected);
+        }
+      }
+
+      function fireLegacyClick(name){
+        const key = name.toLowerCase();
+        if(key === 'daily')  legacy.daily?.click();
+        if(key === 'travel') legacy.travel?.click();
+        if(key === 'k-drama' || key === 'kdrama' || key === 'drama') legacy.drama?.click();
+        if(window.SORI && typeof window.SORI.loadCategory === 'function'){
+          window.SORI.loadCategory(name);
+        }
+      }
+
+      window.SORI = window.SORI || {};
+      window.SORI.loadCategory = window.SORI.loadCategory || function(cat){ console.log('Selected category:', cat); };
+
+      renderPicker();
+    })();
+  </script>
+
+  <!-- Navigation rewrite (기존 코드) -->
+  <script>
+  (function(){
+    const btn = {
+      next: document.getElementById('nextBtn'),
+      prev: document.getElementById('prevBtn'),
+      daily: document.getElementById('dailyBtn'),
+      travel: document.getElementById('travelBtn'),
+      drama: document.getElementById('dramaBtn'),
+    };
+    const progEl  = document.getElementById('prog');
+    const badgeEl = document.getElementById('badge');
+    const tabs = [btn.daily, btn.travel, btn.drama].filter(Boolean);
+
+    const CAT_KEY = { dailyBtn:'daily', travelBtn:'travel', dramaBtn:'drama' };
+
+    function getActiveTab(){ return tabs.find(t => t.classList.contains('active')) || btn.daily; }
+    function getActiveCatKey(){ return CAT_KEY[getActiveTab().id]; }
+
+    function getProgress(){
+      const m = (progEl?.textContent || '').match(/(\d+)\s*\/\s*(\d+)/);
+      if(!m) return {i:1,total:1};
+      return { i: parseInt(m[1],10), total: parseInt(m[2],10) };
     }
-    return order;
-  }
 
-  // 현재 화면의 서브카테고리 이름
-  function currentSubName(){
-    return (badgeEl?.textContent || '').trim();
-  }
-
-  // 렌더 후 첫 아이템으로 이동하는 보정
-  function goFirstItem(){
-    // 현재 페이지 i를 읽어 i>1이면 prev를 i-1번 눌러 1/로 맞춘다
-    const {i} = getProgress();
-    for(let k=1; k<i; k++) btn.prev?.click();
-    // 렌더 타이밍 보정
-    setTimeout(()=>{
-      const again = getProgress().i;
-      for(let k=1; k<again; k++) btn.prev?.click();
-    }, 0);
-  }
-
-  // 서브칩 클릭 유틸
-  function clickSubChipByName(name){
-    const chips = Array.from(document.querySelectorAll('#subFilters .sub-chip'));
-    const target = chips.find(c => (c.textContent || '').trim() === name)
-                || chips.find(c => (c.textContent || '').includes(name));
-    if(target) target.click();
-  }
-
-  // 현재 카테고리의 "첫 서브칩 → 첫 아이템"으로 이동
-  function goFirstSubAndItem(){
-    // 서브칩이 렌더되기 직후를 고려해 두 단계로 보정
-    setTimeout(()=>{
-      const firstChip = document.querySelector('#subFilters .sub-chip');
-      if(firstChip) firstChip.click();
-      setTimeout(goFirstItem, 0);
-    }, 0);
-  }
-
-  // 1) Next 버튼 재정의: 아이템 끝 → 다음 서브 → 다음 카테고리
-  btn.next?.addEventListener('click', function onNext(e){
-    const {i, total} = getProgress();
-    if(i < total) return; // 아직 서브 내 아이템 남아있으면 기본 동작
-
-    // 여기 도달하면 "서브의 마지막 아이템" 상태
-    e.preventDefault();
-    e.stopImmediatePropagation();
-
-    const catKey = getActiveCatKey();
-    const subs = subOrderOf(catKey);
-    const curSub = currentSubName();
-    const curSubIdx = Math.max(0, subs.indexOf(curSub));
-
-    // 다음 서브가 있으면 그걸로
-    if(curSubIdx > -1 && curSubIdx < subs.length - 1){
-      const nextSubName = subs[curSubIdx + 1];
-      clickSubChipByName(nextSubName);
-      setTimeout(goFirstItem, 0);
-      return;
+    function subOrderOf(catKey){
+      const arr = (window.SORI_DATA && window.SORI_DATA[catKey]) || [];
+      const order = [];
+      for(const x of arr){
+        const s = x?.sub || 'Default';
+        if(!order.includes(s)) order.push(s);
+      }
+      return order;
     }
 
-    // 서브도 마지막이면 다음 상위 카테고리로
-    const curTab = getActiveTab();
-    const idx = tabs.indexOf(curTab);
-    const nextIdx = (idx + 1) % tabs.length;
-    tabs[nextIdx].click();
-    // 새 카테고리에서 첫 서브의 첫 아이템
-    goFirstSubAndItem();
-  }, true); // capture로 등록해 기존 핸들러보다 우선
+    function currentSubName(){ return (badgeEl?.textContent || '').trim(); }
 
-  // 2) 사용자가 탭을 직접 눌러도 항상 첫 서브 1/부터
-  tabs.forEach(t=>{
-    t?.addEventListener('click', ()=>{
+    function goFirstItem(){
+      const {i} = getProgress();
+      for(let k=1; k<i; k++) btn.prev?.click();
+      setTimeout(()=>{
+        const again = getProgress().i;
+        for(let k=1; k<again; k++) btn.prev?.click();
+      }, 0);
+    }
+
+    function clickSubChipByName(name){
+      const chips = Array.from(document.querySelectorAll('#subFilters .sub-chip'));
+      const target = chips.find(c => (c.textContent || '').trim() === name)
+               || chips.find(c => (c.textContent || '').includes(name));
+      if(target) target.click();
+    }
+
+    function goFirstSubAndItem(){
+      setTimeout(()=>{
+        const firstChip = document.querySelector('#subFilters .sub-chip');
+        if(firstChip) firstChip.click();
+        setTimeout(goFirstItem, 0);
+      }, 0);
+    }
+
+    btn.next?.addEventListener('click', function onNext(e){
+      const {i, total} = getProgress();
+      if(i < total) return;
+
+      e.preventDefault();
+      e.stopImmediatePropagation();
+
+      const catKey = getActiveCatKey();
+      const subs = subOrderOf(catKey);
+      const curSub = currentSubName();
+      const curSubIdx = Math.max(0, subs.indexOf(curSub));
+
+      if(curSubIdx > -1 && curSubIdx < subs.length - 1){
+        const nextSubName = subs[curSubIdx + 1];
+        clickSubChipByName(nextSubName);
+        setTimeout(goFirstItem, 0);
+        return;
+      }
+
+      const curTab = getActiveTab();
+      const idx = tabs.indexOf(curTab);
+      const nextIdx = (idx + 1) % tabs.length;
+      tabs[nextIdx].click();
       goFirstSubAndItem();
+    }, true);
+
+    tabs.forEach(t=>{
+      t?.addEventListener('click', ()=>{ goFirstSubAndItem(); });
     });
-  });
+  })();
+  </script>
 
-})();
-</script>
+  <!-- Analytics wiring -->
+  <script>
+  (function(){
+    function buildPath(){
+      const activeTab = document.querySelector('.tab-button.active')?.id || 'dailyBtn';
+      const catMap = { dailyBtn:'daily', travelBtn:'travel', dramaBtn:'kdrama', savedBtn:'saved' };
+      const cat = catMap[activeTab] || 'daily';
 
-<script>
-(function(){
-  // --------- Helpers ----------
-  function buildPath(){
-    const activeTab = document.querySelector('.tab-button.active')?.id || 'dailyBtn';
-    const catMap = { dailyBtn:'daily', travelBtn:'travel', dramaBtn:'kdrama', savedBtn:'saved' };
-    const cat = catMap[activeTab] || 'daily';
+      const sub = (document.getElementById('badge')?.textContent || 'default')
+        .trim().replace(/\s+/g,'-').toLowerCase();
 
-    const sub = (document.getElementById('badge')?.textContent || 'default')
-      .trim().replace(/\s+/g,'-').toLowerCase();
+      const progText = document.getElementById('prog')?.textContent || '1 / 1';
+      const m = progText.match(/(\d+)\s*\/\s*(\d+)/);
+      const idx = m ? parseInt(m[1],10) : 1;
 
-    const progText = document.getElementById('prog')?.textContent || '1 / 1';
-    const m = progText.match(/(\d+)\s*\/\s*(\d+)/);
-    const idx = m ? parseInt(m[1],10) : 1;
+      return `/${cat}/${sub}/${idx}`;
+    }
 
-    return `/${cat}/${sub}/${idx}`;
-  }
+    function sendPV(title){
+      try{
+        const path = buildPath();
+        gtag('event', 'page_view', {
+          page_title: title || document.title,
+          page_location: location.href,
+          page_path: path,
+          send_to: 'G-X1Q98DBKR5'
+        });
+      }catch(e){}
+    }
 
-  function sendPV(title){
-    try{
-      const path = buildPath();
-      gtag('event', 'page_view', {
-        page_title: title || document.title,
-        page_location: location.href,
-        page_path: path,
-        send_to: 'G-X1Q98DBKR5'
+    function sendSessionStart(){ try{ gtag('event', 'session_start', { send_to: 'G-X1Q98DBKR5' }); }catch(e){} }
+
+    document.addEventListener('DOMContentLoaded', function(){
+      setTimeout(()=> { sendSessionStart(); sendPV('Sori'); }, 0);
+    });
+
+    ['dailyBtn','travelBtn','dramaBtn','savedBtnHidden'].forEach(id=>{
+      const el = document.getElementById(id);
+      if(!el) return;
+      el.addEventListener('click', ()=> { setTimeout(()=> sendPV(`Sori - ${el.textContent.trim()}`), 0); });
+    });
+
+    const subFilters = document.getElementById('subFilters');
+    if(subFilters){
+      subFilters.addEventListener('click', (e)=>{
+        const chip = e.target.closest('.sub-chip');
+        if(!chip) return;
+        setTimeout(()=> sendPV(`Sori - ${chip.textContent.trim()}`), 0);
       });
-      // console.log('[GA] page_view', path);
-    }catch(e){}
-  }
-
-  // 권장: 세션 시작 이벤트(초기 1회)
-  function sendSessionStart(){
-    try{
-      gtag('event', 'session_start', { send_to: 'G-X1Q98DBKR5' });
-    }catch(e){}
-  }
-
-  // --------- Wiring ----------
-  // 최초 진입: session_start + page_view (렌더 완료 후 한 틱 지연)
-  document.addEventListener('DOMContentLoaded', function(){
-    setTimeout(()=> {
-      sendSessionStart();
-      sendPV('Sori');
-    }, 0);
-  });
-
-  // 탭 전환
-  ['dailyBtn','travelBtn','dramaBtn','savedBtn'].forEach(id=>{
-    const el = document.getElementById(id);
-    if(!el) return;
-    el.addEventListener('click', ()=> {
-      setTimeout(()=> sendPV(`Sori - ${el.textContent.trim()}`), 0);
-    });
-  });
-
-  // 서브칩 전환
-  const subFilters = document.getElementById('subFilters');
-  if(subFilters){
-    subFilters.addEventListener('click', (e)=>{
-      const chip = e.target.closest('.sub-chip');
-      if(!chip) return;
-      setTimeout(()=> sendPV(`Sori - ${chip.textContent.trim()}`), 0);
-    });
-  }
-
-  // Next / Prev
-  const nextBtn = document.getElementById('nextBtn');
-  const prevBtn = document.getElementById('prevBtn');
-  nextBtn?.addEventListener('click', ()=> setTimeout(()=> sendPV('Sori - Next'), 0), true);
-  prevBtn?.addEventListener('click', ()=> setTimeout(()=> sendPV('Sori - Prev'), 0), true);
-
-  // (선택) 포커스 복귀 시도 시 한 번 더 page_view
-  document.addEventListener('visibilitychange', ()=>{
-    if(document.visibilityState === 'visible'){
-      setTimeout(()=> sendPV('Sori - resume'), 0);
     }
-  });
 
-  // 속도 변경 예시(커스텀 이벤트)
-  const speed = document.getElementById('speed');
-  speed?.addEventListener('change', ()=>{
-    gtag('event', 'change_speed', { value: speed.value, send_to: 'G-X1Q98DBKR5' });
-  });
-})();
-</script>
+    const nextBtn = document.getElementById('nextBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    nextBtn?.addEventListener('click', ()=> setTimeout(()=> sendPV('Sori - Next'), 0), true);
+    prevBtn?.addEventListener('click', ()=> setTimeout(()=> sendPV('Sori - Prev'), 0), true);
 
-<script>
-/* Sori TTS (API-first, zero changes to other files)
-   - 한국어 utterance면 Cloud Functions로 mp3 받아 재생
-   - 재생 시작/끝에 utter.onstart/utter.onend를 호출해 기존 로직 유지
-   - 실패 시 원래 speechSynthesis.speak으로 폴백
-*/
-
-(function(){
-  // 🔧 너의 Cloud Functions 엔드포인트로 교체
-  const ENDPOINT = "https://asia-northeast3-sori-tts.cloudfunctions.net/tts";
-
-  // iOS 자동재생 대응: 하나의 Audio만 재사용
-  let sharedAudio = new Audio();
-  let lastUrl = null;
-
-  // 원본 speak 보관
-  const originalSpeak = speechSynthesis.speak.bind(speechSynthesis);
-
-  // 한국어인지 판단
-  function isKorean(utter) {
-    const lang = (utter.lang || "").toLowerCase();
-    const text = (utter.text || "").trim();
-    return (lang.startsWith("ko") || /[가-힣]/.test(text));
-  }
-
-  // onstart/onend 안전 호출
-  function safeCall(fn, arg) {
-    try { typeof fn === "function" && fn(arg); } catch (e) { console.warn(e); }
-  }
-
-  // API 호출로 mp3 받아서 재생
-  async function playViaApi(utter) {
-    // 기존에 재생 중이면 정지
-    try { sharedAudio.pause(); } catch(_) {}
-    if (lastUrl) { URL.revokeObjectURL(lastUrl); lastUrl = null; }
-
-    const text = (utter.text || "").trim();
-    if (!text) throw new Error("empty text");
-
-    // 서버 호출
-    const res = await fetch(ENDPOINT, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text })
+    document.addEventListener('visibilitychange', ()=>{
+      if(document.visibilityState === 'visible'){
+        setTimeout(()=> sendPV('Sori - resume'), 0);
+      }
     });
-    if (!res.ok) throw new Error("TTS HTTP " + res.status);
 
-    const blob = await res.blob();
-    const url = URL.createObjectURL(blob);
-    lastUrl = url;
-    sharedAudio.src = url;
+    const speed = document.getElementById('speed');
+    speed?.addEventListener('change', ()=>{
+      gtag('event', 'change_speed', { value: speed.value, send_to: 'G-X1Q98DBKR5' });
+    });
+  })();
+  </script>
 
-    // 시작 이벤트 흉내
-    safeCall(utter.onstart, new Event("start"));
-
-    // 종료 이벤트 연결
-    sharedAudio.onended = () => {
-      safeCall(utter.onend, new Event("end"));
-      // 정리
-      try { URL.revokeObjectURL(url); } catch(_) {}
-      if (lastUrl === url) lastUrl = null;
+  <!-- TTS patch -->
+  <script>
+  (function(){
+    const ENDPOINT = "https://asia-northeast3-sori-tts.cloudfunctions.net/tts";
+    let sharedAudio = new Audio();
+    let lastUrl = null;
+    const originalSpeak = speechSynthesis.speak.bind(speechSynthesis);
+    function isKorean(utter){ const lang=(utter.lang||"").toLowerCase(); const text=(utter.text||"").trim(); return (lang.startsWith("ko")||/[가-힣]/.test(text)); }
+    function safeCall(fn,arg){ try{ typeof fn==="function" && fn(arg); }catch(e){ console.warn(e); } }
+    async function playViaApi(utter){
+      try{ sharedAudio.pause(); }catch(_){}
+      if(lastUrl){ try{ URL.revokeObjectURL(lastUrl); }catch(_){} lastUrl=null; }
+      const text=(utter.text||"").trim(); if(!text) throw new Error("empty text");
+      const res=await fetch(ENDPOINT,{method:"POST",headers:{ "Content-Type":"application/json" },body:JSON.stringify({ text })});
+      if(!res.ok) throw new Error("TTS HTTP "+res.status);
+      const blob=await res.blob();
+      const url=URL.createObjectURL(blob); lastUrl=url; sharedAudio.src=url;
+      safeCall(utter.onstart,new Event("start"));
+      sharedAudio.onended=()=>{ safeCall(utter.onend,new Event("end")); try{ URL.revokeObjectURL(url); }catch(_){} if(lastUrl===url) lastUrl=null; };
+      sharedAudio.onerror=()=>{ safeCall(utter.onerror,new Event("error")); };
+      await sharedAudio.play();
+    }
+    speechSynthesis.speak=function(utter){
+      try{
+        if(!isKorean(utter)) return originalSpeak(utter);
+        playViaApi(utter).catch(err=>{ console.warn("[Sori TTS] API failed, fallback:", err); originalSpeak(utter); });
+        return;
+      }catch(e){ console.warn("[Sori TTS] patch error, fallback:", e); return originalSpeak(utter); }
     };
-    sharedAudio.onerror = () => {
-      // 에러 시 onerror도 전달
-      safeCall(utter.onerror, new Event("error"));
-    };
+    window.SoriTTSApi={ useWebSpeechOnce(utter){ originalSpeak(utter); } };
+  })();
+  </script>
 
-    // 실제 재생
-    await sharedAudio.play();
-  }
+  <!-- Layout adjustments: replace context with English, move pronunciation up; rotate tips -->
+  <script>
+    (function(){
+      const tips = [
+        "Tip: Small daily reps beat big, rare sessions.",
+        "Tip: Shadow the sound, not the spelling.",
+        "Tip: Say it out loud — your mouth must learn too.",
+        "Tip: Five clean repeats > twenty sloppy ones.",
+        "Tip: Record yourself and match the rhythm.",
+        "Tip: First mimic, then understand.",
+        "Tip: Keep the same speed; build consistency.",
+        "Tip: Close your eyes and copy the melody.",
+        "Tip: Bite-sized goals. One phrase at a time.",
+        "Tip: Revisit yesterday — retention makes speed."
+      ];
 
-  // 핵심: speak 패치
-  speechSynthesis.speak = function(utter){
-    try {
-      // 한국어만 API 우선 적용, 아니면 원래대로
-      if (!isKorean(utter)) return originalSpeak(utter);
+      function randomTip(){
+        const el = document.getElementById('tipText');
+        if(!el) return;
+        const t = tips[Math.floor(Math.random()*tips.length)];
+        el.textContent = t;
+      }
 
-      // API 사용 시도 → 실패하면 폴백
-      playViaApi(utter).catch(err => {
-        console.warn("[Sori TTS] API failed, fallback to WebSpeech:", err);
-        originalSpeak(utter);
+      function swapLayout(){
+        const ctx = document.getElementById('context');
+        const en  = document.getElementById('english');
+        const pr  = document.getElementById('pronunciation');
+
+        if(!ctx || !en || !pr) return;
+
+        // 1) context에 영어 뜻 넣고 큰 폰트 스타일 적용
+        const englishText = (en.textContent || '').replace(/^"+|"+$/g,'').trim();
+        if(englishText){
+          ctx.textContent = englishText;
+          ctx.classList.add('en-mode');
+        }
+
+        // 2) 기존 English 자리에는 발음 텍스트를 큰 폰트(en 스타일)로 표시
+        const pron = (pr.textContent || '').trim();
+        if(pron){
+          en.textContent = pron;  // en 위치에 annyeonghaseyo
+        }
+
+        // 3) 원래 pr는 숨김
+        pr.style.display = 'none';
+
+        // 4) 랜덤 Tip 갱신
+        randomTip();
+      }
+
+      // 초기 1회
+      document.addEventListener('DOMContentLoaded', ()=> {
+        swapLayout();
       });
-      // 여기서 return 해 원래 엔진이 중복 실행되지 않게
-      return;
-    } catch (e) {
-      console.warn("[Sori TTS] patch error, fallback:", e);
-      return originalSpeak(utter);
-    }
-  };
 
-  // 옵션: 전역에서 강제로 API/폴백 제어하고 싶을 때
-  window.SoriTTSApi = {
-    useWebSpeechOnce(utter){
-      // 원본으로 1회 우회 실행
-      originalSpeak(utter);
-    }
-  };
-})();
-</script>
+      // 콘텐츠가 바뀔 때마다(Next/Prev/카테고리 전환) 재적용
+      const target = document.body;
+      const mo = new MutationObserver((ms)=>{
+        // korean/en/pr/ctx 텍스트 변경을 감지해 재배치
+        for(const m of ms){
+          if(m.type === 'childList' || m.type === 'subtree' || m.type === 'characterData'){
+            // 과도한 호출 방지 타이머
+            clearTimeout(window.__soriSwapTimer);
+            window.__soriSwapTimer = setTimeout(swapLayout, 30);
+            break;
+          }
+        }
+      });
+      mo.observe(target, { childList:true, subtree:true, characterData:true });
 
-  
+      // Next/Prev 클릭 시에도 보장
+      ['nextBtn','prevBtn','dailyBtn','travelBtn','dramaBtn','savedBtnHidden'].forEach(id=>{
+        const el = document.getElementById(id);
+        el && el.addEventListener('click', ()=> setTimeout(swapLayout, 0), true);
+      });
+    })();
+  </script>
+
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
