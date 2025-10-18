@@ -24,7 +24,7 @@
     gtag('config',window.GA_ID,{send_page_view:false});
   </script>
 
-  <!-- Firebase -->
+  <!-- Firebase compat -->
   <script defer src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script defer src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
   <script defer src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
@@ -33,14 +33,15 @@
     *{box-sizing:border-box}
     body{
       font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-      max-width:680px;margin:0 auto;padding:12px;
-      background:#faf8ff;min-height:100vh;color:#1f2937;
+      max-width:680px;margin:0 auto;padding:12px;background:#faf8ff;min-height:100vh;color:#1f2937
     }
     h1{font-size:24px;margin:0 0 4px;color:#7c3aed;font-weight:800}
     .intro{color:#9ca3af;font-size:12px;margin-bottom:10px;line-height:1.3;font-weight:500}
+
     .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
     .top-btn{padding:6px 12px;border-radius:10px;font-size:12px;font-weight:700;border:0;cursor:pointer}
     .top-btn.primary{background:#7c3aed;color:#fff}
+
     .card{background:#fff;border-radius:16px;padding:16px;margin:8px 0;box-shadow:0 2px 12px rgba(0,0,0,.05)}
 
     /* Category picker */
@@ -56,8 +57,10 @@
     }
     .picker-menu.open{max-height:156px}
     .picker-list{max-height:150px;overflow-y:auto;padding:6px;scrollbar-width:thin}
-    .picker-item{height:44px;line-height:44px;border-radius:12px;margin:6px 4px;text-align:center;
-      background:#f6f6ff;color:#5b5b72;font-weight:700;cursor:pointer;user-select:none}
+    .picker-item{
+      height:44px;line-height:44px;border-radius:12px;margin:6px 4px;text-align:center;
+      background:#f6f6ff;color:#5b5b72;font-weight:700;cursor:pointer;user-select:none
+    }
     .picker-item:hover,.picker-item.active{background:#7c3aed;color:#fff}
     .saved-btn{
       height:44px;padding:0 16px;border-radius:12px;background:#fff;color:#7c3aed;border:2px solid #e9defd;font-weight:800;cursor:pointer;white-space:nowrap
@@ -75,6 +78,7 @@
     .icon-btn.active{color:#e11d48}
 
     .context{color:#6b7280;font-size:16px;text-align:center;margin:8px 0 0;font-weight:600}
+
     .kbox{background:#f9fafb;border-radius:14px;padding:16px 12px;margin:12px 0;text-align:center}
     .ko{font-size:28px;font-weight:900;color:#1f2937;margin:0 0 6px}
     .en{color:#6b7280;font-size:16px;margin:0 0 10px;font-weight:600}
@@ -84,17 +88,40 @@
     .dots{display:flex;gap:6px;justify-content:center;margin-bottom:8px}
     .rep-dot{width:32px;height:32px;border-radius:50%;border:2px solid #e5e7eb;background:#fff}
     .rep-dot.completed{background:#7c3aed;border-color:#7c3aed}
-    button.big{width:100%;padding:12px 18px;border-radius:14px;border:0;cursor:pointer;font-weight:800;font-size:15px;background:#7c3aed;color:#fff}
-    .row{display:flex;align-items:center;justify-content:center;gap:8px;background:#f9fafb;border-radius:8px;padding:8px;margin-top:8px}
 
+    button.big{width:100%;padding:12px 18px;border-radius:14px;border:0;cursor:pointer;font-weight:800;font-size:15px;background:#7c3aed;color:#fff}
+
+    /* Speed slider brand color */
+    input[type="range"]{accent-color:#7c3aed;outline:0}
+    input[type="range"]::-webkit-slider-runnable-track{height:6px;border-radius:999px;background:#e9defd}
+    input[type="range"]::-webkit-slider-thumb{width:18px;height:18px;border-radius:50%;background:#7c3aed;border:2px solid #6d28d9;margin-top:-6px}
+    input[type="range"]::-moz-range-track{height:6px;border-radius:999px;background:#e9defd}
+    input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#7c3aed;border:2px solid #6d28d9}
+
+    .row{display:flex;align-items:center;justify-content:center;gap:8px;background:#f9fafb;border-radius:8px;padding:8px;margin-top:8px}
     .tip-card{margin-top:10px;background:#fff1f2;border-left:3px solid #e11d48;border-radius:10px;padding:10px}
     .tip-text{font-size:12px;color:#9f1239;font-weight:600}
 
     .hidden-tabs{display:none}
+
+    /* Auth modal */
     .auth{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:9999;background:rgba(0,0,0,.45);padding:16px}
     .auth.open{display:flex}
     .auth-card{background:#fff;width:100%;max-width:360px;border-radius:18px;padding:24px;box-shadow:0 18px 50px rgba(0,0,0,.35);text-align:center;position:relative}
     .auth-close{position:absolute;top:10px;right:10px;background:none;border:none;font-size:22px;color:#9ca3af;cursor:pointer}
+
+    /* Modern nav bar */
+    .navbar{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .nav-center{min-width:112px;text-align:center;font-size:13px;color:#6b7280;font-weight:600}
+    .nav-btn{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:10px 14px;border-radius:12px;border:1px solid #e5e7eb;
+      background:#fff;color:#374151;cursor:pointer;font-weight:700;
+      box-shadow:0 1px 4px rgba(0,0,0,.04)
+    }
+    .nav-btn:hover{border-color:#d8dbe2}
+    .nav-btn .caret{font-size:14px;color:#7c3aed}
+    .nav-btn:disabled{opacity:.5;cursor:not-allowed}
   </style>
 </head>
 <body>
@@ -111,12 +138,15 @@
   <section class="card">
     <div class="category-bar">
       <div class="picker-wrap">
-        <button id="pickerTrigger" class="picker-trigger" aria-haspopup="listbox">Daily</button>
-        <div id="pickerMenu" class="picker-menu"><div class="picker-list"></div></div>
+        <button id="pickerTrigger" class="picker-trigger" aria-haspopup="listbox" aria-expanded="false">Daily</button>
+        <div id="pickerMenu" class="picker-menu">
+          <div class="picker-list" role="listbox"></div>
+        </div>
       </div>
       <button id="savedBtn" class="saved-btn">★ Saved</button>
     </div>
 
+    <!-- 호환용 숨김 탭 -->
     <div class="hidden-tabs" aria-hidden="true">
       <button id="dailyBtn"  class="tab-button active">Daily</button>
       <button id="travelBtn" class="tab-button">Travel</button>
@@ -131,8 +161,9 @@
   <section class="card">
     <div class="row-between">
       <div id="badge" class="badge">Greeting</div>
-      <button id="scrapBtn" class="icon-btn" title="Save this phrase">☆</button>
+      <button id="scrapBtn" class="icon-btn" title="Save this phrase" aria-label="Save">☆</button>
     </div>
+
     <div id="context" class="context">"Hello"</div>
 
     <div class="kbox">
@@ -143,103 +174,242 @@
 
     <div class="practice">
       <p class="practice-label">Practice Count: <span id="repCount">0</span> / 5</p>
-      <div class="dots"><div class="rep-dot"></div><div class="rep-dot"></div><div class="rep-dot"></div><div class="rep-dot"></div><div class="rep-dot"></div></div>
+      <div class="dots">
+        <div class="rep-dot"></div><div class="rep-dot"></div><div class="rep-dot"></div><div class="rep-dot"></div><div class="rep-dot"></div>
+      </div>
     </div>
 
     <button id="playBtn" class="big">Listen & Repeat</button>
-    <div class="row"><label>Speed:</label><input id="speed" type="range" min="0.3" max="1.0" step="0.1" value="0.75"/><span id="speedTxt">0.75x</span></div>
-    <div class="tip-card"><div id="tipText" class="tip-text"></div></div>
+    <div class="row">
+      <label>Speed:</label>
+      <input id="speed" type="range" min="0.3" max="1.0" step="0.1" value="0.75" />
+      <span id="speedTxt">0.75x</span>
+    </div>
+
+    <div class="tip-card"><div id="tipText" class="tip-text">Tip: Listen carefully and repeat multiple times. Consistency is key.</div></div>
   </section>
 
+  <!-- NAV -->
   <section class="card">
-    <div class="nav"><button id="prevBtn">◀ Previous</button><button id="nextBtn">▶ Next</button></div>
-    <div id="prog" class="progress">1 / 30</div>
+    <div class="navbar">
+      <button id="prevBtn" class="nav-btn"><span class="caret">◀</span> Previous</button>
+      <div id="prog" class="nav-center">1 / 45</div>
+      <button id="nextBtn" class="nav-btn">Next <span class="caret">▶</span></button>
+    </div>
   </section>
 
+  <!-- AUTH MODAL -->
   <div id="authModal" class="auth">
     <div class="auth-card">
-      <button id="authClose" class="auth-close">×</button>
+      <button id="authClose" class="auth-close" aria-label="Close">×</button>
       <div style="font-size:24px;font-weight:800;color:#7c3aed;margin-bottom:6px;">Sign in</div>
       <div style="font-size:13px;color:#9ca3af;margin-bottom:18px;">Use your Google account</div>
-      <button class="gbtn" onclick="window.handleGoogleLogin&&window.handleGoogleLogin()">Continue with Google</button>
+      <button class="gbtn" onclick="window.handleGoogleLogin && window.handleGoogleLogin()">Continue with Google</button>
     </div>
   </div>
 
-  <!-- 데이터 연결 -->
+  <!-- DATA -->
   <script defer src="data/daily.js?v=20251017"></script>
   <script defer src="data/travel.js?v=20251017"></script>
   <script defer src="data/drama.js?v=20251017"></script>
   <script defer src="data/dataindex.js?v=20251017"></script>
+
+  <!-- APP SCRIPTS -->
   <script defer src="js/state.js?v=20251017"></script>
   <script defer src="js/tts.js?v=20251017"></script>
   <script defer src="js/app.js?v=20251017"></script>
 
-  <!-- 하단 보조 스크립트들은 모두 DOMContentLoaded 이후 실행 -->
+  <!-- Auth wiring -->
   <script>
-  document.addEventListener('DOMContentLoaded',()=>{
-    // Auth wiring
-    const modal=authModal, login=loginBtn, close=authClose;
-    const open=()=>modal.classList.add('open'), hide=()=>modal.classList.remove('open');
-    function wireLogin(){login.textContent='Login';login.onclick=open;}
-    function wireLogout(){login.textContent='Logout';login.onclick=async()=>{try{await window.SoriUser?.logout?.();}catch(e){}};}
-    close.onclick=hide;modal.onclick=e=>{if(e.target===modal)hide();}
-    try{firebase.auth().onAuthStateChanged(u=>{u?(hide(),wireLogout()):wireLogin();});}
-    catch(e){wireLogin();}
+    document.addEventListener('DOMContentLoaded', ()=>{
+      const modal = document.getElementById('authModal');
+      const loginBtn = document.getElementById('loginBtn');
+      const closeBtn = document.getElementById('authClose');
 
-    // Picker
-    const cats=["Daily","Travel","K-Drama"], menu=pickerMenu.querySelector('.picker-list');
-    menu.innerHTML=''; cats.forEach((c,i)=>{const el=document.createElement('div');el.className='picker-item'+(i==0?' active':'');el.textContent=c;
-      el.onclick=()=>{menu.querySelectorAll('.picker-item').forEach(n=>n.classList.remove('active'));el.classList.add('active');pickerTrigger.textContent=c;pickerMenu.classList.remove('open');changeTip();const key=c.toLowerCase();if(key==='daily')dailyBtn.click();if(key==='travel')travelBtn.click();if(key.includes('drama'))dramaBtn.click();};
-      menu.appendChild(el);
+      const open = ()=> modal.classList.add('open');
+      const close= ()=> modal.classList.remove('open');
+
+      function wireAsLogin(){ loginBtn.textContent='Login'; loginBtn.onclick=open; }
+      function wireAsLogout(){
+        loginBtn.textContent='Logout';
+        loginBtn.onclick= async ()=>{ try{ await window.SoriUser?.logout?.(); }catch(e){ console.warn(e);} };
+      }
+
+      closeBtn?.addEventListener('click', close);
+      modal?.addEventListener('click', e=>{ if(e.target===modal) close(); });
+
+      try{
+        const auth = window.firebase?.auth && firebase.auth();
+        auth?.onAuthStateChanged(user=>{ user ? (close(), wireAsLogout()) : wireAsLogin(); });
+      }catch(e){ console.warn('[Auth init]', e); wireAsLogin(); }
     });
-    pickerTrigger.onclick=e=>{e.stopPropagation();pickerMenu.classList.toggle('open');};
-    document.body.onclick=()=>pickerMenu.classList.remove('open');
-    savedBtn.onclick=()=>savedBtnHidden.click();
-
-    // Tip rotate
-    const tips=[
-      "Tip: Small daily reps beat big, rare sessions.",
-      "Tip: Shadow the sound, not the spelling.",
-      "Tip: Say it out loud — your mouth must learn too.",
-      "Tip: Five clean repeats > twenty sloppy ones.",
-      "Tip: Record yourself and match the rhythm.",
-      "Tip: First mimic, then understand.",
-      "Tip: Keep the same speed; build consistency.",
-      "Tip: Close your eyes and copy the melody.",
-      "Tip: Bite-sized goals. One phrase at a time.",
-      "Tip: Revisit yesterday — retention makes speed."
-    ];
-    const tipText=document.getElementById('tipText');
-    const changeTip=()=>tipText.textContent=tips[Math.floor(Math.random()*tips.length)];
-    changeTip();
-
-    // Layout fix swap
-    const quote=s=>`"${String(s||'').replace(/^"+|"+$/g,'').trim()}"`;let last='';
-    function swap(){
-      const ko=(korean.textContent||'').trim();if(!ko||ko===last)return;last=ko;
-      const en=english,pr=pronunciation,ctx=context;
-      if(en&&pr&&ctx){ctx.textContent=quote(en.textContent.trim());en.textContent=pr.textContent.trim();pr.style.display='none';}
-    }
-    swap();
-    const mo=new MutationObserver(()=>requestAnimationFrame(swap));
-    mo.observe(korean,{childList:true,subtree:true});
-    [nextBtn,prevBtn,dailyBtn,travelBtn,dramaBtn,savedBtnHidden].forEach(el=>el.addEventListener('click',()=>setTimeout(swap,0),true));
-  });
   </script>
 
-  <!-- 안전한 TTS patch -->
+  <!-- Picker logic + Tip -->
+  <script>
+    (function(){
+      const CATS=["Daily","Travel","K-Drama"];
+      const legacy={daily:dailyBtn,travel:travelBtn,drama:dramaBtn};
+      const trigger=pickerTrigger, menu=pickerMenu;
+      const list=menu.querySelector('.picker-list');
+      list.innerHTML='';
+      CATS.forEach((c,i)=>{
+        const el=document.createElement('div');
+        el.className='picker-item'+(i===0?' active':''); el.textContent=c;
+        el.onclick=()=>select(c,el); list.appendChild(el);
+      });
+      function setActive(el){ list.querySelectorAll('.picker-item').forEach(n=>n.classList.remove('active')); el.classList.add('active'); }
+      function select(name,el){
+        setActive(el); trigger.textContent=name; menu.classList.remove('open');
+        const key=name.toLowerCase();
+        if(key==='daily')  legacy.daily?.click();
+        if(key==='travel') legacy.travel?.click();
+        if(key.includes('drama')) legacy.drama?.click();
+        changeTip();
+      }
+      trigger.onclick=(e)=>{ e.stopPropagation(); menu.classList.toggle('open'); };
+      document.onclick=()=>menu.classList.remove('open');
+      savedBtn?.addEventListener('click',()=> savedBtnHidden?.click());
+
+      const tips=[
+        "Tip: Small daily reps beat big, rare sessions.",
+        "Tip: Shadow the sound, not the spelling.",
+        "Tip: Say it out loud — your mouth must learn too.",
+        "Tip: Five clean repeats > twenty sloppy ones.",
+        "Tip: Record yourself and match the rhythm.",
+        "Tip: First mimic, then understand.",
+        "Tip: Keep the same speed; build consistency.",
+        "Tip: Close your eyes and copy the melody.",
+        "Tip: Bite-sized goals. One phrase at a time.",
+        "Tip: Revisit yesterday — retention makes speed."
+      ];
+      const tipEl=document.getElementById('tipText');
+      function changeTip(){ if(tipEl) tipEl.textContent=tips[Math.floor(Math.random()*tips.length)]; }
+      changeTip();
+    })();
+  </script>
+
+  <!-- Navigation rewrite -->
+  <script>
+  (function(){
+    const btn={next:nextBtn,prev:prevBtn,daily:dailyBtn,travel:travelBtn,drama:dramaBtn};
+    const progEl=prog, badgeEl=badge; const tabs=[btn.daily,btn.travel,btn.drama].filter(Boolean);
+    const CAT_KEY={dailyBtn:'daily',travelBtn:'travel',dramaBtn:'drama'};
+    const getActiveTab=()=> tabs.find(t=>t.classList.contains('active'))||btn.daily;
+    const getActiveCatKey=()=> CAT_KEY[getActiveTab().id];
+    function getProgress(){ const m=(progEl?.textContent||'').match(/(\d+)\s*\/\s*(\d+)/); if(!m) return {i:1,total:1}; return {i:parseInt(m[1],10),total:parseInt(m[2],10)};}
+    function subOrderOf(catKey){ const arr=(window.SORI_DATA&&window.SORI_DATA[catKey])||[]; const order=[]; for(const x of arr){const s=x?.sub||'Default'; if(!order.includes(s)) order.push(s);} return order;}
+    const currentSubName=()=> (badgeEl?.textContent||'').trim();
+    function goFirstItem(){ const {i}=getProgress(); for(let k=1;k<i;k++) btn.prev?.click(); setTimeout(()=>{ const again=getProgress().i; for(let k=1;k<again;k++) btn.prev?.click();},0); }
+    function clickSubChipByName(name){ const chips=[...document.querySelectorAll('#subFilters .sub-chip')]; const t=chips.find(c=>(c.textContent||'').trim()===name)||chips.find(c=>(c.textContent||'').includes(name)); if(t) t.click(); }
+    function goFirstSubAndItem(){ setTimeout(()=>{ const first=document.querySelector('#subFilters .sub-chip'); if(first) first.click(); setTimeout(goFirstItem,0); },0); }
+    btn.next?.addEventListener('click',function(e){ const {i,total}=getProgress(); if(i<total) return; e.preventDefault(); e.stopImmediatePropagation();
+      const subs=subOrderOf(getActiveCatKey()); const cur=currentSubName(); const idx=Math.max(0,subs.indexOf(cur));
+      if(idx>-1 && idx<subs.length-1){ clickSubChipByName(subs[idx+1]); setTimeout(goFirstItem,0); return; }
+      const curTab=getActiveTab(); const tIdx=tabs.indexOf(curTab); const nextIdx=(tIdx+1)%tabs.length; tabs[nextIdx].click(); goFirstSubAndItem();
+    },true);
+    tabs.forEach(t=> t?.addEventListener('click',()=>{ goFirstSubAndItem(); }));
+  })();
+  </script>
+
+  <!-- Analytics wiring -->
+  <script>
+  (function(){
+    function buildPath(){
+      const active=document.querySelector('.tab-button.active')?.id || 'dailyBtn';
+      const catMap={dailyBtn:'daily',travelBtn:'travel',dramaBtn:'kdrama',savedBtn:'saved'};
+      const cat=catMap[active]||'daily';
+      const sub=(badge?.textContent||'default').trim().replace(/\s+/g,'-').toLowerCase();
+      const m=(prog?.textContent||'1 / 1').match(/(\d+)\s*\/\s*(\d+)/); const idx=m?parseInt(m[1],10):1;
+      return `/${cat}/${sub}/${idx}`;
+    }
+    function sendPV(title){ try{ gtag('event','page_view',{page_title:title||document.title,page_location:location.href,page_path:buildPath(),send_to:'G-X1Q98DBKR5'});}catch(e){} }
+    function sendSessionStart(){ try{ gtag('event','session_start',{send_to:'G-X1Q98DBKR5'});}catch(e){} }
+    document.addEventListener('DOMContentLoaded',()=>{ setTimeout(()=>{ sendSessionStart(); sendPV('Sori'); },0); });
+    ['dailyBtn','travelBtn','dramaBtn','savedBtnHidden'].forEach(id=>{ const el=document.getElementById(id); el&&el.addEventListener('click',()=> setTimeout(()=>sendPV(`Sori - ${el.textContent.trim()}`),0)); });
+    const subFilters=document.getElementById('subFilters');
+    subFilters&&subFilters.addEventListener('click',e=>{ const chip=e.target.closest('.sub-chip'); if(!chip) return; setTimeout(()=>sendPV(`Sori - ${chip.textContent.trim()}`),0); });
+    nextBtn?.addEventListener('click',()=> setTimeout(()=>sendPV('Sori - Next'),0),true);
+    prevBtn?.addEventListener('click',()=> setTimeout(()=>sendPV('Sori - Prev'),0),true);
+    document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible') setTimeout(()=>sendPV('Sori - resume'),0); });
+    speed?.addEventListener('change',()=>{ gtag('event','change_speed',{value:speed.value,send_to:'G-X1Q98DBKR5'}); });
+  })();
+  </script>
+
+  <!-- TTS patch -->
   <script>
   window.addEventListener('load',()=>{
     const ENDPOINT="https://asia-northeast3-sori-tts.cloudfunctions.net/tts";
     const original=speechSynthesis.speak.bind(speechSynthesis);
     const shared=new Audio();let last=null;
-    async function viaApi(u){try{shared.pause();}catch{}if(last){URL.revokeObjectURL(last);last=null;}
-      const t=(u.text||'').trim();if(!t)throw 0;
-      const r=await fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:t})});
-      const b=await r.blob();const url=URL.createObjectURL(b);last=url;shared.src=url;await shared.play();
+    async function viaApi(u){try{shared.pause();}catch(_){}
+      if(last){try{URL.revokeObjectURL(last);}catch(_){} last=null;}
+      const text=(u.text||'').trim(); if(!text) throw new Error('empty');
+      const r=await fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text})});
+      const b=await r.blob(); const url=URL.createObjectURL(b); last=url; shared.src=url; await shared.play();
     }
-    speechSynthesis.speak=function(u){if(/[가-힣]/.test(u.text||''))viaApi(u).catch(()=>original(u));else original(u);}
+    speechSynthesis.speak=function(u){ if(/[가-힣]/.test((u.text||'').trim())) viaApi(u).catch(()=>original(u)); else original(u); };
   });
+  </script>
+
+  <!-- Layout fix + Practice dots -->
+  <script>
+  (function(){
+    const quote=(s)=>`"${String(s||'').replace(/^"+|"+$/g,'').trim()}"`;
+    let lastKo='';
+
+    function forceMeaningRoman(){
+      const ko=korean, en=english, pr=pronunciation, ctx=context;
+      if(!ko||!en||!pr||!ctx) return;
+      if(!en.dataset.meaning) en.dataset.meaning=(en.textContent||'').trim();
+      if(!pr.dataset.roman)   pr.dataset.roman  =(pr.textContent||'').trim();
+      ctx.textContent=quote(en.dataset.meaning||'');
+      en.textContent=(pr.dataset.roman||'');
+      pr.style.display='none';
+    }
+
+    function resetDots(){
+      const dots=[...document.querySelectorAll('.rep-dot')];
+      dots.forEach(d=>d.classList.remove('completed'));
+      document.getElementById('repCount').textContent='0';
+    }
+
+    function onSentenceChanged(){
+      const ko=(korean?.textContent||'').trim();
+      if(!ko || ko===lastKo) return;
+      lastKo=ko;
+      forceMeaningRoman();
+      resetDots();
+    }
+
+    document.addEventListener('DOMContentLoaded', ()=>{
+      forceMeaningRoman();
+      const mo=new MutationObserver(()=> requestAnimationFrame(onSentenceChanged));
+      mo.observe(korean,{childList:true,characterData:true,subtree:true});
+
+      // 재생 시 연습 카운트 증가 (최대 5)
+      const play= document.getElementById('playBtn');
+      play.addEventListener('click', ()=>{
+        const cntEl=document.getElementById('repCount');
+        let n=parseInt(cntEl.textContent||'0',10);
+        if(n<5){ n++; cntEl.textContent=String(n); }
+        const dots=[...document.querySelectorAll('.rep-dot')];
+        dots.forEach((d,i)=> d.classList.toggle('completed', i < n));
+      });
+
+      // 네비 또는 탭 이동 시 의미/로마자 재적용 및 점 초기화
+      ['nextBtn','prevBtn','dailyBtn','travelBtn','dramaBtn','savedBtnHidden'].forEach(id=>{
+        const el=document.getElementById(id);
+        el && el.addEventListener('click', ()=> setTimeout(()=>{ forceMeaningRoman(); resetDots(); },0), true);
+      });
+
+      // Speed 표시 동기화
+      const speedEl=document.getElementById('speed');
+      const speedTxt=document.getElementById('speedTxt');
+      const sync=()=> speedTxt.textContent = (parseFloat(speedEl.value)).toFixed(2)+'x';
+      speedEl.addEventListener('input', sync); sync();
+    });
+  })();
   </script>
 </body>
 </html>
