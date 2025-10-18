@@ -7,334 +7,179 @@
   <meta name="theme-color" content="#7c3aed"/>
 
   <style>
-    :root {
-      --purple: #7c3aed;
-      --purple-dark: #6d28d9;
-      --pink: #e11d48;
-      --light-bg: #faf8ff;
-      --muted: #6b7280;
-      --ink: #1f2937;
+    :root{
+      --purple:#7c3aed; --purple-d:#6d28d9;
+      --pink:#e11d48;  --muted:#6b7280; --ink:#1f2937;
+      --chip:#e5e7eb;  --bg:#faf8ff;
     }
+    *{box-sizing:border-box}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;max-width:680px;margin:0 auto;padding:12px;background:var(--bg)}
+    h1{font-size:24px;font-weight:800;color:var(--purple);margin:0 0 4px}
+    .intro{font-size:12px;color:#9ca3af;margin-bottom:10px}
 
-    * { box-sizing: border-box; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      max-width: 720px;
-      margin: 0 auto;
-      padding: 20px;
-      background: var(--light-bg);
-      color: var(--ink);
-    }
+    .header{display:flex;justify-content:space-between;align-items:center}
+    .top-btn{padding:6px 12px;border-radius:10px;border:0;background:var(--purple);color:#fff;font-weight:800;cursor:pointer}
 
-    h1 {
-      font-size: 24px;
-      font-weight: 800;
-      color: var(--purple);
-      margin: 0 0 4px;
-    }
+    .card{background:#fff;border-radius:16px;box-shadow:0 2px 12px rgba(0,0,0,.05);padding:16px;margin:8px 0}
 
-    .intro {
-      font-size: 12px;
-      color: var(--muted);
-      margin-bottom: 16px;
-    }
+    /* tabs (기존 방식 유지) */
+    .tabs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px}
+    .tab{padding:12px 0;border-radius:12px;background:#f4f0ff;color:var(--purple-d);font-weight:800;text-align:center;cursor:pointer}
+    .tab.active{background:var(--purple);color:#fff}
+    .saved{padding:10px 14px;border:2px solid #e9defd;background:#fff;color:var(--purple);border-radius:12px;font-weight:800;cursor:pointer;white-space:nowrap}
 
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+    /* sub chips */
+    .sub-filters{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .sub-chip{padding:6px 12px;border-radius:14px;border:2px solid var(--chip);background:#fff;font-size:12px;font-weight:600;color:#374151;cursor:pointer}
+    .sub-chip.active{background:var(--purple);border-color:var(--purple);color:#fff}
 
-    button {
-      cursor: pointer;
-      border: none;
-      outline: none;
-      font-family: inherit;
-    }
+    .row-between{display:flex;justify-content:space-between;align-items:center}
+    .badge{background:var(--purple);color:#fff;font-size:11px;font-weight:800;border-radius:10px;padding:5px 10px}
+    .icon-btn{border:0;background:transparent;color:#9ca3af;width:32px;height:32px;border-radius:8px;font-size:20px;cursor:pointer}
+    .icon-btn.active{color:var(--pink)}
 
-    #loginBtn {
-      padding: 6px 14px;
-      border-radius: 10px;
-      background: var(--purple);
-      color: white;
-      font-weight: 700;
-      font-size: 13px;
-    }
+    /* text layout */
+    .meaning{color:var(--muted);font-size:16px;text-align:center;margin:6px 0 2px;font-style:italic}
+    .kbox{background:#f9fafb;border-radius:14px;padding:14px 10px;margin:6px 0 10px;text-align:center}
+    .ko{font-size:28px;font-weight:900;color:var(--ink);margin:4px 0 6px}
+    .roman{color:var(--muted);font-size:16px;margin:0 0 6px;font-weight:600}
 
-    .tab-group {
-      display: flex;
-      gap: 8px;
-      margin: 16px 0;
-    }
+    .practice{background:#f9fafb;border-radius:10px;padding:10px}
+    .practice-label{font-size:12px;color:var(--muted);text-align:center;margin:0 0 6px;font-weight:600}
+    .dots{display:flex;gap:6px;justify-content:center;margin-bottom:6px}
+    .rep-dot{width:32px;height:32px;border-radius:50%;border:2px solid #e5e7eb;background:#fff}
+    .rep-dot.completed{background:var(--purple);border-color:var(--purple)}
 
-    .tab {
-      flex: 1;
-      padding: 10px;
-      border-radius: 10px;
-      background: #f4f0ff;
-      color: var(--purple-dark);
-      font-weight: 700;
-      text-align: center;
-    }
+    .big{width:100%;padding:12px 18px;border-radius:14px;border:0;background:var(--purple);color:#fff;font-weight:800}
+    .row{display:flex;align-items:center;justify-content:center;gap:8px;background:#f9fafb;border-radius:8px;padding:8px;margin-top:8px}
+    .row label,.row span{color:var(--purple);font-size:12px;font-weight:700}
+    .row input[type="range"]{accent-color:var(--pink)} /* 슬라이더 = 별색 */
 
-    .tab.active {
-      background: var(--purple);
-      color: #fff;
-    }
+    .nav{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .secondary{background:#f9fafb;border:0;border-radius:14px;padding:12px 18px;font-weight:800}
+    .progress{text-align:center;color:var(--purple);font-weight:800;font-size:13px;margin-top:6px}
 
-    .chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 10px;
-    }
+    .tip{margin-top:10px;background:#fff1f2;border-left:3px solid var(--pink);border-radius:10px;padding:10px;color:#9f1239;font-size:12px;font-weight:600}
 
-    .chip {
-      background: white;
-      border: 1.5px solid #e5e7eb;
-      border-radius: 14px;
-      padding: 6px 12px;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--ink);
-    }
-
-    .chip.active {
-      background: var(--purple);
-      color: white;
-    }
-
-    .card {
-      background: white;
-      border-radius: 16px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-      padding: 16px;
-      margin: 10px 0;
-    }
-
-    .category-badge {
-      background: var(--purple);
-      color: white;
-      border-radius: 8px;
-      font-size: 11px;
-      padding: 4px 8px;
-      display: inline-block;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-
-    .ko {
-      font-size: 28px;
-      font-weight: 900;
-      text-align: center;
-      margin: 4px 0;
-    }
-
-    .en {
-      text-align: center;
-      color: var(--muted);
-      font-size: 16px;
-      margin: 0 0 12px;
-    }
-
-    .meaning {
-      text-align: center;
-      color: var(--muted);
-      font-size: 16px;
-      margin: 0 0 6px;
-      font-style: italic;
-    }
-
-    .dots {
-      display: flex;
-      justify-content: center;
-      gap: 6px;
-      margin: 6px 0 12px;
-    }
-
-    .dot {
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      background: #e5e7eb;
-    }
-
-    .dot.filled {
-      background: var(--purple);
-    }
-
-    .listen-btn {
-      width: 100%;
-      background: var(--purple);
-      color: white;
-      font-weight: 800;
-      font-size: 15px;
-      padding: 12px;
-      border-radius: 12px;
-    }
-
-    .speed-control {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      margin: 10px 0;
-    }
-
-    .speed-control input[type="range"] {
-      accent-color: var(--purple);
-    }
-
-    .tip {
-      font-size: 12px;
-      color: #9f1239;
-      background: #fff1f2;
-      border-left: 3px solid var(--pink);
-      padding: 8px;
-      border-radius: 8px;
-      text-align: center;
-      font-weight: 600;
-    }
-
-    .nav {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 16px;
-    }
-
-    .nav button {
-      flex: 1;
-      background: #f9fafb;
-      border-radius: 10px;
-      font-weight: 800;
-      padding: 12px;
-      margin: 0 4px;
-    }
-
-    .progress {
-      text-align: center;
-      color: var(--purple);
-      font-size: 13px;
-      font-weight: 700;
-      margin-top: 6px;
-    }
-
-    /* 로그인 모달 */
-    .auth {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.4);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 999;
-    }
-
-    .auth.open {
-      display: flex;
-    }
-
-    .auth-card {
-      background: white;
-      border-radius: 14px;
-      padding: 24px;
-      max-width: 340px;
-      text-align: center;
-    }
-
-    .gbtn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      background: #f7f2ff;
-      color: var(--purple);
-      font-weight: 800;
-      border: 2px solid #e9defd;
-      border-radius: 10px;
-      padding: 10px;
-      width: 100%;
-    }
-
+    /* hidden legacy tabs for app.js */
+    .hidden-tabs{display:none}
   </style>
 </head>
 <body>
+  <!-- header -->
   <header class="header">
     <div>
-      <h1>Sori <span style="color:#9ca3af;font-size:14px;font-weight:600;">(beta)</span></h1>
+      <h1>Sori <span style="font-size:14px;color:#9ca3af;font-weight:600;">(beta)</span></h1>
       <div class="intro">Learn Korean naturally by repeating real sounds</div>
     </div>
-    <button id="loginBtn">Login</button>
+    <button id="loginBtn" class="top-btn">Login</button>
   </header>
 
-  <div class="tab-group">
-    <div class="tab active">Daily</div>
-    <div class="tab">Travel</div>
-    <div class="tab">K-Drama</div>
-  </div>
+  <!-- category -->
+  <section class="card">
+    <div class="tabs">
+      <button id="dailyBtn"  class="tab active">Daily</button>
+      <button id="travelBtn" class="tab">Travel</button>
+      <button id="dramaBtn"  class="tab">K-Drama</button>
+    </div>
+    <button id="savedBtn" class="saved">★ Saved</button>
 
-  <div class="chips">
-    <div class="chip active">Greeting</div>
-    <div class="chip">Cafe</div>
-    <div class="chip">Shopping</div>
-  </div>
+    <div id="subFilters" class="sub-filters"></div>
 
-  <div class="card">
-    <div class="category-badge">Greeting</div>
+    <!-- 숨김: 기존 app.js 호환용 -->
+    <div class="hidden-tabs">
+      <button id="savedBtnHidden">Saved</button>
+    </div>
+  </section>
 
-    <div class="meaning">"Hello"</div>
-    <div class="ko">안녕하세요.</div>
-    <div class="en">annyeonghaseyo</div>
-
-    <div class="dots">
-      <div class="dot filled"></div>
-      <div class="dot"></div>
-      <div class="dot"></div>
-      <div class="dot"></div>
-      <div class="dot"></div>
+  <!-- lesson -->
+  <section class="card">
+    <div class="row-between">
+      <div id="badge" class="badge">Greeting</div>
+      <button id="scrapBtn" class="icon-btn" title="Save">☆</button>
     </div>
 
-    <button class="listen-btn">Listen & Repeat</button>
+    <!-- 위: 영어 뜻 / 아래: 발음 (tight) -->
+    <p id="meaningText" class="meaning">"Hello"</p>
 
-    <div class="speed-control">
-      <label style="font-size:12px;font-weight:600;">Speed:</label>
-      <input type="range" min="0.3" max="1.0" step="0.1" value="0.75" />
-      <span style="font-size:12px;font-weight:600;">0.75x</span>
+    <div class="kbox">
+      <p id="korean" class="ko">안녕하세요.</p>
+      <p id="roman"  class="roman">annyeonghaseyo</p>
+
+      <!-- 원래 파일에서 넘어오는 기존 자리(숨김) -->
+      <p id="english" style="display:none">Hello</p>
+      <p id="pronunciation" style="display:none">annyeonghaseyo</p>
     </div>
 
-    <div class="tip">Tip: Listen carefully and repeat multiple times. Consistency is key.</div>
+    <div class="practice">
+      <p class="practice-label">Practice Count: <span id="repCount">0</span> / 5</p>
+      <div class="dots"><div class="rep-dot"></div><div class="rep-dot"></div><div class="rep-dot"></div><div class="rep-dot"></div><div class="rep-dot"></div></div>
+    </div>
 
+    <button id="playBtn" class="big">Listen & Repeat</button>
+
+    <div class="row">
+      <label for="speed">Speed:</label>
+      <input id="speed" type="range" min="0.3" max="1.0" step="0.1" value="0.75" />
+      <span id="speedTxt">0.75x</span>
+    </div>
+
+    <div id="tip" class="tip">Tip: Listen carefully and repeat multiple times. Consistency is key.</div>
+  </section>
+
+  <!-- nav -->
+  <section class="card">
     <div class="nav">
-      <button>◀ Previous</button>
-      <button>Next ▶</button>
+      <button id="prevBtn" class="secondary">◀ Previous</button>
+      <button id="nextBtn" class="secondary">▶ Next</button>
     </div>
-    <div class="progress">1 / 45</div>
-  </div>
+    <div id="prog" class="progress">1 / 45</div>
+  </section>
 
-  <div id="authModal" class="auth">
-    <div class="auth-card">
-      <h3 style="margin-top:0;color:var(--purple);font-weight:800;">Sign in</h3>
-      <p style="color:#6b7280;font-size:13px;">Use your Google account</p>
-      <button class="gbtn">
-        <svg width="18" height="18" viewBox="0 0 48 48">
-          <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.6 32.3 29.3 35 24 35c-7.2 0-13-5.8-13-13s5.8-13 13-13c3.3 0 6.3 1.2 8.6 3.3l5.7-5.7C34.7 3.1 29.7 1 24 1 16 1 8.9 5.1 6.3 14.7z"/>
-          <path fill="#4CAF50" d="M24 45c5.2 0 10-1.7 13.6-4.7l-6.3-5.2C29.2 36.8 26.8 37.6 24 37.6c-5.2 0-9.6-3.5-11.2-8.3l-6.5 5.1C8.7 40.8 15.8 45 24 45z"/>
-          <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-1 3.1-3.2 5.6-5.9 7.1l6.3 5.2c8.3-6.1 8.3-18.3 8.3-18.3 0-1.5-.2-3-.4-4.5z"/>
-        </svg>
-        Continue with Google
-      </button>
-    </div>
-  </div>
+  <!-- ===== Scripts (데이터/앱은 기존 파일 그대로 사용) ===== -->
+  <script defer src="data/daily.js?v=20251017"></script>
+  <script defer src="data/travel.js?v=20251017"></script>
+  <script defer src="data/drama.js?v=20251017"></script>
+  <script defer src="data/dataindex.js?v=20251017"></script>
 
+  <script defer src="js/state.js?v=20251017"></script>
+  <script defer src="js/tts.js?v=20251017"></script>
+  <script defer src="js/app.js?v=20251017"></script>
+
+  <!-- 최소한의 배치(무한 감시 없음) -->
   <script>
-    // 로그인 모달 동작
-    const loginBtn = document.getElementById('loginBtn');
-    const modal = document.getElementById('authModal');
+    (function(){
+      const $ = id => document.getElementById(id);
+      const setTxt = (el, txt) => { if(el && el.textContent !== txt) el.textContent = txt; };
 
-    loginBtn.addEventListener('click', () => modal.classList.add('open'));
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) modal.classList.remove('open');
-    });
+      function applyLayoutOnce(){
+        const ko = ($('korean')?.textContent || '').trim();
+        const en = ($('english')?.textContent || '').trim();     // 영어 뜻 원본
+        const pr = ($('pronunciation')?.textContent || '').trim();// 발음 원본
+
+        if(ko){
+          if(en) setTxt($('meaningText'), `"${en.replace(/^"+|"+$/g,'')}"`);
+          if(pr) setTxt($('roman'), pr);
+        }
+      }
+
+      // 최초 1회 적용
+      document.addEventListener('DOMContentLoaded', applyLayoutOnce);
+
+      // 카테고리/서브칩/이전/다음 눌렀을 때만 1회 보정
+      ['dailyBtn','travelBtn','dramaBtn','savedBtnHidden','subFilters','prevBtn','nextBtn']
+        .forEach(id=>{
+          const el = document.getElementById(id);
+          el && el.addEventListener('click', ()=> setTimeout(applyLayoutOnce, 0), true);
+        });
+
+      // Saved 버튼은 기존 숨김 버튼으로 위임
+      $('savedBtn')?.addEventListener('click', ()=> $('savedBtnHidden')?.click());
+
+      // 슬라이더 텍스트
+      const speed = $('speed'), speedTxt = $('speedTxt');
+      speed?.addEventListener('input', ()=> speedTxt.textContent = Number(speed.value).toFixed(2)+'x');
+    })();
   </script>
 </body>
 </html>
