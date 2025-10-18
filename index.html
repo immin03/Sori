@@ -15,15 +15,13 @@
     </svg>'/>
 
   <!-- GA -->
-  <script>
-    window.GA_ID = 'G-X1Q98DBKR5';
-  </script>
+  <script>window.GA_ID='G-X1Q98DBKR5';</script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-X1Q98DBKR5"></script>
   <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){ dataLayer.push(arguments); }
-    gtag('js', new Date());
-    gtag('config', window.GA_ID, { send_page_view: false });
+    window.dataLayer=window.dataLayer||[];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js',new Date());
+    gtag('config',window.GA_ID,{send_page_view:false});
   </script>
 
   <!-- Firebase compat -->
@@ -32,7 +30,7 @@
   <script defer src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
   <style>
-    *{ box-sizing:border-box }
+    *{box-sizing:border-box}
     body{
       font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
       max-width:680px;margin:0 auto;padding:12px;background:#faf8ff;min-height:100vh
@@ -40,15 +38,13 @@
     h1{font-size:24px;margin:0 0 4px;color:#7c3aed;font-weight:800}
     .intro{color:#9ca3af;font-size:12px;margin-bottom:10px;line-height:1.3;font-weight:500}
 
-    /* header */
     .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
     .top-btn{padding:6px 12px;border-radius:10px;font-size:12px;font-weight:700;border:0;cursor:pointer}
     .top-btn.primary{background:#7c3aed;color:#fff}
 
-    /* cards/tabs */
     .card{background:#fff;border-radius:16px;padding:16px;margin:8px 0;box-shadow:0 2px 12px rgba(0,0,0,.05)}
 
-    /* === CATEGORY PICKER (click open, 3-rows viewport) === */
+    /* Category picker */
     .category-bar{display:flex;align-items:center;gap:12px}
     .picker-wrap{position:relative}
     .picker-trigger{
@@ -59,73 +55,49 @@
       position:absolute;top:100%;left:0;right:0;margin-top:6px;background:#fff;border-radius:12px;
       box-shadow:0 10px 30px rgba(0,0,0,.15);overflow:hidden;max-height:0;transition:max-height .25s ease;z-index:50
     }
-    .picker-menu.open{ max-height:156px; } /* 3 rows */
-    .picker-list{ max-height:150px; overflow-y:auto; padding:6px; scrollbar-width:thin }
+    .picker-menu.open{max-height:156px}
+    .picker-list{max-height:150px;overflow-y:auto;padding:6px;scrollbar-width:thin}
     .picker-item{
       height:44px;line-height:44px;border-radius:12px;margin:6px 4px;text-align:center;
       background:#f6f6ff;color:#5b5b72;font-weight:700;cursor:pointer;user-select:none
     }
     .picker-item:hover,.picker-item.active{background:#7c3aed;color:#fff}
     .saved-btn{
-      height:44px;padding:0 16px;border-radius:12px;background:#ffffff;color:#7c3aed;border:2px solid #e9defd;font-weight:800;cursor:pointer;white-space:nowrap
+      height:44px;padding:0 16px;border-radius:12px;background:#fff;color:#7c3aed;border:2px solid #e9defd;font-weight:800;cursor:pointer;white-space:nowrap
     }
     .saved-btn:hover{background:#f7f2ff}
 
-    /* === Sub filters (chips) === */
+    /* Sub chips */
     .sub-filters{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-    .sub-chip{
-      display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:14px;background:#fff;border:2px solid #e5e7eb;color:#374151;font-size:12px;font-weight:600;cursor:pointer;user-select:none
-    }
-    .sub-chip.active{ background:#7c3aed; border-color:#7c3aed; color:#fff; }
+    .sub-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:14px;background:#fff;border:2px solid #e5e7eb;color:#374151;font-size:12px;font-weight:600;cursor:pointer;user-select:none}
+    .sub-chip.active{background:#7c3aed;border-color:#7c3aed;color:#fff}
 
-    /* badge / star */
     .row-between{display:flex;justify-content:space-between;align-items:center;gap:8px}
     .badge{display:inline-block;background:#7c3aed;color:#fff;font-size:11px;font-weight:800;padding:5px 10px;border-radius:10px}
-    .icon-btn{border:none;background:transparent;width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;font-size:20px;line-height:1;color:#9ca3af;cursor:pointer;border-radius:8px}
-    .icon-btn:hover{background:#f3f4f6}
-    .icon-btn.active{color:#e11d48} /* red-pink */
+    .icon-btn{border:none;background:transparent;width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;font-size:20px;color:#9ca3af;cursor:pointer;border-radius:8px}
+    .icon-btn.active{color:#e11d48}
 
-    /* context as English meaning */
     .context{color:#6b7280;font-size:16px;text-align:center;margin:8px 0 0;font-weight:600}
 
-    /* main text */
     .kbox{background:#f9fafb;border-radius:14px;padding:16px 12px;margin:12px 0;text-align:center}
     .ko{font-size:28px;font-weight:900;color:#1f2937;margin:0 0 6px}
     .en{color:#6b7280;font-size:16px;margin:0 0 10px;font-weight:600}
-    .pr{color:#9ca3af;font-size:13px;font-style:italic;margin:0} /* 숨김 예정 */
 
-    /* practice */
     .practice{background:#f9fafb;border-radius:10px;padding:10px}
     .practice-label{font-size:12px;font-weight:600;color:#6b7280;text-align:center;margin:0 0 8px}
     .dots{display:flex;gap:6px;justify-content:center;margin-bottom:8px}
     .rep-dot{width:32px;height:32px;border-radius:50%;border:2px solid #e5e7eb;background:#fff}
     .rep-dot.completed{background:#7c3aed;border-color:#7c3aed}
 
-    /* buttons */
-    button.big{width:100%;padding:12px 18px;border-radius:14px;border:0;cursor:pointer;font-weight:800;font-size:15px;background:#7c3aed;color:#fff;box-shadow:0 2px 8px rgba(124,58,237,.2)}
-    button.big:hover{background:#6d28d9}
-    .error{display:none;background:#fee2e2;color:#991b1b;font-size:11px;font-weight:600;padding:8px 12px;border-radius:8px;margin-top:8px}
-
+    button.big{width:100%;padding:12px 18px;border-radius:14px;border:0;cursor:pointer;font-weight:800;font-size:15px;background:#7c3aed;color:#fff}
     .row{display:flex;align-items:center;justify-content:center;gap:8px;background:#f9fafb;border-radius:8px;padding:8px;margin-top:8px}
-    .row label{color:#7c3aed;font-size:12px;font-weight:600}
-    .row span{color:#7c3aed;font-size:12px;font-weight:700;min-width:42px;text-align:right}
 
-    .nav{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-    .secondary{background:#f9fafb;color:#6b7280;border:0;padding:12px 18px;border-radius:14px;font-weight:800}
-    .secondary:hover{background:#f3f4f6}
-    .progress{text-align:center;color:#7c3aed;font-size:13px;font-weight:700;margin-top:8px}
-
-    .cong{display:none;margin:8px 0;text-align:center;background:linear-gradient(135deg,#ffe4e6 0%,#fecdd3 100%);border-radius:10px;padding:12px}
-    .cong.show{display:block}
-
-    /* Tip box: pink theme */
     .tip-card{margin-top:10px;background:#fff1f2;border-left:3px solid #e11d48;border-radius:10px;padding:10px}
     .tip-text{font-size:12px;color:#9f1239;font-weight:600}
 
-    /* 호환용 숨김 탭 (app.js 기존 의존성) */
     .hidden-tabs{display:none}
 
-    /* Auth modal: 항상 fixed 중앙 */
+    /* Auth modal */
     .auth{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:9999;background:rgba(0,0,0,.45);padding:16px}
     .auth.open{display:flex}
     .auth-card{background:#fff;width:100%;max-width:360px;border-radius:18px;padding:24px;box-shadow:0 18px 50px rgba(0,0,0,.35);text-align:center;position:relative}
@@ -139,9 +111,7 @@
       <h1>Sori <span style="font-size:14px;color:#9ca3af;font-weight:600;">(beta)</span></h1>
       <div class="intro">Learn Korean naturally by repeating real sounds</div>
     </div>
-    <div>
-      <button id="loginBtn" class="top-btn primary">Login</button>
-    </div>
+    <button id="loginBtn" class="top-btn primary">Login</button>
   </header>
 
   <!-- CATEGORY -->
@@ -151,9 +121,9 @@
         <button id="pickerTrigger" class="picker-trigger" aria-haspopup="listbox" aria-expanded="false">Daily</button>
         <div id="pickerMenu" class="picker-menu">
           <div class="picker-list" role="listbox">
-            <div class="picker-item active" role="option">Daily</div>
-            <div class="picker-item" role="option">Travel</div>
-            <div class="picker-item" role="option">K-Drama</div>
+            <div class="picker-item active">Daily</div>
+            <div class="picker-item">Travel</div>
+            <div class="picker-item">K-Drama</div>
           </div>
         </div>
       </div>
@@ -165,10 +135,9 @@
       <button id="dailyBtn"  class="tab-button active">Daily</button>
       <button id="travelBtn" class="tab-button">Travel</button>
       <button id="dramaBtn"  class="tab-button">K-Drama</button>
-      <button id="savedBtnHidden"  class="tab-button">Saved</button>
+      <button id="savedBtnHidden" class="tab-button">Saved</button>
     </div>
 
-    <!-- app.js가 여기에 .sub-chip 버튼들을 주입 -->
     <div id="subFilters" class="sub-filters"></div>
   </section>
 
@@ -179,13 +148,12 @@
       <button id="scrapBtn" class="icon-btn" title="Save this phrase" aria-label="Save">☆</button>
     </div>
 
-    <!-- 영어 뜻 표시 (따옴표 포함) -->
     <div id="context" class="context">"Hello"</div>
 
     <div class="kbox">
       <p id="korean" class="ko">안녕하세요.</p>
       <p id="english" class="en">annyeonghaseyo</p>
-      <p id="pronunciation" class="pr" style="display:none">annyeonghaseyo</p>
+      <p id="pronunciation" style="display:none">annyeonghaseyo</p>
     </div>
 
     <div class="practice">
@@ -195,21 +163,14 @@
       </div>
     </div>
 
-    <div id="congrats" class="cong">Great job!</div>
-
     <button id="playBtn" class="big">Listen & Repeat</button>
-    <div id="errorMsg" class="error"></div>
-
     <div class="row">
-      <label for="speed">Speed:</label>
+      <label>Speed:</label>
       <input id="speed" type="range" min="0.3" max="1.0" step="0.1" value="0.75" />
       <span id="speedTxt">0.75x</span>
     </div>
 
-    <!-- Tip -->
-    <div id="tipBox" class="tip-card">
-      <div id="tipText" class="tip-text">Tip: Listen carefully and repeat multiple times. Consistency is key.</div>
-    </div>
+    <div class="tip-card"><div id="tipText" class="tip-text">Tip: Listen carefully and repeat multiple times. Consistency is key.</div></div>
   </section>
 
   <!-- NAV -->
@@ -242,92 +203,62 @@
   <script defer src="js/tts.js?v=20251017"></script>
   <script defer src="js/app.js?v=20251017"></script>
 
-  <!-- Header auth wiring (모달 중앙 고정/열고닫기) -->
+  <!-- Auth wiring: 상태 기반으로 모달/버튼 제어 -->
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', ()=>{
       const modal = document.getElementById('authModal');
       const loginBtn = document.getElementById('loginBtn');
       const closeBtn = document.getElementById('authClose');
 
-      function openModal(){ modal?.classList.add('open'); }
-      function closeModal(){ modal?.classList.remove('open'); }
+      const open = ()=> modal.classList.add('open');
+      const close= ()=> modal.classList.remove('open');
 
-      loginBtn?.addEventListener('click', async () => {
-        try {
-          const u = (window.firebase?.auth && firebase.auth().currentUser) || null;
-          if (u && window.SoriUser?.logout) {
-            await window.SoriUser.logout();
-          } else {
-            openModal();
-          }
-        } catch (e) { console.warn(e); }
-      });
+      function wireAsLogin(){ loginBtn.textContent='Login'; loginBtn.onclick=open; }
+      function wireAsLogout(){
+        loginBtn.textContent='Logout';
+        loginBtn.onclick= async ()=>{ try{ await window.SoriUser?.logout?.(); }catch(e){ console.warn(e);} };
+      }
 
-      closeBtn?.addEventListener('click', closeModal);
-      modal?.addEventListener('click', (e)=>{ if(e.target===modal) closeModal(); });
+      closeBtn?.addEventListener('click', close);
+      modal?.addEventListener('click', e=>{ if(e.target===modal) close(); });
+
+      try{
+        const auth = window.firebase?.auth && firebase.auth();
+        auth?.onAuthStateChanged(user=>{
+          if(user){ close(); wireAsLogout(); }
+          else { wireAsLogin(); }
+        });
+      }catch(e){ console.warn('[Auth init]', e); wireAsLogin(); }
     });
   </script>
 
-  <!-- Picker logic + legacy compatibility + Tip on category change -->
+  <!-- Picker logic + Tip (카테고리 전환시에만) -->
   <script>
     (function(){
-      // 3개 고정
-      const CATEGORIES = ["Daily","Travel","K-Drama"];
-
-      // 숨김 레거시 탭 (app.js 연동)
-      const legacy = {
-        daily:  document.getElementById('dailyBtn'),
-        travel: document.getElementById('travelBtn'),
-        drama:  document.getElementById('dramaBtn')
-      };
-
-      const trigger = document.getElementById('pickerTrigger');
-      const menu    = document.getElementById('pickerMenu');
-      const list    = menu.querySelector('.picker-list');
-
-      // 초기 렌더(안전하게 다시 세팅)
-      list.innerHTML = '';
-      CATEGORIES.forEach((c,i)=>{
-        const el = document.createElement('div');
-        el.className = 'picker-item' + (i===0?' active':'');
-        el.textContent = c;
-        el.setAttribute('role','option');
-        el.addEventListener('click', ()=> selectCategory(c, el));
-        list.appendChild(el);
+      const CATS=["Daily","Travel","K-Drama"];
+      const legacy={daily:dailyBtn,travel:travelBtn,drama:dramaBtn};
+      const trigger=pickerTrigger, menu=pickerMenu;
+      const list=menu.querySelector('.picker-list');
+      list.innerHTML='';
+      CATS.forEach((c,i)=>{
+        const el=document.createElement('div');
+        el.className='picker-item'+(i===0?' active':''); el.textContent=c;
+        el.onclick=()=>select(c,el); list.appendChild(el);
       });
-
-      function setActive(el){
-        list.querySelectorAll('.picker-item').forEach(n=>n.classList.remove('active'));
-        el.classList.add('active');
-      }
-
-      function selectCategory(name, el){
-        setActive(el);
-        trigger.textContent = name;
-        menu.classList.remove('open');
-
-        // 레거시 탭 가상 클릭(서브칩/컨텐츠 렌더를 기존 로직대로)
-        const key = name.toLowerCase();
+      function setActive(el){ list.querySelectorAll('.picker-item').forEach(n=>n.classList.remove('active')); el.classList.add('active'); }
+      function select(name,el){
+        setActive(el); trigger.textContent=name; menu.classList.remove('open');
+        const key=name.toLowerCase();
         if(key==='daily')  legacy.daily?.click();
         if(key==='travel') legacy.travel?.click();
-        if(key==='k-drama' || key==='kdrama' || key==='drama') legacy.drama?.click();
-
-        // 카테고리 전환시에만 Tip 변경
+        if(key.includes('drama')) legacy.drama?.click();
         changeTip();
       }
+      trigger.onclick=(e)=>{ e.stopPropagation(); menu.classList.toggle('open'); };
+      document.onclick=()=>menu.classList.remove('open');
+      savedBtn?.addEventListener('click',()=> savedBtnHidden?.click());
 
-      // 클릭으로 열고 닫기 (hover X)
-      trigger.addEventListener('click', (e)=>{ e.stopPropagation(); menu.classList.toggle('open'); });
-      document.addEventListener('click', ()=> menu.classList.remove('open'));
-
-      // Saved 버튼 → 기존 saved 동작 유지
-      document.getElementById('savedBtn')?.addEventListener('click', () => {
-        const savedHidden = document.getElementById('savedBtnHidden');
-        savedHidden && savedHidden.click();
-      });
-
-      // ===== Tip (카테고리 전환시에만 랜덤 교체) =====
-      const tips = [
+      const tips=[
         "Tip: Small daily reps beat big, rare sessions.",
         "Tip: Shadow the sound, not the spelling.",
         "Tip: Say it out loud — your mouth must learn too.",
@@ -339,289 +270,114 @@
         "Tip: Bite-sized goals. One phrase at a time.",
         "Tip: Revisit yesterday — retention makes speed."
       ];
-      const tipEl = document.getElementById('tipText');
-      function changeTip(){
-        if(!tipEl) return;
-        tipEl.textContent = tips[Math.floor(Math.random()*tips.length)];
-      }
-
-      // 최초 진입 한 번만 세팅
+      const tipEl=document.getElementById('tipText');
+      function changeTip(){ if(tipEl) tipEl.textContent=tips[Math.floor(Math.random()*tips.length)]; }
       changeTip();
     })();
   </script>
 
-  <!-- Navigation rewrite (네가 쓰던 기존 동작 100% 유지) -->
+  <!-- Navigation rewrite (기존) -->
   <script>
   (function(){
-    const btn = {
-      next: document.getElementById('nextBtn'),
-      prev: document.getElementById('prevBtn'),
-      daily: document.getElementById('dailyBtn'),
-      travel: document.getElementById('travelBtn'),
-      drama: document.getElementById('dramaBtn'),
-    };
-    const progEl  = document.getElementById('prog');
-    const badgeEl = document.getElementById('badge');     // 서브카테고리 이름 표시(Greeting 등)
-    const tabs = [btn.daily, btn.travel, btn.drama].filter(Boolean);
-
-    // 상위 카테고리 id → SORI_DATA 키 매핑
-    const CAT_KEY = {
-      dailyBtn:  'daily',
-      travelBtn: 'travel',
-      dramaBtn:  'drama'
-    };
-
-    function getActiveTab(){
-      return tabs.find(t => t.classList.contains('active')) || btn.daily;
-    }
-    function getActiveCatKey(){
-      const tab = getActiveTab();
-      return CAT_KEY[tab.id];
-    }
-
-    function getProgress(){
-      // "3 / 5" → {i:3,total:5}
-      const m = (progEl?.textContent || '').match(/(\d+)\s*\/\s*(\d+)/);
-      if(!m) return {i:1,total:1};
-      return { i: parseInt(m[1],10), total: parseInt(m[2],10) };
-    }
-
-    // 현재 카테고리의 서브카테고리 순서를 데이터에서 산출
-    function subOrderOf(catKey){
-      const arr = (window.SORI_DATA && window.SORI_DATA[catKey]) || [];
-      const order = [];
-      for(const x of arr){
-        const s = x?.sub || 'Default';
-        if(!order.includes(s)) order.push(s);
-      }
-      return order;
-    }
-
-    // 현재 화면의 서브카테고리 이름
-    function currentSubName(){
-      return (badgeEl?.textContent || '').trim();
-    }
-
-    // 렌더 후 첫 아이템으로 이동하는 보정
-    function goFirstItem(){
-      // 현재 페이지 i를 읽어 i>1이면 prev를 i-1번 눌러 1/로 맞춘다
-      const {i} = getProgress();
-      for(let k=1; k<i; k++) btn.prev?.click();
-      // 렌더 타이밍 보정
-      setTimeout(()=>{
-        const again = getProgress().i;
-        for(let k=1; k<again; k++) btn.prev?.click();
-      }, 0);
-    }
-
-    // 서브칩 클릭 유틸
-    function clickSubChipByName(name){
-      const chips = Array.from(document.querySelectorAll('#subFilters .sub-chip'));
-      const target = chips.find(c => (c.textContent || '').trim() === name)
-                  || chips.find(c => (c.textContent || '').includes(name));
-      if(target) target.click();
-    }
-
-    // 현재 카테고리의 "첫 서브칩 → 첫 아이템"으로 이동
-    function goFirstSubAndItem(){
-      // 서브칩이 렌더되기 직후를 고려해 두 단계로 보정
-      setTimeout(()=>{
-        const firstChip = document.querySelector('#subFilters .sub-chip');
-        if(firstChip) firstChip.click();
-        setTimeout(goFirstItem, 0);
-      }, 0);
-    }
-
-    // 1) Next 버튼 재정의: 아이템 끝 → 다음 서브 → 다음 카테고리
-    btn.next?.addEventListener('click', function onNext(e){
-      const {i, total} = getProgress();
-      if(i < total) return; // 아직 서브 내 아이템 남아있으면 기본 동작
-
-      // 여기 도달하면 "서브의 마지막 아이템" 상태
-      e.preventDefault();
-      e.stopImmediatePropagation();
-
-      const catKey = getActiveCatKey();
-      const subs = subOrderOf(catKey);
-      const curSub = currentSubName();
-      const curSubIdx = Math.max(0, subs.indexOf(curSub));
-
-      // 다음 서브가 있으면 그걸로
-      if(curSubIdx > -1 && curSubIdx < subs.length - 1){
-        const nextSubName = subs[curSubIdx + 1];
-        clickSubChipByName(nextSubName);
-        setTimeout(goFirstItem, 0);
-        return;
-      }
-
-      // 서브도 마지막이면 다음 상위 카테고리로
-      const curTab = getActiveTab();
-      const idx = tabs.indexOf(curTab);
-      const nextIdx = (idx + 1) % tabs.length;
-      tabs[nextIdx].click();
-      // 새 카테고리에서 첫 서브의 첫 아이템
-      goFirstSubAndItem();
-    }, true); // capture로 등록해 기존 핸들러보다 우선
-
-    // 2) 사용자가 탭을 직접 눌러도 항상 첫 서브 1/부터
-    tabs.forEach(t=>{
-      t?.addEventListener('click', ()=>{
-        goFirstSubAndItem();
-      });
-    });
-
+    const btn={next:nextBtn,prev:prevBtn,daily:dailyBtn,travel:travelBtn,drama:dramaBtn};
+    const progEl=prog, badgeEl=badge; const tabs=[btn.daily,btn.travel,btn.drama].filter(Boolean);
+    const CAT_KEY={dailyBtn:'daily',travelBtn:'travel',dramaBtn:'drama'};
+    const getActiveTab=()=> tabs.find(t=>t.classList.contains('active'))||btn.daily;
+    const getActiveCatKey=()=> CAT_KEY[getActiveTab().id];
+    function getProgress(){ const m=(progEl?.textContent||'').match(/(\d+)\s*\/\s*(\d+)/); if(!m) return {i:1,total:1}; return {i:parseInt(m[1],10),total:parseInt(m[2],10)};}
+    function subOrderOf(catKey){ const arr=(window.SORI_DATA&&window.SORI_DATA[catKey])||[]; const order=[]; for(const x of arr){const s=x?.sub||'Default'; if(!order.includes(s)) order.push(s);} return order;}
+    const currentSubName=()=> (badgeEl?.textContent||'').trim();
+    function goFirstItem(){ const {i}=getProgress(); for(let k=1;k<i;k++) btn.prev?.click(); setTimeout(()=>{ const again=getProgress().i; for(let k=1;k<again;k++) btn.prev?.click();},0);}
+    function clickSubChipByName(name){ const chips=[...document.querySelectorAll('#subFilters .sub-chip')]; const t=chips.find(c=>(c.textContent||'').trim()===name)||chips.find(c=>(c.textContent||'').includes(name)); if(t) t.click();}
+    function goFirstSubAndItem(){ setTimeout(()=>{ const first=document.querySelector('#subFilters .sub-chip'); if(first) first.click(); setTimeout(goFirstItem,0); },0); }
+    btn.next?.addEventListener('click',function(e){ const {i,total}=getProgress(); if(i<total) return; e.preventDefault(); e.stopImmediatePropagation();
+      const subs=subOrderOf(getActiveCatKey()); const cur=currentSubName(); const idx=Math.max(0,subs.indexOf(cur));
+      if(idx>-1 && idx<subs.length-1){ clickSubChipByName(subs[idx+1]); setTimeout(goFirstItem,0); return; }
+      const curTab=getActiveTab(); const tIdx=tabs.indexOf(curTab); const nextIdx=(tIdx+1)%tabs.length; tabs[nextIdx].click(); goFirstSubAndItem();
+    },true);
+    tabs.forEach(t=> t?.addEventListener('click',()=>{ goFirstSubAndItem(); }));
   })();
   </script>
 
-  <!-- Analytics wiring (기존) -->
+  <!-- Analytics wiring -->
   <script>
   (function(){
     function buildPath(){
-      const activeTab = document.querySelector('.tab-button.active')?.id || 'dailyBtn';
-      const catMap = { dailyBtn:'daily', travelBtn:'travel', dramaBtn:'kdrama', savedBtn:'saved' };
-      const cat = catMap[activeTab] || 'daily';
-
-      const sub = (document.getElementById('badge')?.textContent || 'default')
-        .trim().replace(/\s+/g,'-').toLowerCase();
-
-      const progText = document.getElementById('prog')?.textContent || '1 / 1';
-      const m = progText.match(/(\d+)\s*\/\s*(\d+)/);
-      const idx = m ? parseInt(m[1],10) : 1;
-
+      const active=document.querySelector('.tab-button.active')?.id || 'dailyBtn';
+      const catMap={dailyBtn:'daily',travelBtn:'travel',dramaBtn:'kdrama',savedBtn:'saved'};
+      const cat=catMap[active]||'daily';
+      const sub=(badge?.textContent||'default').trim().replace(/\s+/g,'-').toLowerCase();
+      const m=(prog?.textContent||'1 / 1').match(/(\d+)\s*\/\s*(\d+)/); const idx=m?parseInt(m[1],10):1;
       return `/${cat}/${sub}/${idx}`;
     }
-
-    function sendPV(title){
-      try{
-        const path = buildPath();
-        gtag('event', 'page_view', {
-          page_title: title || document.title,
-          page_location: location.href,
-          page_path: path,
-          send_to: 'G-X1Q98DBKR5'
-        });
-      }catch(e){}
-    }
-
-    function sendSessionStart(){ try{ gtag('event', 'session_start', { send_to: 'G-X1Q98DBKR5' }); }catch(e){} }
-
-    document.addEventListener('DOMContentLoaded', function(){
-      setTimeout(()=> { sendSessionStart(); sendPV('Sori'); }, 0);
-    });
-
-    ['dailyBtn','travelBtn','dramaBtn','savedBtnHidden'].forEach(id=>{
-      const el = document.getElementById(id);
-      if(!el) return;
-      el.addEventListener('click', ()=> { setTimeout(()=> sendPV(`Sori - ${el.textContent.trim()}`), 0); });
-    });
-
-    const subFilters = document.getElementById('subFilters');
-    if(subFilters){
-      subFilters.addEventListener('click', (e)=>{
-        const chip = e.target.closest('.sub-chip');
-        if(!chip) return;
-        setTimeout(()=> sendPV(`Sori - ${chip.textContent.trim()}`), 0);
-      });
-    }
-
-    const nextBtn = document.getElementById('nextBtn');
-    const prevBtn = document.getElementById('prevBtn');
-    nextBtn?.addEventListener('click', ()=> setTimeout(()=> sendPV('Sori - Next'), 0), true);
-    prevBtn?.addEventListener('click', ()=> setTimeout(()=> sendPV('Sori - Prev'), 0), true);
-
-    document.addEventListener('visibilitychange', ()=>{
-      if(document.visibilityState === 'visible'){
-        setTimeout(()=> sendPV('Sori - resume'), 0);
-      }
-    });
-
-    const speed = document.getElementById('speed');
-    speed?.addEventListener('change', ()=>{
-      gtag('event', 'change_speed', { value: speed.value, send_to: 'G-X1Q98DBKR5' });
-    });
+    function sendPV(title){ try{ gtag('event','page_view',{page_title:title||document.title,page_location:location.href,page_path:buildPath(),send_to:'G-X1Q98DBKR5'});}catch(e){} }
+    function sendSessionStart(){ try{ gtag('event','session_start',{send_to:'G-X1Q98DBKR5'});}catch(e){} }
+    document.addEventListener('DOMContentLoaded',()=>{ setTimeout(()=>{ sendSessionStart(); sendPV('Sori'); },0); });
+    ['dailyBtn','travelBtn','dramaBtn','savedBtnHidden'].forEach(id=>{ const el=document.getElementById(id); el&&el.addEventListener('click',()=> setTimeout(()=>sendPV(`Sori - ${el.textContent.trim()}`),0)); });
+    const subFilters=document.getElementById('subFilters');
+    subFilters&&subFilters.addEventListener('click',e=>{ const chip=e.target.closest('.sub-chip'); if(!chip) return; setTimeout(()=>sendPV(`Sori - ${chip.textContent.trim()}`),0); });
+    nextBtn?.addEventListener('click',()=> setTimeout(()=>sendPV('Sori - Next'),0),true);
+    prevBtn?.addEventListener('click',()=> setTimeout(()=>sendPV('Sori - Prev'),0),true);
+    document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible') setTimeout(()=>sendPV('Sori - resume'),0); });
+    speed?.addEventListener('change',()=>{ gtag('event','change_speed',{value:speed.value,send_to:'G-X1Q98DBKR5'}); });
   })();
   </script>
 
-  <!-- TTS patch (그대로 유지) -->
+  <!-- TTS patch -->
   <script>
   (function(){
-    const ENDPOINT = "https://asia-northeast3-sori-tts.cloudfunctions.net/tts";
-    let sharedAudio = new Audio();
-    let lastUrl = null;
-    const originalSpeak = speechSynthesis.speak.bind(speechSynthesis);
-    function isKorean(utter){ const lang=(utter.lang||"").toLowerCase(); const text=(utter.text||"").trim(); return (lang.startsWith("ko")||/[가-힣]/.test(text)); }
-    function safeCall(fn,arg){ try{ typeof fn==="function" && fn(arg); }catch(e){ console.warn(e); } }
-    async function playViaApi(utter){
-      try{ sharedAudio.pause(); }catch(_){}
-      if(lastUrl){ try{ URL.revokeObjectURL(lastUrl); }catch(_){} lastUrl=null; }
-      const text=(utter.text||"").trim(); if(!text) throw new Error("empty text");
-      const res=await fetch(ENDPOINT,{method:"POST",headers:{ "Content-Type":"application/json" },body:JSON.stringify({ text })});
-      if(!res.ok) throw new Error("TTS HTTP "+res.status);
-      const blob=await res.blob();
-      const url=URL.createObjectURL(blob); lastUrl=url; sharedAudio.src=url;
-
-      // 시작/끝 이벤트는 기존 utter 핸들러로 전달
-      safeCall(utter.onstart,new Event("start"));
-      sharedAudio.onended=()=>{ safeCall(utter.onend,new Event("end")); try{ URL.revokeObjectURL(url); }catch(_){} if(lastUrl===url) lastUrl=null; };
-      sharedAudio.onerror=()=>{ safeCall(utter.onerror,new Event("error")); };
-
-      await sharedAudio.play();
+    const ENDPOINT="https://asia-northeast3-sori-tts.cloudfunctions.net/tts";
+    let shared=new Audio(), last=null;
+    const original=speechSynthesis.speak.bind(speechSynthesis);
+    const isKo=(u)=>/[가-힣]/.test((u.text||'').trim());
+    async function viaApi(u){
+      try{ shared.pause(); }catch(_){}
+      if(last){ try{ URL.revokeObjectURL(last);}catch(_){ } last=null; }
+      const text=(u.text||'').trim(); if(!text) throw new Error('empty');
+      const r=await fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text})});
+      const b=await r.blob(); const url=URL.createObjectURL(b); last=url; shared.src=url; await shared.play();
     }
-    speechSynthesis.speak=function(utter){
-      try{
-        if(!isKorean(utter)) return originalSpeak(utter);
-        playViaApi(utter).catch(err => {
-          console.warn("[Sori TTS] API failed, fallback to WebSpeech:", err);
-          originalSpeak(utter);
-        });
-        return;
-      } catch (e) {
-        console.warn("[Sori TTS] patch error, fallback:", e);
-        return originalSpeak(utter);
-      }
-    };
-    window.SoriTTSApi={ useWebSpeechOnce(utter){ originalSpeak(utter); } };
+    speechSynthesis.speak=function(u){ if(!isKo(u)) return original(u); viaApi(u).catch(()=>original(u)); };
   })();
   </script>
 
-  <!-- Layout fix: 위=영어 뜻, 아래(en)=발음, pr 숨김. 카테고리/다음/이전에도 안정적 동작 -->
+  <!-- Layout fix: 위=영어 뜻, 아래=en=발음. #korean 변경시에만 스왑 -->
   <script>
-    (function(){
-      function applyLayoutOnce(){
-        const ctx = document.getElementById('context');
-        const en  = document.getElementById('english');
-        const pr  = document.getElementById('pronunciation');
-        if(!ctx || !en) return;
+  (function(){
+    const quote=(s)=>`"${String(s||'').replace(/^"+|"+$/g,'').trim()}"`;
+    let lastKo='';
 
-        // 1) context ← 현재 #english(따옴표 포함)
-        const englishText = (en.textContent || '').trim();
-        if(englishText) ctx.textContent = englishText;
+    function swap(){
+      const ko=(korean?.textContent||'').trim();
+      if(!ko || ko===lastKo) return;
+      lastKo=ko;
 
-        // 2) 아래(en) ← 발음
-        const pron = (pr?.textContent || '').trim();
-        if(pron) en.textContent = pron;
+      const ctx=context, en=english, pr=document.getElementById('pronunciation');
+      if(!ctx || !en) return;
 
-        // 3) 발음 원본 숨김
-        if(pr) pr.style.display = 'none';
-      }
+      const englishRaw=(en.textContent||'').trim();   // 원본 영어 뜻
+      const romanRaw=(pr?.textContent||'').trim();    // 원본 발음
 
-      // 초기 1회
-      document.addEventListener('DOMContentLoaded', applyLayoutOnce);
+      if(englishRaw) ctx.textContent = quote(englishRaw);
+      if(romanRaw)   en.textContent  = romanRaw;
+      if(pr) pr.style.display='none';
+    }
 
-      // DOM 갱신 시 한 번만 보정
-      let rafId = 0;
-      const mo = new MutationObserver(()=>{
-        cancelAnimationFrame(rafId);
-        rafId = requestAnimationFrame(applyLayoutOnce);
-      });
-      mo.observe(document.body, { childList:true, subtree:true, characterData:true });
+    document.addEventListener('DOMContentLoaded', swap);
 
-      // 버튼 상호작용 시에도 보정
-      ['nextBtn','prevBtn','dailyBtn','travelBtn','dramaBtn','savedBtnHidden'].forEach(id=>{
-        const el = document.getElementById(id);
-        el && el.addEventListener('click', ()=> requestAnimationFrame(applyLayoutOnce), true);
-      });
-    })();
+    // 오직 #korean 바뀔 때만 다시 스왑
+    const koNode=document.getElementById('korean');
+    if(koNode){
+      const mo=new MutationObserver(()=> requestAnimationFrame(swap));
+      mo.observe(koNode,{childList:true,characterData:true,subtree:true});
+    }
+    // 사용자 조작 후에도 한 틱 지연해서 보정
+    ['nextBtn','prevBtn','dailyBtn','travelBtn','dramaBtn','savedBtnHidden'].forEach(id=>{
+      const el=document.getElementById(id);
+      el && el.addEventListener('click',()=> setTimeout(swap,0), true);
+    });
+  })();
   </script>
 </body>
 </html>
+
