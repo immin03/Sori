@@ -3,332 +3,243 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Sori - Learn Korean</title>
+  <title>Sori - Learn Korean by Sound</title>
+  <meta name="theme-color" content="#7c3aed"/>
 
-  <!-- Reset & Theme (내장 변수 정의로 안전하게) -->
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml"
+    href='data:image/svg+xml;utf8,
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+      <circle cx="32" cy="32" r="30" fill="#7c3aed" stroke="#6d28d9" stroke-width="2"/>
+      <text x="16" y="40" font-family="sans-serif" font-size="22" font-weight="bold" fill="white">소</text>
+    </svg>'/>
+
+  <!-- GA -->
+  <script>window.GA_ID='G-X1Q98DBKR5';</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-X1Q98DBKR5"></script>
+  <script>
+    window.dataLayer=window.dataLayer||[];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js',new Date());
+    gtag('config',window.GA_ID,{send_page_view:false});
+  </script>
+
+  <!-- Firebase -->
+  <script defer src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
   <style>
-    :root{
-      --bg: #ffffff;
-      --bg-grad-a: #f5f3ff;
-      --bg-grad-b: #faf5ff;
-      --bg-grad-c: #f0f9ff;
-      --ink: #222222;
-      --ink-dim: #6b7280;
-      --brand: #7c3aed;
-      --brand-ink: #ffffff;
-      --chip: #f3f0ff;
-      --chip-ink: #5b21b6;
-      --border: #e5e7eb;
-      --card: #ffffff;
-      --shadow: 0 8px 24px rgba(0,0,0,.06);
-      --radius: 16px;
-    }
     *{box-sizing:border-box}
-    html,body{height:100%}
     body{
-      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,system-ui,sans-serif;
-      max-width:720px; margin:0 auto; padding:20px;
-      background: linear-gradient(135deg,var(--bg-grad-a) 0%,var(--bg-grad-b) 50%,var(--bg-grad-c) 100%);
-      color:var(--ink);
-      min-height:100vh;
+      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+      max-width:680px;margin:0 auto;padding:12px;
+      background:#faf8ff;min-height:100vh;color:#1f2937;
     }
-    h1{font-size:28px; font-weight:800; color:var(--brand); margin:0 0 8px}
-    .sub{font-size:13px; color:var(--ink-dim); margin-bottom:16px}
+    h1{font-size:24px;margin:0 0 4px;color:#7c3aed;font-weight:800}
+    .intro{color:#9ca3af;font-size:12px;margin-bottom:10px;line-height:1.3;font-weight:500}
+    .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+    .top-btn{padding:6px 12px;border-radius:10px;font-size:12px;font-weight:700;border:0;cursor:pointer}
+    .top-btn.primary{background:#7c3aed;color:#fff}
+    .card{background:#fff;border-radius:16px;padding:16px;margin:8px 0;box-shadow:0 2px 12px rgba(0,0,0,.05)}
 
-    .topbar{display:flex; align-items:center; justify-content:space-between; margin-bottom:8px}
-    .badge{font-size:12px; padding:2px 8px; border-radius:999px; background:#ede9fe; color:#5b21b6}
-    .btn{
-      display:inline-flex; align-items:center; justify-content:center; gap:8px;
-      padding:10px 14px; border-radius:12px; border:1px solid var(--border);
-      background:#fff; color:var(--ink); cursor:pointer; user-select:none;
+    /* Category picker */
+    .category-bar{display:flex;align-items:center;gap:12px}
+    .picker-wrap{position:relative}
+    .picker-trigger{
+      padding:12px 18px;border-radius:14px;background:#7c3aed;color:#fff;
+      font-weight:800;border:0;cursor:pointer;min-width:200px;text-align:center
     }
-    .btn.primary{background:var(--brand); color:var(--brand-ink); border:none}
-    .btn:disabled{opacity:.5; cursor:not-allowed}
-
-    .tabs{display:flex; gap:12px; margin:16px 0 10px}
-    .tab{
-      flex:1; text-align:center; padding:12px; border-radius:12px;
-      background:#efeafd; color:#4c1d95; font-weight:700; cursor:pointer; border:1px solid #e9d8fd;
+    .picker-menu{
+      position:absolute;top:100%;left:0;right:0;margin-top:6px;background:#fff;border-radius:12px;
+      box-shadow:0 10px 30px rgba(0,0,0,.15);overflow:hidden;max-height:0;transition:max-height .25s ease;z-index:50
     }
-    .tab.active{background:var(--brand); color:#fff; border-color:var(--brand)}
-
-    .chips{display:flex; flex-wrap:wrap; gap:10px; margin-bottom:12px}
-    .chip{
-      padding:8px 12px; border-radius:999px; background:var(--chip);
-      color:var(--chip-ink); border:1px solid #e9d5ff; cursor:pointer; font-weight:600;
+    .picker-menu.open{max-height:156px}
+    .picker-list{max-height:150px;overflow-y:auto;padding:6px;scrollbar-width:thin}
+    .picker-item{height:44px;line-height:44px;border-radius:12px;margin:6px 4px;text-align:center;
+      background:#f6f6ff;color:#5b5b72;font-weight:700;cursor:pointer;user-select:none}
+    .picker-item:hover,.picker-item.active{background:#7c3aed;color:#fff}
+    .saved-btn{
+      height:44px;padding:0 16px;border-radius:12px;background:#fff;color:#7c3aed;border:2px solid #e9defd;font-weight:800;cursor:pointer;white-space:nowrap
     }
-    .chip.active{background:#5b21b6; color:#fff; border-color:#5b21b6}
+    .saved-btn:hover{background:#f7f2ff}
 
-    .card{
-      background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow);
-      padding:28px 20px; margin:12px 0;
-    }
-    .meaning{color:var(--ink-dim); text-align:center; margin-bottom:4px; font-style:italic}
-    .korean{font-size:34px; font-weight:800; text-align:center; margin:8px 0 6px}
-    .roman{font-size:15px; color:var(--ink-dim); text-align:center; letter-spacing:.1px}
+    /* Sub chips */
+    .sub-filters{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .sub-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:14px;background:#fff;border:2px solid #e5e7eb;color:#374151;font-size:12px;font-weight:600;cursor:pointer;user-select:none}
+    .sub-chip.active{background:#7c3aed;border-color:#7c3aed;color:#fff}
 
-    .dots{display:flex; gap:8px; justify-content:center; margin:14px 0 6px}
-    .dot{width:8px; height:8px; border-radius:50%; background:#e5e7eb}
-    .dot.active{background:#7c3aed}
+    .row-between{display:flex;justify-content:space-between;align-items:center;gap:8px}
+    .badge{display:inline-block;background:#7c3aed;color:#fff;font-size:11px;font-weight:800;padding:5px 10px;border-radius:10px}
+    .icon-btn{border:none;background:transparent;width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;font-size:20px;color:#9ca3af;cursor:pointer;border-radius:8px}
+    .icon-btn.active{color:#e11d48}
 
-    .listen{margin-top:12px}
-    .slider-wrap{display:flex; align-items:center; gap:10px; margin:12px 0 4px}
-    .slider{flex:1}
-    .tip{font-size:12px; color:#b45309; background:#fff7ed; border:1px solid #ffedd5; padding:8px 10px; border-radius:10px; text-align:center}
+    .context{color:#6b7280;font-size:16px;text-align:center;margin:8px 0 0;font-weight:600}
+    .kbox{background:#f9fafb;border-radius:14px;padding:16px 12px;margin:12px 0;text-align:center}
+    .ko{font-size:28px;font-weight:900;color:#1f2937;margin:0 0 6px}
+    .en{color:#6b7280;font-size:16px;margin:0 0 10px;font-weight:600}
 
-    .nav{
-      display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px
-    }
-    .counter{font-size:13px; color:var(--ink-dim); text-align:center; margin:8px 0}
+    .practice{background:#f9fafb;border-radius:10px;padding:10px}
+    .practice-label{font-size:12px;font-weight:600;color:#6b7280;text-align:center;margin:0 0 8px}
+    .dots{display:flex;gap:6px;justify-content:center;margin-bottom:8px}
+    .rep-dot{width:32px;height:32px;border-radius:50%;border:2px solid #e5e7eb;background:#fff}
+    .rep-dot.completed{background:#7c3aed;border-color:#7c3aed}
+    button.big{width:100%;padding:12px 18px;border-radius:14px;border:0;cursor:pointer;font-weight:800;font-size:15px;background:#7c3aed;color:#fff}
+    .row{display:flex;align-items:center;justify-content:center;gap:8px;background:#f9fafb;border-radius:8px;padding:8px;margin-top:8px}
 
-    @media (max-width:420px){
-      .korean{font-size:28px}
-    }
+    .tip-card{margin-top:10px;background:#fff1f2;border-left:3px solid #e11d48;border-radius:10px;padding:10px}
+    .tip-text{font-size:12px;color:#9f1239;font-weight:600}
+
+    .hidden-tabs{display:none}
+    .auth{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:9999;background:rgba(0,0,0,.45);padding:16px}
+    .auth.open{display:flex}
+    .auth-card{background:#fff;width:100%;max-width:360px;border-radius:18px;padding:24px;box-shadow:0 18px 50px rgba(0,0,0,.35);text-align:center;position:relative}
+    .auth-close{position:absolute;top:10px;right:10px;background:none;border:none;font-size:22px;color:#9ca3af;cursor:pointer}
   </style>
 </head>
 <body>
-  <div class="topbar">
+  <!-- HEADER -->
+  <header class="header">
     <div>
-      <span class="badge">beta</span>
-      <h1 style="display:inline-block; margin-left:8px;">Sori</h1>
-      <div class="sub">Learn Korean naturally by repeating real sounds</div>
+      <h1>Sori <span style="font-size:14px;color:#9ca3af;font-weight:600;">(beta)</span></h1>
+      <div class="intro">Learn Korean naturally by repeating real sounds</div>
     </div>
-    <button class="btn" id="loginBtn" aria-label="Login">Login</button>
-  </div>
+    <button id="loginBtn" class="top-btn primary">Login</button>
+  </header>
 
-  <!-- Tabs -->
-  <div class="tabs" id="tabs"></div>
-
-  <!-- Subcategory chips -->
-  <div class="chips" id="chips"></div>
-
-  <!-- Card -->
-  <div class="card">
-    <div class="meaning" id="meaning">"Hello"</div>
-    <div class="korean" id="korean">안녕하세요.</div>
-    <div class="roman" id="roman">annyeonghaseyo</div>
-
-    <div class="dots" id="dots"></div>
-
-    <div class="listen">
-      <button class="btn primary" id="speakBtn">Listen &amp; Repeat</button>
-      <div class="slider-wrap">
-        <div style="font-size:13px; color:var(--ink-dim)">Speed:</div>
-        <input id="rate" class="slider" type="range" min="0.5" max="1.25" value="0.9" step="0.05" />
-        <div id="rateLbl" style="width:52px; text-align:right; font-size:13px; color:var(--ink-dim)">0.90x</div>
+  <!-- CATEGORY -->
+  <section class="card">
+    <div class="category-bar">
+      <div class="picker-wrap">
+        <button id="pickerTrigger" class="picker-trigger" aria-haspopup="listbox">Daily</button>
+        <div id="pickerMenu" class="picker-menu"><div class="picker-list"></div></div>
       </div>
-      <div class="tip">Tip: Listen carefully and repeat multiple times. Consistency is key.</div>
+      <button id="savedBtn" class="saved-btn">★ Saved</button>
     </div>
 
-    <div class="nav">
-      <button class="btn" id="prevBtn">◀ Previous</button>
-      <button class="btn" id="nextBtn">Next ▶</button>
+    <div class="hidden-tabs" aria-hidden="true">
+      <button id="dailyBtn"  class="tab-button active">Daily</button>
+      <button id="travelBtn" class="tab-button">Travel</button>
+      <button id="dramaBtn"  class="tab-button">K-Drama</button>
+      <button id="savedBtnHidden" class="tab-button">Saved</button>
     </div>
-    <div class="counter" id="counter">1 / 1</div>
+
+    <div id="subFilters" class="sub-filters"></div>
+  </section>
+
+  <!-- LESSON -->
+  <section class="card">
+    <div class="row-between">
+      <div id="badge" class="badge">Greeting</div>
+      <button id="scrapBtn" class="icon-btn" title="Save this phrase">☆</button>
+    </div>
+    <div id="context" class="context">"Hello"</div>
+
+    <div class="kbox">
+      <p id="korean" class="ko">안녕하세요.</p>
+      <p id="english" class="en">annyeonghaseyo</p>
+      <p id="pronunciation" style="display:none">annyeonghaseyo</p>
+    </div>
+
+    <div class="practice">
+      <p class="practice-label">Practice Count: <span id="repCount">0</span> / 5</p>
+      <div class="dots"><div class="rep-dot"></div><div class="rep-dot"></div><div class="rep-dot"></div><div class="rep-dot"></div><div class="rep-dot"></div></div>
+    </div>
+
+    <button id="playBtn" class="big">Listen & Repeat</button>
+    <div class="row"><label>Speed:</label><input id="speed" type="range" min="0.3" max="1.0" step="0.1" value="0.75"/><span id="speedTxt">0.75x</span></div>
+    <div class="tip-card"><div id="tipText" class="tip-text"></div></div>
+  </section>
+
+  <section class="card">
+    <div class="nav"><button id="prevBtn">◀ Previous</button><button id="nextBtn">▶ Next</button></div>
+    <div id="prog" class="progress">1 / 30</div>
+  </section>
+
+  <div id="authModal" class="auth">
+    <div class="auth-card">
+      <button id="authClose" class="auth-close">×</button>
+      <div style="font-size:24px;font-weight:800;color:#7c3aed;margin-bottom:6px;">Sign in</div>
+      <div style="font-size:13px;color:#9ca3af;margin-bottom:18px;">Use your Google account</div>
+      <button class="gbtn" onclick="window.handleGoogleLogin&&window.handleGoogleLogin()">Continue with Google</button>
+    </div>
   </div>
 
+  <!-- 데이터 연결 -->
+  <script defer src="data/daily.js?v=20251017"></script>
+  <script defer src="data/travel.js?v=20251017"></script>
+  <script defer src="data/drama.js?v=20251017"></script>
+  <script defer src="data/dataindex.js?v=20251017"></script>
+  <script defer src="js/state.js?v=20251017"></script>
+  <script defer src="js/tts.js?v=20251017"></script>
+  <script defer src="js/app.js?v=20251017"></script>
+
+  <!-- 하단 보조 스크립트들은 모두 DOMContentLoaded 이후 실행 -->
   <script>
-    // ----------------------------
-    // 1) 데이터
-    // ----------------------------
-    window.SORI_DATA = {
-      daily: [
-        {t:'Greeting', c:'First meeting', k:'안녕하세요.', e:'Hello', p:'annyeonghaseyo'},
-        {t:'Greeting', c:'Casual hi', k:'안녕!', e:'Hi', p:'annyeong'},
-        {t:'Greeting', c:'How are you', k:'잘 지냈어요?', e:'Have you been well?', p:'jal jinaesseoyo'},
-        {t:'Greeting', c:'Introduce', k:'저는 민우예요.', e:'I am Minwoo.', p:'jeoneun minuyeyo'},
+  document.addEventListener('DOMContentLoaded',()=>{
+    // Auth wiring
+    const modal=authModal, login=loginBtn, close=authClose;
+    const open=()=>modal.classList.add('open'), hide=()=>modal.classList.remove('open');
+    function wireLogin(){login.textContent='Login';login.onclick=open;}
+    function wireLogout(){login.textContent='Logout';login.onclick=async()=>{try{await window.SoriUser?.logout?.();}catch(e){}};}
+    close.onclick=hide;modal.onclick=e=>{if(e.target===modal)hide();}
+    try{firebase.auth().onAuthStateChanged(u=>{u?(hide(),wireLogout()):wireLogin();});}
+    catch(e){wireLogin();}
 
-        {t:'Small talk', c:'Thanks', k:'고맙습니다.', e:'Thank you.', p:'gomapseumnida'},
-        {t:'Small talk', c:'Sorry', k:'미안해요.', e:'I’m sorry.', p:'mianhaeyo'},
-        {t:'Small talk', c:'Please', k:'부탁드립니다.', e:'Please.', p:'butak deurimnida'},
-        {t:'Small talk', c:'Excuse me', k:'실례합니다.', e:'Excuse me.', p:'sillyehamnida'},
-
-        {t:'Numbers', c:'Price check', k:'얼마예요?', e:'How much is it?', p:'eolmayeyo'},
-        {t:'Numbers', c:'Count to ten', k:'하나, 둘, 셋...', e:'One, two, three…', p:'hana, dul, set'},
-
-        {t:'Time', c:'What time', k:'지금 몇 시예요?', e:'What time is it now?', p:'jigeum myeot siyeyo'},
-        {t:'Time', c:'Today', k:'오늘 일정 있어요.', e:'I have plans today.', p:'oneul iljeong isseoyo'}
-      ],
-      travel: [
-        {t:'Cafe', c:'Order coffee', k:'아메리카노 한 잔 주세요.', e:'One Americano, please.', p:'amerikano han jan juseyo'},
-        {t:'Cafe', c:'To go', k:'테이크아웃 돼요?', e:'Can I get it to go?', p:'teikeu aut dwaeyo'},
-        {t:'Shopping', c:'Different size', k:'다른 사이즈 있어요?', e:'Do you have another size?', p:'dareun saijeu isseoyo'},
-        {t:'Shopping', c:'Try on', k:'입어봐도 돼요?', e:'May I try this on?', p:'ibeobwado dwaeyo'},
-        {t:'Transport', c:'Subway', k:'지하철 어디로 가요?', e:'Which way is the subway?', p:'jihacheol eodiro gayo'},
-        {t:'Hotel', c:'Check in', k:'체크인 하려고 왔어요.', e:'I’d like to check in.', p:'chekeu-in haryeogo wasseoyo'},
-        {t:'Restaurant', c:'Recommendation', k:'추천 메뉴가 뭐예요?', e:'What do you recommend?', p:'chucheon menyuga mwoyeyo'},
-        {t:'Emergency', c:'Help', k:'도와주세요!', e:'Please help!', p:'dowajuseyo'}
-      ],
-      drama: [
-        {t:'Goblin', c:'Kim Shin', k:'너는, 내가 잃은 모든 날들이다.', e:'You are all the days I lost.', p:'neoneun, naega ireun modeun naldeulida'},
-        {t:'Goblin', c:'Eun-tak', k:'혼자였던 시간도, 나를 만들었어.', e:'Even my lonely days shaped me.', p:'honjayotteon sigando, nareul mandeureosseo'},
-        {t:'Crash Landing', c:'Ri Jeong-hyeok', k:'널 좋아한 게, 잘못이었을까?', e:'Was it wrong that I liked you?', p:'neol joahan ge, jalmosieosseulkka'},
-        {t:'Itaewon Class', c:'Park Sae-ro-yi', k:'내 길은 내가 정한다.', e:'I decide my own path.', p:'nae gireun naega jeonghanda'}
-      ]
-    };
-
-    // ----------------------------
-    // 2) 상태
-    // ----------------------------
-    const state = {
-      tab: 'daily',       // 'daily' | 'travel' | 'drama'
-      sub: null,          // 현재 필터 서브카테고리
-      idx: 0,             // 현재 문장 인덱스
-      rate: 0.9,          // 음성 속도
-      koVoice: null       // 한국어 보이스 캐시
-    };
-
-    // ----------------------------
-    // 3) 유틸
-    // ----------------------------
-    const $ = sel => document.querySelector(sel);
-    const $$ = sel => document.querySelectorAll(sel);
-
-    function getList(){
-      const list = window.SORI_DATA[state.tab] || [];
-      if(!state.sub) return list;
-      return list.filter(x => x.t === state.sub);
-    }
-
-    function clampIdx(){
-      const list = getList();
-      if(list.length === 0){ state.idx = 0; return; }
-      if(state.idx >= list.length) state.idx = list.length - 1;
-      if(state.idx < 0) state.idx = 0;
-    }
-
-    // ----------------------------
-    // 4) 렌더
-    // ----------------------------
-    function renderTabs(){
-      const tabs = [
-        {key:'daily', label:'Daily'},
-        {key:'travel', label:'Travel'},
-        {key:'drama', label:'K-Drama'}
-      ];
-      const el = $('#tabs');
-      el.innerHTML = '';
-      tabs.forEach(t=>{
-        const btn = document.createElement('button');
-        btn.className = 'tab' + (state.tab===t.key?' active':'');
-        btn.textContent = t.label;
-        btn.onclick = ()=>{
-          state.tab = t.key; state.sub = null; state.idx = 0;
-          renderAll();
-        };
-        el.appendChild(btn);
-      });
-    }
-
-    function renderChips(){
-      const list = window.SORI_DATA[state.tab] || [];
-      const subs = [...new Set(list.map(x=>x.t))];
-      const el = $('#chips');
-      el.innerHTML = '';
-      subs.forEach(s=>{
-        const chip = document.createElement('button');
-        chip.className = 'chip' + (state.sub===s?' active':'');
-        chip.textContent = s;
-        chip.onclick = ()=>{
-          state.sub = (state.sub===s ? null : s);
-          state.idx = 0;
-          renderAll();
-        };
-        el.appendChild(chip);
-      });
-    }
-
-    function renderCard(){
-      const list = getList();
-      const empty = {e:'No items', k:'', p:''};
-      const item = list[state.idx] || empty;
-
-      $('#meaning').textContent = item.e ? `"${item.e}"` : '';
-      $('#korean').textContent = item.k || '';
-      $('#roman').textContent  = item.p || '';
-
-      // dots
-      const dots = $('#dots');
-      dots.innerHTML = '';
-      list.forEach((_,i)=>{
-        const d = document.createElement('div');
-        d.className = 'dot' + (i===state.idx?' active':'');
-        d.onclick = ()=>{ state.idx = i; renderCard(); };
-        dots.appendChild(d);
-      });
-
-      // counter
-      $('#counter').textContent = list.length ? `${state.idx+1} / ${list.length}` : '0 / 0';
-
-      // 네비 버튼
-      $('#prevBtn').disabled = state.idx<=0 || list.length===0;
-      $('#nextBtn').disabled = state.idx>=list.length-1 || list.length===0;
-    }
-
-    function renderAll(){
-      renderTabs();
-      renderChips();
-      clampIdx();
-      renderCard();
-    }
-
-    // ----------------------------
-    // 5) 음성 합성
-    // ----------------------------
-    function pickKoreanVoice(){
-      const voices = window.speechSynthesis.getVoices();
-      // ko-KR 우선, 없으면 한국어가 들어간 이름, 마지막으로 기본값
-      const exact = voices.find(v=>/ko-KR/i.test(v.lang));
-      if(exact) return exact;
-      const anyKo = voices.find(v=>/korean|ko/i.test(v.name+v.lang));
-      return anyKo || voices[0] || null;
-    }
-
-    function speakKorean(text){
-      if(!('speechSynthesis' in window)) {
-        alert('Speech Synthesis not supported on this browser.');
-        return;
-      }
-      window.speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(text);
-      state.koVoice = state.koVoice || pickKoreanVoice();
-      if(state.koVoice) u.voice = state.koVoice;
-      u.lang = (state.koVoice && state.koVoice.lang) || 'ko-KR';
-      u.rate = state.rate;
-      u.pitch = 1.0;
-      window.speechSynthesis.speak(u);
-    }
-
-    // ----------------------------
-    // 6) 이벤트
-    // ----------------------------
-    $('#speakBtn').addEventListener('click', ()=>{
-      const list = getList();
-      if(!list.length) return;
-      speakKorean(list[state.idx].k);
+    // Picker
+    const cats=["Daily","Travel","K-Drama"], menu=pickerMenu.querySelector('.picker-list');
+    menu.innerHTML=''; cats.forEach((c,i)=>{const el=document.createElement('div');el.className='picker-item'+(i==0?' active':'');el.textContent=c;
+      el.onclick=()=>{menu.querySelectorAll('.picker-item').forEach(n=>n.classList.remove('active'));el.classList.add('active');pickerTrigger.textContent=c;pickerMenu.classList.remove('open');changeTip();const key=c.toLowerCase();if(key==='daily')dailyBtn.click();if(key==='travel')travelBtn.click();if(key.includes('drama'))dramaBtn.click();};
+      menu.appendChild(el);
     });
+    pickerTrigger.onclick=e=>{e.stopPropagation();pickerMenu.classList.toggle('open');};
+    document.body.onclick=()=>pickerMenu.classList.remove('open');
+    savedBtn.onclick=()=>savedBtnHidden.click();
 
-    $('#prevBtn').addEventListener('click', ()=>{
-      state.idx--; clampIdx(); renderCard();
-    });
-    $('#nextBtn').addEventListener('click', ()=>{
-      state.idx++; clampIdx(); renderCard();
-    });
+    // Tip rotate
+    const tips=[
+      "Tip: Small daily reps beat big, rare sessions.",
+      "Tip: Shadow the sound, not the spelling.",
+      "Tip: Say it out loud — your mouth must learn too.",
+      "Tip: Five clean repeats > twenty sloppy ones.",
+      "Tip: Record yourself and match the rhythm.",
+      "Tip: First mimic, then understand.",
+      "Tip: Keep the same speed; build consistency.",
+      "Tip: Close your eyes and copy the melody.",
+      "Tip: Bite-sized goals. One phrase at a time.",
+      "Tip: Revisit yesterday — retention makes speed."
+    ];
+    const tipText=document.getElementById('tipText');
+    const changeTip=()=>tipText.textContent=tips[Math.floor(Math.random()*tips.length)];
+    changeTip();
 
-    const rateEl = $('#rate');
-    const rateLbl = $('#rateLbl');
-    rateEl.addEventListener('input', ()=>{
-      state.rate = parseFloat(rateEl.value);
-      rateLbl.textContent = state.rate.toFixed(2)+'x';
-    });
-
-    // 일부 브라우저는 첫 로드 때 보이스 목록이 비어있다가 event를 나중에 쏜다
-    if('speechSynthesis' in window){
-      window.speechSynthesis.onvoiceschanged = ()=>{ state.koVoice = pickKoreanVoice(); };
+    // Layout fix swap
+    const quote=s=>`"${String(s||'').replace(/^"+|"+$/g,'').trim()}"`;let last='';
+    function swap(){
+      const ko=(korean.textContent||'').trim();if(!ko||ko===last)return;last=ko;
+      const en=english,pr=pronunciation,ctx=context;
+      if(en&&pr&&ctx){ctx.textContent=quote(en.textContent.trim());en.textContent=pr.textContent.trim();pr.style.display='none';}
     }
+    swap();
+    const mo=new MutationObserver(()=>requestAnimationFrame(swap));
+    mo.observe(korean,{childList:true,subtree:true});
+    [nextBtn,prevBtn,dailyBtn,travelBtn,dramaBtn,savedBtnHidden].forEach(el=>el.addEventListener('click',()=>setTimeout(swap,0),true));
+  });
+  </script>
 
-    // 초기 렌더
-    renderAll();
+  <!-- 안전한 TTS patch -->
+  <script>
+  window.addEventListener('load',()=>{
+    const ENDPOINT="https://asia-northeast3-sori-tts.cloudfunctions.net/tts";
+    const original=speechSynthesis.speak.bind(speechSynthesis);
+    const shared=new Audio();let last=null;
+    async function viaApi(u){try{shared.pause();}catch{}if(last){URL.revokeObjectURL(last);last=null;}
+      const t=(u.text||'').trim();if(!t)throw 0;
+      const r=await fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:t})});
+      const b=await r.blob();const url=URL.createObjectURL(b);last=url;shared.src=url;await shared.play();
+    }
+    speechSynthesis.speak=function(u){if(/[가-힣]/.test(u.text||''))viaApi(u).catch(()=>original(u));else original(u);}
+  });
   </script>
 </body>
 </html>
