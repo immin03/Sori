@@ -352,88 +352,99 @@
   });
   </script>
 
-  <!-- Layout fix + Practice dots: SORI_DATA에서 정확히 찾아 채우기 -->
-  <script>
-  (function(){
-    const quote=(s)=>`"${String(s||'').replace(/^"+|"+$/g,'').trim()}"`;
-    let lastK='';
+  <!-- Layout fix + Practice dots (robust ready + retry) -->
+<script>
+(function(){
+  const quote = s => `"${String(s||'').replace(/^"+|"+$/g,'').trim()}"`;
+  let lastKo = '';
 
-    function findInDataByK(ko){
-      try{
-        const DB = window.SORI_DATA || {};
-        const pools = [DB.daily||[], DB.travel||[], DB.drama||[]];
-        for(const arr of pools){
-          const hit = arr.find(x => (x.k||'').trim() === ko);
-          if(hit) return hit; // {t,c,k,e,p,sub}
-        }
-      }catch(e){}
-      return null;
-    }
+  function findInDataByK(ko){
+    try{
+      const DB = window.SORI_DATA || {};
+      const pools = [DB.daily||[], DB.travel||[], DB.drama||[]];
+      for(const arr of pools){
+        const hit = arr.find(x => (x.k||'').trim() === ko);
+        if(hit) return hit; // {t,c,k,e,p,sub}
+      }
+    }catch(e){}
+    return null;
+  }
 
-    function applyMeaningRoman(){
-      const koEl = document.getElementById('korean');
-      const enEl = document.getElementById('english');
-      const prEl = document.getElementById('pronunciation');
-      const ctxEl= document.getElementById('context');
-      if(!koEl||!enEl||!prEl||!ctxEl) return;
+  function applyMeaningRomanOnce(){
+    const koEl = document.getElementById('korean');
+    const enEl = document.getElementById('english');
+    const prEl = document.getElementById('pronunciation');
+    const ctxEl = document.getElementById('context');
+    if(!koEl || !enEl || !prEl || !ctxEl) return false;
 
-      const koText=(koEl.textContent||'').trim();
-      if(!koText) return;
+    const ko = (koEl.textContent||'').trim();
+    if(!ko) return false;
 
-      // 데이터에서 정답을 찾아서 강제 세팅
-      const data = findInDataByK(koText);
-      const meaning = data?.e || (ctxEl.textContent||'').replace(/(^"+|"+$)/g,'').trim();
-      const roman   = data?.p || (prEl.textContent||'').trim() || (enEl.textContent||'').trim();
+    const item = findInDataByK(ko);
+    if(!item) return false;
 
-      if(meaning) ctxEl.textContent = quote(meaning);
-      if(roman)   enEl.textContent  = roman;
+    // 위: 영어 뜻, 아래: 로마자
+    if(item.e) ctxEl.textContent = quote(item.e);
+    if(item.p) enEl.textContent  = item.p;
+    prEl.style.display = 'none';
+    return true;
+  }
 
-      prEl.style.display='none';
-    }
+  // 데이터가 아직 안 왔으면 재시도
+  function ensureApplied(attempt=0){
+    const ok = applyMeaningRomanOnce();
+    if(ok) return;
+    if(attempt >= 60) return;            // 최대 3초(50ms * 60) 까지 재시도
+    setTimeout(()=>ensureApplied(attempt+1), 50);
+  }
 
-    function resetDots(){
+  function resetDots(){
+    const dots = [...document.querySelectorAll('.rep-dot')];
+    dots.forEach(d=>d.classList.remove('completed'));
+    const cnt = document.getElementById('repCount'); if(cnt) cnt.textContent = '0';
+  }
+
+  function onSentenceChanged(){
+    const ko = (korean?.textContent||'').trim();
+    if(!ko || ko === lastKo) return;
+    lastKo = ko;
+    ensureApplied(0);
+    resetDots();
+  }
+
+  document.addEventListener('DOMContentLoaded', ()=>{
+    // 첫 진입 보정: 즉시 + 지연 2회 더 시도
+    ensureApplied(0);
+    setTimeout(()=>ensureApplied(0), 200);
+    setTimeout(()=>ensureApplied(0), 500);
+
+    // 문장 내용 변경 감지
+    const mo = new MutationObserver(()=> requestAnimationFrame(onSentenceChanged));
+    if(korean) mo.observe(korean, {childList:true, characterData:true, subtree:true});
+
+    // 재생하면 연습 점 채우기
+    playBtn.addEventListener('click', ()=>{
+      const cntEl=document.getElementById('repCount');
+      let n=parseInt(cntEl.textContent||'0',10);
+      if(n<5){ n++; cntEl.textContent=String(n); }
       const dots=[...document.querySelectorAll('.rep-dot')];
-      dots.forEach(d=>d.classList.remove('completed'));
-      document.getElementById('repCount').textContent='0';
-    }
-
-    function onSentenceChanged(){
-      const ko=(korean?.textContent||'').trim();
-      if(!ko || ko===lastK) return;
-      lastK=ko;
-      applyMeaningRoman();
-      resetDots();
-    }
-
-    document.addEventListener('DOMContentLoaded', ()=>{
-      applyMeaningRoman();
-
-      // 문장 변경 감지
-      const mo=new MutationObserver(()=> requestAnimationFrame(onSentenceChanged));
-      mo.observe(korean,{childList:true,characterData:true,subtree:true});
-
-      // 재생시 점 채우기
-      playBtn.addEventListener('click', ()=>{
-        const cntEl=document.getElementById('repCount');
-        let n=parseInt(cntEl.textContent||'0',10);
-        if(n<5){ n++; cntEl.textContent=String(n); }
-        const dots=[...document.querySelectorAll('.rep-dot')];
-        dots.forEach((d,i)=> d.classList.toggle('completed', i < n));
-      });
-
-      // 탭/네비 이동 시도 때 재적용
-      ['nextBtn','prevBtn','dailyBtn','travelBtn','dramaBtn','savedBtnHidden'].forEach(id=>{
-        const el=document.getElementById(id);
-        el && el.addEventListener('click', ()=> setTimeout(()=>{ applyMeaningRoman(); resetDots(); },0), true);
-      });
-
-      // Speed 표시 동기화
-      const speedEl=document.getElementById('speed');
-      const speedTxt=document.getElementById('speedTxt');
-      const sync=()=> speedTxt.textContent = (parseFloat(speedEl.value)).toFixed(2)+'x';
-      speedEl.addEventListener('input', sync); sync();
+      dots.forEach((d,i)=> d.classList.toggle('completed', i < n));
     });
-  })();
-  </script>
+
+    // 탭/네비 이동 후에도 의미/로마자 재적용
+    ['nextBtn','prevBtn','dailyBtn','travelBtn','dramaBtn','savedBtnHidden'].forEach(id=>{
+      const el=document.getElementById(id);
+      el && el.addEventListener('click', ()=> setTimeout(()=>ensureApplied(0), 0), true);
+    });
+
+    // Speed 표시 동기화
+    const speedEl=document.getElementById('speed');
+    const speedTxt=document.getElementById('speedTxt');
+    const sync=()=> speedTxt.textContent=(parseFloat(speedEl.value)).toFixed(2)+'x';
+    speedEl.addEventListener('input', sync); sync();
+  });
+})();
+</script>
 </body>
 </html>
+
