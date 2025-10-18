@@ -1,358 +1,356 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Sori - Learn Korean by Sound</title>
-  <meta name="theme-color" content="#7c3aed"/>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Sori - Learn Korean by Sound</title>
+<meta name="theme-color" content="#7c3aed"/>
 
-  <!-- Favicon -->
-  <link rel="icon" type="image/svg+xml"
-    href='data:image/svg+xml;utf8,
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-      <circle cx="32" cy="32" r="30" fill="#7c3aed" stroke="#6d28d9" stroke-width="2"/>
-      <text x="16" y="40" font-family="sans-serif" font-size="22" font-weight="bold" fill="white">소</text>
-    </svg>'/>
+<!-- Favicon -->
+<link rel="icon" type="image/svg+xml"
+  href='data:image/svg+xml;utf8,
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+    <circle cx="32" cy="32" r="30" fill="#7c3aed" stroke="#6d28d9" stroke-width="2"/>
+    <text x="16" y="40" font-family="sans-serif" font-size="22" font-weight="bold" fill="white">소</text>
+  </svg>'/>
 
-  <!-- GA -->
-  <script>window.GA_ID='G-X1Q98DBKR5';</script>
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-X1Q98DBKR5"></script>
-  <script>
-    window.dataLayer=window.dataLayer||[];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js',new Date());
-    gtag('config',window.GA_ID,{send_page_view:false});
-  </script>
+<!-- GA -->
+<script>window.GA_ID='G-X1Q98DBKR5';</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-X1Q98DBKR5"></script>
+<script>
+  window.dataLayer=window.dataLayer||[];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js',new Date());
+  gtag('config',window.GA_ID,{send_page_view:false});
+</script>
 
-  <!-- Firebase compat -->
-  <script defer src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-  <script defer src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-  <script defer src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<!-- Firebase compat -->
+<script defer src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
-  <style>
-    *{box-sizing:border-box}
-    body{
-      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-      max-width:720px;margin:0 auto;padding:16px;background:#faf8ff;min-height:100vh;color:#1f2937
-    }
-    h1{font-size:26px;margin:0 0 4px;color:#7c3aed;font-weight:800}
-    .intro{color:#9ca3af;font-size:12px;margin-bottom:10px;line-height:1.3;font-weight:500}
+<style>
+*{box-sizing:border-box}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  max-width:720px;margin:0 auto;padding:16px;background:#faf8ff;min-height:100vh;color:#111827
+}
+h1{font-size:26px;margin:0 0 4px;color:#7c3aed;font-weight:800}
+.intro{color:#9ca3af;font-size:12px;margin-bottom:10px;line-height:1.3;font-weight:500}
 
-    .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-    .top-btn{padding:8px 14px;border-radius:12px;font-size:12px;font-weight:700;border:0;cursor:pointer}
-    .top-btn.primary{background:#7c3aed;color:#fff}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.top-btn{padding:8px 14px;border-radius:12px;font-size:12px;font-weight:700;border:0;cursor:pointer}
+.top-btn.primary{background:#7c3aed;color:#fff}
 
-    .card{background:#fff;border-radius:18px;padding:18px;margin:10px 0;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+.card{background:#fff;border-radius:18px;padding:18px;margin:10px 0;box-shadow:0 2px 12px rgba(0,0,0,.06)}
 
-    /* Category picker */
-    .category-bar{display:flex;align-items:center;gap:12px}
-    .picker-wrap{position:relative}
-    .picker-trigger{
-      padding:12px 18px;border-radius:14px;background:#7c3aed;color:#fff;
-      font-weight:800;border:0;cursor:pointer;min-width:220px;text-align:center
-    }
-    .picker-menu{
-      position:absolute;top:100%;left:0;right:0;margin-top:6px;background:#fff;border-radius:12px;
-      box-shadow:0 10px 30px rgba(0,0,0,.15);overflow:hidden;max-height:0;transition:max-height .25s ease;z-index:50
-    }
-    .picker-menu.open{max-height:160px}
-    .picker-list{max-height:150px;overflow-y:auto;padding:6px;scrollbar-width:thin}
-    .picker-item{
-      height:44px;line-height:44px;border-radius:12px;margin:6px 4px;text-align:center;
-      background:#f6f6ff;color:#5b5b72;font-weight:700;cursor:pointer;user-select:none
-    }
-    .picker-item:hover,.picker-item.active{background:#7c3aed;color:#fff}
-    .saved-btn{
-      height:44px;padding:0 18px;border-radius:12px;background:#fff;color:#7c3aed;border:2px solid #e9defd;font-weight:800;cursor:pointer;white-space:nowrap
-    }
-    .saved-btn:hover{background:#f7f2ff}
+/* Category picker */
+.category-bar{display:flex;align-items:center;gap:12px}
+.picker-wrap{position:relative}
+.picker-trigger{
+  padding:12px 18px;border-radius:14px;background:#7c3aed;color:#fff;
+  font-weight:800;border:0;cursor:pointer;min-width:220px;text-align:center
+}
+.picker-menu{
+  position:absolute;top:100%;left:0;right:0;margin-top:6px;background:#fff;border-radius:12px;
+  box-shadow:0 10px 30px rgba(0,0,0,.15);overflow:hidden;max-height:0;transition:max-height .25s ease;z-index:50
+}
+.picker-menu.open{max-height:160px}
+.picker-list{max-height:150px;overflow-y:auto;padding:6px;scrollbar-width:thin}
+.picker-item{height:44px;line-height:44px;border-radius:12px;margin:6px 4px;text-align:center;
+  background:#f6f6ff;color:#5b5b72;font-weight:700;cursor:pointer;user-select:none}
+.picker-item:hover,.picker-item.active{background:#7c3aed;color:#fff}
+.saved-btn{height:44px;padding:0 18px;border-radius:12px;background:#fff;color:#7c3aed;border:2px solid #e9defd;font-weight:800;cursor:pointer;white-space:nowrap}
+.saved-btn:hover{background:#f7f2ff}
 
-    /* Sub chips */
-    .sub-filters{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-    .sub-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:14px;background:#fff;border:2px solid #e5e7eb;color:#374151;font-size:12px;font-weight:600;cursor:pointer;user-select:none}
-    .sub-chip.active{background:#7c3aed;border-color:#7c3aed;color:#fff}
+/* Sub chips */
+.sub-filters{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.sub-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:14px;background:#fff;border:2px solid #e5e7eb;color:#374151;font-size:12px;font-weight:600;cursor:pointer;user-select:none}
+.sub-chip.active{background:#7c3aed;border-color:#7c3aed;color:#fff}
 
-    .row-between{display:flex;justify-content:space-between;align-items:center;gap:8px}
-    .badge{display:inline-block;background:#7c3aed;color:#fff;font-size:11px;font-weight:800;padding:5px 10px;border-radius:12px}
-    .icon-btn{border:none;background:transparent;width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;font-size:20px;color:#9ca3af;cursor:pointer;border-radius:8px}
-    .icon-btn.active{color:#e11d48}
+.row-between{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.badge{display:inline-block;background:#7c3aed;color:#fff;font-size:11px;font-weight:800;padding:5px 10px;border-radius:12px}
+.icon-btn{border:none;background:transparent;width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;font-size:20px;color:#9ca3af;cursor:pointer;border-radius:8px}
+.icon-btn.active{color:#e11d48}
 
-    .context{color:#6b7280;font-size:16px;text-align:center;margin:8px 0 0;font-weight:600}
+.context{color:#6b7280;font-size:16px;text-align:center;margin:8px 0 0;font-weight:600}
 
-    .kbox{background:#f3f4f6;border-radius:16px;padding:18px 14px;margin:12px 0;text-align:center}
-    .ko{font-size:30px;font-weight:900;color:#111827;margin:0 0 8px}
-    .en{color:#6b7280;font-size:16px;margin:0 0 10px;font-weight:600}
+.kbox{background:#f3f4f6;border-radius:16px;padding:18px 14px;margin:12px 0;text-align:center}
+.ko{font-size:30px;font-weight:900;margin:0 0 8px}
+.en{color:#6b7280;font-size:16px;margin:0 0 10px;font-weight:600}
 
-    .practice{background:#f9fafb;border-radius:12px;padding:12px}
-    .practice-label{font-size:12px;font-weight:600;color:#6b7280;text-align:center;margin:0 0 8px}
-    .dots{display:flex;gap:10px;justify-content:center;margin-bottom:8px}
-    .rep-dot{width:30px;height:30px;border-radius:50%;border:2px solid #e5e7eb;background:#fff;transition:.15s}
-    .rep-dot.completed{background:#7c3aed;border-color:#7c3aed}
+.practice{background:#f9fafb;border-radius:12px;padding:12px}
+.practice-label{font-size:12px;font-weight:600;color:#6b7280;text-align:center;margin:0 0 8px}
+.dots{display:flex;gap:10px;justify-content:center;margin-bottom:8px}
+.rep-dot{width:30px;height:30px;border-radius:50%;border:2px solid #e5e7eb;background:#fff;transition:.15s}
+.rep-dot.completed{background:#7c3aed;border-color:#7c3aed}
 
-    button.big{width:100%;padding:14px 20px;border-radius:14px;border:0;cursor:pointer;font-weight:800;font-size:15px;background:#7c3aed;color:#fff}
+button.big{width:100%;padding:14px 20px;border-radius:14px;border:0;cursor:pointer;font-weight:800;font-size:15px;background:#7c3aed;color:#fff}
 
-    /* Speed slider brand color */
-    input[type="range"]{accent-color:#7c3aed;outline:0}
-    input[type="range"]::-webkit-slider-runnable-track{height:6px;border-radius:999px;background:#e9defd}
-    input[type="range"]::-webkit-slider-thumb{width:18px;height:18px;border-radius:50%;background:#7c3aed;border:2px solid #6d28d9;margin-top:-6px}
-    input[type="range"]::-moz-range-track{height:6px;border-radius:999px;background:#e9defd}
-    input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#7c3aed;border:2px solid #6d28d9}
+/* Speed slider + layout */
+.row{display:flex;align-items:center;justify-content:center;gap:12px;background:#f9fafb;border-radius:10px;padding:10px;margin-top:8px}
+.speed-val{min-width:56px;text-align:left;font-variant-numeric:tabular-nums}
+input[type="range"]{accent-color:#7c3aed;outline:0}
+input[type="range"]::-webkit-slider-runnable-track{height:6px;border-radius:999px;background:#e9defd}
+input[type="range"]::-webkit-slider-thumb{width:18px;height:18px;border-radius:50%;background:#7c3aed;border:2px solid #6d28d9;margin-top:-6px}
+input[type="range"]::-moz-range-track{height:6px;border-radius:999px;background:#e9defd}
+input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#7c3aed;border:2px solid #6d28d9}
 
-    .row{display:flex;align-items:center;justify-content:center;gap:8px;background:#f9fafb;border-radius:10px;padding:10px;margin-top:8px}
-    .tip-card{margin-top:10px;background:#fff1f2;border-left:3px solid #e11d48;border-radius:10px;padding:10px}
-    .tip-text{font-size:12px;color:#9f1239;font-weight:600}
+.tip-card{margin-top:10px;background:#fff1f2;border-left:3px solid #e11d48;border-radius:10px;padding:10px}
+.tip-text{font-size:12px;color:#9f1239;font-weight:600}
 
-    .hidden-tabs{display:none}
+.hidden-tabs{display:none}
 
-    /* Auth modal */
-    .auth{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:9999;background:rgba(0,0,0,.45);padding:16px}
-    .auth.open{display:flex}
-    .auth-card{background:#fff;width:100%;max-width:380px;border-radius:20px;padding:24px;box-shadow:0 18px 50px rgba(0,0,0,.35);text-align:center;position:relative}
-    .auth-close{position:absolute;top:10px;right:10px;background:none;border:none;font-size:22px;color:#9ca3af;cursor:pointer}
+/* Auth modal */
+.auth{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:9999;background:rgba(0,0,0,.45);padding:16px}
+.auth.open{display:flex}
+.auth-card{background:#fff;width:100%;max-width:380px;border-radius:20px;padding:24px;box-shadow:0 18px 50px rgba(0,0,0,.35);text-align:center;position:relative}
+.auth-close{position:absolute;top:10px;right:10px;background:none;border:none;font-size:22px;color:#9ca3af;cursor:pointer}
+.gbtn{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  width:100%; padding:10px 14px; border-radius:12px; border:1.5px solid #e5e7eb;
+  background:#fff; color:#111827; font-weight:700; cursor:pointer;
+}
+.gbtn:hover{border-color:#d8dbe2; box-shadow:0 2px 8px rgba(124,58,237,.15)}
+.glogo{width:18px;height:18px;display:inline-block}
 
-    /* Modern nav bar - 더 큼직하게 */
-    .navbar{display:flex;align-items:center;justify-content:space-between;gap:14px}
-    .nav-center{min-width:130px;text-align:center;font-size:13px;color:#6b7280;font-weight:700}
-    .nav-btn{
-      display:inline-flex;align-items:center;justify-content:center;gap:10px;
-      padding:12px 22px;border-radius:14px;border:1.5px solid #e5e7eb;
-      background:#fff;color:#111827;cursor:pointer;font-weight:800;font-size:14px;
-      box-shadow:0 1px 6px rgba(0,0,0,.05)
-    }
-    .nav-btn:hover{border-color:#d8dbe2}
-    .nav-btn .caret{font-size:15px;color:#7c3aed}
-    .nav-btn:disabled{opacity:.5;cursor:not-allowed}
-  </style>
+/* Modern nav bar - 더 큼직하게 */
+.navbar{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.nav-center{min-width:130px;text-align:center;font-size:13px;color:#6b7280;font-weight:700}
+.nav-btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  padding:12px 28px;border-radius:14px;border:1.5px solid #e5e7eb;
+  background:#fff;color:#111827;cursor:pointer;font-weight:800;font-size:14px;
+  box-shadow:0 1px 6px rgba(0,0,0,.05)
+}
+.nav-btn:hover{border-color:#d8dbe2}
+.nav-btn .caret{font-size:15px;color:#7c3aed}
+.nav-btn:disabled{opacity:.5;cursor:not-allowed}
+</style>
 </head>
 <body>
-  <!-- HEADER -->
-  <header class="header">
-    <div>
-      <h1>Sori <span style="font-size:14px;color:#9ca3af;font-weight:600;">(beta)</span></h1>
-      <div class="intro">Learn Korean naturally by repeating real sounds</div>
+<!-- HEADER -->
+<header class="header">
+  <div>
+    <h1>Sori <span style="font-size:14px;color:#9ca3af;font-weight:600;">(beta)</span></h1>
+    <div class="intro">Learn Korean naturally by repeating real sounds</div>
+  </div>
+  <button id="loginBtn" class="top-btn primary">Login</button>
+</header>
+
+<!-- CATEGORY -->
+<section class="card">
+  <div class="category-bar">
+    <div class="picker-wrap">
+      <button id="pickerTrigger" class="picker-trigger" aria-haspopup="listbox" aria-expanded="false">Daily</button>
+      <div id="pickerMenu" class="picker-menu"><div class="picker-list" role="listbox"></div></div>
     </div>
-    <button id="loginBtn" class="top-btn primary">Login</button>
-  </header>
+    <button id="savedBtn" class="saved-btn">★ Saved</button>
+  </div>
 
-  <!-- CATEGORY -->
-  <section class="card">
-    <div class="category-bar">
-      <div class="picker-wrap">
-        <button id="pickerTrigger" class="picker-trigger" aria-haspopup="listbox" aria-expanded="false">Daily</button>
-        <div id="pickerMenu" class="picker-menu">
-          <div class="picker-list" role="listbox"></div>
-        </div>
-      </div>
-      <button id="savedBtn" class="saved-btn">★ Saved</button>
-    </div>
+  <!-- 호환용 숨김 탭 -->
+  <div class="hidden-tabs" aria-hidden="true">
+    <button id="dailyBtn"  class="tab-button active">Daily</button>
+    <button id="travelBtn" class="tab-button">Travel</button>
+    <button id="dramaBtn"  class="tab-button">K-Drama</button>
+    <button id="savedBtnHidden" class="tab-button">Saved</button>
+  </div>
 
-    <!-- 호환용 숨김 탭 -->
-    <div class="hidden-tabs" aria-hidden="true">
-      <button id="dailyBtn"  class="tab-button active">Daily</button>
-      <button id="travelBtn" class="tab-button">Travel</button>
-      <button id="dramaBtn"  class="tab-button">K-Drama</button>
-      <button id="savedBtnHidden" class="tab-button">Saved</button>
-    </div>
+  <div id="subFilters" class="sub-filters"></div>
+</section>
 
-    <div id="subFilters" class="sub-filters"></div>
-  </section>
+<!-- LESSON -->
+<section class="card">
+  <div class="row-between">
+    <div id="badge" class="badge">Greeting</div>
+    <button id="scrapBtn" class="icon-btn" title="Save this phrase" aria-label="Save">☆</button>
+  </div>
 
-  <!-- LESSON -->
-  <section class="card">
-    <div class="row-between">
-      <div id="badge" class="badge">Greeting</div>
-      <button id="scrapBtn" class="icon-btn" title="Save this phrase" aria-label="Save">☆</button>
-    </div>
+  <div id="context" class="context">"Hello"</div>
 
-    <div id="context" class="context">"Hello"</div>
+  <div class="kbox">
+    <p id="korean" class="ko">안녕하세요.</p>
+    <p id="english" class="en">annyeonghaseyo</p>
+    <p id="pronunciation" style="display:none">annyeonghaseyo</p>
+  </div>
 
-    <div class="kbox">
-      <p id="korean" class="ko">안녕하세요.</p>
-      <p id="english" class="en">annyeonghaseyo</p>
-      <p id="pronunciation" style="display:none">annyeonghaseyo</p>
-    </div>
-
-    <div class="practice">
-      <p class="practice-label">Practice Count: <span id="repCount">0</span> / 5</p>
-      <div class="dots">
-        <div class="rep-dot"></div><div class="rep-dot"></div><div class="rep-dot"></div><div class="rep-dot"></div><div class="rep-dot"></div>
-      </div>
-    </div>
-
-    <button id="playBtn" class="big">Listen & Repeat</button>
-    <div class="row">
-      <label>Speed:</label>
-      <input id="speed" type="range" min="0.3" max="1.0" step="0.1" value="0.80" />
-      <span id="speedTxt">0.80x</span>
-    </div>
-
-    <div class="tip-card"><div id="tipText" class="tip-text">Tip: Listen carefully and repeat multiple times. Consistency is key.</div></div>
-  </section>
-
-  <!-- NAV -->
-  <section class="card">
-    <div class="navbar">
-      <button id="prevBtn" class="nav-btn"><span class="caret">◀</span> Previous</button>
-      <div id="prog" class="nav-center">1 / 45</div>
-      <button id="nextBtn" class="nav-btn">Next <span class="caret">▶</span></button>
-    </div>
-  </section>
-
-  <!-- AUTH MODAL -->
-  <div id="authModal" class="auth">
-    <div class="auth-card">
-      <button id="authClose" class="auth-close" aria-label="Close">×</button>
-      <div style="font-size:24px;font-weight:800;color:#7c3aed;margin-bottom:6px;">Sign in</div>
-      <div style="font-size:13px;color:#9ca3af;margin-bottom:18px;">Use your Google account</div>
-      <button class="gbtn" onclick="window.handleGoogleLogin && window.handleGoogleLogin()">Continue with Google</button>
+  <div class="practice">
+    <p class="practice-label">Practice Count: <span id="repCount">0</span> / 5</p>
+    <div class="dots">
+      <div class="rep-dot"></div><div class="rep-dot"></div><div class="rep-dot"></div><div class="rep-dot"></div><div class="rep-dot"></div>
     </div>
   </div>
 
-  <!-- DATA -->
-  <script defer src="data/daily.js?v=20251017"></script>
-  <script defer src="data/travel.js?v=20251017"></script>
-  <script defer src="data/drama.js?v=20251017"></script>
-  <script defer src="data/dataindex.js?v=20251017"></script>
+  <button id="playBtn" class="big">Listen & Repeat</button>
+  <div class="row">
+    <label>Speed:</label>
+    <input id="speed" type="range" min="0.3" max="1.0" step="0.05" value="0.80"/>
+    <span id="speedTxt" class="speed-val">0.80x</span>
+  </div>
 
-  <!-- APP SCRIPTS -->
-  <script defer src="js/state.js?v=20251017"></script>
-  <script defer src="js/tts.js?v=20251017"></script>
-  <script defer src="js/app.js?v=20251017"></script>
+  <div class="tip-card"><div id="tipText" class="tip-text">Tip: Listen carefully and repeat multiple times. Consistency is key.</div></div>
+</section>
 
-  <!-- Auth wiring -->
-  <script>
-    document.addEventListener('DOMContentLoaded', ()=>{
-      const modal = document.getElementById('authModal');
-      const loginBtn = document.getElementById('loginBtn');
-      const closeBtn = document.getElementById('authClose');
+<!-- NAV -->
+<section class="card">
+  <div class="navbar">
+    <button id="prevBtn" class="nav-btn"><span class="caret">◀</span> Previous</button>
+    <div id="prog" class="nav-center">1 / 45</div>
+    <button id="nextBtn" class="nav-btn">Next <span class="caret">▶</span></button>
+  </div>
+</section>
 
-      const open = ()=> modal.classList.add('open');
-      const close= ()=> modal.classList.remove('open');
+<!-- AUTH MODAL -->
+<div id="authModal" class="auth">
+  <div class="auth-card">
+    <button id="authClose" class="auth-close" aria-label="Close">×</button>
+    <div style="font-size:24px;font-weight:800;color:#7c3aed;margin-bottom:6px;">Sign in</div>
+    <div style="font-size:13px;color:#9ca3af;margin-bottom:18px;">Use your Google account</div>
+    <button class="gbtn" onclick="window.handleGoogleLogin && window.handleGoogleLogin()">
+      <span class="glogo">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18"><path fill="#EA4335" d="M9 7.3h8.5v3.4H9z"/><path fill="#4285F4" d="M17.6 9.2c0-.6-.1-1.2-.2-1.8H9v3.4h4.8c-.2 1-.8 1.8-1.7 2.3v1.9h2.8c1.6-1.5 2.7-3.7 2.7-5.8z"/><path fill="#FBBC05" d="M9 18c2.4 0 4.4-.8 5.9-2.2l-2.8-1.9c-.8.5-1.8.8-3.1.8-2.4 0-4.5-1.6-5.2-3.7H.9v2.3C2.4 15.9 5.4 18 9 18z"/><path fill="#34A853" d="M3.8 11c-.2-.6-.3-1.3-.3-2s.1-1.4.3-2V4.7H.9C.3 6 0 7.5 0 9s.3 3 .9 4.3L3.8 11z"/><path fill="#EB4335" d="M9 3.5c1.3 0 2.5.5 3.4 1.4l2.3-2.3C13.4.9 11.4 0 9 0 5.4 0 2.4 2.1.9 4.7L3.8 7c.7-2.1 2.8-3.5 5.2-3.5z"/></svg>
+      </span>
+      Continue with Google
+    </button>
+  </div>
+</div>
 
-      function wireAsLogin(){ loginBtn.textContent='Login'; loginBtn.onclick=open; }
-      function wireAsLogout(){
-        loginBtn.textContent='Logout';
-        loginBtn.onclick= async ()=>{ try{ await window.SoriUser?.logout?.(); }catch(e){ console.warn(e);} };
-      }
+<!-- DATA -->
+<script defer src="data/daily.js?v=20251017"></script>
+<script defer src="data/travel.js?v=20251017"></script>
+<script defer src="data/drama.js?v=20251017"></script>
+<script defer src="data/dataindex.js?v=20251017"></script>
 
-      closeBtn?.addEventListener('click', close);
-      modal?.addEventListener('click', e=>{ if(e.target===modal) close(); });
+<!-- APP SCRIPTS -->
+<script defer src="js/state.js?v=20251017"></script>
+<script defer src="js/tts.js?v=20251017"></script>
+<script defer src="js/app.js?v=20251017"></script>
 
-      try{
-        const auth = window.firebase?.auth && firebase.auth();
-        auth?.onAuthStateChanged(user=>{ user ? (close(), wireAsLogout()) : wireAsLogin(); });
-      }catch(e){ console.warn('[Auth init]', e); wireAsLogin(); }
-    });
-  </script>
+<!-- Auth wiring -->
+<script>
+document.addEventListener('DOMContentLoaded', ()=>{
+  const modal = authModal, loginBtn = document.getElementById('loginBtn'), closeBtn = authClose;
+  const open = ()=> modal.classList.add('open');
+  const close= ()=> modal.classList.remove('open');
+  function wireAsLogin(){ loginBtn.textContent='Login'; loginBtn.onclick=open; }
+  function wireAsLogout(){
+    loginBtn.textContent='Logout';
+    loginBtn.onclick= async ()=>{ try{ await window.SoriUser?.logout?.(); }catch(e){ console.warn(e);} };
+  }
+  closeBtn?.addEventListener('click', close);
+  modal?.addEventListener('click', e=>{ if(e.target===modal) close(); });
+  try{ firebase.auth().onAuthStateChanged(user=>{ user ? (close(), wireAsLogout()) : wireAsLogin(); }); }
+  catch(e){ console.warn('[Auth init]', e); wireAsLogin(); }
+});
+</script>
 
-  <!-- Picker logic + Tip -->
-  <script>
-    (function(){
-      const CATS=["Daily","Travel","K-Drama"];
-      const legacy={daily:dailyBtn,travel:travelBtn,drama:dramaBtn};
-      const trigger=pickerTrigger, menu=pickerMenu;
-      const list=menu.querySelector('.picker-list');
-      list.innerHTML='';
-      CATS.forEach((c,i)=>{
-        const el=document.createElement('div');
-        el.className='picker-item'+(i===0?' active':''); el.textContent=c;
-        el.onclick=()=>select(c,el); list.appendChild(el);
-      });
-      function setActive(el){ list.querySelectorAll('.picker-item').forEach(n=>n.classList.remove('active')); el.classList.add('active'); }
-      function select(name,el){
-        setActive(el); trigger.textContent=name; menu.classList.remove('open');
-        const key=name.toLowerCase();
-        if(key==='daily')  legacy.daily?.click();
-        if(key==='travel') legacy.travel?.click();
-        if(key.includes('drama')) legacy.drama?.click();
-        changeTip();
-      }
-      trigger.onclick=(e)=>{ e.stopPropagation(); menu.classList.toggle('open'); };
-      document.onclick=()=>menu.classList.remove('open');
-      savedBtn?.addEventListener('click',()=> savedBtnHidden?.click());
-
-      const tips=[
-        "Tip: Small daily reps beat big, rare sessions.",
-        "Tip: Shadow the sound, not the spelling.",
-        "Tip: Say it out loud — your mouth must learn too.",
-        "Tip: Five clean repeats > twenty sloppy ones.",
-        "Tip: Record yourself and match the rhythm.",
-        "Tip: First mimic, then understand.",
-        "Tip: Keep the same speed; build consistency.",
-        "Tip: Close your eyes and copy the melody.",
-        "Tip: Bite-sized goals. One phrase at a time.",
-        "Tip: Revisit yesterday — retention makes speed."
-      ];
-      const tipEl=document.getElementById('tipText');
-      function changeTip(){ if(tipEl) tipEl.textContent=tips[Math.floor(Math.random()*tips.length)]; }
+<!-- Picker logic + Tip -->
+<script>
+(function(){
+  const CATS=["Daily","Travel","K-Drama"];
+  const legacy={daily:dailyBtn,travel:travelBtn,drama:dramaBtn};
+  const trigger=pickerTrigger, menu=pickerMenu, list=menu.querySelector('.picker-list');
+  list.innerHTML='';
+  CATS.forEach((c,i)=>{
+    const el=document.createElement('div');
+    el.className='picker-item'+(i===0?' active':''); el.textContent=c;
+    el.onclick=()=>{ list.querySelectorAll('.picker-item').forEach(n=>n.classList.remove('active')); el.classList.add('active');
+      trigger.textContent=c; menu.classList.remove('open');
+      const key=c.toLowerCase(); if(key==='daily')dailyBtn.click(); if(key==='travel')travelBtn.click(); if(key.includes('drama'))dramaBtn.click();
       changeTip();
-    })();
-  </script>
-
-  <!-- Navigation rewrite -->
-  <script>
-  (function(){
-    const btn={next:nextBtn,prev:prevBtn,daily:dailyBtn,travel:travelBtn,drama:dramaBtn};
-    const progEl=prog, badgeEl=badge; const tabs=[btn.daily,btn.travel,btn.drama].filter(Boolean);
-    const CAT_KEY={dailyBtn:'daily',travelBtn:'travel',dramaBtn:'drama'};
-    const getActiveTab=()=> tabs.find(t=>t.classList.contains('active'))||btn.daily;
-    const getActiveCatKey=()=> CAT_KEY[getActiveTab().id];
-    function getProgress(){ const m=(progEl?.textContent||'').match(/(\d+)\s*\/\s*(\d+)/); if(!m) return {i:1,total:1}; return {i:parseInt(m[1],10),total:parseInt(m[2],10)};}
-    function subOrderOf(catKey){ const arr=(window.SORI_DATA&&window.SORI_DATA[catKey])||[]; const order=[]; for(const x of arr){const s=x?.sub||'Default'; if(!order.includes(s)) order.push(s);} return order;}
-    const currentSubName=()=> (badgeEl?.textContent||'').trim();
-    function goFirstItem(){ const {i}=getProgress(); for(let k=1;k<i;k++) btn.prev?.click(); setTimeout(()=>{ const again=getProgress().i; for(let k=1;k<again;k++) btn.prev?.click();},0); }
-    function clickSubChipByName(name){ const chips=[...document.querySelectorAll('#subFilters .sub-chip')]; const t=chips.find(c=>(c.textContent||'').trim()===name)||chips.find(c=>(c.textContent||'').includes(name)); if(t) t.click(); }
-    function goFirstSubAndItem(){ setTimeout(()=>{ const first=document.querySelector('#subFilters .sub-chip'); if(first) first.click(); setTimeout(goFirstItem,0); },0); }
-    btn.next?.addEventListener('click',function(e){ const {i,total}=getProgress(); if(i<total) return; e.preventDefault(); e.stopImmediatePropagation();
-      const subs=subOrderOf(getActiveCatKey()); const cur=currentSubName(); const idx=Math.max(0,subs.indexOf(cur));
-      if(idx>-1 && idx<subs.length-1){ clickSubChipByName(subs[idx+1]); setTimeout(goFirstItem,0); return; }
-      const curTab=getActiveTab(); const tIdx=tabs.indexOf(curTab); const nextIdx=(tIdx+1)%tabs.length; tabs[nextIdx].click(); goFirstSubAndItem();
-    },true);
-    tabs.forEach(t=> t?.addEventListener('click',()=>{ goFirstSubAndItem(); }));
-  })();
-  </script>
-
-  <!-- Analytics wiring -->
-  <script>
-  (function(){
-    function buildPath(){
-      const active=document.querySelector('.tab-button.active')?.id || 'dailyBtn';
-      const catMap={dailyBtn:'daily',travelBtn:'travel',dramaBtn:'kdrama',savedBtn:'saved'};
-      const cat=catMap[active]||'daily';
-      const sub=(badge?.textContent||'default').trim().replace(/\s+/g,'-').toLowerCase();
-      const m=(prog?.textContent||'1 / 1').match(/(\d+)\s*\/\s*(\d+)/); const idx=m?parseInt(m[1],10):1;
-      return `/${cat}/${sub}/${idx}`;
-    }
-    function sendPV(title){ try{ gtag('event','page_view',{page_title:title||document.title,page_location:location.href,page_path:buildPath(),send_to:'G-X1Q98DBKR5'});}catch(e){} }
-    function sendSessionStart(){ try{ gtag('event','session_start',{send_to:'G-X1Q98DBKR5'});}catch(e){} }
-    document.addEventListener('DOMContentLoaded',()=>{ setTimeout(()=>{ sendSessionStart(); sendPV('Sori'); },0); });
-    ['dailyBtn','travelBtn','dramaBtn','savedBtnHidden'].forEach(id=>{ const el=document.getElementById(id); el&&el.addEventListener('click',()=> setTimeout(()=>sendPV(`Sori - ${el.textContent.trim()}`),0)); });
-    const subFilters=document.getElementById('subFilters');
-    subFilters&&subFilters.addEventListener('click',e=>{ const chip=e.target.closest('.sub-chip'); if(!chip) return; setTimeout(()=>sendPV(`Sori - ${chip.textContent.trim()}`),0); });
-    nextBtn?.addEventListener('click',()=> setTimeout(()=>sendPV('Sori - Next'),0),true);
-    prevBtn?.addEventListener('click',()=> setTimeout(()=>sendPV('Sori - Prev'),0),true);
-    document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible') setTimeout(()=>sendPV('Sori - resume'),0); });
-    speed?.addEventListener('change',()=>{ gtag('event','change_speed',{value:speed.value,send_to:'G-X1Q98DBKR5'}); });
-  })();
-  </script>
-
-  <!-- TTS patch -->
-  <script>
-  window.addEventListener('load',()=>{
-    const ENDPOINT="https://asia-northeast3-sori-tts.cloudfunctions.net/tts";
-    const original=speechSynthesis.speak.bind(speechSynthesis);
-    const shared=new Audio();let last=null;
-    async function viaApi(u){try{shared.pause();}catch(_){}
-      if(last){try{URL.revokeObjectURL(last);}catch(_){} last=null;}
-      const text=(u.text||'').trim(); if(!text) throw new Error('empty');
-      const r=await fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text})});
-      const b=await r.blob(); const url=URL.createObjectURL(b); last=url; shared.src=url; await shared.play();
-    }
-    speechSynthesis.speak=function(u){ if(/[가-힣]/.test((u.text||'').trim())) viaApi(u).catch(()=>original(u)); else original(u); };
+    };
+    list.appendChild(el);
   });
-  </script>
+  trigger.onclick=(e)=>{ e.stopPropagation(); menu.classList.toggle('open'); };
+  document.onclick=()=>menu.classList.remove('open');
+  savedBtn?.addEventListener('click',()=> savedBtnHidden?.click());
 
-  <!-- Layout fix + Practice dots (robust ready + retry) -->
+  const tips=[
+    "Tip: Small daily reps beat big, rare sessions.",
+    "Tip: Shadow the sound, not the spelling.",
+    "Tip: Say it out loud — your mouth must learn too.",
+    "Tip: Five clean repeats > twenty sloppy ones.",
+    "Tip: Record yourself and match the rhythm.",
+    "Tip: First mimic, then understand.",
+    "Tip: Keep the same speed; build consistency.",
+    "Tip: Close your eyes and copy the melody.",
+    "Tip: Bite-sized goals. One phrase at a time.",
+    "Tip: Revisit yesterday — retention makes speed."
+  ];
+  const tipEl=tipText; function changeTip(){ tipEl.textContent=tips[Math.floor(Math.random()*tips.length)]; } changeTip();
+})();
+</script>
+
+<!-- Navigation rewrite -->
+<script>
+(function(){
+  const btn={next:nextBtn,prev:prevBtn,daily:dailyBtn,travel:travelBtn,drama:dramaBtn};
+  const progEl=prog, badgeEl=badge; const tabs=[btn.daily,btn.travel,btn.drama].filter(Boolean);
+  const CAT_KEY={dailyBtn:'daily',travelBtn:'travel',dramaBtn:'drama'};
+  const getActiveTab=()=> tabs.find(t=>t.classList.contains('active'))||btn.daily;
+  const getActiveCatKey=()=> CAT_KEY[getActiveTab().id];
+  function getProgress(){ const m=(progEl?.textContent||'').match(/(\d+)\s*\/\s*(\d+)/); if(!m) return {i:1,total:1}; return {i:parseInt(m[1],10),total:parseInt(m[2],10)};}
+  function subOrderOf(catKey){ const arr=(window.SORI_DATA&&window.SORI_DATA[catKey])||[]; const order=[]; for(const x of arr){const s=x?.sub||'Default'; if(!order.includes(s)) order.push(s);} return order;}
+  const currentSubName=()=> (badgeEl?.textContent||'').trim();
+  function goFirstItem(){ const {i}=getProgress(); for(let k=1;k<i;k++) btn.prev?.click(); setTimeout(()=>{ const again=getProgress().i; for(let k=1;k<again;k++) btn.prev?.click();},0); }
+  function clickSubChipByName(name){ const chips=[...document.querySelectorAll('#subFilters .sub-chip')]; const t=chips.find(c=>(c.textContent||'').trim()===name)||chips.find(c=>(c.textContent||'').includes(name)); if(t) t.click(); }
+  function goFirstSubAndItem(){ setTimeout(()=>{ const first=document.querySelector('#subFilters .sub-chip'); if(first) first.click(); setTimeout(goFirstItem,0); },0); }
+  btn.next?.addEventListener('click',function(e){ const {i,total}=getProgress(); if(i<total) return; e.preventDefault(); e.stopImmediatePropagation();
+    const subs=subOrderOf(getActiveCatKey()); const cur=currentSubName(); const idx=Math.max(0,subs.indexOf(cur));
+    if(idx>-1 && idx<subs.length-1){ clickSubChipByName(subs[idx+1]); setTimeout(goFirstItem,0); return; }
+    const curTab=getActiveTab(); const tIdx=tabs.indexOf(curTab); const nextIdx=(tIdx+1)%tabs.length; tabs[nextIdx].click(); goFirstSubAndItem();
+  },true);
+  tabs.forEach(t=> t?.addEventListener('click',()=>{ goFirstSubAndItem(); }));
+})();
+</script>
+
+<!-- Analytics wiring -->
+<script>
+(function(){
+  function buildPath(){
+    const active=document.querySelector('.tab-button.active')?.id || 'dailyBtn';
+    const catMap={dailyBtn:'daily',travelBtn:'travel',dramaBtn:'kdrama',savedBtn:'saved'};
+    const cat=catMap[active]||'daily';
+    const sub=(badge?.textContent||'default').trim().replace(/\s+/g,'-').toLowerCase();
+    const m=(prog?.textContent||'1 / 1').match(/(\d+)\s*\/\s*(\d+)/); const idx=m?parseInt(m[1],10):1;
+    return `/${cat}/${sub}/${idx}`;
+  }
+  function sendPV(title){ try{ gtag('event','page_view',{page_title:title||document.title,page_location:location.href,page_path:buildPath(),send_to:'G-X1Q98DBKR5'});}catch(e){} }
+  function sendSessionStart(){ try{ gtag('event','session_start',{send_to:'G-X1Q98DBKR5'});}catch(e){} }
+  document.addEventListener('DOMContentLoaded',()=>{ setTimeout(()=>{ sendSessionStart(); sendPV('Sori'); },0); });
+  ['dailyBtn','travelBtn','dramaBtn','savedBtnHidden'].forEach(id=>{ const el=document.getElementById(id); el&&el.addEventListener('click',()=> setTimeout(()=>sendPV(`Sori - ${el.textContent.trim()}`),0)); });
+  const subFilters=document.getElementById('subFilters');
+  subFilters&&subFilters.addEventListener('click',e=>{ const chip=e.target.closest('.sub-chip'); if(!chip) return; setTimeout(()=>sendPV(`Sori - ${chip.textContent.trim()}`),0); });
+  nextBtn?.addEventListener('click',()=> setTimeout(()=>sendPV('Sori - Next'),0),true);
+  prevBtn?.addEventListener('click',()=> setTimeout(()=>sendPV('Sori - Prev'),0),true);
+  document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible') setTimeout(()=>sendPV('Sori - resume'),0); });
+  speed?.addEventListener('change',()=>{ gtag('event','change_speed',{value:speed.value,send_to:'G-X1Q98DBKR5'}); });
+})();
+</script>
+
+<!-- TTS patch (속도 반영) -->
+<script>
+window.addEventListener('load',()=>{
+  const ENDPOINT="https://asia-northeast3-sori-tts.cloudfunctions.net/tts";
+  const original=speechSynthesis.speak.bind(speechSynthesis);
+  const shared=new Audio(); let last=null;
+
+  const getRate=()=>{ const v=parseFloat(document.getElementById('speed')?.value||'1'); return Math.max(0.3,Math.min(1.0,v)); };
+  function setPlaybackRate(){ shared.playbackRate=getRate(); }
+  document.getElementById('speed')?.addEventListener('input', setPlaybackRate);
+
+  async function viaApi(u){
+    try{ shared.pause(); }catch(_){}
+    if(last){ try{ URL.revokeObjectURL(last); }catch(_){ } last=null; }
+    const text=(u.text||'').trim(); if(!text) throw new Error('empty');
+    const r=await fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text})});
+    const b=await r.blob(); const url=URL.createObjectURL(b); last=url; shared.src=url; setPlaybackRate(); await shared.play();
+  }
+  speechSynthesis.speak=function(u){ if(/[가-힣]/.test((u.text||'').trim())) viaApi(u).catch(()=>original(u)); else original(u); };
+});
+</script>
+
+<!-- Layout fix + Practice dots (robust ready + multi-frame enforce) -->
 <script>
 (function(){
   const quote = s => `"${String(s||'').replace(/^"+|"+$/g,'').trim()}"`;
@@ -364,83 +362,71 @@
       const pools = [DB.daily||[], DB.travel||[], DB.drama||[]];
       for(const arr of pools){
         const hit = arr.find(x => (x.k||'').trim() === ko);
-        if(hit) return hit; // {t,c,k,e,p,sub}
+        if(hit) return hit;
       }
     }catch(e){}
     return null;
   }
 
-  function applyMeaningRomanOnce(){
-    const koEl = document.getElementById('korean');
-    const enEl = document.getElementById('english');
-    const prEl = document.getElementById('pronunciation');
-    const ctxEl = document.getElementById('context');
-    if(!koEl || !enEl || !prEl || !ctxEl) return false;
+  function enforceMeaningRoman(){
+    const koEl=korean, enEl=english, prEl=pronunciation, ctxEl=context;
+    if(!koEl||!enEl||!prEl||!ctxEl) return false;
+    const ko=(koEl.textContent||'').trim(); if(!ko) return false;
 
-    const ko = (koEl.textContent||'').trim();
-    if(!ko) return false;
+    const item=findInDataByK(ko);
+    const meaning = item?.e || (ctxEl.textContent||'').replace(/(^"+|"+$)/g,'').trim();
+    const roman   = item?.p || (prEl.textContent||'').trim() || (enEl.textContent||'').trim();
 
-    const item = findInDataByK(ko);
-    if(!item) return false;
-
-    // 위: 영어 뜻, 아래: 로마자
-    if(item.e) ctxEl.textContent = quote(item.e);
-    if(item.p) enEl.textContent  = item.p;
-    prEl.style.display = 'none';
+    if(meaning) ctxEl.textContent = quote(meaning);
+    if(roman)   enEl.textContent  = roman;
+    prEl.style.display='none';
     return true;
   }
 
-  // 데이터가 아직 안 왔으면 재시도
-  function ensureApplied(attempt=0){
-    const ok = applyMeaningRomanOnce();
-    if(ok) return;
-    if(attempt >= 60) return;            // 최대 3초(50ms * 60) 까지 재시도
-    setTimeout(()=>ensureApplied(attempt+1), 50);
+  // 렌더 직후 DOM이 여러 번 바뀌어도 N프레임 동안 강제로 유지
+  function enforceForFrames(n=20, delay=16){
+    let i=0; (function tick(){
+      enforceMeaningRoman();
+      if(++i<n) setTimeout(tick, delay);
+    })();
   }
 
   function resetDots(){
-    const dots = [...document.querySelectorAll('.rep-dot')];
-    dots.forEach(d=>d.classList.remove('completed'));
-    const cnt = document.getElementById('repCount'); if(cnt) cnt.textContent = '0';
+    document.querySelectorAll('.rep-dot').forEach(d=>d.classList.remove('completed'));
+    const cnt=document.getElementById('repCount'); if(cnt) cnt.textContent='0';
   }
 
   function onSentenceChanged(){
-    const ko = (korean?.textContent||'').trim();
-    if(!ko || ko === lastKo) return;
-    lastKo = ko;
-    ensureApplied(0);
+    const ko=(korean?.textContent||'').trim();
+    if(!ko || ko===lastKo) return;
+    lastKo=ko;
+    enforceForFrames(20,16);
     resetDots();
   }
 
   document.addEventListener('DOMContentLoaded', ()=>{
-    // 첫 진입 보정: 즉시 + 지연 2회 더 시도
-    ensureApplied(0);
-    setTimeout(()=>ensureApplied(0), 200);
-    setTimeout(()=>ensureApplied(0), 500);
+    enforceForFrames(30,16);               // 첫 진입 보정 (약 0.5초)
+    const mo=new MutationObserver(()=> requestAnimationFrame(onSentenceChanged));
+    if(korean) mo.observe(korean,{childList:true,characterData:true,subtree:true});
+    if(english) mo.observe(english,{childList:true,characterData:true,subtree:true});
+    if(pronunciation) mo.observe(pronunciation,{childList:true,characterData:true,subtree:true});
 
-    // 문장 내용 변경 감지
-    const mo = new MutationObserver(()=> requestAnimationFrame(onSentenceChanged));
-    if(korean) mo.observe(korean, {childList:true, characterData:true, subtree:true});
-
-    // 재생하면 연습 점 채우기
     playBtn.addEventListener('click', ()=>{
-      const cntEl=document.getElementById('repCount');
-      let n=parseInt(cntEl.textContent||'0',10);
+      const cntEl=repCount; let n=parseInt(cntEl.textContent||'0',10);
       if(n<5){ n++; cntEl.textContent=String(n); }
       const dots=[...document.querySelectorAll('.rep-dot')];
       dots.forEach((d,i)=> d.classList.toggle('completed', i < n));
     });
 
-    // 탭/네비 이동 후에도 의미/로마자 재적용
+    // 탭/네비 이동 뒤에도 여러 프레임 재강제
     ['nextBtn','prevBtn','dailyBtn','travelBtn','dramaBtn','savedBtnHidden'].forEach(id=>{
       const el=document.getElementById(id);
-      el && el.addEventListener('click', ()=> setTimeout(()=>ensureApplied(0), 0), true);
+      el && el.addEventListener('click', ()=> setTimeout(()=>enforceForFrames(20,16), 0), true);
     });
 
-    // Speed 표시 동기화
-    const speedEl=document.getElementById('speed');
-    const speedTxt=document.getElementById('speedTxt');
-    const sync=()=> speedTxt.textContent=(parseFloat(speedEl.value)).toFixed(2)+'x';
+    // Speed 표시 고정폭
+    const speedEl=speed, speedLbl=speedTxt;
+    const sync=()=> speedLbl.textContent=(parseFloat(speedEl.value)).toFixed(2)+'x';
     speedEl.addEventListener('input', sync); sync();
   });
 })();
