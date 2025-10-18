@@ -463,9 +463,111 @@
   });
 })();
 </script>
+
+<script>
+/* Sori TTS (API-first, zero changes to other files)
+   - 한국어 utterance면 Cloud Functions로 mp3 받아 재생
+   - 재생 시작/끝에 utter.onstart/utter.onend를 호출해 기존 로직 유지
+   - 실패 시 원래 speechSynthesis.speak으로 폴백
+*/
+
+(function(){
+  // 🔧 너의 Cloud Functions 엔드포인트로 교체
+  const ENDPOINT = "https://asia-northeast3-sori-tts.cloudfunctions.net/tts";
+
+  // iOS 자동재생 대응: 하나의 Audio만 재사용
+  let sharedAudio = new Audio();
+  let lastUrl = null;
+
+  // 원본 speak 보관
+  const originalSpeak = speechSynthesis.speak.bind(speechSynthesis);
+
+  // 한국어인지 판단
+  function isKorean(utter) {
+    const lang = (utter.lang || "").toLowerCase();
+    const text = (utter.text || "").trim();
+    return (lang.startsWith("ko") || /[가-힣]/.test(text));
+  }
+
+  // onstart/onend 안전 호출
+  function safeCall(fn, arg) {
+    try { typeof fn === "function" && fn(arg); } catch (e) { console.warn(e); }
+  }
+
+  // API 호출로 mp3 받아서 재생
+  async function playViaApi(utter) {
+    // 기존에 재생 중이면 정지
+    try { sharedAudio.pause(); } catch(_) {}
+    if (lastUrl) { URL.revokeObjectURL(lastUrl); lastUrl = null; }
+
+    const text = (utter.text || "").trim();
+    if (!text) throw new Error("empty text");
+
+    // 서버 호출
+    const res = await fetch(ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text })
+    });
+    if (!res.ok) throw new Error("TTS HTTP " + res.status);
+
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    lastUrl = url;
+    sharedAudio.src = url;
+
+    // 시작 이벤트 흉내
+    safeCall(utter.onstart, new Event("start"));
+
+    // 종료 이벤트 연결
+    sharedAudio.onended = () => {
+      safeCall(utter.onend, new Event("end"));
+      // 정리
+      try { URL.revokeObjectURL(url); } catch(_) {}
+      if (lastUrl === url) lastUrl = null;
+    };
+    sharedAudio.onerror = () => {
+      // 에러 시 onerror도 전달
+      safeCall(utter.onerror, new Event("error"));
+    };
+
+    // 실제 재생
+    await sharedAudio.play();
+  }
+
+  // 핵심: speak 패치
+  speechSynthesis.speak = function(utter){
+    try {
+      // 한국어만 API 우선 적용, 아니면 원래대로
+      if (!isKorean(utter)) return originalSpeak(utter);
+
+      // API 사용 시도 → 실패하면 폴백
+      playViaApi(utter).catch(err => {
+        console.warn("[Sori TTS] API failed, fallback to WebSpeech:", err);
+        originalSpeak(utter);
+      });
+      // 여기서 return 해 원래 엔진이 중복 실행되지 않게
+      return;
+    } catch (e) {
+      console.warn("[Sori TTS] patch error, fallback:", e);
+      return originalSpeak(utter);
+    }
+  };
+
+  // 옵션: 전역에서 강제로 API/폴백 제어하고 싶을 때
+  window.SoriTTSApi = {
+    useWebSpeechOnce(utter){
+      // 원본으로 1회 우회 실행
+      originalSpeak(utter);
+    }
+  };
+})();
+</script>
+
   
 </body>
 </html>
+
 
 
 
