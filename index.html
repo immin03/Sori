@@ -4,42 +4,18 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Sori - Learn Korean by Sound</title>
-
   <meta name="theme-color" content="#7c3aed"/>
 
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml"
     href='data:image/svg+xml;utf8,
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-      <defs>
-        <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stop-color="#7c3aed"/>
-          <stop offset="1" stop-color="#6d28d9"/>
-        </linearGradient>
-      </defs>
-      <circle cx="32" cy="32" r="30" fill="url(%23g)" stroke="%236d28d9" stroke-width="2"/>
-      <path d="M42 22c0-4-4-7-10-7s-10 3-10 7c0 7 20 4 20 12 0 4-4 7-10 7s-10-3-10-7"
-            fill="none" stroke="white" stroke-width="5" stroke-linecap="round"/>
+      <circle cx="32" cy="32" r="30" fill="#7c3aed" stroke="#6d28d9" stroke-width="2"/>
+      <text x="16" y="40" font-family="sans-serif" font-size="22" font-weight="bold" fill="white">소</text>
     </svg>'/>
 
-  <!-- Apple Touch Icon -->
-  <link rel="apple-touch-icon"
-    href='data:image/svg+xml;utf8,
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180">
-      <defs>
-        <linearGradient id="ga" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stop-color="#7c3aed"/>
-          <stop offset="1" stop-color="#6d28d9"/>
-        </linearGradient>
-      </defs>
-      <rect width="180" height="180" rx="36" fill="url(%23ga)"/>
-      <path d="M126 62c0-12-12-21-30-21s-30 9-30 21c0 21 60 12 60 36 0 12-12 21-30 21s-30-9-30-21"
-            fill="none" stroke="white" stroke-width="14" stroke-linecap="round"/>
-    </svg>'/>
-
-  <script>
-    window.GA_ID = 'G-X1Q98DBKR5';
-  </script>
+  <!-- GA -->
+  <script> window.GA_ID = 'G-X1Q98DBKR5'; </script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-X1Q98DBKR5"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -62,69 +38,72 @@
     h1{font-size:24px;margin:0 0 4px;color:#7c3aed;font-weight:800}
     .intro{color:#9ca3af;font-size:12px;margin-bottom:10px;line-height:1.3;font-weight:500}
 
+    /* header */
     .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
     .top-btn{padding:6px 12px;border-radius:10px;font-size:12px;font-weight:700;border:0;cursor:pointer}
     .top-btn.primary{background:#7c3aed;color:#fff}
 
+    /* cards/tabs */
     .card{background:#fff;border-radius:16px;padding:16px;margin:8px 0;box-shadow:0 2px 12px rgba(0,0,0,.05)}
 
-    /* Picker row */
-    .row-flex{display:flex;align-items:center;gap:12px}
-
-    /* Wheel picker */
-    .picker-wrap{position:relative;width:220px;height:180px}
-    .picker{position:absolute;inset:0;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none;outline:none;scroll-snap-type:y mandatory}
-    .picker::-webkit-scrollbar{display:none}
-    .picker-item{height:44px;line-height:44px;text-align:center;border-radius:12px;margin:6px 8px;background:#f6f6ff;color:#5b5b72;font-weight:700;scroll-snap-align:center;user-select:none}
-    .picker-item.active{background:#7c3aed;color:#fff;transform:scale(1.03)}
-    .picker-item.spacer{background:transparent;pointer-events:none}
-    .picker-focus{position:absolute;top:50%;left:6px;right:6px;height:44px;margin-top:-22px;border-radius:12px;border:2px solid rgba(124,58,237,.35);pointer-events:none}
-
-    /* Saved fixed */
-    .saved-btn{height:44px;padding:0 16px;border-radius:12px;background:#ffffff;color:#7c3aed;border:2px solid #e9defd;font-weight:800;cursor:pointer;white-space:nowrap}
+    /* === CATEGORY PICKER (dropdown-style, 3-rows viewport) === */
+    .category-bar{display:flex;align-items:center;gap:12px}
+    .picker-wrap{position:relative}
+    .picker-trigger{
+      padding:12px 18px;border-radius:14px;background:#7c3aed;color:#fff;
+      font-weight:800;border:0;cursor:pointer;min-width:200px;text-align:center
+    }
+    .picker-menu{
+      position:absolute;top:100%;left:0;right:0;margin-top:6px;background:#fff;border-radius:12px;
+      box-shadow:0 10px 30px rgba(0,0,0,.15);overflow:hidden;max-height:0;transition:max-height .2s ease;z-index:20
+    }
+    .picker-wrap:hover .picker-menu,
+    .picker-wrap:focus-within .picker-menu{ max-height:156px; } /* 3 rows * (44 + margin) 근사치 */
+    .picker-list{
+      max-height:150px;overflow-y:auto;padding:6px;
+      scrollbar-width:thin
+    }
+    .picker-item{
+      height:44px;line-height:44px;border-radius:12px;margin:6px 4px;text-align:center;
+      background:#f6f6ff;color:#5b5b72;font-weight:700;cursor:pointer;user-select:none
+    }
+    .picker-item:hover,.picker-item.active{background:#7c3aed;color:#fff}
+    .saved-btn{
+      height:44px;padding:0 16px;border-radius:12px;background:#ffffff;color:#7c3aed;border:2px solid #e9defd;font-weight:800;cursor:pointer;white-space:nowrap
+    }
     .saved-btn:hover{background:#f7f2ff}
 
-    /* 숨김 탭: 기존 app.js 호환용 */
-    .hidden-tabs{display:none}
+    /* === Sub filters (chips) === */
+    .sub-filters{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .sub-chip{
+      display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:14px;background:#fff;border:2px solid #e5e7eb;color:#374151;font-size:12px;font-weight:600;cursor:pointer;user-select:none
+    }
+    .sub-chip.active{ background:#7c3aed; border-color:#7c3aed; color:#fff; }
 
-    /* Sub filters (chips) */
-    .sub-filters{display:none;margin-top:8px;padding:8px;background:#f9fafb;border-radius:10px;gap:8px;flex-wrap:wrap}
-    .sub-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:14px;background:#fff;border:2px solid #e5e7eb;color:#374151;font-size:12px;font-weight:600;cursor:pointer;user-select:none;line-height:1;transition:background .15s,border-color .15s,color .15s}
-    .sub-chip:hover{background:#f3f4f6}
-    .sub-chip.active{background:#7c3aed;border-color:#7c3aed;color:#fff}
-    .sub-chip .sub-icon{font-size:14px;line-height:1;transform:translateY(.5px)}
-    .sub-chip .sub-label{line-height:1}
-
+    /* badge / star */
     .row-between{display:flex;justify-content:space-between;align-items:center;gap:8px}
     .badge{display:inline-block;background:#7c3aed;color:#fff;font-size:11px;font-weight:800;padding:5px 10px;border-radius:10px}
-
-    /* Star color: red-pink */
     .icon-btn{border:none;background:transparent;width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;font-size:20px;line-height:1;color:#9ca3af;cursor:pointer;border-radius:8px}
     .icon-btn:hover{background:#f3f4f6}
-    .icon-btn.active{color:#e11d48} /* was #d97706 */
+    .icon-btn.active{color:#e11d48} /* red-pink */
 
-    /* Context: will be re-used to show English meaning with big style */
-    .context{
-      background:#f9fafb;border-radius:8px;padding:6px 10px;margin-top:8px;
-      color:#6b7280;font-size:12px;font-weight:600
-    }
-    /* When we turn it into English meaning, match .en style and remove background look */
-    .context.en-mode{
-      background:transparent;border-radius:0;padding:0;margin-top:8px;
-      color:#6b7280;font-size:16px;font-weight:600;text-align:center
-    }
+    /* context as English meaning */
+    .context{color:#6b7280;font-size:16px;text-align:center;margin:8px 0 0;font-weight:600}
 
-    .kbox{background:#f9fafb;border-radius:14px;padding:16px 12px;margin:12px 0}
-    .ko{font-size:28px;font-weight:900;color:#1f2937;text-align:center;margin:0 0 6px}
-    .en{color:#6b7280;font-size:16px;text-align:center;margin:0 0 10px;font-weight:600}
-    .pr{color:#9ca3af;font-size:13px;font-style:italic;text-align:center;margin:0}
+    /* main text */
+    .kbox{background:#f9fafb;border-radius:14px;padding:16px 12px;margin:12px 0;text-align:center}
+    .ko{font-size:28px;font-weight:900;color:#1f2937;margin:0 0 6px}
+    .en{color:#6b7280;font-size:16px;margin:0 0 10px;font-weight:600}
+    .pr{color:#9ca3af;font-size:13px;font-style:italic;margin:0} /* 숨김 예정 */
 
+    /* practice */
     .practice{background:#f9fafb;border-radius:10px;padding:10px}
     .practice-label{font-size:12px;font-weight:600;color:#6b7280;text-align:center;margin:0 0 8px}
     .dots{display:flex;gap:6px;justify-content:center;margin-bottom:8px}
-    .rep-dot{width:32px;height:32px;border-radius:50%;border:2px solid #e5e7eb;background:#fff;display:flex;align-items:center;justify-content:center}
+    .rep-dot{width:32px;height:32px;border-radius:50%;border:2px solid #e5e7eb;background:#fff}
     .rep-dot.completed{background:#7c3aed;border-color:#7c3aed}
 
+    /* buttons */
     button.big{width:100%;padding:12px 18px;border-radius:14px;border:0;cursor:pointer;font-weight:800;font-size:15px;background:#7c3aed;color:#fff;box-shadow:0 2px 8px rgba(124,58,237,.2)}
     button.big:hover{background:#6d28d9}
     .error{display:none;background:#fee2e2;color:#991b1b;font-size:11px;font-weight:600;padding:8px 12px;border-radius:8px;margin-top:8px}
@@ -145,15 +124,8 @@
     .tip-card{margin-top:10px;background:#fff1f2;border-left:3px solid #e11d48;border-radius:10px;padding:10px}
     .tip-text{font-size:12px;color:#9f1239;font-weight:600}
 
-    .auth{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);align-items:center;justify-content:center;z-index:9999;padding:16px}
-    .auth:not(.hidden){display:flex}
-    .auth-card{background:#fff;width:100%;max-width:360px;border-radius:18px;padding:24px;box-shadow:0 18px 50px rgba(0,0,0,.35);text-align:center;position:relative}
-    .auth-close{position:absolute;top:10px;right:10px;background:none;border:none;font-size:22px;color:#9ca3af;cursor:pointer}
-
-    @media (max-width:640px){
-      .picker-wrap{width:100%}
-      .kbox{padding:14px 10px}
-    }
+    /* 호환용 숨김 탭 (app.js 기존 의존성) */
+    .hidden-tabs{display:none}
   </style>
 </head>
 <body>
@@ -170,10 +142,16 @@
 
   <!-- CATEGORY -->
   <section class="card">
-    <div class="row-flex">
+    <div class="category-bar">
       <div class="picker-wrap">
-        <div id="categoryPicker" class="picker"></div>
-        <div class="picker-focus"></div>
+        <button id="pickerTrigger" class="picker-trigger" aria-haspopup="listbox" aria-expanded="false">Daily</button>
+        <div id="pickerMenu" class="picker-menu">
+          <div class="picker-list" role="listbox">
+            <div class="picker-item active" role="option">Daily</div>
+            <div class="picker-item" role="option">Travel</div>
+            <div class="picker-item" role="option">K-Drama</div>
+          </div>
+        </div>
       </div>
       <button id="savedBtn" class="saved-btn">★ Saved</button>
     </div>
@@ -186,6 +164,7 @@
       <button id="savedBtnHidden" class="tab-button">Saved</button>
     </div>
 
+    <!-- app.js가 여기에 .sub-chip 버튼들을 주입 -->
     <div id="subFilters" class="sub-filters"></div>
   </section>
 
@@ -196,13 +175,13 @@
       <button id="scrapBtn" class="icon-btn" title="Save this phrase" aria-label="Save">☆</button>
     </div>
 
-    <!-- 여기엔 영어 뜻을 크게 넣기 위해 JS가 en-mode를 추가 -->
-    <div id="context" class="context">Conversation: First meeting</div>
+    <!-- 영어 뜻 표시 (따옴표 포함) -->
+    <div id="context" class="context">"Hello"</div>
 
     <div class="kbox">
       <p id="korean" class="ko">안녕하세요.</p>
-      <p id="english" class="en">"Hello"</p>
-      <p id="pronunciation" class="pr">annyeonghaseyo</p>
+      <p id="english" class="en">annyeonghaseyo</p>
+      <p id="pronunciation" class="pr" style="display:none">annyeonghaseyo</p>
     </div>
 
     <div class="practice">
@@ -223,7 +202,7 @@
       <span id="speedTxt">0.75x</span>
     </div>
 
-    <!-- Tip: 랜덤 문구 -->
+    <!-- Tip -->
     <div id="tipBox" class="tip-card">
       <div id="tipText" class="tip-text">Tip: Listen carefully and repeat multiple times. Consistency is key.</div>
     </div>
@@ -282,96 +261,92 @@
     });
   </script>
 
-  <!-- Wheel Picker logic + legacy compatibility -->
+  <!-- Picker logic + legacy compatibility + Tip on category change -->
   <script>
     (function(){
-      const CATEGORIES = ["Daily","Travel","K-Drama","Food","Shopping","Cafe","Numbers","Phrases"];
+      // 3개 고정
+      const CATEGORIES = ["Daily","Travel","K-Drama"];
 
+      // 숨김 레거시 탭 (app.js 연동)
       const legacy = {
         daily:  document.getElementById('dailyBtn'),
         travel: document.getElementById('travelBtn'),
         drama:  document.getElementById('dramaBtn')
       };
 
+      const trigger = document.getElementById('pickerTrigger');
+      const menu    = document.getElementById('pickerMenu');
+      const list    = menu.querySelector('.picker-list');
+
+      // 초기 렌더(안전하게 다시 세팅)
+      list.innerHTML = '';
+      CATEGORIES.forEach((c,i)=>{
+        const el = document.createElement('div');
+        el.className = 'picker-item' + (i===0?' active':'');
+        el.textContent = c;
+        el.setAttribute('role','option');
+        el.addEventListener('click', ()=> selectCategory(c, el));
+        list.appendChild(el);
+      });
+
+      function setActive(el){
+        list.querySelectorAll('.picker-item').forEach(n=>n.classList.remove('active'));
+        el.classList.add('active');
+      }
+
+      function selectCategory(name, el){
+        setActive(el);
+        trigger.textContent = name;
+        trigger.setAttribute('aria-expanded','false');
+        menu.style.maxHeight = '0';
+
+        // 레거시 탭 가상 클릭(서브칩/컨텐츠 렌더를 기존 로직대로)
+        const key = name.toLowerCase();
+        if(key==='daily')  legacy.daily?.click();
+        if(key==='travel') legacy.travel?.click();
+        if(key==='k-drama' || key==='kdrama' || key==='drama') legacy.drama?.click();
+
+        // 카테고리 전환시에만 Tip 변경
+        changeTip();
+      }
+
+      trigger.addEventListener('click', ()=>{
+        const expanded = trigger.getAttribute('aria-expanded') === 'true';
+        trigger.setAttribute('aria-expanded', String(!expanded));
+        // CSS가 열고 닫는 건 hover/focus가 담당, 클릭은 접근성 보조
+      });
+
+      // Saved 버튼 → 기존 saved 동작 유지
       document.getElementById('savedBtn')?.addEventListener('click', () => {
         const savedHidden = document.getElementById('savedBtnHidden');
         savedHidden && savedHidden.click();
       });
 
-      const picker = document.getElementById('categoryPicker');
-      const itemHeight = 44, padItems = 3;
-
-      function addItem(text, spacer=false){
-        const el = document.createElement('div');
-        el.className = 'picker-item' + (spacer ? ' spacer' : '');
-        el.textContent = text;
-        if(!spacer){
-          el.addEventListener('click', () => {
-            const idx = [...picker.children].indexOf(el);
-            snapToIndex(idx);
-          });
-        }
-        picker.appendChild(el);
+      // ===== Tip (카테고리 전환시에만 랜덤 교체) =====
+      const tips = [
+        "Tip: Small daily reps beat big, rare sessions.",
+        "Tip: Shadow the sound, not the spelling.",
+        "Tip: Say it out loud — your mouth must learn too.",
+        "Tip: Five clean repeats > twenty sloppy ones.",
+        "Tip: Record yourself and match the rhythm.",
+        "Tip: First mimic, then understand.",
+        "Tip: Keep the same speed; build consistency.",
+        "Tip: Close your eyes and copy the melody.",
+        "Tip: Bite-sized goals. One phrase at a time.",
+        "Tip: Revisit yesterday — retention makes speed."
+      ];
+      const tipEl = document.getElementById('tipText');
+      function changeTip(){
+        if(!tipEl) return;
+        tipEl.textContent = tips[Math.floor(Math.random()*tips.length)];
       }
 
-      function renderPicker(){
-        for(let i=0;i<padItems;i++) addItem('', true);
-        CATEGORIES.forEach(c => addItem(c));
-        for(let i=0;i<padItems;i++) addItem('', true);
-
-        picker.tabIndex = 0;
-        snapToIndex(padItems);
-        fireLegacyClick("Daily");
-      }
-
-      let scrollTimer;
-      picker.addEventListener('scroll', () => {
-        clearTimeout(scrollTimer);
-        scrollTimer = setTimeout(() => {
-          const index = Math.round(picker.scrollTop / itemHeight);
-          snapToIndex(index);
-        }, 80);
-      });
-
-      picker.addEventListener('keydown', e => {
-        const cur = Math.round(picker.scrollTop / itemHeight);
-        if(e.key === 'ArrowUp') snapToIndex(cur - 1);
-        if(e.key === 'ArrowDown') snapToIndex(cur + 1);
-      });
-
-      function snapToIndex(i){
-        const max = picker.children.length - 1;
-        const clamped = Math.max(0, Math.min(max, i));
-        picker.scrollTo({ top: clamped * itemHeight, behavior: 'smooth' });
-
-        [...picker.querySelectorAll('.picker-item')].forEach(el => el.classList.remove('active'));
-        const el = picker.children[clamped];
-        if(el && !el.classList.contains('spacer')){
-          el.classList.add('active');
-          const logicalIndex = clamped - padItems;
-          const selected = CATEGORIES[logicalIndex];
-          if(selected) fireLegacyClick(selected);
-        }
-      }
-
-      function fireLegacyClick(name){
-        const key = name.toLowerCase();
-        if(key === 'daily')  legacy.daily?.click();
-        if(key === 'travel') legacy.travel?.click();
-        if(key === 'k-drama' || key === 'kdrama' || key === 'drama') legacy.drama?.click();
-        if(window.SORI && typeof window.SORI.loadCategory === 'function'){
-          window.SORI.loadCategory(name);
-        }
-      }
-
-      window.SORI = window.SORI || {};
-      window.SORI.loadCategory = window.SORI.loadCategory || function(cat){ console.log('Selected category:', cat); };
-
-      renderPicker();
+      // 최초 진입은 Daily로 맞추고 Tip 한 번만 세팅
+      changeTip();
     })();
   </script>
 
-  <!-- Navigation rewrite (기존 코드) -->
+  <!-- Navigation rewrite (기존 코드 유지) -->
   <script>
   (function(){
     const btn = {
@@ -566,83 +541,34 @@
   })();
   </script>
 
-  <!-- Layout adjustments: replace context with English, move pronunciation up; rotate tips -->
+  <!-- Layout fix: keep context as English, en as pronunciation; DO NOT rotate tips here -->
   <script>
     (function(){
-      const tips = [
-        "Tip: Small daily reps beat big, rare sessions.",
-        "Tip: Shadow the sound, not the spelling.",
-        "Tip: Say it out loud — your mouth must learn too.",
-        "Tip: Five clean repeats > twenty sloppy ones.",
-        "Tip: Record yourself and match the rhythm.",
-        "Tip: First mimic, then understand.",
-        "Tip: Keep the same speed; build consistency.",
-        "Tip: Close your eyes and copy the melody.",
-        "Tip: Bite-sized goals. One phrase at a time.",
-        "Tip: Revisit yesterday — retention makes speed."
-      ];
-
-      function randomTip(){
-        const el = document.getElementById('tipText');
-        if(!el) return;
-        const t = tips[Math.floor(Math.random()*tips.length)];
-        el.textContent = t;
-      }
-
-      function swapLayout(){
+      function applyLayoutOnce(){
         const ctx = document.getElementById('context');
         const en  = document.getElementById('english');
         const pr  = document.getElementById('pronunciation');
+        if(!ctx || !en) return;
 
-        if(!ctx || !en || !pr) return;
-
-        // 1) context에 영어 뜻 넣고 큰 폰트 스타일 적용
-        const englishText = (en.textContent || '').replace(/^"+|"+$/g,'').trim();
-        if(englishText){
-          ctx.textContent = englishText;
-          ctx.classList.add('en-mode');
-        }
-
-        // 2) 기존 English 자리에는 발음 텍스트를 큰 폰트(en 스타일)로 표시
-        const pron = (pr.textContent || '').trim();
-        if(pron){
-          en.textContent = pron;  // en 위치에 annyeonghaseyo
-        }
-
-        // 3) 원래 pr는 숨김
-        pr.style.display = 'none';
-
-        // 4) 랜덤 Tip 갱신
-        randomTip();
+        // ctx = 영어 뜻 (따옴표 유지)
+        // en  = 발음
+        if(pr){ pr.style.display='none'; }
       }
 
-      // 초기 1회
-      document.addEventListener('DOMContentLoaded', ()=> {
-        swapLayout();
-      });
+      document.addEventListener('DOMContentLoaded', applyLayoutOnce);
 
-      // 콘텐츠가 바뀔 때마다(Next/Prev/카테고리 전환) 재적용
-      const target = document.body;
-      const mo = new MutationObserver((ms)=>{
-        // korean/en/pr/ctx 텍스트 변경을 감지해 재배치
-        for(const m of ms){
-          if(m.type === 'childList' || m.type === 'subtree' || m.type === 'characterData'){
-            // 과도한 호출 방지 타이머
-            clearTimeout(window.__soriSwapTimer);
-            window.__soriSwapTimer = setTimeout(swapLayout, 30);
-            break;
-          }
-        }
+      // Next/Prev/서브 전환 시에도 영어/발음 구조 깨지지 않도록 보정
+      const mo = new MutationObserver(()=>{
+        clearTimeout(window.__soriFixTimer);
+        window.__soriFixTimer = setTimeout(applyLayoutOnce, 30);
       });
-      mo.observe(target, { childList:true, subtree:true, characterData:true });
+      mo.observe(document.body, { childList:true, subtree:true, characterData:true });
 
-      // Next/Prev 클릭 시에도 보장
       ['nextBtn','prevBtn','dailyBtn','travelBtn','dramaBtn','savedBtnHidden'].forEach(id=>{
         const el = document.getElementById(id);
-        el && el.addEventListener('click', ()=> setTimeout(swapLayout, 0), true);
+        el && el.addEventListener('click', ()=> setTimeout(applyLayoutOnce, 0), true);
       });
     })();
   </script>
-
 </body>
 </html>
