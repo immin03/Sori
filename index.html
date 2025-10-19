@@ -13,6 +13,7 @@
     <text x="16" y="40" font-family="sans-serif" font-size="22" font-weight="bold" fill="white">소</text>
   </svg>'/>
 
+<!-- GA -->
 <script>window.GA_ID='G-X1Q98DBKR5';</script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-X1Q98DBKR5"></script>
 <script>
@@ -22,6 +23,7 @@
   gtag('config',window.GA_ID,{send_page_view:false});
 </script>
 
+<!-- Firebase compat -->
 <script defer src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script defer src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script defer src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
@@ -31,10 +33,14 @@
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;max-width:720px;margin:0 auto;padding:16px;background:#faf8ff;min-height:100vh;color:#111827}
 h1{font-size:26px;margin:0 0 4px;color:#7c3aed;font-weight:800}
 .intro{color:#9ca3af;font-size:12px;margin-bottom:10px;line-height:1.3;font-weight:500}
+
 .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
 .top-btn{padding:8px 14px;border-radius:12px;font-size:12px;font-weight:700;border:0;cursor:pointer}
 .top-btn.primary{background:#7c3aed;color:#fff}
+
 .card{background:#fff;border-radius:18px;padding:18px;margin:10px 0;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+
+/* Category picker */
 .category-bar{display:flex;align-items:center;gap:12px}
 .picker-wrap{position:relative}
 .picker-trigger{padding:12px 18px;border-radius:14px;background:#7c3aed;color:#fff;font-weight:800;border:0;cursor:pointer;min-width:220px;text-align:center}
@@ -45,24 +51,39 @@ h1{font-size:26px;margin:0 0 4px;color:#7c3aed;font-weight:800}
 .picker-item:hover,.picker-item.active{background:#7c3aed;color:#fff}
 .saved-btn{height:44px;padding:0 18px;border-radius:12px;background:#fff;color:#7c3aed;border:2px solid #e9defd;font-weight:800;cursor:pointer;white-space:nowrap}
 .saved-btn:hover{background:#f7f2ff}
+
+/* Sub chips */
 .sub-filters{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
 .sub-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:14px;background:#fff;border:2px solid #e5e7eb;color:#374151;font-size:12px;font-weight:600;cursor:pointer;user-select:none}
 .sub-chip.active{background:#7c3aed;border-color:#7c3aed;color:#fff}
+
 .row-between{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .badge{display:inline-block;background:#7c3aed;color:#fff;font-size:11px;font-weight:800;padding:5px 10px;border-radius:12px}
 .icon-btn{border:none;background:transparent;width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;font-size:20px;color:#9ca3af;cursor:pointer;border-radius:8px}
 .icon-btn.active{color:#e11d48}
+
+/* ====== 핵심: 깜빡임 제거 ====== */
+#lessonCard .context,
+#lessonCard .en{opacity:0; transition:opacity .12s ease;}
+#lessonCard.lesson-ready .context,
+#lessonCard.lesson-ready .en{opacity:1;}
+/* =============================== */
+
 .context{color:#6b7280;font-size:16px;text-align:center;margin:8px 0 0;font-weight:600}
+
 .kbox{background:#f3f4f6;border-radius:16px;padding:18px 14px;margin:12px 0;text-align:center}
 .ko{font-size:30px;font-weight:900;margin:0 0 8px}
 .en{color:#6b7280;font-size:16px;margin:0 0 10px;font-weight:600}
+
 .practice{background:#f9fafb;border-radius:12px;padding:12px}
 .practice-label{font-size:12px;font-weight:600;color:#6b7280;text-align:center;margin:0 0 8px}
 .dots{display:flex;gap:10px;justify-content:center;margin-bottom:8px}
 .rep-dot{width:30px;height:30px;border-radius:50%;border:2px solid #e5e7eb;background:#fff;transition:.15s}
 .rep-dot.completed{background:#7c3aed;border-color:#7c3aed}
+
 button.big{width:100%;padding:14px 20px;border-radius:14px;border:0;cursor:pointer;font-weight:800;font-size:15px;background:#7c3aed;color:#fff}
-/* Speed */
+
+/* Speed slider */
 .row{display:flex;align-items:center;justify-content:center;gap:12px;background:#f9fafb;border-radius:10px;padding:10px;margin-top:8px}
 .speed-val{min-width:56px;text-align:left;font-variant-numeric:tabular-nums}
 input[type="range"]{accent-color:#7c3aed;outline:0}
@@ -70,10 +91,13 @@ input[type="range"]::-webkit-slider-runnable-track{height:6px;border-radius:999p
 input[type="range"]::-webkit-slider-thumb{width:18px;height:18px;border-radius:50%;background:#7c3aed;border:2px solid #6d28d9;margin-top:-6px}
 input[type="range"]::-moz-range-track{height:6px;border-radius:999px;background:#e9defd}
 input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#7c3aed;border:2px solid #6d28d9}
+
 .tip-card{margin-top:10px;background:#fff1f2;border-left:3px solid #e11d48;border-radius:10px;padding:10px}
 .tip-text{font-size:12px;color:#9f1239;font-weight:600}
+
 .hidden-tabs{display:none}
-/* Auth */
+
+/* Auth modal */
 .auth{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:9999;background:rgba(0,0,0,.45);padding:16px}
 .auth.open{display:flex}
 .auth-card{background:#fff;width:100%;max-width:380px;border-radius:20px;padding:24px;box-shadow:0 18px 50px rgba(0,0,0,.35);text-align:center;position:relative}
@@ -81,6 +105,7 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 .gbtn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:10px 14px;border-radius:12px;border:1.5px solid #e5e7eb;background:#fff;color:#111827;font-weight:700;cursor:pointer}
 .gbtn:hover{border-color:#d8dbe2;box-shadow:0 2px 8px rgba(124,58,237,.15)}
 .glogo{width:18px;height:18px;display:inline-block}
+
 /* Nav */
 .navbar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:nowrap}
 .nav-center{min-width:130px;text-align:center;font-size:13px;color:#6b7280;font-weight:700}
@@ -88,6 +113,7 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 .nav-btn:hover{border-color:#d8dbe2}
 .nav-btn .caret{font-size:15px;color:#7c3aed}
 .nav-btn:disabled{opacity:.5;cursor:not-allowed}
+
 /* Mobile */
 @media (max-width:480px){
   .navbar{flex-wrap:wrap}
@@ -105,6 +131,7 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
   <button id="loginBtn" class="top-btn primary">Login</button>
 </header>
 
+<!-- CATEGORY -->
 <section class="card">
   <div class="category-bar">
     <div class="picker-wrap">
@@ -114,6 +141,7 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
     <button id="savedBtn" class="saved-btn">★ Saved</button>
   </div>
 
+  <!-- 호환용 숨김 탭 -->
   <div class="hidden-tabs" aria-hidden="true">
     <button id="dailyBtn"  class="tab-button active">Daily</button>
     <button id="travelBtn" class="tab-button">Travel</button>
@@ -124,6 +152,7 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
   <div id="subFilters" class="sub-filters"></div>
 </section>
 
+<!-- LESSON -->
 <section class="card" id="lessonCard">
   <div class="row-between">
     <div id="badge" class="badge">Greeting</div>
@@ -155,6 +184,7 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
   <div class="tip-card"><div id="tipText" class="tip-text">Tip: Listen carefully and repeat multiple times. Consistency is key.</div></div>
 </section>
 
+<!-- NAV -->
 <section class="card">
   <div class="navbar">
     <button id="prevBtn" class="nav-btn"><span class="caret">◀</span> Previous</button>
@@ -226,7 +256,13 @@ document.addEventListener('DOMContentLoaded', ()=>{
   document.onclick=()=>menu.classList.remove('open');
   savedBtn?.addEventListener('click',()=> savedBtnHidden?.click());
 
-  const tips=["Tip: Small daily reps beat big, rare sessions.","Tip: Shadow the sound, not the spelling.","Tip: Say it out loud — your mouth must learn too.","Tip: Five clean repeats > twenty sloppy ones.","Tip: Record yourself and match the rhythm.","Tip: First mimic, then understand.","Tip: Keep the same speed; build consistency.","Tip: Close your eyes and copy the melody.","Tip: Bite-sized goals. One phrase at a time.","Tip: Revisit yesterday — retention makes speed."];
+  const tips=[
+    "Tip: Small daily reps beat big, rare sessions.","Tip: Shadow the sound, not the spelling.",
+    "Tip: Say it out loud — your mouth must learn too.","Tip: Five clean repeats > twenty sloppy ones.",
+    "Tip: Record yourself and match the rhythm.","Tip: First mimic, then understand.",
+    "Tip: Keep the same speed; build consistency.","Tip: Close your eyes and copy the melody.",
+    "Tip: Bite-sized goals. One phrase at a time.","Tip: Revisit yesterday — retention makes speed."
+  ];
   const tipEl=tipText; function changeTip(){ tipEl.textContent=tips[Math.floor(Math.random()*tips.length)]; } changeTip();
 })();
 </script>
@@ -278,7 +314,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 })();
 </script>
 
-<!-- TTS: API only (웹 TTS 차단), 속도 0.6~1.0 -->
+<!-- TTS: API only, 0.6~1.0 -->
 <script>
 window.addEventListener('load',()=>{
   const ENDPOINT="https://asia-northeast3-sori-tts.cloudfunctions.net/tts";
@@ -297,7 +333,6 @@ window.addEventListener('load',()=>{
     const b=await r.blob(); const url=URL.createObjectURL(b); lastUrl=url; audio.src=url; setAudioRate(); await audio.play();
   }
 
-  // Listen: API만 실행, 카운트 정확히 1회
   document.getElementById('playBtn')?.addEventListener('click', async (e)=>{
     e.preventDefault(); e.stopImmediatePropagation();
     const ko=(document.getElementById('korean')?.textContent||'').trim();
@@ -307,79 +342,79 @@ window.addEventListener('load',()=>{
     document.querySelectorAll('.rep-dot').forEach((d,i)=> d.classList.toggle('completed', i < n));
   }, true);
 
-  // 웹 TTS 완전 무력화
   if('speechSynthesis' in window){
     try{ window.speechSynthesis.speak = ()=>{}; window.speechSynthesis.cancel = ()=>{}; }catch(_){}
   }
 });
 </script>
 
-<!-- 뜻/로마자 강제 적용 (무한루프 없는 디바운스 방식) -->
+<!-- 뜻/로마자 적용 (디바운스 + 페이드인) -->
 <script>
 (function(){
   const quote = s => `"${String(s||'').replace(/^"+|"+$/g,'').trim()}"`;
-  let map=null, isApplying=false, debounceTimer=null;
+  let map=null, applying=false, timer=null;
 
-  function buildMapFromData(){
+  function buildMap(){
     const DB=window.SORI_DATA||{};
     const pools=[...(DB.daily||[]),...(DB.travel||[]),...(DB.drama||[])];
     const m=new Map();
     for(const o of pools){ const k=(o.k||'').trim(); if(k && !m.has(k)) m.set(k,{e:o.e||'',p:o.p||''}); }
     return m;
   }
-  function waitForData(maxMs=2000){
+  function waitData(max=2000){
     return new Promise(res=>{
-      const start=performance.now();
+      const st=performance.now();
       (function poll(){
-        if(window.SORI_DATA || performance.now()-start>maxMs) return res(buildMapFromData());
+        if(window.SORI_DATA || performance.now()-st>max) return res(buildMap());
         setTimeout(poll,50);
       })();
     });
   }
 
+  function hideLines(){ document.getElementById('lessonCard')?.classList.remove('lesson-ready'); }
+  function showLines(){ document.getElementById('lessonCard')?.classList.add('lesson-ready'); }
+
   function applyOnce(){
-    if(isApplying) return;
-    const koEl=korean, enEl=english, prEl=pronunciation, ctxEl=context;
-    if(!koEl||!enEl||!prEl||!ctxEl) return;
+    if(applying) return;
+    const ctx=context, en=english, pr=pronunciation, koEl=korean;
+    if(!ctx||!en||!pr||!koEl) return;
 
     const ko=(koEl.textContent||'').trim();
-    if(!ko) return;
+    const hit=map?.get(ko)||{};
+    const meaning=hit.e || (ctx.textContent||'').replace(/(^"+|"+$)/g,'').trim();
+    const roman  =hit.p || (pr.textContent||'').trim() || (en.textContent||'').trim();
 
-    const hit=map?.get(ko);
-    const meaning=(hit?.e || (ctxEl.textContent||'').replace(/(^"+|"+$)/g,'').trim());
-    const roman  =(hit?.p || (prEl.textContent||'').trim() || (enEl.textContent||'').trim());
-
-    isApplying=true; // 가드 시작
+    applying=true;
     try{
-      if(meaning && ctxEl.textContent !== quote(meaning)) ctxEl.textContent = quote(meaning);
-      if(roman   && enEl.textContent  !== roman)          enEl.textContent  = roman;
-      prEl.style.display='none';
+      if(meaning) ctx.textContent=quote(meaning);
+      if(roman)   en.textContent=roman;
+      pr.style.display='none';
+      // 준비 완료 → 보이기
+      showLines();
     }finally{
-      // 미세 지연 후 가드 해제 (옵저버 재귀 방지)
-      setTimeout(()=>{ isApplying=false; }, 0);
+      setTimeout(()=>{ applying=false; },0);
     }
   }
 
   function scheduleApply(){
-    clearTimeout(debounceTimer);
-    debounceTimer=setTimeout(applyOnce,120);
+    hideLines();                  // 먼저 숨기고
+    clearTimeout(timer);
+    timer=setTimeout(applyOnce,110);  // 짧은 디바운스 후 1회만 적용
   }
 
   document.addEventListener('DOMContentLoaded', async ()=>{
-    map = await waitForData();
-
-    // 초기 2회 보정 (데이터 늦을 상황 대비, 무한루프 없음)
-    applyOnce(); setTimeout(applyOnce,250);
-
-    // #korean 변경만 관찰
-    const mo=new MutationObserver(()=>{ if(!isApplying) scheduleApply(); });
-    if(korean) mo.observe(korean,{childList:true,characterData:true,subtree:true});
-
-    // 탭/네비/서브칩 등 사용자 전환 시에도 1회 보정
-    ['nextBtn','prevBtn','dailyBtn','travelBtn','dramaBtn','savedBtnHidden','subFilters'].forEach(id=>{
-      const el=(id==='subFilters')?document.getElementById('subFilters'):document.getElementById(id);
-      el && el.addEventListener('click', ()=> scheduleApply(), true);
-    });
+    hideLines();                  // 초기엔 숨김(깜빡임 방지)
+    map=await waitData();
+    scheduleApply();              // 첫 보정
+    // #korean 변경만 감지
+    const mo=new MutationObserver(()=>{ if(!applying) scheduleApply(); });
+    korean && mo.observe(korean,{childList:true,characterData:true,subtree:true});
+    // 사용자 전환 시에도 1회 보정
+    ['nextBtn','prevBtn','dailyBtn','travelBtn','dramaBtn','savedBtnHidden','subFilters']
+      .forEach(id=>{
+        const el=(id==='subFilters')?document.getElementById(id):document.getElementById(id);
+        el&&el.addEventListener('click', scheduleApply, true);
+      });
 
     // Speed 라벨 동기화
     const speedEl=speed, speedLbl=speedTxt;
