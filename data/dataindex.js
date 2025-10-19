@@ -46,53 +46,82 @@
     }
     return res;
   }
+  // 주어진 선호 목록을 앞으로 당겨 정렬 (선호에 없는 값은 기존 순서 유지)
+  function prioritize(list, firsts) {
+    var i, set = {}, res = [];
+    for (i = 0; i < firsts.length; i++) set[firsts[i]] = 1;
+    // 1) 선호를 순서대로 집어넣되 실제 존재할 때만
+    for (i = 0; i < firsts.length; i++) {
+      if (list.indexOf(firsts[i]) !== -1) res.push(firsts[i]);
+    }
+    // 2) 나머지
+    for (i = 0; i < list.length; i++) {
+      var v = list[i];
+      if (!set[v]) res.push(v);
+    }
+    return res;
+  }
 
   // ---- source read (새 구조: window.SORI_DATA.<cat>) ----
   var SD = window.SORI_DATA || {};
   var dailySrc   = asArray(SD.daily);
   var travelSrc  = asArray(SD.travel);
   var dramaSrc   = asArray(SD.drama);
-  var trendySrc  = asArray(SD.trendy);   // 신규
+  var trendySrc  = asArray(SD.trendy); // 선택 소스
 
   // ---- normalize ----
   var daily   = norm(dailySrc,  "daily");
   var travel  = norm(travelSrc, "travel");
   var drama   = norm(dramaSrc,  "drama");
-  var trendy  = norm(trendySrc, "trendy"); // 신규
+  var trendy  = norm(trendySrc, "trendy");
 
   // ---- publish main index ----
   window.SoriDataIndex = {
     daily:  daily,
     travel: travel,
     drama:  drama,
-    trendy: trendy     // 신규
+    trendy: trendy
   };
 
-  // ---- subcategory 목록 제공
+  // ---- 서브카테고리 목록 제공 (+ Love 최우선)
+  var dailySubsRaw = uniqTruthies(daily.map(function(x){ return x.sub; }));
+  var DAILY_PREF_ORDER = ["Love","Greeting","Cafe","Restaurant","Shopping","Health","Social","Work","Tech","Exercise"];
+  var dailySubs = prioritize(dailySubsRaw, DAILY_PREF_ORDER);
+
   if (!window.SoriSubCategories) {
     window.SoriSubCategories = {
-      daily:  uniqTruthies(daily .map(function(x){ return x.sub; })),
+      daily:  dailySubs,
       travel: uniqTruthies(travel.map(function(x){ return x.sub; })),
       drama:  uniqTruthies(drama .map(function(x){ return x.sub; })),
-      trendy: uniqTruthies(trendy.map(function(x){ return x.sub; })) // 신규
+      trendy: uniqTruthies(trendy.map(function(x){ return x.sub; }))
     };
+  } else {
+    // 이미 존재한다면 daily만 보강
+    window.SoriSubCategories.daily = dailySubs;
   }
 
-  // ---- 아이콘은 별도 지정 없음
+  // ---- 아이콘 (Love 추가)
   if (!window.SoriSubIcons) {
     window.SoriSubIcons = {
-      // 기존 아이콘 세트 유지 필요 시 여기에만 남겨둠
+      Love:"❤️",
       Greeting:"👋", Cafe:"☕", Restaurant:"🍽️", Shopping:"🛍️", Health:"💊",
       Social:"👥", Work:"💼", Tech:"🖥️", Exercise:"🏃",
       Airport:"✈️", Hotel:"🏨", Transport:"🚇", Emergency:"🆘", Convenience:"🏪",
       "Street Food":"🌭", Market:"🧺", "Duty Free":"🛂", Department:"🏬",
       "Food Court":"🥢", Payment:"💳", Delivery:"📦", Sightseeing:"📍"
-      // trendy는 아이콘 미지정
     };
+  } else {
+    window.SoriSubIcons.Love = window.SoriSubIcons.Love || "❤️";
   }
+
+  // ---- 기본값(앱에서 참조용): daily는 Love부터
+  if (!window.SoriDefaults) window.SoriDefaults = {};
+  window.SoriDefaults.defaultSubByCategory = window.SoriDefaults.defaultSubByCategory || {};
+  window.SoriDefaults.defaultSubByCategory.daily = "Love";
 
   // ---- log ----
   console.log("[SoriDataIndex ready]", {
-    daily: daily.length, travel: travel.length, drama: drama.length, trendy: trendy.length
+    daily: daily.length, travel: travel.length, drama: drama.length, trendy: trendy.length,
+    dailySubs: dailySubs
   });
 })();
