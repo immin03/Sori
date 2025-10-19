@@ -64,43 +64,60 @@
 
   // ---- source read (새 구조: window.SORI_DATA.<cat>) ----
   var SD = window.SORI_DATA || {};
-  var dailySrc   = asArray(SD.daily);
-  var travelSrc  = asArray(SD.travel);
-  var dramaSrc   = asArray(SD.drama);
-  var trendySrc  = asArray(SD.trendy); // 선택 소스
+  var dailySrc    = asArray(SD.daily);
+  var travelSrc   = asArray(SD.travel);
+  var dramaSrc    = asArray(SD.drama);
+  var trendySrc   = asArray(SD.trendy);   // 선택 소스
+  var numbersSrc  = asArray(SD.numbers);  // 신규 숫자 소스
 
   // ---- normalize ----
-  var daily   = norm(dailySrc,  "daily");
-  var travel  = norm(travelSrc, "travel");
-  var drama   = norm(dramaSrc,  "drama");
-  var trendy  = norm(trendySrc, "trendy");
+  var daily    = norm(dailySrc,   "daily");
+  var travel   = norm(travelSrc,  "travel");
+  var drama    = norm(dramaSrc,   "drama");
+  var trendy   = norm(trendySrc,  "trendy");
+  var numbers  = norm(numbersSrc, "numbers");
 
   // ---- publish main index ----
   window.SoriDataIndex = {
-    daily:  daily,
-    travel: travel,
-    drama:  drama,
-    trendy: trendy
+    daily:   daily,
+    travel:  travel,
+    drama:   drama,
+    trendy:  trendy,
+    numbers: numbers
   };
 
-  // ---- 서브카테고리 목록 제공 (+ Love 최우선)
-  var dailySubsRaw = uniqTruthies(daily.map(function(x){ return x.sub; }));
-  var DAILY_PREF_ORDER = ["Love","Greeting","Cafe","Restaurant","Shopping","Health","Social","Work","Tech","Exercise"];
-  var dailySubs = prioritize(dailySubsRaw, DAILY_PREF_ORDER);
+  // ---- 서브카테고리 목록 제공
+  var dailySubsRaw   = uniqTruthies(daily.map(function(x){ return x.sub; }));
+  var travelSubsRaw  = uniqTruthies(travel.map(function(x){ return x.sub; }));
+  var dramaSubsRaw   = uniqTruthies(drama.map(function(x){ return x.sub; }));
+  var trendySubsRaw  = uniqTruthies(trendy.map(function(x){ return x.sub; }));
+  var numbersSubsRaw = uniqTruthies(numbers.map(function(x){ return x.sub; }));
+
+  // daily 우선순위
+  var DAILY_PREF_ORDER   = ["Love","Greeting","Cafe","Restaurant","Shopping","Health","Social","Work","Tech","Exercise"];
+  // numbers 우선순위
+  var NUMBERS_PREF_ORDER = ["Basic","Counting","Dates","Money","Tens & Hundreds","Practice"];
+
+  var dailySubs   = prioritize(dailySubsRaw,   DAILY_PREF_ORDER);
+  var numbersSubs = prioritize(numbersSubsRaw, NUMBERS_PREF_ORDER);
 
   if (!window.SoriSubCategories) {
     window.SoriSubCategories = {
-      daily:  dailySubs,
-      travel: uniqTruthies(travel.map(function(x){ return x.sub; })),
-      drama:  uniqTruthies(drama .map(function(x){ return x.sub; })),
-      trendy: uniqTruthies(trendy.map(function(x){ return x.sub; }))
+      daily:   dailySubs,
+      travel:  travelSubsRaw,
+      drama:   dramaSubsRaw,
+      trendy:  trendySubsRaw,
+      numbers: numbersSubs
     };
   } else {
-    // 이미 존재한다면 daily만 보강
-    window.SoriSubCategories.daily = dailySubs;
+    window.SoriSubCategories.daily   = dailySubs;
+    window.SoriSubCategories.travel  = travelSubsRaw;
+    window.SoriSubCategories.drama   = dramaSubsRaw;
+    window.SoriSubCategories.trendy  = trendySubsRaw;
+    window.SoriSubCategories.numbers = numbersSubs;
   }
 
-  // ---- 아이콘 (Love 추가)
+  // ---- 아이콘 (기존 유지 + numbers 추가)
   if (!window.SoriSubIcons) {
     window.SoriSubIcons = {
       Love:"❤️",
@@ -108,20 +125,34 @@
       Social:"👥", Work:"💼", Tech:"🖥️", Exercise:"🏃",
       Airport:"✈️", Hotel:"🏨", Transport:"🚇", Emergency:"🆘", Convenience:"🏪",
       "Street Food":"🌭", Market:"🧺", "Duty Free":"🛂", Department:"🏬",
-      "Food Court":"🥢", Payment:"💳", Delivery:"📦", Sightseeing:"📍"
+      "Food Court":"🥢", Payment:"💳", Delivery:"📦", Sightseeing:"📍",
+
+      // numbers
+      Basic:"🔢", Counting:"✋", Dates:"📅", Money:"💵",
+      "Tens & Hundreds":"🔟", Practice:"🎯"
     };
   } else {
-    window.SoriSubIcons.Love = window.SoriSubIcons.Love || "❤️";
+    // 필수 아이콘 보강
+    window.SoriSubIcons.Love   = window.SoriSubIcons.Love   || "❤️";
+    window.SoriSubIcons.Basic  = window.SoriSubIcons.Basic  || "🔢";
+    window.SoriSubIcons.Counting = window.SoriSubIcons.Counting || "✋";
+    window.SoriSubIcons.Dates  = window.SoriSubIcons.Dates  || "📅";
+    window.SoriSubIcons.Money  = window.SoriSubIcons.Money  || "💵";
+    window.SoriSubIcons["Tens & Hundreds"] = window.SoriSubIcons["Tens & Hundreds"] || "🔟";
+    window.SoriSubIcons.Practice = window.SoriSubIcons.Practice || "🎯";
   }
 
-  // ---- 기본값(앱에서 참조용): daily는 Love부터
+  // ---- 기본값(앱에서 참조용)
   if (!window.SoriDefaults) window.SoriDefaults = {};
   window.SoriDefaults.defaultSubByCategory = window.SoriDefaults.defaultSubByCategory || {};
-  window.SoriDefaults.defaultSubByCategory.daily = "Love";
+  window.SoriDefaults.defaultSubByCategory.daily   = "Love";
+  window.SoriDefaults.defaultSubByCategory.numbers = "Basic";
 
   // ---- log ----
-  console.log("[SoriDataIndex ready]", {
-    daily: daily.length, travel: travel.length, drama: drama.length, trendy: trendy.length,
-    dailySubs: dailySubs
-  });
+  try {
+    console.log("[SoriDataIndex ready]", {
+      daily: daily.length, travel: travel.length, drama: drama.length, trendy: trendy.length, numbers: numbers.length,
+      dailySubs: dailySubs, numbersSubs: numbersSubs
+    });
+  } catch (e) {}
 })();
