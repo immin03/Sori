@@ -144,8 +144,8 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
   <div class="hidden-tabs" aria-hidden="true">
     <button id="dailyBtn"   class="tab-button active">Daily</button>
     <button id="travelBtn"  class="tab-button">Travel</button>
-    <button id="dramaBtn"   class="tab-button">K-Drama</button>
     <button id="trendyBtn"  class="tab-button">Trendy Talk</button>
+    <button id="dramaBtn"   class="tab-button">K-Drama</button>    
     <button id="savedBtnHidden" class="tab-button">Saved</button>
   </div>
 
@@ -237,7 +237,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 <!-- Picker + Tips -->
 <script>
 (function(){
-  const CATS=["Daily","Travel","K-Drama","Trendy Talk"];
+  const CATS=["Daily","Travel","Trendy Talk","K-Drama"];
   const trigger=pickerTrigger, menu=pickerMenu, list=menu.querySelector('.picker-list');
   list.innerHTML='';
   CATS.forEach((c,i)=>{
@@ -273,7 +273,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 <script>
 (function(){
   const btn={next:nextBtn,prev:prevBtn,daily:dailyBtn,travel:travelBtn,drama:dramaBtn,trendy:trendyBtn};
-  const progEl=prog, badgeEl=badge; const tabs=[btn.daily,btn.travel,btn.drama,btn.trendy].filter(Boolean);
+  const progEl=prog, badgeEl=badge; const tabs=[btn.daily,btn.travel,btn.trendy,btn.drama].filter(Boolean);
   const CAT_KEY={dailyBtn:'daily',travelBtn:'travel',dramaBtn:'drama',trendyBtn:'trendy'};
   const getActiveTab=()=> tabs.find(t=>t.classList.contains('active'))||btn.daily;
   const getActiveCatKey=()=> CAT_KEY[getActiveTab().id];
@@ -426,3 +426,4 @@ window.addEventListener('load',()=>{
 </script>
 </body>
 </html>
+
