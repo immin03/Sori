@@ -119,6 +119,25 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
   .nav-btn{flex:1 1 calc(50% - 8px);min-width:140px}
   .nav-center{order:3;width:100%;margin-top:8px}
 }
+
+/* Congrats toast */
+#congrats {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(0,0,0,.75);
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s ease;
+  z-index: 9999;
+}
+#congrats.show { opacity: 1; }
 </style>
 </head>
 <body>
@@ -424,5 +443,9 @@ window.addEventListener('load',()=>{
   });
 })();
 </script>
+
+<!-- Congrats toast element -->
+<div id="congrats" aria-live="polite"></div>
+
 </body>
 </html>
