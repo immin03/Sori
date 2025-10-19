@@ -45,8 +45,8 @@ h1{font-size:26px;margin:0 0 4px;color:#7c3aed;font-weight:800}
 .picker-wrap{position:relative}
 .picker-trigger{padding:12px 18px;border-radius:14px;background:#7c3aed;color:#fff;font-weight:800;border:0;cursor:pointer;min-width:220px;text-align:center}
 .picker-menu{position:absolute;top:100%;left:0;right:0;margin-top:6px;background:#fff;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.15);overflow:hidden;max-height:0;transition:max-height .25s ease;z-index:50}
-.picker-menu.open{max-height:160px}
-.picker-list{max-height:150px;overflow-y:auto;padding:6px;scrollbar-width:thin}
+.picker-menu.open{max-height:220px}
+.picker-list{max-height:210px;overflow-y:auto;padding:6px;scrollbar-width:thin}
 .picker-item{height:44px;line-height:44px;border-radius:12px;margin:6px 4px;text-align:center;background:#f6f6ff;color:#5b5b72;font-weight:700;cursor:pointer;user-select:none}
 .picker-item:hover,.picker-item.active{background:#7c3aed;color:#fff}
 .saved-btn{height:44px;padding:0 18px;border-radius:12px;background:#fff;color:#7c3aed;border:2px solid #e9defd;font-weight:800;cursor:pointer;white-space:nowrap}
@@ -62,12 +62,11 @@ h1{font-size:26px;margin:0 0 4px;color:#7c3aed;font-weight:800}
 .icon-btn{border:none;background:transparent;width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;font-size:20px;color:#9ca3af;cursor:pointer;border-radius:8px}
 .icon-btn.active{color:#e11d48}
 
-/* ====== 핵심: 깜빡임 제거 ====== */
+/* 핵심 깜빡임 제거 */
 #lessonCard .context,
 #lessonCard .en{opacity:0; transition:opacity .12s ease;}
 #lessonCard.lesson-ready .context,
 #lessonCard.lesson-ready .en{opacity:1;}
-/* =============================== */
 
 .context{color:#6b7280;font-size:16px;text-align:center;margin:8px 0 0;font-weight:600}
 
@@ -143,9 +142,10 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 
   <!-- 호환용 숨김 탭 -->
   <div class="hidden-tabs" aria-hidden="true">
-    <button id="dailyBtn"  class="tab-button active">Daily</button>
-    <button id="travelBtn" class="tab-button">Travel</button>
-    <button id="dramaBtn"  class="tab-button">K-Drama</button>
+    <button id="dailyBtn"   class="tab-button active">Daily</button>
+    <button id="travelBtn"  class="tab-button">Travel</button>
+    <button id="dramaBtn"   class="tab-button">K-Drama</button>
+    <button id="trendyBtn"  class="tab-button">Trendy Talk</button>
     <button id="savedBtnHidden" class="tab-button">Saved</button>
   </div>
 
@@ -212,6 +212,7 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 <script defer src="data/daily.js?v=20251017"></script>
 <script defer src="data/travel.js?v=20251017"></script>
 <script defer src="data/drama.js?v=20251017"></script>
+<script defer src="data/trendy.js?v=20251019"></script>
 <script defer src="data/dataindex.js?v=20251017"></script>
 
 <!-- APP -->
@@ -236,7 +237,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 <!-- Picker + Tips -->
 <script>
 (function(){
-  const CATS=["Daily","Travel","K-Drama"];
+  const CATS=["Daily","Travel","K-Drama","Trendy Talk"];
   const trigger=pickerTrigger, menu=pickerMenu, list=menu.querySelector('.picker-list');
   list.innerHTML='';
   CATS.forEach((c,i)=>{
@@ -247,7 +248,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
       const key=c.toLowerCase();
       if(key==='daily') dailyBtn.click();
       else if(key==='travel') travelBtn.click();
-      else dramaBtn.click();
+      else if(key==='k-drama' || key==='kdrama') dramaBtn.click();
+      else trendyBtn.click();
       changeTip();
     };
     list.appendChild(el);
@@ -270,9 +272,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
 <!-- Nav rewrite -->
 <script>
 (function(){
-  const btn={next:nextBtn,prev:prevBtn,daily:dailyBtn,travel:travelBtn,drama:dramaBtn};
-  const progEl=prog, badgeEl=badge; const tabs=[btn.daily,btn.travel,btn.drama].filter(Boolean);
-  const CAT_KEY={dailyBtn:'daily',travelBtn:'travel',dramaBtn:'drama'};
+  const btn={next:nextBtn,prev:prevBtn,daily:dailyBtn,travel:travelBtn,drama:dramaBtn,trendy:trendyBtn};
+  const progEl=prog, badgeEl=badge; const tabs=[btn.daily,btn.travel,btn.drama,btn.trendy].filter(Boolean);
+  const CAT_KEY={dailyBtn:'daily',travelBtn:'travel',dramaBtn:'drama',trendyBtn:'trendy'};
   const getActiveTab=()=> tabs.find(t=>t.classList.contains('active'))||btn.daily;
   const getActiveCatKey=()=> CAT_KEY[getActiveTab().id];
   function getProgress(){ const m=(progEl?.textContent||'').match(/(\d+)\s*\/\s*(\d+)/); if(!m) return {i:1,total:1}; return {i:parseInt(m[1],10),total:parseInt(m[2],10)};}
@@ -295,7 +297,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 (function(){
   function buildPath(){
     const active=document.querySelector('.tab-button.active')?.id || 'dailyBtn';
-    const catMap={dailyBtn:'daily',travelBtn:'travel',dramaBtn:'kdrama',savedBtn:'saved'};
+    const catMap={dailyBtn:'daily',travelBtn:'travel',dramaBtn:'kdrama',trendyBtn:'trendy',savedBtn:'saved'};
     const cat=catMap[active]||'daily';
     const sub=(badge?.textContent||'default').trim().replace(/\s+/g,'-').toLowerCase();
     const m=(prog?.textContent||'1 / 1').match(/(\d+)\s*\/\s*(\d+)/); const idx=m?parseInt(m[1],10):1;
@@ -304,7 +306,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   function sendPV(title){ try{ gtag('event','page_view',{page_title:title||document.title,page_location:location.href,page_path:buildPath(),send_to:'G-X1Q98DBKR5'});}catch(e){} }
   function sendSessionStart(){ try{ gtag('event','session_start',{send_to:'G-X1Q98DBKR5'});}catch(e){} }
   document.addEventListener('DOMContentLoaded',()=>{ setTimeout(()=>{ sendSessionStart(); sendPV('Sori'); },0); });
-  ['dailyBtn','travelBtn','dramaBtn','savedBtnHidden'].forEach(id=>{ const el=document.getElementById(id); el&&el.addEventListener('click',()=> setTimeout(()=>sendPV(`Sori - ${el.textContent.trim()}`),0)); });
+  ['dailyBtn','travelBtn','dramaBtn','trendyBtn','savedBtnHidden'].forEach(id=>{ const el=document.getElementById(id); el&&el.addEventListener('click',()=> setTimeout(()=>sendPV(`Sori - ${el.textContent.trim()}`),0)); });
   const subFilters=document.getElementById('subFilters');
   subFilters&&subFilters.addEventListener('click',e=>{ const chip=e.target.closest('.sub-chip'); if(!chip) return; setTimeout(()=>sendPV(`Sori - ${chip.textContent.trim()}`),0); });
   nextBtn?.addEventListener('click',()=> setTimeout(()=>sendPV('Sori - Next'),0),true);
@@ -314,7 +316,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 })();
 </script>
 
-<!-- TTS: API only, 0.6~1.0 -->
+<!-- TTS API 0.6~1.0 -->
 <script>
 window.addEventListener('load',()=>{
   const ENDPOINT="https://asia-northeast3-sori-tts.cloudfunctions.net/tts";
@@ -348,7 +350,7 @@ window.addEventListener('load',()=>{
 });
 </script>
 
-<!-- 뜻/로마자 적용 (디바운스 + 페이드인) -->
+<!-- 뜻/로마자 적용 디바운스 + 페이드인 -->
 <script>
 (function(){
   const quote = s => `"${String(s||'').replace(/^"+|"+$/g,'').trim()}"`;
@@ -356,9 +358,12 @@ window.addEventListener('load',()=>{
 
   function buildMap(){
     const DB=window.SORI_DATA||{};
-    const pools=[...(DB.daily||[]),...(DB.travel||[]),...(DB.drama||[])];
+    const pools=[...(DB.daily||[]),...(DB.travel||[]),...(DB.drama||[]),...(DB.trendy||[])];
     const m=new Map();
-    for(const o of pools){ const k=(o.k||'').trim(); if(k && !m.has(k)) m.set(k,{e:o.e||'',p:o.p||''}); }
+    for(const o of pools){
+      const k=(o.k||'').trim();
+      if(k && !m.has(k)) m.set(k,{e:o.e||'',p:o.p||''});
+    }
     return m;
   }
   function waitData(max=2000){
@@ -389,7 +394,6 @@ window.addEventListener('load',()=>{
       if(meaning) ctx.textContent=quote(meaning);
       if(roman)   en.textContent=roman;
       pr.style.display='none';
-      // 준비 완료 → 보이기
       showLines();
     }finally{
       setTimeout(()=>{ applying=false; },0);
@@ -397,26 +401,23 @@ window.addEventListener('load',()=>{
   }
 
   function scheduleApply(){
-    hideLines();                  // 먼저 숨기고
+    hideLines();
     clearTimeout(timer);
-    timer=setTimeout(applyOnce,110);  // 짧은 디바운스 후 1회만 적용
+    timer=setTimeout(applyOnce,110);
   }
 
   document.addEventListener('DOMContentLoaded', async ()=>{
-    hideLines();                  // 초기엔 숨김(깜빡임 방지)
+    hideLines();
     map=await waitData();
-    scheduleApply();              // 첫 보정
-    // #korean 변경만 감지
+    scheduleApply();
     const mo=new MutationObserver(()=>{ if(!applying) scheduleApply(); });
     korean && mo.observe(korean,{childList:true,characterData:true,subtree:true});
-    // 사용자 전환 시에도 1회 보정
-    ['nextBtn','prevBtn','dailyBtn','travelBtn','dramaBtn','savedBtnHidden','subFilters']
+    ['nextBtn','prevBtn','dailyBtn','travelBtn','dramaBtn','trendyBtn','savedBtnHidden','subFilters']
       .forEach(id=>{
         const el=(id==='subFilters')?document.getElementById(id):document.getElementById(id);
         el&&el.addEventListener('click', scheduleApply, true);
       });
 
-    // Speed 라벨 동기화
     const speedEl=speed, speedLbl=speedTxt;
     const sync=()=> speedLbl.textContent=(parseFloat(speedEl.value)).toFixed(2)+'x';
     speedEl.addEventListener('input', sync); sync();
