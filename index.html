@@ -164,7 +164,19 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 <section class="card" id="lessonCard">
   <div class="row-between">
     <div id="badge" class="badge">Love</div>
-    <button id="scrapBtn" class="icon-btn" title="Save this phrase" aria-label="Save">☆</button>
+
+    <div style="display:flex;gap:6px;align-items:center;">
+      <!-- Threads 공유 버튼(⭐ 왼쪽) -->
+      <button id="threadShareBtn" class="icon-btn" title="Share to Threads" aria-label="Share to Threads" type="button" style="font-size:18px;">
+        <!-- Threads 로고 SVG (모노) -->
+        <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 1.5C6.21 1.5 1.5 6.21 1.5 12S6.21 22.5 12 22.5 22.5 17.79 22.5 12 17.79 1.5 12 1.5Zm4.77 11.23c-.16 2.23-1.6 4.67-5.02 4.77-2.06.06-3.7-.92-3.88-2.47-.13-1.08.56-1.97 1.64-2.1.99-.12 1.78.56 1.9 1.46.07.56-.2 1.06-.64 1.36.37.33.95.47 1.54.45 1.63-.05 2.71-1.26 2.83-2.85-.47.21-.99.32-1.56.32-2.05 0-3.71-1.42-3.71-3.45 0-2.02 1.66-3.46 3.76-3.46 2.35 0 4.02 1.43 4.14 4.97ZM13.88 9c-.99 0-1.76.66-1.76 1.55 0 .89.76 1.55 1.76 1.55.99 0 1.76-.66 1.76-1.55 0-.89-.76-1.55-1.76-1.55Z"/>
+        </svg>
+      </button>
+
+      <!-- 기존 별표(저장) 버튼 -->
+      <button id="scrapBtn" class="icon-btn" title="Save this phrase" aria-label="Save">☆</button>
+    </div>
   </div>
 
   <div id="context" class="context">"I like you."</div>
@@ -317,6 +329,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   prevBtn?.addEventListener('click',()=> setTimeout(()=>sendPV('Sori - Prev'),0),true);
   document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible') setTimeout(()=>sendPV('Sori - resume'),0); });
   speed?.addEventListener('change',()=>{ gtag('event','change_speed',{value:speed.value,send_to:'G-X1Q98DBKR5'}); });
+  window.buildPath = buildPath; // 다른 스크립트에서 사용
 })();
 </script>
 
@@ -437,6 +450,25 @@ window.addEventListener('load',()=>{
     speedEl.addEventListener('input', sync); sync();
   });
 })();
+</script>
+
+<!-- Threads 원클릭 공유 스크립트 -->
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  const shareBtn = document.getElementById('threadShareBtn');
+  const koEl = document.getElementById('korean');
+  const ctxEl = document.getElementById('context');
+
+  function shareToThreads(){
+    const ko = (koEl?.textContent||'').trim();
+    const en = (ctxEl?.textContent||'').replace(/^"+|"+$/g,'').trim() || 'Learn Korean with Sori';
+    const text = encodeURIComponent(`${en}\n${ko}\nhttp://sori.io.kr/`);
+    window.open(`https://www.threads.net/intent/post?text=${text}`, '_blank', 'noopener');
+    try { gtag('event','share_threads',{send_to:'G-X1Q98DBKR5'}); } catch(e){}
+  }
+
+  shareBtn && shareBtn.addEventListener('click', shareToThreads);
+});
 </script>
 
 <div id="congrats" aria-live="polite"></div>
