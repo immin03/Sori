@@ -127,7 +127,7 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 .nav-btn .caret{font-size:15px;color:#7c3aed}
 .nav-btn:disabled{opacity:.5;cursor:not-allowed}
 
-/* Mobile safety: 버튼이 화면 밖으로 안 나가도록 래핑 */
+/* Mobile safety */
 @media (max-width: 480px){
   .navbar{flex-wrap:wrap}
   .nav-btn{flex:1 1 calc(50% - 8px); min-width:140px}
@@ -136,7 +136,6 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 </style>
 </head>
 <body>
-<!-- HEADER -->
 <header class="header">
   <div>
     <h1>Sori <span style="font-size:14px;color:#9ca3af;font-weight:600;">(beta)</span></h1>
@@ -145,7 +144,6 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
   <button id="loginBtn" class="top-btn primary">Login</button>
 </header>
 
-<!-- CATEGORY -->
 <section class="card">
   <div class="category-bar">
     <div class="picker-wrap">
@@ -155,7 +153,6 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
     <button id="savedBtn" class="saved-btn">★ Saved</button>
   </div>
 
-  <!-- 호환용 숨김 탭 -->
   <div class="hidden-tabs" aria-hidden="true">
     <button id="dailyBtn"  class="tab-button active">Daily</button>
     <button id="travelBtn" class="tab-button">Travel</button>
@@ -167,7 +164,7 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 </section>
 
 <!-- LESSON -->
-<section class="card">
+<section id="lessonCard" class="card">
   <div class="row-between">
     <div id="badge" class="badge">Greeting</div>
     <button id="scrapBtn" class="icon-btn" title="Save this phrase" aria-label="Save">☆</button>
@@ -198,7 +195,6 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
   <div class="tip-card"><div id="tipText" class="tip-text">Tip: Listen carefully and repeat multiple times. Consistency is key.</div></div>
 </section>
 
-<!-- NAV -->
 <section class="card">
   <div class="navbar">
     <button id="prevBtn" class="nav-btn"><span class="caret">◀</span> Previous</button>
@@ -251,7 +247,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 });
 </script>
 
-<!-- Picker logic + Tip -->
+<!-- Picker + Tips -->
 <script>
 (function(){
   const CATS=["Daily","Travel","K-Drama"];
@@ -335,18 +331,16 @@ document.addEventListener('DOMContentLoaded', ()=>{
 })();
 </script>
 
-<!-- TTS: API only (웹 TTS 차단), 속도 0.6~1.0 반영 -->
+<!-- TTS: API only, 0.6~1.0 -->
 <script>
 window.addEventListener('load',()=>{
   const ENDPOINT="https://asia-northeast3-sori-tts.cloudfunctions.net/tts";
   const audio=new Audio(); let lastUrl=null;
+  const speedEl=document.getElementById('speed');
 
-  function getRate(){
-    const v=parseFloat(document.getElementById('speed')?.value||'1');
-    return Math.max(0.6, Math.min(1.0, v));
-  }
+  function getRate(){ const v=parseFloat(speedEl?.value||'1'); return Math.max(0.6, Math.min(1.0, v)); }
   function setAudioRate(){ audio.playbackRate=getRate(); }
-  document.getElementById('speed')?.addEventListener('input', setAudioRate);
+  speedEl?.addEventListener('input', setAudioRate);
 
   async function playKo(text){
     try{ audio.pause(); }catch(_){}
@@ -356,49 +350,82 @@ window.addEventListener('load',()=>{
     const b=await r.blob(); const url=URL.createObjectURL(b); lastUrl=url; audio.src=url; setAudioRate(); await audio.play();
   }
 
-  // Listen 버튼을 "캡처 단계"에서 가로채 API만 실행 (웹 TTS 차단)
+  // Listen 버튼: API만 실행(웹 TTS 완전 차단), 카운트 1회
   document.getElementById('playBtn')?.addEventListener('click', async (e)=>{
     e.preventDefault(); e.stopImmediatePropagation();
     const ko=(document.getElementById('korean')?.textContent||'').trim();
     await playKo(ko);
-
-    // 연습 점 1회 증가
     const cntEl=document.getElementById('repCount');
     let n=parseInt(cntEl.textContent||'0',10); if(n<5){ n++; cntEl.textContent=String(n); }
     const dots=[...document.querySelectorAll('.rep-dot')];
     dots.forEach((d,i)=> d.classList.toggle('completed', i < n));
   }, true);
 
-  // 혹시 외부에서 speechSynthesis를 써도 무시 (완전 차단)
-  const nullSpeak = function(){ /* no-op to avoid double */ };
+  // 외부 speechSynthesis 무력화
   if('speechSynthesis' in window){
-    try{ const ss = window.speechSynthesis; ss.speak = nullSpeak; ss.cancel = nullSpeak; }catch(_){}
+    try{ window.speechSynthesis.speak = ()=>{}; window.speechSynthesis.cancel = ()=>{}; }catch(_){}
   }
 });
 </script>
 
-<!-- Layout fix + robust 적용 (뜻/로마자 강제) -->
+<!-- MEANING/ROMAN ENFORCER: 어떤 상황에서도 강제 유지 -->
 <script>
 (function(){
   const quote = s => `"${String(s||'').replace(/^"+|"+$/g,'').trim()}"`;
-  let lastKo='';
+  let map = null;           // ko -> {e,p}
+  let lastKo = '';
 
-  // SORI_DATA 준비될 때까지 기다렸다가 맵 구성
   function buildMap(){
     const DB = window.SORI_DATA||{};
     const pools=[...(DB.daily||[]), ...(DB.travel||[]), ...(DB.drama||[])];
-    const map=new Map();
-    pools.forEach(o=>{ const k=(o.k||'').trim(); if(k && !map.has(k)) map.set(k, {e:o.e||'', p:o.p||''}); });
-    return map;
+    const m=new Map();
+    pools.forEach(o=>{
+      const k=(o.k||'').trim();
+      if(!k) return;
+      // 가장 정보가 풍부한 데이터 우선
+      if(!m.has(k)) m.set(k, {e:o.e||'', p:o.p||''});
+    });
+    return m;
   }
-  function waitForData(max=60){ // 최대 약 3초
+  function waitForData(max=80){ // ~4초
     return new Promise(res=>{
-      let n=0; (function tick(){
-        if(window.SORI_DATA) return res(buildMap());
-        if(++n>max) return res(buildMap());
+      let n=0;(function tick(){
+        if(window.SORI_DATA){ res(buildMap()); return; }
+        if(++n>max){ res(buildMap()); return; }
         setTimeout(tick,50);
       })();
     });
+  }
+
+  function enforce(){
+    const koEl=korean, enEl=english, prEl=pronunciation, ctxEl=context;
+    if(!koEl||!enEl||!prEl||!ctxEl) return;
+
+    const ko=(koEl.textContent||'').trim();
+    if(!ko) return;
+
+    // 데이터에서 검색
+    const hit = map?.get(ko) || null;
+    const meaning = hit?.e || (ctxEl.textContent||'').replace(/(^"+|"+$)/g,'').trim();
+    const roman   = hit?.p || (prEl.textContent||'').trim() || (enEl.textContent||'').trim();
+
+    // 강제 오버라이드
+    if(meaning) ctxEl.textContent = quote(meaning);
+    if(roman)   enEl.textContent  = roman;
+
+    prEl.style.display='none';
+  }
+
+  function enforceFor(ms=1200){ // 지정 시간 동안 지속 감시 + 강제 적용
+    const start=performance.now();
+    const obs = new MutationObserver(()=> enforce());
+    obs.observe(document.getElementById('lessonCard'), {childList:true,subtree:true,characterData:true});
+
+    (function loop(){
+      enforce();
+      if(performance.now()-start < ms){ requestAnimationFrame(loop); }
+      else { obs.disconnect(); }
+    })();
   }
 
   function resetDots(){
@@ -406,36 +433,26 @@ window.addEventListener('load',()=>{
     const cnt=document.getElementById('repCount'); if(cnt) cnt.textContent='0';
   }
 
-  function enforce(map){
-    const koEl=korean, enEl=english, prEl=pronunciation, ctxEl=context;
-    if(!koEl||!enEl||!prEl||!ctxEl) return;
-    const ko=(koEl.textContent||'').trim(); if(!ko) return;
-
-    const hit=map.get(ko);
-    const meaning=(hit?.e || (ctxEl.textContent||'').replace(/(^"+|"+$)/g,'').trim());
-    const roman  =(hit?.p || (prEl.textContent||'').trim() || (enEl.textContent||'').trim());
-    if(meaning) ctxEl.textContent=quote(meaning);
-    if(roman)   enEl.textContent=roman;
-    prEl.style.display='none';
-  }
-
   document.addEventListener('DOMContentLoaded', async ()=>{
-    const map = await waitForData();
-    // 첫 진입 다중 프레임 보정
-    let i=0; (function many(){ enforce(map); if(++i<24) setTimeout(many,16); })();
+    map = await waitForData();
 
-    // 문장 변경 감지
+    // 첫 진입: 1.2초 동안 지속 강제 (앱이 덮어써도 다시 덮어씀)
+    enforceFor(1200);
+
+    // 문장이 바뀌면 다시 강제 + 점 초기화
     const mo=new MutationObserver(()=>{
       const ko=(korean?.textContent||'').trim();
-      if(ko && ko!==lastKo){ lastKo=ko; enforce(map); resetDots(); }
+      if(ko && ko!==lastKo){ lastKo=ko; enforceFor(800); resetDots(); }
     });
-    if(korean) mo.observe(korean,{childList:true,characterData:true,subtree:true});
+    mo.observe(korean,{childList:true,characterData:true,subtree:true});
 
-    // 탭/네비 클릭 후에도 재강제
-    ['nextBtn','prevBtn','dailyBtn','travelBtn','dramaBtn','savedBtnHidden'].forEach(id=>{
-      const el=document.getElementById(id);
-      el && el.addEventListener('click', ()=> setTimeout(()=>enforce(map), 0), true);
-    });
+    // 탭/네비 이동, 서브칩 클릭 후에도 재강제
+    const reapply=()=> setTimeout(()=>enforceFor(800), 0);
+    ['nextBtn','prevBtn','dailyBtn','travelBtn','dramaBtn','savedBtnHidden','subFilters']
+      .forEach(id=>{
+        const el=(id==='subFilters')?document.getElementById('subFilters') : document.getElementById(id);
+        el && el.addEventListener('click', reapply, true);
+      });
 
     // Speed 라벨 동기화
     const speedEl=speed, speedLbl=speedTxt;
