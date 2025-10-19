@@ -1,9 +1,9 @@
-/* js/app.js — 2025.10 Stable + Subfilters (fixed, add trendy, Love default) */
+/* js/app.js — 2025.10 Stable + Subfilters (All default, reset on change, congrats EN) */
 (function () {
   // ---------- 로컬 상태 ----------
   let currentCategory = "daily";
   let currentIndex = 0;
-  let currentSub = null;
+  let currentSub = null;                 // All 기본: null이면 All로 처리
   let phrases = [];
   let savedList = [];
 
@@ -13,7 +13,7 @@
     dailyBtn: $("dailyBtn"),
     travelBtn: $("travelBtn"),
     dramaBtn: $("dramaBtn"),
-    trendyBtn: $("trendyBtn"),                  // ★ 유지: Trendy 탭
+    trendyBtn: $("trendyBtn"),
     savedBtn: $("savedBtn"),
     scrapBtn: $("scrapBtn"),
     badge: $("badge"),
@@ -38,16 +38,13 @@
   const getAuthUser = () =>
     (window.firebase && firebase.auth && firebase.auth().currentUser) || null;
 
-  // SoriDataIndex(정규화) 우선 → 없으면 원본 SORI_DATA
+  // 정규화된 인덱스 우선 사용
   const getAllData = () => window.SoriDataIndex || window.SORI_DATA || {};
 
-  // 소문자+트림
   const norm = function(v){ return (v == null ? "" : String(v)).trim().toLowerCase(); };
 
-  // ---------- 서브 목록/아이콘/기본 서브 (데이터 우선, 폴백 제공) ----------
-  // 데이터에서 내려온 서브(우선순위 반영: dataindex가 Love를 맨 앞에 둠)
+  // ---------- 서브 목록/아이콘/기본 서브 ----------
   const SUBS = window.SoriSubCategories || {
-    // 폴백: Love를 daily 최우선으로
     daily:  ['Love','Greeting','Cafe','Restaurant','Shopping','Health','Social','Work','Tech','Exercise'],
     travel: ['Airport','Hotel','Transport','Emergency','Convenience','Street Food','Market','Duty Free','Department','Food Court','Payment','Delivery','Sightseeing'],
     trendy: ['Reaction','Emotion','Daily Talk','Online','Support & Life','Fun']
@@ -60,10 +57,11 @@
     Convenience:'🏪', 'Street Food':'🌭', Market:'🧺', 'Duty Free':'🛂', Department:'🏬',
     'Food Court':'🥢', Payment:'💳', Delivery:'📦', Sightseeing:'📍'
   };
-  // dataindex.js가 내려주는 기본 서브(없으면 폴백으로 첫 항목 사용)
+
   const DEFAULTS = (window.SoriDefaults && window.SoriDefaults.defaultSubByCategory) || {};
   function defaultSubFor(cat){
-    return DEFAULTS[cat] || (SUBS[cat] && SUBS[cat][0]) || null;
+    // All을 기본으로 보여주고 싶으니 null 반환
+    return null;
   }
 
   // ---------- 데이터 로딩/필터 ----------
@@ -80,17 +78,15 @@
       ? raw.slice()
       : (raw && Array.isArray(raw.data)) ? raw.data.slice() : [];
 
-    // ★ currentSub이 비어있다면, 카테고리별 기본 서브를 적용
-    if (!currentSub && (currentCategory !== "drama" && currentCategory !== "saved")) {
-      currentSub = defaultSubFor(currentCategory);
-    }
-
+    // currentSub이 없으면 All 처리
     if (!currentSub || currentSub === "All") {
       phrases = base;
     } else {
       const want = norm(currentSub);
       phrases = base.filter(function(p){ return norm(p.sub || p.t) === want; });
     }
+
+    // 진행도 안전 보정
     currentIndex = Math.min(currentIndex, Math.max(0, phrases.length - 1));
   }
 
@@ -122,7 +118,6 @@
 
   // ---------- 서브필터 UI ----------
   function rebuildSubFilters() {
-    // saved/drama는 서브필터 비표시 (요구사항 유지)
     if (currentCategory === "saved" || currentCategory === "drama") {
       els.subFilters.style.display = "none";
       els.subFilters.innerHTML = "";
@@ -139,8 +134,7 @@
     const chips = ["All"].concat(list);
     var html = chips.map(function(lbl){
       var value = (lbl === "All") ? "" : lbl;
-      // 기본 서브 계산 (currentSub가 없으면 여기서도 보정)
-      var effectiveSub = currentSub || defaultSubFor(currentCategory) || null;
+      var effectiveSub = currentSub;               // null이면 All 활성
       var active = value ? (norm(value) === norm(effectiveSub)) : (!effectiveSub);
       var icon = (lbl !== "All" && ICONS[lbl]) ? (ICONS[lbl] + " ") : "";
       return '<div class="sub-chip ' + (active?'active':'') + '" data-sub="'+ value +'">'+ icon + lbl +'</div>';
@@ -158,13 +152,12 @@
 
   function handleTab(tab) {
     currentCategory = tab;
-    currentIndex = 0;
-
-    // drama/saved는 서브 개념 없음 → null, 그 외는 기본 서브로
+    currentIndex = 0;              // 카테고리 전환 시 1부터
+    // drama/saved는 서브 없음, 그 외는 All 기본
     if (tab === "drama" || tab === "saved") {
       currentSub = null;
     } else {
-      currentSub = defaultSubFor(tab);    // ★ Daily 진입시 Love가 자동 설정됨
+      currentSub = null;           // All
     }
 
     rebuildSubFilters();
@@ -193,12 +186,9 @@
       return;
     }
     var p = phrases[currentIndex];
-    // 본문
     els.korean.textContent = p.k || "";
-    // 의미는 상단 index.html의 디바운서가 context로 보정하므로 여기선 en을 "따옴표" 포함 의미로 표기
     els.english.textContent = p.e ? '"' + p.e + '"' : "";
     els.pronunciation.textContent = p.p || "";
-    // 배지는 데이터의 t(서브명: Love/Greeting 등)를 그대로 사용
     els.badge.textContent = p.t || (p.sub || "");
     els.context.textContent = p.c || "";
     els.prog.textContent = (currentIndex + 1) + " / " + phrases.length;
@@ -228,7 +218,7 @@
 
   function findPhraseById(id) {
     const all = getAllData();
-    const cats = ["daily","travel","drama","trendy"];   // ★ trendy 검색 포함
+    const cats = ["daily","travel","drama","trendy"];
     for (var i=0;i<cats.length;i++){
       var cat = cats[i];
       var list = all[cat] || [];
@@ -296,6 +286,8 @@
       els.repCount.textContent = String(n);
       if (els.repDots[n - 1]) els.repDots[n - 1].classList.add("completed");
       if (n === 5 && els.congrats) {
+        // 영어로 가벼운 칭찬 문구
+        els.congrats.textContent = "Nice work!";
         els.congrats.classList.add("show");
         setTimeout(function(){ els.congrats.classList.remove("show"); }, 1800);
       }
@@ -330,7 +322,7 @@
     els.dailyBtn  && els.dailyBtn .addEventListener("click", function(){ handleTab("daily");  });
     els.travelBtn && els.travelBtn.addEventListener("click", function(){ handleTab("travel"); });
     els.dramaBtn  && els.dramaBtn .addEventListener("click", function(){ handleTab("drama");  });
-    els.trendyBtn && els.trendyBtn.addEventListener("click", function(){ handleTab("trendy"); }); // ★ 유지
+    els.trendyBtn && els.trendyBtn.addEventListener("click", function(){ handleTab("trendy"); });
     els.savedBtn  && els.savedBtn .addEventListener("click", function(){ handleTab("saved");  });
 
     // 서브필터 델리게이션
@@ -338,7 +330,8 @@
       var chip = e.target.closest && e.target.closest(".sub-chip");
       if (!chip) return;
       var v = chip.getAttribute("data-sub") || "";
-      currentSub = v || null;
+      currentSub = v || null;     // All이면 null
+      currentIndex = 0;           // 서브 변경 시 1부터
       rebuildSubFilters();
       loadData();
     });
@@ -376,9 +369,9 @@
       if (local) savedList = JSON.parse(local) || [];
     } catch(_){}
 
-    // 첫 진입: Daily일 때 기본 서브를 Love로 강제 세팅 (데이터/폴백 모두 지원)
+    // 첫 진입: Daily 탭 + All 서브가 기본
     currentCategory = "daily";
-    currentSub = defaultSubFor("daily");   // ★ 여기서 Love로 셋업
+    currentSub = null;            // All
 
     bindEvents();
     rebuildSubFilters();
