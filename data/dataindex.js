@@ -9,7 +9,7 @@
     if (!x) return [];
     if (isArr(x)) return x.slice();
     if (x && isArr(x.data)) return x.data.slice();
-    // 구(舊) 형식: { base:[...], plus:[...] }
+    // 구 형식: { base:[...], plus:[...] }
     var out = [];
     if (x && isArr(x.base)) out = out.concat(x.base);
     if (x && isArr(x.plus)) out = out.concat(x.plus);
@@ -49,40 +49,50 @@
 
   // ---- source read (새 구조: window.SORI_DATA.<cat>) ----
   var SD = window.SORI_DATA || {};
-  var dailySrc  = asArray(SD.daily);
-  var travelSrc = asArray(SD.travel);
-  var dramaSrc  = asArray(SD.drama);
+  var dailySrc   = asArray(SD.daily);
+  var travelSrc  = asArray(SD.travel);
+  var dramaSrc   = asArray(SD.drama);
+  var trendySrc  = asArray(SD.trendy);   // 신규
 
   // ---- normalize ----
-  var daily  = norm(dailySrc,  "daily");
-  var travel = norm(travelSrc, "travel");
-  var drama  = norm(dramaSrc,  "drama");
+  var daily   = norm(dailySrc,  "daily");
+  var travel  = norm(travelSrc, "travel");
+  var drama   = norm(dramaSrc,  "drama");
+  var trendy  = norm(trendySrc, "trendy"); // 신규
 
   // ---- publish main index ----
-  window.SoriDataIndex = { daily: daily, travel: travel, drama: drama };
+  window.SoriDataIndex = {
+    daily:  daily,
+    travel: travel,
+    drama:  drama,
+    trendy: trendy     // 신규
+  };
 
-  // ---- subcategory & icon defaults (app.js가 읽는 이름) ----
+  // ---- subcategory 목록 제공
   if (!window.SoriSubCategories) {
     window.SoriSubCategories = {
       daily:  uniqTruthies(daily .map(function(x){ return x.sub; })),
       travel: uniqTruthies(travel.map(function(x){ return x.sub; })),
-      drama:  []
+      drama:  uniqTruthies(drama .map(function(x){ return x.sub; })),
+      trendy: uniqTruthies(trendy.map(function(x){ return x.sub; })) // 신규
     };
   }
+
+  // ---- 아이콘은 별도 지정 없음
   if (!window.SoriSubIcons) {
     window.SoriSubIcons = {
-      // Daily
+      // 기존 아이콘 세트 유지 필요 시 여기에만 남겨둠
       Greeting:"👋", Cafe:"☕", Restaurant:"🍽️", Shopping:"🛍️", Health:"💊",
       Social:"👥", Work:"💼", Tech:"🖥️", Exercise:"🏃",
-      // Travel
       Airport:"✈️", Hotel:"🏨", Transport:"🚇", Emergency:"🆘", Convenience:"🏪",
       "Street Food":"🌭", Market:"🧺", "Duty Free":"🛂", Department:"🏬",
       "Food Court":"🥢", Payment:"💳", Delivery:"📦", Sightseeing:"📍"
+      // trendy는 아이콘 미지정
     };
   }
 
   // ---- log ----
   console.log("[SoriDataIndex ready]", {
-    daily: daily.length, travel: travel.length, drama: drama.length
+    daily: daily.length, travel: travel.length, drama: drama.length, trendy: trendy.length
   });
 })();
