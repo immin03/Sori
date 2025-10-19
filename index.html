@@ -150,10 +150,11 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
   </div>
 
   <div class="hidden-tabs" aria-hidden="true">
-    <button id="dailyBtn"   class="tab-button active">Daily</button>
-    <button id="travelBtn"  class="tab-button">Travel</button>
-    <button id="trendyBtn"  class="tab-button">Trendy Talk</button>
-    <button id="dramaBtn"   class="tab-button">K-Drama</button>    
+    <button id="dailyBtn"    class="tab-button active">Daily</button>
+    <button id="travelBtn"   class="tab-button">Travel</button>
+    <button id="trendyBtn"   class="tab-button">Trendy Talk</button>
+    <button id="dramaBtn"    class="tab-button">K-Drama</button>
+    <button id="numbersBtn"  class="tab-button">Numbers</button>
     <button id="savedBtnHidden" class="tab-button">Saved</button>
   </div>
 
@@ -213,12 +214,15 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
   </div>
 </div>
 
+<!-- data sources -->
 <script defer src="data/daily.js?v=20251017"></script>
 <script defer src="data/travel.js?v=20251017"></script>
 <script defer src="data/drama.js?v=20251017"></script>
 <script defer src="data/trendy.js?v=20251019"></script>
+<script defer src="data/numbers.js?v=20251019"></script>
 <script defer src="data/dataindex.js?v=20251019"></script>
 
+<!-- app scripts -->
 <script defer src="js/state.js?v=20251017"></script>
 <script defer src="js/tts.js?v=20251017"></script>
 <script defer src="js/app.js?v=20251017"></script>
@@ -238,7 +242,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
 <script>
 (function(){
-  const CATS=["Daily","Travel","Trendy Talk","K-Drama"];
+  const CATS=["Daily","Travel","Trendy Talk","K-Drama","Numbers"];
   const trigger=pickerTrigger, menu=pickerMenu, list=menu.querySelector('.picker-list');
   list.innerHTML='';
   CATS.forEach((c,i)=>{
@@ -250,6 +254,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
       if(key==='daily') dailyBtn.click();
       else if(key==='travel') travelBtn.click();
       else if(key==='k-drama' || key==='kdrama') dramaBtn.click();
+      else if(key==='numbers') numbersBtn.click();
       else trendyBtn.click();
       changeTip();
     };
@@ -272,9 +277,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
 <script>
 (function(){
-  const btn={next:nextBtn,prev:prevBtn,daily:dailyBtn,travel:travelBtn,drama:dramaBtn,trendy:trendyBtn};
-  const progEl=prog, badgeEl=badge; const tabs=[btn.daily,btn.travel,btn.trendy,btn.drama].filter(Boolean);
-  const CAT_KEY={dailyBtn:'daily',travelBtn:'travel',dramaBtn:'drama',trendyBtn:'trendy'};
+  const btn={next:nextBtn,prev:prevBtn,daily:dailyBtn,travel:travelBtn,drama:dramaBtn,trendy:trendyBtn,numbers:numbersBtn};
+  const progEl=prog, badgeEl=badge; const tabs=[btn.daily,btn.travel,btn.trendy,btn.drama,btn.numbers].filter(Boolean);
+  const CAT_KEY={dailyBtn:'daily',travelBtn:'travel',dramaBtn:'drama',trendyBtn:'trendy',numbersBtn:'numbers'};
   const getActiveTab=()=> tabs.find(t=>t.classList.contains('active'))||btn.daily;
   const getActiveCatKey=()=> CAT_KEY[getActiveTab().id];
   function getProgress(){ const m=(progEl?.textContent||'').match(/(\d+)\s*\/\s*(\d+)/); if(!m) return {i:1,total:1}; return {i:parseInt(m[1],10),total:parseInt(m[2],10)};}
@@ -296,7 +301,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 (function(){
   function buildPath(){
     const active=document.querySelector('.tab-button.active')?.id || 'dailyBtn';
-    const catMap={dailyBtn:'daily',travelBtn:'travel',dramaBtn:'kdrama',trendyBtn:'trendy',savedBtn:'saved'};
+    const catMap={dailyBtn:'daily',travelBtn:'travel',dramaBtn:'kdrama',trendyBtn:'trendy',numbersBtn:'numbers',savedBtn:'saved'};
     const cat=catMap[active]||'daily';
     const sub=(badge?.textContent||'default').trim().replace(/\s+/g,'-').toLowerCase();
     const m=(prog?.textContent||'1 / 1').match(/(\d+)\s*\/\s*(\d+)/); const idx=m?parseInt(m[1],10):1;
@@ -305,7 +310,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   function sendPV(title){ try{ gtag('event','page_view',{page_title:title||document.title,page_location:location.href,page_path:buildPath(),send_to:'G-X1Q98DBKR5'});}catch(e){} }
   function sendSessionStart(){ try{ gtag('event','session_start',{send_to:'G-X1Q98DBKR5'});}catch(e){} }
   document.addEventListener('DOMContentLoaded',()=>{ setTimeout(()=>{ sendSessionStart(); sendPV('Sori'); },0); });
-  ['dailyBtn','travelBtn','dramaBtn','trendyBtn','savedBtnHidden'].forEach(id=>{ const el=document.getElementById(id); el&&el.addEventListener('click',()=> setTimeout(()=>sendPV(`Sori - ${el.textContent.trim()}`),0)); });
+  ['dailyBtn','travelBtn','dramaBtn','trendyBtn','numbersBtn','savedBtnHidden'].forEach(id=>{ const el=document.getElementById(id); el&&el.addEventListener('click',()=> setTimeout(()=>sendPV(`Sori - ${el.textContent.trim()}`),0)); });
   const subFilters=document.getElementById('subFilters');
   subFilters&&subFilters.addEventListener('click',e=>{ const chip=e.target.closest('.sub-chip'); if(!chip) return; setTimeout(()=>sendPV(`Sori - ${chip.textContent.trim()}`),0); });
   nextBtn?.addEventListener('click',()=> setTimeout(()=>sendPV('Sori - Next'),0),true);
@@ -367,7 +372,7 @@ window.addEventListener('load',()=>{
 
   function buildMap(){
     const DB=window.SORI_DATA||{};
-    const pools=[...(DB.daily||[]),...(DB.travel||[]),...(DB.drama||[]),...(DB.trendy||[])];
+    const pools=[...(DB.daily||[]),...(DB.travel||[]),...(DB.drama||[]),...(DB.trendy||[]),...(DB.numbers||[])];
     const m=new Map();
     for(const o of pools){
       const k=(o.k||'').trim();
@@ -421,7 +426,7 @@ window.addEventListener('load',()=>{
     scheduleApply();
     const mo=new MutationObserver(()=>{ if(!applying) scheduleApply(); });
     korean && mo.observe(korean,{childList:true,characterData:true,subtree:true});
-    ['nextBtn','prevBtn','dailyBtn','travelBtn','dramaBtn','trendyBtn','savedBtnHidden','subFilters']
+    ['nextBtn','prevBtn','dailyBtn','travelBtn','dramaBtn','trendyBtn','numbersBtn','savedBtnHidden','subFilters']
       .forEach(id=>{
         const el=(id==='subFilters')?document.getElementById(id):document.getElementById(id);
         el&&el.addEventListener('click', scheduleApply, true);
