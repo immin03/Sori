@@ -129,6 +129,35 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
   z-index: 9999;
 }
 #congrats.show { opacity: 1; }
+
+/* ====== 공유 메뉴 추가 ====== */
+.share-wrap { position: relative; }
+.share-menu{
+  background:#fff;
+  border:1px solid #e5e7eb;
+  position:absolute;
+  top:36px;
+  right:12px;
+  z-index:100;
+  padding:10px;
+  border-radius:12px;
+  display:none;
+  box-shadow:0 6px 20px rgba(0,0,0,.1);
+}
+.share-menu button{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:14px;
+  font-weight:600;
+  padding:6px 10px;
+  border:none;
+  background:none;
+  color:#4b5563;
+  cursor:pointer;
+  width:100%;
+}
+.share-menu button:hover{ background:#f3f4f6; border-radius:8px; }
 </style>
 </head>
 <body>
@@ -162,9 +191,20 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 </section>
 
 <section class="card" id="lessonCard">
-  <div class="row-between">
+  <div class="row-between share-wrap">
     <div id="badge" class="badge">Love</div>
-    <button id="scrapBtn" class="icon-btn" title="Save this phrase" aria-label="Save">☆</button>
+    <div style="display:flex;gap:6px;align-items:center;">
+      <!-- 공유 버튼: 별표 왼쪽 -->
+      <button id="shareBtn" class="icon-btn" title="Share this phrase" aria-label="Share">🔗</button>
+      <!-- 기존 별표 버튼 -->
+      <button id="scrapBtn" class="icon-btn" title="Save this phrase" aria-label="Save">☆</button>
+    </div>
+    <!-- 공유 메뉴 -->
+    <div id="shareMenu" class="share-menu" role="menu" aria-hidden="true">
+      <button type="button" onclick="shareToThreads()">🧵 Threads 로 공유</button>
+      <button type="button" onclick="shareToInstagram()">📷 Instagram Story</button>
+      <button type="button" onclick="copyLink()">🔗 링크 복사</button>
+    </div>
   </div>
 
   <div id="context" class="context">"I like you."</div>
@@ -317,6 +357,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
   prevBtn?.addEventListener('click',()=> setTimeout(()=>sendPV('Sori - Prev'),0),true);
   document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible') setTimeout(()=>sendPV('Sori - resume'),0); });
   speed?.addEventListener('change',()=>{ gtag('event','change_speed',{value:speed.value,send_to:'G-X1Q98DBKR5'}); });
+  // buildPath를 전역에서 쓰게 노출
+  window.buildPath = buildPath;
 })();
 </script>
 
@@ -438,6 +480,105 @@ window.addEventListener('load',()=>{
   });
 })();
 </script>
+
+<!-- ===== 공유 기능 스크립트 추가 ===== -->
+<script>
+(function(){
+  const shareBtn = document.getElementById('shareBtn');
+  const shareMenu = document.getElementById('shareMenu');
+  const koEl = document.getElementById('korean');
+  const ctxEl = document.getElementById('context');
+  const roEl = document.getElementById('english');   // en 엘리먼트에 로마자 표기가 들어가도록 이미 처리됨
+  const wrap = document.querySelector('#lessonCard .share-wrap');
+
+  function toggleShareMenu(force){
+    const show = typeof force === 'boolean' ? force : (shareMenu.style.display !== 'block');
+    shareMenu.style.display = show ? 'block' : 'none';
+    shareMenu.setAttribute('aria-hidden', show ? 'false' : 'true');
+  }
+
+  function onDocClick(e){
+    if(!wrap) return;
+    if(!wrap.contains(e.target)){
+      toggleShareMenu(false);
+    }
+  }
+
+  window.shareToThreads = function(){
+    try {
+      const ko = (koEl?.textContent||'').trim();
+      const en = (ctxEl?.textContent||'').replace(/^"+|"+$/g,'').trim() || 'Learn Korean with Sori';
+      const text = encodeURIComponent(`${en}\n${ko}\nhttps://sori.page`);
+      window.open(`https://www.threads.net/intent/post?text=${text}`, '_blank');
+      toggleShareMenu(false);
+      try { gtag('event','share_threads',{send_to:'G-X1Q98DBKR5'}); } catch(e){}
+    } catch(err) {
+      alert('공유에 실패했습니다.');
+    }
+  };
+
+  window.shareToInstagram = function(){
+    alert('Instagram Story 공유는 앱 환경에서 최적으로 동작합니다. (웹에서는 이미지 캡처 기능을 곧 추가 예정)');
+    toggleShareMenu(false);
+    try { gtag('event','share_instagram_attempt',{send_to:'G-X1Q98DBKR5'}); } catch(e){}
+  };
+
+  window.copyLink = function(){
+    try {
+      const path = (typeof buildPath === 'function') ? buildPath() : location.pathname;
+      const url = location.origin + path;
+      navigator.clipboard.writeText(url);
+      const toast=document.getElementById('congrats');
+      if(toast){
+        toast.textContent='링크가 복사되었습니다';
+        toast.classList.add('show');
+        setTimeout(()=>toast.classList.remove('show'),1600);
+      } else {
+        alert('링크가 복사되었습니다');
+      }
+      toggleShareMenu(false);
+      try { gtag('event','share_copylink',{send_to:'G-X1Q98DBKR5'}); } catch(e){}
+    } catch(err){
+      alert('복사에 실패했습니다.');
+    }
+  };
+
+  function syncShareCard(){
+    const ko = (koEl?.textContent||'').trim();
+    const en = (ctxEl?.textContent||'').replace(/^"+|"+$/g,'').trim();
+    const ro = (roEl?.textContent||'').trim();
+    const sKo = document.getElementById('shareKo');
+    const sEn = document.getElementById('shareEn');
+    const sRo = document.getElementById('shareRo');
+    if(sKo) sKo.textContent = ko;
+    if(sEn) sEn.textContent = en;
+    if(sRo) sRo.textContent = ro;
+  }
+
+  shareBtn?.addEventListener('click', function(e){
+    e.stopPropagation();
+    toggleShareMenu();
+  });
+
+  document.addEventListener('click', onDocClick);
+
+  ['korean','context','english'].forEach(id=>{
+    const node=document.getElementById(id);
+    if(!node) return;
+    const mo = new MutationObserver(syncShareCard);
+    mo.observe(node,{childList:true,characterData:true,subtree:true});
+  });
+  syncShareCard();
+})();
+</script>
+
+<!-- 공유용 템플릿 (숨김) -->
+<div id="shareCard" style="display:none; text-align:center; background:#ffffff; padding:30px; border-radius:16px;">
+  <p id="shareKo" style="font-size:28px; font-weight:800; margin:0 0 8px;"></p>
+  <p id="shareEn" style="font-size:16px; color:#6b7280; margin:0 0 4px;"></p>
+  <p id="shareRo" style="font-size:14px; color:#9ca3af; margin:0;"></p>
+  <footer style="margin-top:20px; font-size:12px; color:#a1a1aa;">Learn Korean naturally with Sori</footer>
+</div>
 
 <div id="congrats" aria-live="polite"></div>
 </body>
