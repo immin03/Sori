@@ -114,8 +114,8 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 .gbtn:hover{border-color:#d8dbe2; box-shadow:0 2px 8px rgba(124,58,237,.15)}
 .glogo{width:18px;height:18px;display:inline-block}
 
-/* Modern nav bar - 더 큼직하게 */
-.navbar{display:flex;align-items:center;justify-content:space-between;gap:14px}
+/* Modern nav bar */
+.navbar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:nowrap}
 .nav-center{min-width:130px;text-align:center;font-size:13px;color:#6b7280;font-weight:700}
 .nav-btn{
   display:inline-flex;align-items:center;justify-content:center;gap:10px;
@@ -126,6 +126,13 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 .nav-btn:hover{border-color:#d8dbe2}
 .nav-btn .caret{font-size:15px;color:#7c3aed}
 .nav-btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* Mobile safety: 버튼이 화면 밖으로 안 나가도록 래핑 */
+@media (max-width: 480px){
+  .navbar{flex-wrap:wrap}
+  .nav-btn{flex:1 1 calc(50% - 8px); min-width:140px}
+  .nav-center{order:3;width:100%;margin-top:8px}
+}
 </style>
 </head>
 <body>
@@ -184,7 +191,7 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
   <button id="playBtn" class="big">Listen & Repeat</button>
   <div class="row">
     <label>Speed:</label>
-    <input id="speed" type="range" min="0.3" max="1.0" step="0.05" value="0.80"/>
+    <input id="speed" type="range" min="0.6" max="1.0" step="0.05" value="0.80"/>
     <span id="speedTxt" class="speed-val">0.80x</span>
   </div>
 
@@ -328,67 +335,70 @@ document.addEventListener('DOMContentLoaded', ()=>{
 })();
 </script>
 
-<!-- TTS patch (속도 반영) -->
+<!-- TTS: API only (웹 TTS 차단), 속도 0.6~1.0 반영 -->
 <script>
 window.addEventListener('load',()=>{
   const ENDPOINT="https://asia-northeast3-sori-tts.cloudfunctions.net/tts";
-  const original=speechSynthesis.speak.bind(speechSynthesis);
-  const shared=new Audio(); let last=null;
+  const audio=new Audio(); let lastUrl=null;
 
-  const getRate=()=>{ const v=parseFloat(document.getElementById('speed')?.value||'1'); return Math.max(0.3,Math.min(1.0,v)); };
-  function setPlaybackRate(){ shared.playbackRate=getRate(); }
-  document.getElementById('speed')?.addEventListener('input', setPlaybackRate);
-
-  async function viaApi(u){
-    try{ shared.pause(); }catch(_){}
-    if(last){ try{ URL.revokeObjectURL(last); }catch(_){ } last=null; }
-    const text=(u.text||'').trim(); if(!text) throw new Error('empty');
-    const r=await fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text})});
-    const b=await r.blob(); const url=URL.createObjectURL(b); last=url; shared.src=url; setPlaybackRate(); await shared.play();
+  function getRate(){
+    const v=parseFloat(document.getElementById('speed')?.value||'1');
+    return Math.max(0.6, Math.min(1.0, v));
   }
-  speechSynthesis.speak=function(u){ if(/[가-힣]/.test((u.text||'').trim())) viaApi(u).catch(()=>original(u)); else original(u); };
+  function setAudioRate(){ audio.playbackRate=getRate(); }
+  document.getElementById('speed')?.addEventListener('input', setAudioRate);
+
+  async function playKo(text){
+    try{ audio.pause(); }catch(_){}
+    if(lastUrl){ try{ URL.revokeObjectURL(lastUrl);}catch(_){ } lastUrl=null; }
+    const t=(text||'').trim(); if(!t) return;
+    const r=await fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:t})});
+    const b=await r.blob(); const url=URL.createObjectURL(b); lastUrl=url; audio.src=url; setAudioRate(); await audio.play();
+  }
+
+  // Listen 버튼을 "캡처 단계"에서 가로채 API만 실행 (웹 TTS 차단)
+  document.getElementById('playBtn')?.addEventListener('click', async (e)=>{
+    e.preventDefault(); e.stopImmediatePropagation();
+    const ko=(document.getElementById('korean')?.textContent||'').trim();
+    await playKo(ko);
+
+    // 연습 점 1회 증가
+    const cntEl=document.getElementById('repCount');
+    let n=parseInt(cntEl.textContent||'0',10); if(n<5){ n++; cntEl.textContent=String(n); }
+    const dots=[...document.querySelectorAll('.rep-dot')];
+    dots.forEach((d,i)=> d.classList.toggle('completed', i < n));
+  }, true);
+
+  // 혹시 외부에서 speechSynthesis를 써도 무시 (완전 차단)
+  const nullSpeak = function(){ /* no-op to avoid double */ };
+  if('speechSynthesis' in window){
+    try{ const ss = window.speechSynthesis; ss.speak = nullSpeak; ss.cancel = nullSpeak; }catch(_){}
+  }
 });
 </script>
 
-<!-- Layout fix + Practice dots (robust ready + multi-frame enforce) -->
+<!-- Layout fix + robust 적용 (뜻/로마자 강제) -->
 <script>
 (function(){
   const quote = s => `"${String(s||'').replace(/^"+|"+$/g,'').trim()}"`;
-  let lastKo = '';
+  let lastKo='';
 
-  function findInDataByK(ko){
-    try{
-      const DB = window.SORI_DATA || {};
-      const pools = [DB.daily||[], DB.travel||[], DB.drama||[]];
-      for(const arr of pools){
-        const hit = arr.find(x => (x.k||'').trim() === ko);
-        if(hit) return hit;
-      }
-    }catch(e){}
-    return null;
+  // SORI_DATA 준비될 때까지 기다렸다가 맵 구성
+  function buildMap(){
+    const DB = window.SORI_DATA||{};
+    const pools=[...(DB.daily||[]), ...(DB.travel||[]), ...(DB.drama||[])];
+    const map=new Map();
+    pools.forEach(o=>{ const k=(o.k||'').trim(); if(k && !map.has(k)) map.set(k, {e:o.e||'', p:o.p||''}); });
+    return map;
   }
-
-  function enforceMeaningRoman(){
-    const koEl=korean, enEl=english, prEl=pronunciation, ctxEl=context;
-    if(!koEl||!enEl||!prEl||!ctxEl) return false;
-    const ko=(koEl.textContent||'').trim(); if(!ko) return false;
-
-    const item=findInDataByK(ko);
-    const meaning = item?.e || (ctxEl.textContent||'').replace(/(^"+|"+$)/g,'').trim();
-    const roman   = item?.p || (prEl.textContent||'').trim() || (enEl.textContent||'').trim();
-
-    if(meaning) ctxEl.textContent = quote(meaning);
-    if(roman)   enEl.textContent  = roman;
-    prEl.style.display='none';
-    return true;
-  }
-
-  // 렌더 직후 DOM이 여러 번 바뀌어도 N프레임 동안 강제로 유지
-  function enforceForFrames(n=20, delay=16){
-    let i=0; (function tick(){
-      enforceMeaningRoman();
-      if(++i<n) setTimeout(tick, delay);
-    })();
+  function waitForData(max=60){ // 최대 약 3초
+    return new Promise(res=>{
+      let n=0; (function tick(){
+        if(window.SORI_DATA) return res(buildMap());
+        if(++n>max) return res(buildMap());
+        setTimeout(tick,50);
+      })();
+    });
   }
 
   function resetDots(){
@@ -396,35 +406,38 @@ window.addEventListener('load',()=>{
     const cnt=document.getElementById('repCount'); if(cnt) cnt.textContent='0';
   }
 
-  function onSentenceChanged(){
-    const ko=(korean?.textContent||'').trim();
-    if(!ko || ko===lastKo) return;
-    lastKo=ko;
-    enforceForFrames(20,16);
-    resetDots();
+  function enforce(map){
+    const koEl=korean, enEl=english, prEl=pronunciation, ctxEl=context;
+    if(!koEl||!enEl||!prEl||!ctxEl) return;
+    const ko=(koEl.textContent||'').trim(); if(!ko) return;
+
+    const hit=map.get(ko);
+    const meaning=(hit?.e || (ctxEl.textContent||'').replace(/(^"+|"+$)/g,'').trim());
+    const roman  =(hit?.p || (prEl.textContent||'').trim() || (enEl.textContent||'').trim());
+    if(meaning) ctxEl.textContent=quote(meaning);
+    if(roman)   enEl.textContent=roman;
+    prEl.style.display='none';
   }
 
-  document.addEventListener('DOMContentLoaded', ()=>{
-    enforceForFrames(30,16);               // 첫 진입 보정 (약 0.5초)
-    const mo=new MutationObserver(()=> requestAnimationFrame(onSentenceChanged));
-    if(korean) mo.observe(korean,{childList:true,characterData:true,subtree:true});
-    if(english) mo.observe(english,{childList:true,characterData:true,subtree:true});
-    if(pronunciation) mo.observe(pronunciation,{childList:true,characterData:true,subtree:true});
+  document.addEventListener('DOMContentLoaded', async ()=>{
+    const map = await waitForData();
+    // 첫 진입 다중 프레임 보정
+    let i=0; (function many(){ enforce(map); if(++i<24) setTimeout(many,16); })();
 
-    playBtn.addEventListener('click', ()=>{
-      const cntEl=repCount; let n=parseInt(cntEl.textContent||'0',10);
-      if(n<5){ n++; cntEl.textContent=String(n); }
-      const dots=[...document.querySelectorAll('.rep-dot')];
-      dots.forEach((d,i)=> d.classList.toggle('completed', i < n));
+    // 문장 변경 감지
+    const mo=new MutationObserver(()=>{
+      const ko=(korean?.textContent||'').trim();
+      if(ko && ko!==lastKo){ lastKo=ko; enforce(map); resetDots(); }
     });
+    if(korean) mo.observe(korean,{childList:true,characterData:true,subtree:true});
 
-    // 탭/네비 이동 뒤에도 여러 프레임 재강제
+    // 탭/네비 클릭 후에도 재강제
     ['nextBtn','prevBtn','dailyBtn','travelBtn','dramaBtn','savedBtnHidden'].forEach(id=>{
       const el=document.getElementById(id);
-      el && el.addEventListener('click', ()=> setTimeout(()=>enforceForFrames(20,16), 0), true);
+      el && el.addEventListener('click', ()=> setTimeout(()=>enforce(map), 0), true);
     });
 
-    // Speed 표시 고정폭
+    // Speed 라벨 동기화
     const speedEl=speed, speedLbl=speedTxt;
     const sync=()=> speedLbl.textContent=(parseFloat(speedEl.value)).toFixed(2)+'x';
     speedEl.addEventListener('input', sync); sync();
@@ -433,4 +446,3 @@ window.addEventListener('load',()=>{
 </script>
 </body>
 </html>
-
