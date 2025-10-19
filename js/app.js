@@ -1,4 +1,4 @@
-/* js/app.js — 2025.10 Stable + Subfilters (fixed, add trendy) */
+/* js/app.js — 2025.10 Stable + Subfilters (fixed, add trendy, Love default) */
 (function () {
   // ---------- 로컬 상태 ----------
   let currentCategory = "daily";
@@ -13,7 +13,7 @@
     dailyBtn: $("dailyBtn"),
     travelBtn: $("travelBtn"),
     dramaBtn: $("dramaBtn"),
-    trendyBtn: $("trendyBtn"),                  // ★ 추가
+    trendyBtn: $("trendyBtn"),                  // ★ 유지: Trendy 탭
     savedBtn: $("savedBtn"),
     scrapBtn: $("scrapBtn"),
     badge: $("badge"),
@@ -41,23 +41,30 @@
   // SoriDataIndex(정규화) 우선 → 없으면 원본 SORI_DATA
   const getAllData = () => window.SoriDataIndex || window.SORI_DATA || {};
 
-  // 서브 카테고리 매핑(데이터에 없을 때 폴백)
+  // 소문자+트림
+  const norm = function(v){ return (v == null ? "" : String(v)).trim().toLowerCase(); };
+
+  // ---------- 서브 목록/아이콘/기본 서브 (데이터 우선, 폴백 제공) ----------
+  // 데이터에서 내려온 서브(우선순위 반영: dataindex가 Love를 맨 앞에 둠)
   const SUBS = window.SoriSubCategories || {
-    daily:  ['Greeting','Cafe','Restaurant','Shopping','Health','Social','Work','Tech','Exercise'],
+    // 폴백: Love를 daily 최우선으로
+    daily:  ['Love','Greeting','Cafe','Restaurant','Shopping','Health','Social','Work','Tech','Exercise'],
     travel: ['Airport','Hotel','Transport','Emergency','Convenience','Street Food','Market','Duty Free','Department','Food Court','Payment','Delivery','Sightseeing'],
-    trendy: ['Reaction','Emotion','Daily Talk','Online','Support & Life','Fun']  // ★ 추가
+    trendy: ['Reaction','Emotion','Daily Talk','Online','Support & Life','Fun']
   };
   const ICONS = window.SoriSubIcons || {
+    Love:'❤️',
     Greeting:'👋', Cafe:'☕', Restaurant:'🍽️', Shopping:'🛍️', Health:'💊', Social:'👥',
     Work:'💼', Tech:'🖥️', Exercise:'🏃',
     Airport:'✈️', Hotel:'🏨', Transport:'🚇', Emergency:'🆘',
     Convenience:'🏪', 'Street Food':'🌭', Market:'🧺', 'Duty Free':'🛂', Department:'🏬',
     'Food Court':'🥢', Payment:'💳', Delivery:'📦', Sightseeing:'📍'
-    // Trendy는 아이콘 없음(요청 사항)
   };
-
-  // 소문자+트림
-  const norm = function(v){ return (v == null ? "" : String(v)).trim().toLowerCase(); };
+  // dataindex.js가 내려주는 기본 서브(없으면 폴백으로 첫 항목 사용)
+  const DEFAULTS = (window.SoriDefaults && window.SoriDefaults.defaultSubByCategory) || {};
+  function defaultSubFor(cat){
+    return DEFAULTS[cat] || (SUBS[cat] && SUBS[cat][0]) || null;
+  }
 
   // ---------- 데이터 로딩/필터 ----------
   function rawFor(cat) {
@@ -73,11 +80,16 @@
       ? raw.slice()
       : (raw && Array.isArray(raw.data)) ? raw.data.slice() : [];
 
-    if (!currentSub) {
+    // ★ currentSub이 비어있다면, 카테고리별 기본 서브를 적용
+    if (!currentSub && (currentCategory !== "drama" && currentCategory !== "saved")) {
+      currentSub = defaultSubFor(currentCategory);
+    }
+
+    if (!currentSub || currentSub === "All") {
       phrases = base;
     } else {
       const want = norm(currentSub);
-      phrases = base.filter(function(p){ return norm(p.sub) === want; });
+      phrases = base.filter(function(p){ return norm(p.sub || p.t) === want; });
     }
     currentIndex = Math.min(currentIndex, Math.max(0, phrases.length - 1));
   }
@@ -127,7 +139,9 @@
     const chips = ["All"].concat(list);
     var html = chips.map(function(lbl){
       var value = (lbl === "All") ? "" : lbl;
-      var active = value ? (norm(value) === norm(currentSub)) : (currentSub == null);
+      // 기본 서브 계산 (currentSub가 없으면 여기서도 보정)
+      var effectiveSub = currentSub || defaultSubFor(currentCategory) || null;
+      var active = value ? (norm(value) === norm(effectiveSub)) : (!effectiveSub);
       var icon = (lbl !== "All" && ICONS[lbl]) ? (ICONS[lbl] + " ") : "";
       return '<div class="sub-chip ' + (active?'active':'') + '" data-sub="'+ value +'">'+ icon + lbl +'</div>';
     }).join("");
@@ -136,7 +150,7 @@
 
   // ---------- 탭 ----------
   function setActiveTab(tab) {
-    ["daily","travel","drama","trendy","saved"].forEach(function(id){  // ★ trendy 포함
+    ["daily","travel","drama","trendy","saved"].forEach(function(id){
       var b = $(id + "Btn");
       if (b) b.classList.toggle("active", id === tab);
     });
@@ -145,7 +159,14 @@
   function handleTab(tab) {
     currentCategory = tab;
     currentIndex = 0;
-    currentSub = null;
+
+    // drama/saved는 서브 개념 없음 → null, 그 외는 기본 서브로
+    if (tab === "drama" || tab === "saved") {
+      currentSub = null;
+    } else {
+      currentSub = defaultSubFor(tab);    // ★ Daily 진입시 Love가 자동 설정됨
+    }
+
     rebuildSubFilters();
     loadData();
     setActiveTab(tab);
@@ -172,10 +193,13 @@
       return;
     }
     var p = phrases[currentIndex];
+    // 본문
     els.korean.textContent = p.k || "";
-    els.english.textContent = p.e ? '"' + p.e + '"' : ""; // 의미는 위 스크립트가 context로도 보정
+    // 의미는 상단 index.html의 디바운서가 context로 보정하므로 여기선 en을 "따옴표" 포함 의미로 표기
+    els.english.textContent = p.e ? '"' + p.e + '"' : "";
     els.pronunciation.textContent = p.p || "";
-    els.badge.textContent = p.t || "";
+    // 배지는 데이터의 t(서브명: Love/Greeting 등)를 그대로 사용
+    els.badge.textContent = p.t || (p.sub || "");
     els.context.textContent = p.c || "";
     els.prog.textContent = (currentIndex + 1) + " / " + phrases.length;
     renderScrapStar(p.id);
@@ -306,7 +330,7 @@
     els.dailyBtn  && els.dailyBtn .addEventListener("click", function(){ handleTab("daily");  });
     els.travelBtn && els.travelBtn.addEventListener("click", function(){ handleTab("travel"); });
     els.dramaBtn  && els.dramaBtn .addEventListener("click", function(){ handleTab("drama");  });
-    els.trendyBtn && els.trendyBtn.addEventListener("click", function(){ handleTab("trendy"); }); // ★ 추가
+    els.trendyBtn && els.trendyBtn.addEventListener("click", function(){ handleTab("trendy"); }); // ★ 유지
     els.savedBtn  && els.savedBtn .addEventListener("click", function(){ handleTab("saved");  });
 
     // 서브필터 델리게이션
@@ -351,9 +375,14 @@
       var local = localStorage.getItem("soriSaved");
       if (local) savedList = JSON.parse(local) || [];
     } catch(_){}
+
+    // 첫 진입: Daily일 때 기본 서브를 Love로 강제 세팅 (데이터/폴백 모두 지원)
+    currentCategory = "daily";
+    currentSub = defaultSubFor("daily");   // ★ 여기서 Love로 셋업
+
     bindEvents();
     rebuildSubFilters();
     loadData();
-    console.log("[Sori] boot", getAllData());
+    console.log("[Sori] boot", { data: getAllData(), currentCategory, currentSub });
   });
 })();
