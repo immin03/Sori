@@ -14,6 +14,7 @@
     travelBtn: $("travelBtn"),
     dramaBtn: $("dramaBtn"),
     trendyBtn: $("trendyBtn"),
+    numbersBtn: $("numbersBtn"),  // ★ 추가
     savedBtn: $("savedBtn"),
     scrapBtn: $("scrapBtn"),
     badge: $("badge"),
@@ -47,7 +48,8 @@
   const SUBS = window.SoriSubCategories || {
     daily:  ['Love','Greeting','Cafe','Restaurant','Shopping','Health','Social','Work','Tech','Exercise'],
     travel: ['Airport','Hotel','Transport','Emergency','Convenience','Street Food','Market','Duty Free','Department','Food Court','Payment','Delivery','Sightseeing'],
-    trendy: ['Reaction','Emotion','Daily Talk','Online','Support & Life','Fun']
+    trendy: ['Reaction','Emotion','Daily Talk','Online','Support & Life','Fun'],
+    numbers:['Basic','Counting','Dates','Money','Tens & Hundreds','Practice'] // ★ 추가
   };
   const ICONS = window.SoriSubIcons || {
     Love:'❤️',
@@ -55,7 +57,9 @@
     Work:'💼', Tech:'🖥️', Exercise:'🏃',
     Airport:'✈️', Hotel:'🏨', Transport:'🚇', Emergency:'🆘',
     Convenience:'🏪', 'Street Food':'🌭', Market:'🧺', 'Duty Free':'🛂', Department:'🏬',
-    'Food Court':'🥢', Payment:'💳', Delivery:'📦', Sightseeing:'📍'
+    'Food Court':'🥢', Payment:'💳', Delivery:'📦', Sightseeing:'📍',
+    // numbers fallback 아이콘 ★
+    Basic:'🔢', Counting:'✋', Dates:'📅', Money:'💵', 'Tens & Hundreds':'🔟', Practice:'🎯'
   };
 
   const DEFAULTS = (window.SoriDefaults && window.SoriDefaults.defaultSubByCategory) || {};
@@ -144,7 +148,7 @@
 
   // ---------- 탭 ----------
   function setActiveTab(tab) {
-    ["daily","travel","drama","trendy","saved"].forEach(function(id){
+    ["daily","travel","drama","trendy","numbers","saved"].forEach(function(id){
       var b = $(id + "Btn");
       if (b) b.classList.toggle("active", id === tab);
     });
@@ -218,7 +222,7 @@
 
   function findPhraseById(id) {
     const all = getAllData();
-    const cats = ["daily","travel","drama","trendy"];
+    const cats = ["daily","travel","drama","trendy","numbers"]; // ★ numbers 포함
     for (var i=0;i<cats.length;i++){
       var cat = cats[i];
       var list = all[cat] || [];
@@ -319,11 +323,12 @@
 
   // ---------- 이벤트 ----------
   function bindEvents() {
-    els.dailyBtn  && els.dailyBtn .addEventListener("click", function(){ handleTab("daily");  });
-    els.travelBtn && els.travelBtn.addEventListener("click", function(){ handleTab("travel"); });
-    els.dramaBtn  && els.dramaBtn .addEventListener("click", function(){ handleTab("drama");  });
-    els.trendyBtn && els.trendyBtn.addEventListener("click", function(){ handleTab("trendy"); });
-    els.savedBtn  && els.savedBtn .addEventListener("click", function(){ handleTab("saved");  });
+    els.dailyBtn   && els.dailyBtn  .addEventListener("click", function(){ handleTab("daily");   });
+    els.travelBtn  && els.travelBtn .addEventListener("click", function(){ handleTab("travel");  });
+    els.dramaBtn   && els.dramaBtn  .addEventListener("click", function(){ handleTab("drama");   });
+    els.trendyBtn  && els.trendyBtn .addEventListener("click", function(){ handleTab("trendy");  });
+    els.numbersBtn && els.numbersBtn.addEventListener("click", function(){ handleTab("numbers"); }); // ★ 추가
+    els.savedBtn   && els.savedBtn  .addEventListener("click", function(){ handleTab("saved");   });
 
     // 서브필터 델리게이션
     els.subFilters && els.subFilters.addEventListener("click", function(e){
