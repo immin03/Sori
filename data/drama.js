@@ -2,7 +2,7 @@
 (function () {
   window.SORI_DATA = window.SORI_DATA || {};
 
-  const dramaBase = [
+  window.SORI_DATA.drama = [
     {t:'Goblin',c:'Kim Shin to Eun-tak',k:'너는, 내가 잃은 모든 날들이다.',e:'You are all the days I lost.',p:'neoneun, naega ireun modeun naldeulida',sub:'Goblin'},
     {t:'Goblin',c:'Eun-tak reflection',k:'혼자였던 시간도, 나를 만들었어.',e:'Even my lonely days shaped me.',p:'honjayotteon sigando, nareul mandeureosseo',sub:'Goblin'},
     {t:'Crash Landing on You',c:'Ri Jeong-hyeok',k:'널 좋아한 게, 잘못이었을까?',e:'Was it wrong that I liked you?',p:'neol joahan ge, jalmosieosseulkka',sub:'Crash Landing'},
@@ -20,10 +20,29 @@
     {t:'Signal',c:'Detective',k:'포기하면, 거기서 끝이야.',e:'If you give up, it ends there.',p:'pogihamyeon, geogiseo kkeusiya',sub:'Signal'},
     {t:'Our Blues',c:'Mother',k:'천천히 해도, 괜찮아.',e:'It is okay to go slow.',p:'cheoncheonhi haedo, gwaenchana',sub:'Our Blues'},
     {t:'Hometown Cha Cha Cha',c:'Hong Du-sik',k:'답은 늘, 가까이에 있어.',e:'The answer is always close by.',p:'dabeun neul, gakkaie isseo',sub:'Hometown'},
-    {t:'Misaeng',c:'Manager Oh',k:'작은 성실이, 큰 변화를 만든다.',e:'Small diligence makes big change.',p:'jageun seongsiri, keun byeonhwareul mandeunda',sub:'Misaeng'}
-  ];
+    {t:'Misaeng',c:'Manager Oh',k:'작은 성실이, 큰 변화를 만든다.',e:'Small diligence makes big change.',p:'jageun seongsiri, keun byeonhwareul mandeunda',sub:'Misaeng'},
 
-  const dramaPlus = [
+    {t:'My Mister',c:'Park Dong-hoon',k:'어떤 날은, 버티는 게 용기야.',e:'On some days, enduring is courage.',p:'eotteon nareun, beotineun ge yonggiya',sub:'My Mister'},
+    {t:'Start-Up',c:'Seo Dal-mi',k:'처음이라서 더 두근거려.',e:'It is more exciting because it is the first time.',p:'cheoeumiraseo deo dugeungeoryeo',sub:'Start-Up'},
+    {t:'Start-Up',c:'Han Ji-pyeong',k:'실패는 값비싼 수업료야.',e:'Failure is expensive tuition.',p:'silpaeneun gapbissan sueomnyoya',sub:'Start-Up'},
+    {t:'It’s Okay to Not Be Okay',c:'Ko Moon-young',k:'상처도 나의 일부야.',e:'My scars are part of me.',p:'sangcheodo naui ilbuya',sub:'It’s Okay'},
+    {t:'Move to Heaven',c:'Han Geu-ru',k:'남긴 것은 이야기예요.',e:'What is left is a story.',p:'namgin geoseun iyagiyeyo',sub:'Move to Heaven'},
+    {t:'Vincenzo',c:'Vincenzo',k:'정의는 때로, 날카로워야 해.',e:'Justice must be sharp at times.',p:'jeongineun ttaero, narkarowoya hae',sub:'Vincenzo'},
+    {t:'Hotel Del Luna',c:'Jang Man-wol',k:'인연은, 때가 되면 다시 와.',e:'Ties return when the time comes.',p:'inyeoneun, ttaega doemyeon dasi wa',sub:'Hotel Del Luna'},
+    {t:'Kingdom',c:'Crown Prince',k:'두려움은 퍼지고, 용기는 모인다.',e:'Fear spreads, courage gathers.',p:'duryeoumeun peojigo, yonggineun moinda',sub:'Kingdom'},
+    {t:'Sweet Home',c:'Hyun-su',k:'괴물은 밖에만 있지 않아.',e:'Monsters are not only outside.',p:'goemureun bakke man itji ana',sub:'Sweet Home'},
+    {t:'Weak Hero Class 1',c:'Yeon Si-eun',k:'머리로 싸우는 법을 알지.',e:'I know how to fight with my head.',p:'meoriro ssau neun beobeul alji',sub:'Weak Hero'},
+    {t:'Reply 1988',c:'Taek',k:'천천히 해도, 우리는 친구야.',e:'Even slowly, we are friends.',p:'cheoncheonhi haedo, urineun chinguya',sub:'Reply 1988'},
+    {t:'Misaeng',c:'Jang Geu-rae',k:'시작은 미약해도, 포기는 없어.',e:'Beginnings are small, but there is no giving up.',p:'sijageun miyakhaedo, pogineun eopseo',sub:'Misaeng'},
+    {t:'Hometown Cha Cha Cha',c:'Hye-jin',k:'완벽보다, 따뜻함이 먼저야.',e:'Warmth comes before perfection.',p:'wanbyeokboda, ttatteuthami meonjeoya',sub:'Hometown'},
+    {t:'Hospital Playlist',c:'Song-hwa',k:'네 속도로 걸어가.',e:'Walk at your own pace.',p:'ne sokdoro georeoga',sub:'Hospital'},
+    {t:'Mr. Sunshine',c:'Eugene',k:'나는 선택했고, 책임진다.',e:'I chose and I take responsibility.',p:'naneun seontaekhaetgo, chaegimjinda',sub:'Mr. Sunshine'},
+    {t:'Signal',c:'Profiler',k:'진실은, 시간을 건너온다.',e:'Truth crosses time.',p:'jinsireun, siganeul geonneo onda',sub:'Signal'},
+    {t:'Twenty Five Twenty One',c:'Baek Yi-jin',k:'지더라도 배운다면, 진 거 아니야.',e:'If you learn, a loss is not a loss.',p:'jideorado baeundamyeon, jin geo aniya',sub:'Twenty Five'},
+    {t:'Itaewon Class',c:'Jo Yi-seo',k:'집요함이 결국 이겨.',e:'Persistence wins in the end.',p:'jibyohami gyeolguk igyeo',sub:'Itaewon'},
+    {t:'Crash Landing on You',c:'Squad',k:'국경보다 마음이 넓었지.',e:'Our hearts were wider than borders.',p:'gukgyeongboda maeumi neolbeotji',sub:'Crash Landing'},
+    {t:'Extraordinary Attorney Woo',c:'Team',k:'다름은 틀림이 아니야.',e:'Different is not wrong.',p:'dareumeun teullimi aniya',sub:'Attorney Woo'},
+
     {t:'Romance',c:'Secret Garden',k:'네가 누군지 알기도 전에, 좋아했어.',e:'I liked you before knowing who you were.',p:'nega nugunji algido jeone, joahaesseo',sub:'Romance'},
     {t:'Romance',c:'Hotel Del Luna',k:'천 년을 기다렸어, 너를.',e:'I waited a thousand years for you.',p:'cheon nyeoneul gidaryeosseo, neoreul',sub:'Romance'},
     {t:'Romance',c:'What is Love',k:'사랑이 뭔데? 먹는 거야?',e:'What is love? Can you eat it?',p:'sarangi mwonde? meongneun geoya',sub:'Romance'},
@@ -38,9 +57,17 @@
     {t:'Support',c:'Comfort',k:'울어도 괜찮아.',e:'It is okay to cry.',p:'ureodo gwaenchana',sub:'Support'},
     {t:'Support',c:'Belief',k:'난 네가 할 수 있다고 믿어.',e:'I believe you can do it.',p:'nan nega hal su itdago mideo',sub:'Support'},
     {t:'Support',c:'Together',k:'혼자가 아니야.',e:'You are not alone.',p:'honjaga aniya',sub:'Support'},
-    {t:'Support',c:'Rest',k:'쉬어도 괜찮아.',e:'It is okay to rest.',p:'swieodo gwaenchana',sub:'Support'}
-  ];
+    {t:'Support',c:'Rest',k:'쉬어도 괜찮아.',e:'It is okay to rest.',p:'swieodo gwaenchana',sub:'Support'},
 
-  // 최종: 배열로 합쳐 저장
-  window.SORI_DATA.drama = (window.SORI_DATA.drama || []).concat(dramaBase, dramaPlus);
+    {t:'Friendship',c:'Thanks',k:'네 편이 있어 든든해.',e:'It is reassuring to have you on my side.',p:'ne pyeoni isseo deundeunhae',sub:'Friendship'},
+    {t:'Friendship',c:'Memory',k:'같이 웃던 날을 잊지 말자.',e:'Let us not forget the days we laughed together.',p:'gachi utteon nareul itji malja',sub:'Friendship'},
+    {t:'Motivation',c:'Spark',k:'작은 시작이 큰 파도를 만든다.',e:'A small start makes a big wave.',p:'jageun sijagi keun padoreul mandeunda',sub:'Motivation'},
+    {t:'Motivation',c:'Focus',k:'비교 말고, 집중만 하자.',e:'Do not compare, just focus.',p:'bigyo malgo, jipjungman haja',sub:'Motivation'},
+    {t:'Healing',c:'Night walk',k:'밤공기부터 천천히 들이마셔.',e:'Breathe in the night air slowly.',p:'bamgonggibuteo cheoncheonhi deurimasyeo',sub:'Healing'},
+    {t:'Healing',c:'Self talk',k:'오늘의 나는 충분했다.',e:'I was enough for today.',p:'oneurui naneun chungbunhaetda',sub:'Healing'},
+    {t:'Family',c:'Home',k:'집은, 돌아오면 따뜻해진다.',e:'Home warms you when you return.',p:'jibeun, doraomyeon ttatteuthae jinda',sub:'Family'},
+    {t:'Family',c:'Promise',k:'네 손을 먼저 잡을게.',e:'I will take your hand first.',p:'ne soneul meonjeo jabeulge',sub:'Family'},
+    {t:'Romance',c:'Heartbeat',k:'네가 오면, 시간이 느려져.',e:'When you come, time slows down.',p:'nega omyeon, sigani neuryojeo',sub:'Romance'},
+    {t:'Life',c:'Retry',k:'다시 시작해도 괜찮아.',e:'It is okay to start again.',p:'dasi sijakaedo gwaenchana',sub:'Life'}
+  ];
 })();
