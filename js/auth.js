@@ -1,40 +1,23 @@
 // js/auth.js
 console.log("Firebase Auth loaded");
 
-// Firebase 설정 정보 (네 프로젝트 전용)
-const firebaseConfig = {
-  apiKey: "AIzaSyBzSINSq3wc_uglLODnzho-MSfqAACBlu4",
-  authDomain: "sori-533fc.firebaseapp.com",
-  projectId: "sori-533fc",
-  storageBucket: "sori-533fc.appspot.com",
-  messagingSenderId: "645509054375",
-  appId: "1:645509054375:web:dddc1321e92c286e0cc082",
-  measurementId: "G-JD752VQ54Z"
-};
+// Firebase SDK import
+import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 
-// Firebase 초기화
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
+// Firebase 앱과 인증 객체 가져오기
+const auth = getAuth(window.firebaseApp);
+const provider = new GoogleAuthProvider();
+
+// 팝업 차단 방지를 위한 추가 설정
+provider.setCustomParameters({
+  prompt: 'select_account'
+});
 
 // 로그인 버튼 클릭 시 실행될 함수
 window.handleGoogleLogin = function () {
   console.log("Google login button clicked");
   
-  if (!firebase || !firebase.auth) {
-    console.error("Firebase not loaded");
-    alert("Firebase가 로드되지 않았습니다. 페이지를 새로고침해주세요.");
-    return;
-  }
-
-  const provider = new firebase.auth.GoogleAuthProvider();
-  
-  // 팝업 차단 방지를 위한 추가 설정
-  provider.setCustomParameters({
-    prompt: 'select_account'
-  });
-
-  auth.signInWithPopup(provider)
+  signInWithPopup(auth, provider)
     .then((result) => {
       const user = result.user;
       console.log("✅ 로그인 성공:", user.displayName);
@@ -71,7 +54,7 @@ window.handleGoogleLogin = function () {
 
 // 로그아웃 함수
 window.handleLogout = function () {
-  auth.signOut()
+  signOut(auth)
     .then(() => {
       console.log("✅ 로그아웃 성공");
       
@@ -88,6 +71,15 @@ window.handleLogout = function () {
       alert("로그아웃 중 오류가 발생했습니다: " + error.message);
     });
 };
+
+// 인증 상태 변경 감지
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    console.log("사용자 로그인됨:", user.displayName);
+  } else {
+    console.log("사용자 로그아웃됨");
+  }
+});
 
 // SoriUser 객체 생성 (app.js에서 사용)
 window.SoriUser = {

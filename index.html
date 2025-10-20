@@ -81,9 +81,31 @@
   gtag('config',window.GA_ID,{send_page_view:false});
 </script>
 
-<script defer src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script defer src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-<script defer src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+  import { getAuth } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+  import { getAnalytics } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js';
+  
+  // Firebase 설정
+  const firebaseConfig = {
+    apiKey: "AIzaSyBZsIN5q3wc_uglLODnzho-MSfqAACBlu4",
+    authDomain: "sori-533fc.firebaseapp.com",
+    projectId: "sori-533fc",
+    storageBucket: "sori-533fc.firebasestorage.app",
+    messagingSenderId: "645509054375",
+    appId: "1:645509054375:web:dddc1321e92c286e0cc082",
+    measurementId: "G-JD752VQ54Z"
+  };
+
+  // Firebase 초기화
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const analytics = getAnalytics(app);
+  
+  // 전역으로 사용할 수 있도록 설정
+  window.firebaseApp = app;
+  window.firebaseAuth = auth;
+</script>
 
 <!-- html2canvas: 카드 캡처용 -->
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
@@ -297,7 +319,7 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 <script defer src="data/dataindex.js?v=20251019"></script>
 
 <!-- app scripts -->
-<script defer src="js/auth.js?v=20251021"></script>
+<script type="module" src="js/auth.js?v=20251021"></script>
 <script defer src="js/state.js?v=20251017"></script>
 <script defer src="js/tts.js?v=20251017"></script>
 <script defer src="js/app.js?v=20251017"></script>
@@ -312,7 +334,13 @@ document.addEventListener('DOMContentLoaded', ()=>{
   closeBtn?.addEventListener('click', close);
   modal?.addEventListener('click', e=>{ if(e.target===modal) close(); });
   googleBtn?.addEventListener('click', ()=>{ window.handleGoogleLogin && window.handleGoogleLogin(); });
-  try{ firebase.auth().onAuthStateChanged(user=>{ user ? (close(), wireAsLogout()) : wireAsLogin(); }); }catch(e){ wireAsLogin(); }
+  try{ 
+    if (window.firebaseAuth) {
+      window.firebaseAuth.onAuthStateChanged(user=>{ user ? (close(), wireAsLogout()) : wireAsLogin(); }); 
+    } else {
+      wireAsLogin();
+    }
+  }catch(e){ wireAsLogin(); }
 });
 </script>
 
