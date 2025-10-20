@@ -224,7 +224,7 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
     <button id="authClose" class="auth-close" aria-label="Close">×</button>
     <div style="font-size:24px;font-weight:800;color:#7c3aed;margin-bottom:6px;">Sign in</div>
     <div style="font-size:13px;color:#9ca3af;margin-bottom:18px;">Use your Google account</div>
-    <button class="gbtn" onclick="window.handleGoogleLogin && window.handleGoogleLogin()">
+    <button class="gbtn" id="googleLoginBtn">
       <span class="glogo">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18"><path fill="#EA4335" d="M9 7.3h8.5v3.4H9z"/><path fill="#4285F4" d="M17.6 9.2c0-.6-.1-1.2-.2-1.8H9v3.4h4.8c-.2 1-.8 1.8-1.7 2.3v1.9h2.8c1.6-1.5 2.7-3.7 2.7-5.8z"/><path fill="#FBBC05" d="M9 18c2.4 0 4.4-.8 5.9-2.2l-2.8-1.9c-.8.5-1.8.8-3.1.8-2.4 0-4.5-1.6-5.2-3.7H.9v2.3C2.4 15.9 5.4 18 9 18z"/><path fill="#34A853" d="M3.8 11c-.2-.6-.3-1.3-.3-2s.1-1.4.3-2V4.7H.9C.3 6 0 7.5 0 9s.3 3 .9 4.3L3.8 11z"/><path fill="#EB4335" d="M9 3.5c1.3 0 2.5.5 3.4 1.4l2.3-2.3C13.4.9 11.4 0 9 0 5.4 0 2.4 2.1.9 4.7L3.8 7c.7-2.1 2.8-3.5 5.2-3.5z"/></svg>
       </span>
@@ -242,19 +242,21 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 <script defer src="data/dataindex.js?v=20251019"></script>
 
 <!-- app scripts -->
+<script defer src="js/auth.js?v=20251021"></script>
 <script defer src="js/state.js?v=20251017"></script>
 <script defer src="js/tts.js?v=20251017"></script>
 <script defer src="js/app.js?v=20251017"></script>
 
 <script>
 document.addEventListener('DOMContentLoaded', ()=>{
-  const modal=authModal, loginBtn=document.getElementById('loginBtn'), closeBtn=authClose;
+  const modal=authModal, loginBtn=document.getElementById('loginBtn'), closeBtn=authClose, googleBtn=document.getElementById('googleLoginBtn');
   const open = ()=> modal.classList.add('open');
   const close=()=> modal.classList.remove('open');
   function wireAsLogin(){ loginBtn.textContent='Login'; loginBtn.onclick=open; }
   function wireAsLogout(){ loginBtn.textContent='Logout'; loginBtn.onclick= async ()=>{ try{ await window.SoriUser?.logout?.(); }catch(e){} }; }
   closeBtn?.addEventListener('click', close);
   modal?.addEventListener('click', e=>{ if(e.target===modal) close(); });
+  googleBtn?.addEventListener('click', ()=>{ window.handleGoogleLogin && window.handleGoogleLogin(); });
   try{ firebase.auth().onAuthStateChanged(user=>{ user ? (close(), wireAsLogout()) : wireAsLogin(); }); }catch(e){ wireAsLogin(); }
 });
 </script>
