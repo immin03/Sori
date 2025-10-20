@@ -346,6 +346,10 @@ document.addEventListener('DOMContentLoaded', ()=>{
   closeBtn?.addEventListener('click', close);
   modal?.addEventListener('click', e=>{ if(e.target===modal) close(); });
   googleBtn?.addEventListener('click', ()=>{ window.handleGoogleLogin && window.handleGoogleLogin(); });
+  
+  // 즉시 로그인 버튼 활성화 (Firebase 준비와 관계없이)
+  wireAsLogin();
+  
   // Firebase 준비 이벤트 리스너
   window.addEventListener('firebaseReady', () => {
     console.log("Firebase 준비 완료, 인증 상태 확인 시작");
