@@ -13,9 +13,52 @@
 <link rel="icon" type="image/svg+xml"
   href='data:image/svg+xml;utf8,
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-    <circle cx="32" cy="32" r="30" fill="#7c3aed" stroke="#6d28d9" stroke-width="2"/>
-    <text x="16" y="40" font-family="sans-serif" font-size="22" font-weight="bold" fill="white">소</text>
+    <circle cx="32" cy="32" r="30" fill="#7c3aed"/>
+    <text x="32" y="42" font-family="sans-serif" font-size="24" font-weight="bold" fill="white" text-anchor="middle">S</text>
   </svg>'/>
+
+<!-- Apple Touch Icon for home screen -->
+<link rel="apple-touch-icon" href='data:image/svg+xml;utf8,
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180">
+    <circle cx="90" cy="90" r="85" fill="#7c3aed"/>
+    <text x="90" y="118" font-family="sans-serif" font-size="68" font-weight="bold" fill="white" text-anchor="middle">S</text>
+  </svg>'/>
+
+<!-- Android and PWA icons -->
+<link rel="icon" type="image/png" sizes="192x192" href='data:image/svg+xml;utf8,
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
+    <circle cx="96" cy="96" r="90" fill="#7c3aed"/>
+    <text x="96" y="125" font-family="sans-serif" font-size="72" font-weight="bold" fill="white" text-anchor="middle">S</text>
+  </svg>'/>
+<link rel="icon" type="image/png" sizes="512x512" href='data:image/svg+xml;utf8,
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+    <circle cx="256" cy="256" r="240" fill="#7c3aed"/>
+    <text x="256" y="340" font-family="sans-serif" font-size="192" font-weight="bold" fill="white" text-anchor="middle">S</text>
+  </svg>'/>
+
+<!-- PWA Manifest -->
+<link rel="manifest" href='data:application/json;utf8,
+  {
+    "name": "Sori - Learn Korean by Sound",
+    "short_name": "Sori",
+    "description": "Learn Korean naturally by repeating real sounds",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#faf8ff",
+    "theme_color": "#7c3aed",
+    "icons": [
+      {
+        "src": "data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 192 192%22%3E%3Ccircle cx=%2296%22 cy=%2296%22 r=%2290%22 fill=%22%237c3aed%22/%3E%3Ctext x=%2296%22 y=%22125%22 font-family=%22sans-serif%22 font-size=%2272%22 font-weight=%22bold%22 fill=%22white%22 text-anchor=%22middle%22%3ES%3C/text%3E%3C/svg%3E",
+        "sizes": "192x192",
+        "type": "image/svg+xml"
+      },
+      {
+        "src": "data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22%3E%3Ccircle cx=%22256%22 cy=%22256%22 r=%22240%22 fill=%22%237c3aed%22/%3E%3Ctext x=%22256%22 y=%22340%22 font-family=%22sans-serif%22 font-size=%22192%22 font-weight=%22bold%22 fill=%22white%22 text-anchor=%22middle%22%3ES%3C/text%3E%3C/svg%3E",
+        "sizes": "512x512",
+        "type": "image/svg+xml"
+      }
+    ]
+  }'/>
 
 <script>window.GA_ID='G-X1Q98DBKR5';</script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-X1Q98DBKR5"></script>
