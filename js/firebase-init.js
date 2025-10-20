@@ -20,9 +20,15 @@ provider.setCustomParameters({
   prompt: 'select_account'
 });
 
-// Auth 준비 완료 신호
+// 준비 신호: onAuthStateChanged + 안전용 타임아웃 둘 다 사용
 export const authReady = new Promise((resolve) => {
-  onAuthStateChanged(auth, () => resolve());
+  let done = false;
+  onAuthStateChanged(auth, () => {
+    if (!done) { done = true; resolve(); }
+  });
+  // 혹시 브라우저/확장프로그램 때문에 콜백이 지연되면 1.5초 후 강제 준비 완료
+  setTimeout(() => { if (!done) resolve(); }, 1500);
 });
 
-console.log("Firebase 초기화 완료 (v9 모듈)");
+// 디버그 로그 (필요하면 유지)
+console.log("[firebase-init] loaded");
