@@ -334,13 +334,23 @@ document.addEventListener('DOMContentLoaded', ()=>{
   closeBtn?.addEventListener('click', close);
   modal?.addEventListener('click', e=>{ if(e.target===modal) close(); });
   googleBtn?.addEventListener('click', ()=>{ window.handleGoogleLogin && window.handleGoogleLogin(); });
-  try{ 
+  // Firebase 인증이 준비될 때까지 대기
+  function waitForAuth() {
     if (window.firebaseAuth) {
-      window.firebaseAuth.onAuthStateChanged(user=>{ user ? (close(), wireAsLogout()) : wireAsLogin(); }); 
+      try {
+        window.firebaseAuth.onAuthStateChanged(user=>{ user ? (close(), wireAsLogout()) : wireAsLogin(); }); 
+      } catch(e) {
+        console.log("Auth state change error:", e);
+        wireAsLogin();
+      }
     } else {
-      wireAsLogin();
+      // Firebase가 아직 로드되지 않았으면 잠시 후 다시 시도
+      setTimeout(waitForAuth, 100);
     }
-  }catch(e){ wireAsLogin(); }
+  }
+  
+  // 페이지 로드 후 Firebase 인증 대기
+  setTimeout(waitForAuth, 500);
 });
 </script>
 
