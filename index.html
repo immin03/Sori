@@ -97,14 +97,26 @@
     measurementId: "G-JD752VQ54Z"
   };
 
-  // Firebase 초기화
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const analytics = getAnalytics(app);
-  
-  // 전역으로 사용할 수 있도록 설정
-  window.firebaseApp = app;
-  window.firebaseAuth = auth;
+  try {
+    // Firebase 초기화
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const analytics = getAnalytics(app);
+    
+    // 전역으로 사용할 수 있도록 설정
+    window.firebaseApp = app;
+    window.firebaseAuth = auth;
+    
+    console.log("Firebase 초기화 성공");
+    
+    // 초기화 완료 이벤트 발생
+    window.dispatchEvent(new CustomEvent('firebaseReady'));
+    
+  } catch (error) {
+    console.error("Firebase 초기화 실패:", error);
+    window.firebaseApp = null;
+    window.firebaseAuth = null;
+  }
 </script>
 
 <!-- html2canvas: 카드 캡처용 -->
@@ -334,23 +346,27 @@ document.addEventListener('DOMContentLoaded', ()=>{
   closeBtn?.addEventListener('click', close);
   modal?.addEventListener('click', e=>{ if(e.target===modal) close(); });
   googleBtn?.addEventListener('click', ()=>{ window.handleGoogleLogin && window.handleGoogleLogin(); });
-  // Firebase 인증이 준비될 때까지 대기
-  function waitForAuth() {
-    if (window.firebaseAuth) {
-      try {
-        window.firebaseAuth.onAuthStateChanged(user=>{ user ? (close(), wireAsLogout()) : wireAsLogin(); }); 
-      } catch(e) {
-        console.log("Auth state change error:", e);
-        wireAsLogin();
-      }
-    } else {
-      // Firebase가 아직 로드되지 않았으면 잠시 후 다시 시도
-      setTimeout(waitForAuth, 100);
+  // Firebase 준비 이벤트 리스너
+  window.addEventListener('firebaseReady', () => {
+    console.log("Firebase 준비 완료, 인증 상태 확인 시작");
+    try {
+      window.firebaseAuth.onAuthStateChanged(user=>{ 
+        console.log("Auth state changed:", user ? "로그인됨" : "로그아웃됨");
+        user ? (close(), wireAsLogout()) : wireAsLogin(); 
+      }); 
+    } catch(e) {
+      console.log("Auth state change error:", e);
+      wireAsLogin();
     }
-  }
+  });
   
-  // 페이지 로드 후 Firebase 인증 대기
-  setTimeout(waitForAuth, 500);
+  // Firebase가 준비되지 않은 경우를 위한 폴백
+  setTimeout(() => {
+    if (!window.firebaseAuth) {
+      console.log("Firebase 준비 시간 초과, 기본 로그인 상태로 설정");
+      wireAsLogin();
+    }
+  }, 3000);
 });
 </script>
 

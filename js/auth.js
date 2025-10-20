@@ -4,12 +4,12 @@ console.log("Firebase Auth loaded");
 // Firebase SDK import
 import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 
-// Firebase 앱과 인증 객체 가져오기 (대기 로직 포함)
+// Firebase 앱과 인증 객체 가져오기 (이벤트 기반)
 let auth = null;
 let provider = null;
 
 function initializeAuth() {
-  if (window.firebaseApp) {
+  try {
     auth = getAuth(window.firebaseApp);
     provider = new GoogleAuthProvider();
     
@@ -19,14 +19,20 @@ function initializeAuth() {
     });
     
     console.log("Firebase Auth 초기화 완료");
-  } else {
-    // Firebase 앱이 아직 준비되지 않았으면 잠시 후 다시 시도
-    setTimeout(initializeAuth, 100);
+    
+    // 인증 상태 리스너 설정
+    setupAuthStateListener();
+    
+  } catch (error) {
+    console.error("Firebase Auth 초기화 실패:", error);
   }
 }
 
-// Firebase 인증 초기화 시작
-initializeAuth();
+// Firebase 준비 이벤트 리스너
+window.addEventListener('firebaseReady', () => {
+  console.log("Firebase 준비 이벤트 수신, Auth 초기화 시작");
+  initializeAuth();
+});
 
 // 로그인 버튼 클릭 시 실행될 함수
 window.handleGoogleLogin = function () {
@@ -99,7 +105,7 @@ window.handleLogout = function () {
     });
 };
 
-// 인증 상태 변경 감지 (auth가 준비된 후에만 실행)
+// 인증 상태 변경 감지
 function setupAuthStateListener() {
   if (auth) {
     onAuthStateChanged(auth, (user) => {
@@ -109,14 +115,8 @@ function setupAuthStateListener() {
         console.log("사용자 로그아웃됨");
       }
     });
-  } else {
-    // auth가 아직 준비되지 않았으면 잠시 후 다시 시도
-    setTimeout(setupAuthStateListener, 100);
   }
 }
-
-// 인증 상태 리스너 설정 시작
-setupAuthStateListener();
 
 // SoriUser 객체 생성 (app.js에서 사용)
 window.SoriUser = {
