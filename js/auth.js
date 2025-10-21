@@ -48,7 +48,16 @@ auth.onAuthStateChanged((user) => {
 
 // 전역 함수들 - redirect만 사용, popup 제거
 window.SoriUser = {
-  logout: () => auth.signOut(),
+  logout: async () => {
+    try {
+      console.log("[auth] SoriUser.logout 호출됨");
+      await auth.signOut();
+      console.log("[auth] auth.signOut() 완료");
+    } catch (err) {
+      console.error("[auth] logout 에러:", err);
+      throw err;
+    }
+  },
   isLoggedIn: () => !!auth.currentUser,
   getCurrentUser: () => auth.currentUser,
   // loginRedirect: 무조건 리디렉션만 사용 (COOP 경고 제거)
@@ -57,10 +66,13 @@ window.SoriUser = {
     loggingIn = true;
     try {
       await authReady;
+      console.log("[auth] 리디렉션 로그인 시작");
       await signInWithRedirect(auth, provider);
+      // 리디렉션은 페이지를 이동시키므로 여기까지 도달하지 않음
     } catch (err) {
       console.error("[auth] 로그인 실패:", err.message);
       loggingIn = false;
+      throw err; // 에러를 다시 던져서 호출자에게 알림
     }
   },
   // login: loginRedirect와 동일하게 리디렉션만 사용
@@ -69,10 +81,13 @@ window.SoriUser = {
     loggingIn = true;
     try {
       await authReady;
+      console.log("[auth] 로그인 시작");
       await signInWithRedirect(auth, provider);
+      // 리디렉션은 페이지를 이동시키므로 여기까지 도달하지 않음
     } catch (err) {
       console.error("[auth] 로그인 실패:", err.message);
       loggingIn = false;
+      throw err; // 에러를 다시 던져서 호출자에게 알림
     }
   },
   onAuth: (callback) => {

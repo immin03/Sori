@@ -314,9 +314,14 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
   const hasAuth = () => !!window.firebaseAuth;
   const user = () => (window.firebaseAuth ? window.firebaseAuth.currentUser : null);
   const loggedIn = () => !!user();
-  const hasLoginAPI = () =>
-    !!(window.SoriUser &&
-       (window.SoriUser.loginRedirect || window.SoriUser.login));
+  const hasLoginAPI = () => {
+    const hasSoriUser = !!window.SoriUser;
+    const hasLoginRedirect = !!(window.SoriUser?.loginRedirect);
+    const hasLogin = !!(window.SoriUser?.login);
+    const result = hasSoriUser && (hasLoginRedirect || hasLogin);
+    console.log("[auth] hasLoginAPI 체크:", { hasSoriUser, hasLoginRedirect, hasLogin, result });
+    return result;
+  };
 
   // modal helpers
   const openModal  = () => {
@@ -331,10 +336,15 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
   // 공용 대기
   async function waitUntil(cond, {timeout=12000, step=60}={}) {
     const t0 = now();
+    console.log("[auth] waitUntil 시작");
     while (!cond()) {
-      if (now()-t0 > timeout) return false;
+      if (now()-t0 > timeout) {
+        console.log("[auth] waitUntil 타임아웃");
+        return false;
+      }
       await wait(step);
     }
+    console.log("[auth] waitUntil 완료");
     return true;
   }
 
@@ -352,6 +362,7 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
         ev.preventDefault();
         ev.stopPropagation();
         try {
+          console.log("[auth] 로그아웃 시작");
           // 로그아웃 시작: 모달 완전 차단 + 포커스 제거
           isLoggingOut = true;
           pendingAction = null;
@@ -360,7 +371,10 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
           document.activeElement?.blur();
 
           await window.SoriUser?.logout?.();
+          console.log("[auth] 로그아웃 완료");
 
+        } catch (err) {
+          console.error("[auth] 로그아웃 에러:", err);
         } finally {
           // 약간의 여유 후 플래그 해제
           setTimeout(()=>{ isLoggingOut = false; }, 800);
@@ -413,10 +427,23 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
   // Google sign-in: redirect만 사용 (COOP 경고 회피)
   async function doSignIn() {
     const ready = await waitUntil(()=> hasAuth() && hasLoginAPI());
-    if (!ready) return;
+    if (!ready) {
+      console.log("[auth] 로그인 준비 안됨");
+      return;
+    }
     const S = window.SoriUser;
-    if (S?.loginRedirect) return S.loginRedirect();
-    if (S?.login)         return S.login();
+    try {
+      console.log("[auth] 구글 로그인 시작");
+      if (S?.loginRedirect) {
+        await S.loginRedirect();
+      } else if (S?.login) {
+        await S.login();
+      } else {
+        console.error("[auth] 로그인 API 없음");
+      }
+    } catch (err) {
+      console.error("[auth] 로그인 에러:", err);
+    }
   }
   btnGoogle?.addEventListener("click", (e) => { e.preventDefault(); doSignIn(); });
 

@@ -16,6 +16,10 @@ export const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfi
 export const auth = getAuth(app);
 export const provider = new GoogleAuthProvider();
 
+console.log("[firebase] Firebase 초기화 완료");
+console.log("[firebase] Auth 객체:", auth);
+console.log("[firebase] Provider 객체:", provider);
+
 // 세션 유지 강제: 리디렉션 후에도 로그인 상태가 유지되도록
 setPersistence(auth, browserLocalPersistence).catch(console.error);
 
@@ -27,12 +31,22 @@ provider.setCustomParameters({
 // 준비 신호: onAuthStateChanged + 안전용 타임아웃 둘 다 사용
 export const authReady = new Promise((resolve) => {
   let settled = false;
+  console.log("[firebase] authReady Promise 시작");
   onAuthStateChanged(auth, (u) => {
     console.log("[auth] state changed:", u ? `IN as ${u.email || u.uid}` : "OUT");
-    if (!settled) { settled = true; resolve(); }
+    if (!settled) { 
+      settled = true; 
+      console.log("[firebase] authReady 완료 (onAuthStateChanged)");
+      resolve(); 
+    }
   });
   // 로딩 순서/확장프로그램 영향 시 안전망
-  setTimeout(() => { if (!settled) resolve(); }, 1500);
+  setTimeout(() => { 
+    if (!settled) {
+      console.log("[firebase] authReady 완료 (타임아웃)");
+      resolve(); 
+    }
+  }, 1500);
 });
 
 // signOut 추적 제거
