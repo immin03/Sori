@@ -36,8 +36,13 @@
   };
 
   // ---------- 유틸 ----------
-  const getAuthUser = () =>
-    (window.firebase && firebase.auth && firebase.auth().currentUser) || null;
+  const getAuthUser = () => {
+    // v9 방식으로 수정
+    if (window.SoriUser && window.SoriUser.getCurrentUser) {
+      return window.SoriUser.getCurrentUser();
+    }
+    return null;
+  };
 
   // 정규화된 인덱스 우선 사용
   const getAllData = () => window.SoriDataIndex || window.SORI_DATA || {};
@@ -351,9 +356,9 @@
       els.speedTxt.textContent = (Math.round(v * 100) / 100).toFixed(2) + "x";
     });
 
-    // 로그인 상태 변화 → savedList 동기화
-    if (window.firebase && firebase.auth) {
-      firebase.auth().onAuthStateChanged(function(user){
+    // 로그인 상태 변화 → savedList 동기화 (v9 방식)
+    if (window.firebaseAuth) {
+      window.firebaseAuth.onAuthStateChanged(function(user){
         if (user && window.db) {
           db.collection("users").doc(user.uid).get().then(function(snap){
             if (snap.exists && snap.data() && snap.data().savedList) {

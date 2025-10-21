@@ -291,14 +291,10 @@ document.addEventListener('DOMContentLoaded', ()=>{
   
   // Firebase 준비 이벤트 리스너
   window.addEventListener('firebaseReady', () => {
-    console.log("Firebase 준비 완료, 인증 상태 확인 시작");
     try {
       window.firebaseAuth.onAuthStateChanged(user=>{ 
-        console.log("Auth state changed:", user ? `로그인됨 (${user.email})` : "로그아웃됨");
-        
         // 로그인 상태에 따른 UI 업데이트
         if (user) {
-          console.log("[UI] 사용자 로그인됨, UI 업데이트 중...");
           close(); // 모달 닫기
           
           // 로그아웃 버튼으로 변경
@@ -308,26 +304,22 @@ document.addEventListener('DOMContentLoaded', ()=>{
             loginBtn.onclick = async () => { 
               try { 
                 await window.SoriUser?.logout?.(); 
-                console.log("[UI] 로그아웃 완료");
               } catch(e){
-                console.error("[UI] 로그아웃 실패:", e);
+                console.error("로그아웃 실패:", e);
               }
             };
-            console.log("[UI] 버튼이 'Logout'으로 변경됨");
           }
         } else {
-          console.log("[UI] 사용자 로그아웃됨, UI 업데이트 중...");
           // 로그인 버튼으로 변경
           const loginBtn = document.getElementById('openLogin');
           if (loginBtn) {
             loginBtn.textContent = 'Login';
             loginBtn.onclick = open;
-            console.log("[UI] 버튼이 'Login'으로 변경됨");
           }
         }
       }); 
     } catch(e) {
-      console.log("Auth state change error:", e);
+      console.error("Auth state error:", e);
     }
   });
 });
