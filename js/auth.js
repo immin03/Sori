@@ -1,37 +1,38 @@
 import { auth, provider, authReady } from "./firebase-init.js";
 import { signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
 
-console.log("[auth] loaded");
+// 중복 클릭 방지 플래그
+let loggingIn = false;
 
-// 로그인 버튼 선택 (더 안전한 방식)
-const btn = document.getElementById("loginBtn") || document.querySelector('[data-role="login"]') || document.querySelector('#loginBtn');
-if (btn) btn.disabled = true;
+// 이벤트 위임: 문서 전체에서 [data-login] 또는 지정 클래스 클릭을 잡음
+const LOGIN_SELECTOR = '[data-login], .js-login, #loginBtn, .google-login, #googleLoginBtn';
 
-// 준비되면 버튼 활성화
-authReady.then(() => {
-  if (btn) btn.disabled = false;
-  console.log("[auth] ready");
-});
+document.addEventListener("click", async (e) => {
+  const trigger = e.target.closest(LOGIN_SELECTOR);
+  if (!trigger) return;
 
-// 리디렉션 로그인만 사용
-let inFlight = false;
-btn?.addEventListener("click", async (e) => {
   e.preventDefault();
-  if (inFlight) return;
-  inFlight = true;
+
+  if (loggingIn) {
+    console.log("[auth] 로그인 진행 중, 중복 클릭 무시");
+    return;
+  }
+  
+  loggingIn = true;
+
   try {
-    await authReady;
+    await authReady;                         // 준비 보장
     console.log("[auth] redirect login start");
     await signInWithRedirect(auth, provider);
-  } catch (e) {
-    console.error("[auth] redirect error", e);
-    alert("Login failed: " + e.message);
-  } finally {
-    inFlight = false;
+    // 여기서 페이지가 구글로 이동하므로 아래는 보통 실행되지 않음
+  } catch (err) {
+    loggingIn = false;
+    console.error("[auth] redirect error", err);
+    alert("Login failed: " + (err?.message || err));
   }
 });
 
-// 복귀 처리: 성공 시 UI 고정, 실패만 알림
+// 리디렉션 복귀 처리 + 상태 로깅
 getRedirectResult(auth)
   .then((res) => {
     if (res?.user) {
@@ -50,18 +51,24 @@ getRedirectResult(auth)
       if (modal) {
         modal.classList.remove('open');
       }
+    } else {
+      console.log("[auth] redirect result: none (checking existing session)");
     }
   })
   .catch((e) => console.error("[auth] redirect result error", e));
 
 // 기존 window 함수들도 유지 (호환성)
 window.handleGoogleLogin = async function () {
+  if (loggingIn) return;
+  loggingIn = true;
+  
   try {
     await authReady;
-    console.log("[auth] handleGoogleLogin 리디렉션 시작");
+    console.log("[auth] handleGoogleLogin redirect start");
     await signInWithRedirect(auth, provider);
   } catch (e) {
-    console.error("[auth] handleGoogleLogin 실패:", e);
+    loggingIn = false;
+    console.error("[auth] handleGoogleLogin error:", e);
     alert("로그인 실패: " + e.message);
   }
 };
@@ -96,3 +103,5 @@ authReady.then(() => {
   window.firebaseAuth = auth;
   window.dispatchEvent(new CustomEvent('firebaseReady'));
 });
+
+console.log("[auth] loaded with event delegation");

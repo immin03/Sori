@@ -48,3 +48,8 @@ authReady.then(() => { window.__authReady = true; });
 
 // 디버그 로그 (필요하면 유지)
 console.log("[firebase-init] loaded");
+console.log("[firebase-init] Firebase config:", {
+  apiKey: firebaseConfig.apiKey.substring(0, 10) + "...",
+  authDomain: firebaseConfig.authDomain,
+  projectId: firebaseConfig.projectId
+});
