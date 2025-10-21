@@ -1,17 +1,40 @@
 import { auth, provider, authReady } from "./firebase-init.js";
 import { signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
 
-// 중복 클릭 방지 플래그
+// 버튼 캐시
+const openBtn   = document.getElementById("openLogin");   // 모달 열기
+const googleBtn = document.getElementById("googleLogin"); // 실제 로그인
+
+// 사용자 제스처 감지 (자동 실행 방지)
+let lastUserGestureAt = 0;
+["pointerdown","keydown"].forEach(ev =>
+  window.addEventListener(ev, () => { lastUserGestureAt = Date.now(); }, { capture:true })
+);
+
+// 모달 열기 버튼: 모달만 열고 로그인은 절대 하지 않음
+openBtn?.addEventListener("click", (e) => {
+  e.preventDefault();
+  console.log("[auth] open login modal");
+  
+  // 모달 열기
+  const modal = document.getElementById('authModal');
+  if (modal) {
+    modal.classList.add('open');
+  }
+});
+
+// 중복 클릭 방지
 let loggingIn = false;
 
-// 이벤트 위임: 문서 전체에서 [data-login] 또는 지정 클래스 클릭을 잡음
-const LOGIN_SELECTOR = '[data-login], .js-login, #loginBtn, .google-login, #googleLoginBtn';
-
-document.addEventListener("click", async (e) => {
-  const trigger = e.target.closest(LOGIN_SELECTOR);
-  if (!trigger) return;
-
+// 구글 로그인 버튼: 여기서만 로그인
+googleBtn?.addEventListener("click", async (e) => {
   e.preventDefault();
+
+  // 최근 5초 이내 사용자 제스처가 없으면 거부 (자동실행 방지)
+  if (Date.now() - lastUserGestureAt > 5000) {
+    console.warn("[auth] no recent user gesture; blocking auto login");
+    return;
+  }
 
   if (loggingIn) {
     console.log("[auth] 로그인 진행 중, 중복 클릭 무시");
@@ -21,18 +44,18 @@ document.addEventListener("click", async (e) => {
   loggingIn = true;
 
   try {
-    await authReady;                         // 준비 보장
+    await authReady;   // 준비 보장
     console.log("[auth] redirect login start");
     await signInWithRedirect(auth, provider);
-    // 여기서 페이지가 구글로 이동하므로 아래는 보통 실행되지 않음
   } catch (err) {
-    loggingIn = false;
     console.error("[auth] redirect error", err);
     alert("Login failed: " + (err?.message || err));
+  } finally {
+    loggingIn = false;
   }
 });
 
-// 리디렉션 복귀 처리 + 상태 로깅
+// 리디렉션 결과 처리(있으면 로그만)
 getRedirectResult(auth)
   .then((res) => {
     if (res?.user) {
@@ -104,4 +127,4 @@ authReady.then(() => {
   window.dispatchEvent(new CustomEvent('firebaseReady'));
 });
 
-console.log("[auth] loaded with event delegation");
+console.log("[auth] loaded with clear separation");
