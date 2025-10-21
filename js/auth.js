@@ -1,5 +1,5 @@
 import { auth, provider, authReady } from "./firebase-init.js";
-import { signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+import { signInWithPopup, signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
 
 let loggingIn = false;
 let lastUserGestureAt = 0;
@@ -8,6 +8,43 @@ let lastUserGestureAt = 0;
 ["pointerdown","keydown"].forEach(ev =>
   window.addEventListener(ev, () => { lastUserGestureAt = Date.now(); }, { capture:true })
 );
+
+// 팝업 우선 + 리디렉션 폴백 로그인 함수
+async function doGoogleLogin() {
+  await authReady;
+
+  try {
+    // 1) 팝업 먼저 시도
+    console.log("[auth] popup login start");
+    const r = await signInWithPopup(auth, provider);
+    console.log("[auth] popup login ok:", r.user?.email);
+    
+    // 성공 메시지 표시
+    const toast = document.getElementById('congrats');
+    if (toast) {
+      toast.textContent = `환영합니다, ${r.user.displayName}님!`;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+    
+    // 모달 닫기
+    const modal = document.getElementById('authModal');
+    if (modal) {
+      modal.classList.remove('open');
+    }
+    return;
+  } catch (e) {
+    // 2) 팝업이 차단/취소됐다면 리디렉션으로 폴백
+    if (e?.code === "auth/popup-blocked" || e?.code === "auth/cancelled-popup-request") {
+      console.warn("[auth] popup blocked -> redirect fallback");
+      await signInWithRedirect(auth, provider);
+      return;
+    }
+    console.error("[auth] popup error:", e);
+    alert("Login failed: " + (e?.message || e));
+    return;
+  }
+}
 
 // 1) 모달 열기 버튼(헤더)은 오직 모달 열기만 담당
 function bindOpenButton() {
@@ -49,10 +86,9 @@ function bindGoogleButton() {
 
     try {
       await authReady;
-      console.log("[auth] redirect login start");
-      await signInWithRedirect(auth, provider);
+      await doGoogleLogin();
     } catch (err) {
-      console.error("[auth] redirect error", err);
+      console.error("[auth] login error", err);
       alert("Login failed: " + (err?.message || err));
     } finally {
       loggingIn = false;
@@ -116,7 +152,10 @@ getRedirectResult(auth)
       console.log("[auth] redirect result: none (checking existing session)");
     }
   })
-  .catch((e) => console.error("[auth] redirect result error", e));
+  .catch((e) => {
+    console.error("[auth] redirect result error", e?.code, e?.message, e);
+    alert("Login failed: " + (e?.message || e));
+  });
 
 // 기존 window 함수들도 유지 (호환성)
 window.handleGoogleLogin = async function () {
