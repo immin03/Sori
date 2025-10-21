@@ -41,4 +41,6 @@ export const authReady = new Promise((resolve) => {
 window.__authReady = false;
 authReady.then(() => { window.__authReady = true; });
 
+// Auth 준비 완료 이벤트 발생 (auth.js에서 처리)
+
 // 디버그 로그 제거

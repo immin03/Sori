@@ -332,8 +332,10 @@ document.addEventListener('DOMContentLoaded', ()=>{
   // 즐겨찾기/저장 클릭 시 로그인 요구 게이트
   async function requireLoginThen(action) {
     try {
-      const u = window.SoriUser?.getCurrentUser();
-      if (u) return action?.();
+      if (window.SoriUser && typeof window.SoriUser.getCurrentUser === 'function') {
+        const u = window.SoriUser.getCurrentUser();
+        if (u) return action?.();
+      }
       // 아직 로그인 안됨 → 알림만 표시
       alert("로그인 후 이용해주세요.");
     } catch (e) {
@@ -345,7 +347,15 @@ document.addEventListener('DOMContentLoaded', ()=>{
   // Saved 버튼들 게이트 적용
   safeOn(btnScrap, "click", (e) => {
     // app.js의 실제 저장 로직을 막지 않으면서, 미로그인일 때만 가로채기
-    const isLoggedIn = !!window.SoriUser?.getCurrentUser();
+    let isLoggedIn = false;
+    try {
+      if (window.SoriUser && typeof window.SoriUser.getCurrentUser === 'function') {
+        isLoggedIn = !!window.SoriUser.getCurrentUser();
+      }
+    } catch (e) {
+      console.warn("btnScrap login check error:", e);
+    }
+    
     if (!isLoggedIn) {
       e.stopImmediatePropagation();
       e.preventDefault();
@@ -354,7 +364,15 @@ document.addEventListener('DOMContentLoaded', ()=>{
   });
 
   safeOn(btnSaved, "click", (e) => {
-    const isLoggedIn = !!window.SoriUser?.getCurrentUser();
+    let isLoggedIn = false;
+    try {
+      if (window.SoriUser && typeof window.SoriUser.getCurrentUser === 'function') {
+        isLoggedIn = !!window.SoriUser.getCurrentUser();
+      }
+    } catch (e) {
+      console.warn("btnSaved login check error:", e);
+    }
+    
     if (!isLoggedIn) {
       e.stopImmediatePropagation();
       e.preventDefault();

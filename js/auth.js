@@ -110,7 +110,7 @@ if (document.readyState === 'loading') {
   init();
 }
 
-// 전역 함수들
+// 전역 함수들 - 즉시 정의
 window.SoriUser = {
   logout: () => auth.signOut(),
   isLoggedIn: () => !!auth.currentUser,
@@ -134,5 +134,11 @@ window.SoriUser = {
     auth.onAuthStateChanged(callback);
   }
 };
+
+// Auth 준비 완료 이벤트 발생
+authReady.then(() => {
+  window.firebaseAuth = auth;
+  window.dispatchEvent(new CustomEvent('firebaseReady'));
+});
 
 // 로드 완료

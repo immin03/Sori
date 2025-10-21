@@ -38,11 +38,15 @@
   // ---------- 유틸 ----------
   const getAuthUser = () => {
     // v9 방식으로 수정 - 더 강력한 체크
-    if (window.SoriUser && window.SoriUser.getCurrentUser) {
-      const user = window.SoriUser.getCurrentUser();
-      if (user && user.email) {
-        return user;
+    try {
+      if (window.SoriUser && typeof window.SoriUser.getCurrentUser === 'function') {
+        const user = window.SoriUser.getCurrentUser();
+        if (user && user.email) {
+          return user;
+        }
       }
+    } catch (e) {
+      console.warn("getAuthUser error:", e);
     }
     return null;
   };
