@@ -88,15 +88,12 @@ function updateUI(isLoggedIn, user = null) {
   }
 }
 
-// 리디렉션 결과 처리
-getRedirectResult(auth).then((result) => {
-  if (result?.user) {
-    updateUI(true, result.user);
-  }
-}).catch(console.error);
+// 리디렉션 결과 처리 (사용자 액션 시에만)
+// getRedirectResult는 Google 로그인 버튼 클릭 시에만 호출
 
-// 인증 상태 변경 감지
+// 인증 상태 변경 감지 (UI 업데이트만, 자동 로그인 없음)
 auth.onAuthStateChanged((user) => {
+  // UI만 업데이트하고 자동으로 모달을 열거나 로그인을 시도하지 않음
   updateUI(!!user, user);
 });
 
@@ -117,7 +114,26 @@ if (document.readyState === 'loading') {
 window.SoriUser = {
   logout: () => auth.signOut(),
   isLoggedIn: () => !!auth.currentUser,
-  getCurrentUser: () => auth.currentUser
+  getCurrentUser: () => auth.currentUser,
+  user: auth.currentUser,
+  loginWithPopup: async () => {
+    const result = await signInWithPopup(auth, provider);
+    return result;
+  },
+  login: async () => {
+    // 팝업 시도 후 차단되면 리디렉션
+    try {
+      return await signInWithPopup(auth, provider);
+    } catch (e) {
+      if (e.code === "auth/popup-blocked") {
+        return await signInWithRedirect(auth, provider);
+      }
+      throw e;
+    }
+  },
+  onAuth: (callback) => {
+    auth.onAuthStateChanged(callback);
+  }
 };
 
 // 로드 완료

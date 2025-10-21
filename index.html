@@ -289,39 +289,130 @@ document.addEventListener('DOMContentLoaded', ()=>{
   closeBtn?.addEventListener('click', close);
   modal?.addEventListener('click', e=>{ if(e.target===modal) close(); });
   
-  // Firebase 준비 이벤트 리스너
-  window.addEventListener('firebaseReady', () => {
+/* Sori Auth UI — drop-in fix, login only */
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const modal = $("authModal");
+  const btnOpen = $("openLogin");
+  const btnClose = $("authClose");
+  const btnGoogle = $("googleLogin");
+  const btnScrap = $("scrapBtn");
+  const btnSaved = $("savedBtn");         // 상단 Saved
+  const btnSavedHidden = $("savedBtnHidden"); // 실제 탭 전환용
+
+  // 모달 제어
+  const openModal = () => modal?.classList.add("open");
+  const closeModal = () => modal?.classList.remove("open");
+
+  // 한 번만 바인딩되도록 기존 리스너 제거 후 재등록
+  function safeOn(el, type, fn) {
+    if (!el) return;
+    el.removeEventListener(type, fn);
+    el.addEventListener(type, fn, { passive: true });
+  }
+
+  // 로그인 상태에 따라 UI 스위칭
+  function setLoggedInUI(user) {
+    if (!btnOpen) return;
+    if (user) {
+      btnOpen.textContent = "Logout";
+      btnOpen.onclick = async () => {
+        try { await window.SoriUser?.logout?.(); }
+        catch (e) { console.error("로그아웃 실패:", e); }
+      };
+      // 로그인 완료 후 모달 닫기
+      closeModal();
+      // 저장 버튼 아이콘 상태 클래스 동기화는 app.js가 담당하므로 여기선 미개입
+    } else {
+      btnOpen.textContent = "Login";
+      btnOpen.onclick = () => openModal();
+    }
+  }
+
+  // 즐겨찾기/저장 클릭 시 로그인 요구 게이트
+  async function requireLoginThen(action) {
     try {
-      window.firebaseAuth.onAuthStateChanged(user=>{ 
-        // 로그인 상태에 따른 UI 업데이트
-        if (user) {
-          close(); // 모달 닫기
-          
-          // 로그아웃 버튼으로 변경
-          const loginBtn = document.getElementById('openLogin');
-          if (loginBtn) {
-            loginBtn.textContent = 'Logout';
-            loginBtn.onclick = async () => { 
-              try { 
-                await window.SoriUser?.logout?.(); 
-              } catch(e){
-                console.error("로그아웃 실패:", e);
-              }
-            };
-          }
-        } else {
-          // 로그인 버튼으로 변경
-          const loginBtn = document.getElementById('openLogin');
-          if (loginBtn) {
-            loginBtn.textContent = 'Login';
-            loginBtn.onclick = open;
-          }
-        }
-      }); 
-    } catch(e) {
-      console.error("Auth state error:", e);
+      const u = window.firebaseAuth?.currentUser || window.SoriUser?.user;
+      if (u) return action?.();
+      // 아직 로그인 안됨 → 모달 열고 한번만 후속 실행
+      openModal();
+
+      const once = (ev) => {
+        document.removeEventListener("sori:logged-in", once);
+        action?.();
+      };
+      document.addEventListener("sori:logged-in", once, { once: true });
+    } catch (e) {
+      console.warn("requireLoginThen error:", e);
+      openModal();
+    }
+  }
+
+  // Saved 버튼들 게이트 적용
+  safeOn(btnScrap, "click", (e) => {
+    // app.js의 실제 저장 로직을 막지 않으면서, 미로그인일 때만 가로채기
+    const isLoggedIn = !!(window.firebaseAuth?.currentUser || window.SoriUser?.user);
+    if (!isLoggedIn) {
+      e.stopImmediatePropagation();
+      e.preventDefault();
+      requireLoginThen(() => btnScrap.click());
     }
   });
+
+  safeOn(btnSaved, "click", (e) => {
+    const isLoggedIn = !!(window.firebaseAuth?.currentUser || window.SoriUser?.user);
+    if (!isLoggedIn) {
+      e.stopImmediatePropagation();
+      e.preventDefault();
+      requireLoginThen(() => btnSavedHidden?.click());
+    }
+  });
+
+  // 모달 바인딩
+  safeOn(btnClose, "click", closeModal);
+  safeOn(modal, "click", (e) => { if (e.target === modal) closeModal(); });
+
+  // Google 로그인 버튼
+  safeOn(btnGoogle, "click", async () => {
+    try {
+      // 가능하면 팝업 로그인 우선
+      if (window.SoriUser?.loginWithPopup) {
+        await window.SoriUser.loginWithPopup();
+      } else if (window.SoriUser?.login) {
+        await window.SoriUser.login(); // 내부에서 popup/redirect 선택
+      } else {
+        alert("로그인 모듈이 초기화되지 않았습니다. 새로고침 후 다시 시도해 주세요.");
+        return;
+      }
+      // 성공 시 신호 발행
+      document.dispatchEvent(new CustomEvent("sori:logged-in"));
+    } catch (e) {
+      console.error("Google 로그인 실패:", e);
+      alert("로그인에 실패했어요. 팝업 차단을 해제하고 다시 시도해 주세요.");
+    }
+  });
+
+  // Firebase 준비되면 auth 상태 구독
+  window.addEventListener("firebaseReady", () => {
+    try {
+      // 자동 로그인처럼 보이는 현상 최소화: UI만 조용히 바꾸고 모달은 열지 않음
+      window.firebaseAuth?.onAuthStateChanged?.((user) => setLoggedInUI(user));
+      // 혹시 SoriUser가 자체 이벤트를 발행한다면 동기화
+      if (window.SoriUser?.onAuth) {
+        window.SoriUser.onAuth((user) => setLoggedInUI(user));
+      }
+      // 초기 상태 반영
+      setLoggedInUI(window.firebaseAuth?.currentUser || window.SoriUser?.user || null);
+    } catch (e) {
+      console.error("Auth state wiring error:", e);
+    }
+  });
+
+  // firebaseReady가 이미 지난 시점일 수도 있으니 한 번 더 시도
+  setTimeout(() => {
+    setLoggedInUI(window.firebaseAuth?.currentUser || window.SoriUser?.user || null);
+  }, 0);
+})();
 });
 </script>
 
