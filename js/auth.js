@@ -29,20 +29,14 @@ function bindGoogleButton() {
 
     try {
       await authReady;
-      console.log("[auth] 로그인 시작");
-      
       // 팝업 시도
       try {
         const result = await signInWithPopup(auth, provider);
-        console.log("[auth] 로그인 성공:", result.user.email);
-        
-        // UI 업데이트
         updateUI(true, result.user);
         
       } catch (popupError) {
         // 팝업 차단 시 리디렉션
         if (popupError.code === "auth/popup-blocked") {
-          console.log("[auth] 팝업 차단됨, 리디렉션으로 전환");
           await signInWithRedirect(auth, provider);
         } else {
           throw popupError;
@@ -97,22 +91,13 @@ function updateUI(isLoggedIn, user = null) {
 // 리디렉션 결과 처리
 getRedirectResult(auth).then((result) => {
   if (result?.user) {
-    console.log("[auth] 리디렉션 로그인 성공:", result.user.email);
     updateUI(true, result.user);
   }
-}).catch((e) => {
-  console.error("[auth] 리디렉션 오류:", e.message);
-});
+}).catch(console.error);
 
 // 인증 상태 변경 감지
 auth.onAuthStateChanged((user) => {
-  if (user) {
-    console.log("[auth] 로그인 상태:", user.email);
-    updateUI(true, user);
-  } else {
-    console.log("[auth] 로그아웃 상태");
-    updateUI(false);
-  }
+  updateUI(!!user, user);
 });
 
 // 버튼 바인딩
@@ -135,4 +120,4 @@ window.SoriUser = {
   getCurrentUser: () => auth.currentUser
 };
 
-console.log("[auth] 로드 완료");
+// 로드 완료

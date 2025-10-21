@@ -17,9 +17,7 @@ export const auth = getAuth(app);
 export const provider = new GoogleAuthProvider();
 
 // 세션 유지 강제: 리디렉션 후에도 로그인 상태가 유지되도록
-setPersistence(auth, browserLocalPersistence)
-  .then(() => console.log("[firebase-init] 세션 퍼시스턴스 설정 완료"))
-  .catch(err => console.error("[firebase-init] 세션 퍼시스턴스 설정 실패:", err));
+setPersistence(auth, browserLocalPersistence).catch(console.error);
 
 // 팝업 차단 방지를 위한 추가 설정
 provider.setCustomParameters({
@@ -37,21 +35,10 @@ export const authReady = new Promise((resolve) => {
   setTimeout(() => { if (!settled) resolve(); }, 1500);
 });
 
-// 디버그: 전역 signOut 호출 추적
-const _signOut = auth.signOut.bind(auth);
-auth.signOut = async (...args) => {
-  console.warn("[auth] signOut called!", new Error().stack);
-  return _signOut(...args);
-};
+// signOut 추적 제거
 
 // 전역 디버그 플래그(이전 코드가 참조하던 경우 대비)
 window.__authReady = false;
 authReady.then(() => { window.__authReady = true; });
 
-// 디버그 로그 (필요하면 유지)
-console.log("[firebase-init] loaded");
-console.log("[firebase-init] Firebase config:", {
-  apiKey: firebaseConfig.apiKey.substring(0, 10) + "...",
-  authDomain: firebaseConfig.authDomain,
-  projectId: firebaseConfig.projectId
-});
+// 디버그 로그 제거

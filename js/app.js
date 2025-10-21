@@ -37,9 +37,12 @@
 
   // ---------- 유틸 ----------
   const getAuthUser = () => {
-    // v9 방식으로 수정
+    // v9 방식으로 수정 - 더 강력한 체크
     if (window.SoriUser && window.SoriUser.getCurrentUser) {
-      return window.SoriUser.getCurrentUser();
+      const user = window.SoriUser.getCurrentUser();
+      if (user && user.email) {
+        return user;
+      }
     }
     return null;
   };
@@ -208,21 +211,35 @@
   // ---------- 별(스크랩) ----------
   async function toggleScrap() {
     const user = getAuthUser();
-    if (!user) { alert("Please login to save phrases."); return; }
+    console.log("저장 시도 - 사용자:", user ? user.email : "없음");
+    if (!user) { 
+      alert("로그인 후 저장하세요."); 
+      return; 
+    }
+    
     const p = phrases[currentIndex];
     if (!p) return;
+    
     const id = p.id;
     const i = savedList.indexOf(id);
-    if (i >= 0) savedList.splice(i, 1);
-    else savedList.push(id);
+    if (i >= 0) {
+      savedList.splice(i, 1);
+    } else {
+      savedList.push(id);
+    }
     renderScrapStar(id);
 
+    // 로컬 저장
+    localStorage.setItem("soriSaved", JSON.stringify(savedList));
+    
+    // 클라우드 저장 (선택적)
     try {
-      if (window.db) {
+      if (window.db && user.uid) {
         await db.collection("users").doc(user.uid).set({ savedList: savedList }, { merge: true });
       }
-    } catch (e) { console.warn("cloud save failed, fallback to local", e); }
-    localStorage.setItem("soriSaved", JSON.stringify(savedList));
+    } catch (e) { 
+      // 클라우드 저장 실패해도 로컬은 저장됨
+    }
   }
 
   function findPhraseById(id) {
