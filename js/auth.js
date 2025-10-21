@@ -66,15 +66,31 @@ function safeBindAll() {
   bindGoogleButton();
 }
 
-// 4) 모달/동적 렌더도 잡기 위해 MutationObserver로 재바인딩
-const mo = new MutationObserver(() => safeBindAll());
-mo.observe(document.body, { childList: true, subtree: true });
+// 4) 모달/동적 렌더도 잡기 위해 MutationObserver로 재바인딩 (자동 실행 방지)
+let observerActive = false;
+const mo = new MutationObserver(() => {
+  if (observerActive) {
+    safeBindAll();
+  }
+});
 
-// 5) 초기 한 번 실행
+// DOM이 완전히 로드된 후에만 observer 활성화
+document.addEventListener("DOMContentLoaded", () => {
+  setTimeout(() => {
+    observerActive = true;
+    mo.observe(document.body, { childList: true, subtree: true });
+  }, 500);
+});
+
+// 5) 초기 한 번 실행 (자동 실행 방지)
 if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", safeBindAll);
+  document.addEventListener("DOMContentLoaded", () => {
+    // 약간의 지연을 두어 자동 실행 방지
+    setTimeout(safeBindAll, 100);
+  });
 } else {
-  safeBindAll();
+  // 이미 로드된 경우에도 지연
+  setTimeout(safeBindAll, 100);
 }
 
 // 6) 리디렉션 복귀 로그 (성공 시 사용자 표시)
