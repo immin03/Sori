@@ -115,7 +115,6 @@ window.SoriUser = {
   logout: () => auth.signOut(),
   isLoggedIn: () => !!auth.currentUser,
   getCurrentUser: () => auth.currentUser,
-  user: auth.currentUser,
   loginWithPopup: async () => {
     const result = await signInWithPopup(auth, provider);
     return result;
