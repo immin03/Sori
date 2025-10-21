@@ -23,26 +23,33 @@ btn?.addEventListener("click", async () => {
   }
 });
 
-// 리디렉션 복귀 처리(선택)
-getRedirectResult(auth).then((res) => {
-  if (res?.user) {
-    console.log("[auth] signed in:", res.user.email);
-    
-    // 성공 메시지 표시
-    const toast = document.getElementById('congrats');
-    if (toast) {
-      toast.textContent = `환영합니다, ${res.user.displayName}님!`;
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 3000);
+// 리디렉션 복귀 처리 개선
+authReady.then(async () => {
+  try {
+    const result = await getRedirectResult(auth);
+    if (result?.user) {
+      console.log("[auth] 리디렉션 로그인 성공:", result.user.email);
+      
+      // 성공 메시지 표시
+      const toast = document.getElementById('congrats');
+      if (toast) {
+        toast.textContent = `환영합니다, ${result.user.displayName}님!`;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+      }
+      
+      // 모달 닫기
+      const modal = document.getElementById('authModal');
+      if (modal) {
+        modal.classList.remove('open');
+      }
+    } else {
+      console.log("[auth] 리디렉션 결과 없음 - 기존 세션 확인 중...");
     }
-    
-    // 모달 닫기
-    const modal = document.getElementById('authModal');
-    if (modal) {
-      modal.classList.remove('open');
-    }
+  } catch (error) {
+    console.error("[auth] 리디렉션 처리 오류:", error);
   }
-}).catch(console.error);
+});
 
 // 기존 window 함수들도 유지 (호환성)
 window.handleGoogleLogin = async function () {

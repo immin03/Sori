@@ -320,8 +320,15 @@ document.addEventListener('DOMContentLoaded', ()=>{
     console.log("Firebase 준비 완료, 인증 상태 확인 시작");
     try {
       window.firebaseAuth.onAuthStateChanged(user=>{ 
-        console.log("Auth state changed:", user ? "로그인됨" : "로그아웃됨");
-        user ? (close(), wireAsLogout()) : wireAsLogin(); 
+        console.log("Auth state changed:", user ? `로그인됨 (${user.email})` : "로그아웃됨");
+        
+        // 로그인 상태에 따른 UI 업데이트
+        if (user) {
+          close(); // 모달 닫기
+          wireAsLogout(); // 로그아웃 버튼으로 변경
+        } else {
+          wireAsLogin(); // 로그인 버튼으로 변경
+        }
       }); 
     } catch(e) {
       console.log("Auth state change error:", e);
