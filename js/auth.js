@@ -81,5 +81,7 @@ window.SoriUser = {
 
 // Auth 준비 완료 이벤트 발생
 authReady.then(() => {
+  // index.html에서 사용하는 window.firebaseAuth 노출
+  window.firebaseAuth = auth;
   window.dispatchEvent(new CustomEvent('firebaseReady'));
 });
