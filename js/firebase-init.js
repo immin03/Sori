@@ -23,13 +23,17 @@ provider.setCustomParameters({
 
 // 준비 신호: onAuthStateChanged + 안전용 타임아웃 둘 다 사용
 export const authReady = new Promise((resolve) => {
-  let done = false;
+  let settled = false;
   onAuthStateChanged(auth, () => {
-    if (!done) { done = true; resolve(); }
+    if (!settled) { settled = true; resolve(); }
   });
-  // 혹시 브라우저/확장프로그램 때문에 콜백이 지연되면 1.5초 후 강제 준비 완료
-  setTimeout(() => { if (!done) resolve(); }, 1500);
+  // 로딩 순서/확장프로그램 영향 시 안전망
+  setTimeout(() => { if (!settled) resolve(); }, 1200);
 });
+
+// 전역 디버그 플래그(이전 코드가 참조하던 경우 대비)
+window.__authReady = false;
+authReady.then(() => { window.__authReady = true; });
 
 // 디버그 로그 (필요하면 유지)
 console.log("[firebase-init] loaded");

@@ -1,9 +1,10 @@
 import { auth, provider, authReady } from "./firebase-init.js";
-import { signInWithPopup, getRedirectResult } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+import { signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
 
 console.log("[auth] loaded");
 
-const btn = document.getElementById("loginBtn"); // 실제 버튼 id와 일치해야 함
+// 로그인 버튼 선택 (더 안전한 방식)
+const btn = document.getElementById("loginBtn") || document.querySelector('[data-role="login"]') || document.querySelector('#loginBtn');
 if (btn) btn.disabled = true;
 
 // 준비되면 버튼 활성화
@@ -12,36 +13,16 @@ authReady.then(() => {
   console.log("[auth] ready");
 });
 
-// 팝업 방식 로그인으로 변경
-btn?.addEventListener("click", async () => {
+// 리디렉션 방식 로그인
+btn?.addEventListener("click", async (e) => {
+  e.preventDefault();
   try {
-    await authReady; // 준비 전 실행 금지
-    console.log("[auth] 팝업 로그인 시작");
-    const result = await signInWithPopup(auth, provider);
-    console.log("[auth] 팝업 로그인 성공:", result.user.email);
-    
-    // 성공 메시지 표시
-    const toast = document.getElementById('congrats');
-    if (toast) {
-      toast.textContent = `환영합니다, ${result.user.displayName}님!`;
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 3000);
-    }
-    
-    // 모달 닫기
-    const modal = document.getElementById('authModal');
-    if (modal) {
-      modal.classList.remove('open');
-    }
+    await authReady; // 반드시 준비 보장
+    console.log("[auth] 리디렉션 로그인 시작");
+    await signInWithRedirect(auth, provider);
   } catch (e) {
-    console.error("[auth] 팝업 로그인 실패:", e);
-    if (e.code === 'auth/popup-blocked') {
-      alert("팝업이 차단되었습니다. 브라우저에서 팝업을 허용해주세요.");
-    } else if (e.code === 'auth/popup-closed-by-user') {
-      console.log("[auth] 사용자가 팝업을 닫았습니다.");
-    } else {
-      alert("로그인 실패: " + e.message);
-    }
+    console.error("[auth] 리디렉션 로그인 실패:", e);
+    alert("로그인 실패: " + e.message);
   }
 });
 
@@ -77,32 +58,11 @@ authReady.then(async () => {
 window.handleGoogleLogin = async function () {
   try {
     await authReady;
-    console.log("[auth] handleGoogleLogin 팝업 시작");
-    const result = await signInWithPopup(auth, provider);
-    console.log("[auth] handleGoogleLogin 성공:", result.user.email);
-    
-    // 성공 메시지 표시
-    const toast = document.getElementById('congrats');
-    if (toast) {
-      toast.textContent = `환영합니다, ${result.user.displayName}님!`;
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 3000);
-    }
-    
-    // 모달 닫기
-    const modal = document.getElementById('authModal');
-    if (modal) {
-      modal.classList.remove('open');
-    }
+    console.log("[auth] handleGoogleLogin 리디렉션 시작");
+    await signInWithRedirect(auth, provider);
   } catch (e) {
     console.error("[auth] handleGoogleLogin 실패:", e);
-    if (e.code === 'auth/popup-blocked') {
-      alert("팝업이 차단되었습니다. 브라우저에서 팝업을 허용해주세요.");
-    } else if (e.code === 'auth/popup-closed-by-user') {
-      console.log("[auth] 사용자가 팝업을 닫았습니다.");
-    } else {
-      alert("로그인 실패: " + e.message);
-    }
+    alert("로그인 실패: " + e.message);
   }
 };
 
