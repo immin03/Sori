@@ -1,55 +1,7 @@
 import { auth, provider, authReady } from "./firebase-init.js";
-import { signInWithPopup, signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+import { signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
 
 let loggingIn = false;
-
-// 모달 열기 버튼
-function bindOpenButton() {
-  const openBtn = document.getElementById("openLogin");
-  if (!openBtn || openBtn.dataset.wired) return;
-  openBtn.dataset.wired = "1";
-  
-  openBtn.addEventListener("click", (e) => {
-    e.preventDefault();
-    const modal = document.getElementById('authModal');
-    if (modal) modal.classList.add('open');
-  });
-}
-
-// 구글 로그인 버튼
-function bindGoogleButton() {
-  const googleBtn = document.getElementById("googleLogin");
-  if (!googleBtn || googleBtn.dataset.wired) return;
-  googleBtn.dataset.wired = "1";
-
-  googleBtn.addEventListener("click", async (e) => {
-    e.preventDefault();
-    if (loggingIn) return;
-    loggingIn = true;
-
-    try {
-      await authReady;
-      // 팝업 시도
-      try {
-        const result = await signInWithPopup(auth, provider);
-        updateUI(true, result.user);
-        
-      } catch (popupError) {
-        // 팝업 차단 시 리디렉션
-        if (popupError.code === "auth/popup-blocked") {
-          await signInWithRedirect(auth, provider);
-        } else {
-          throw popupError;
-        }
-      }
-    } catch (err) {
-      console.error("[auth] 로그인 실패:", err.message);
-      alert("로그인 실패: " + err.message);
-    } finally {
-      loggingIn = false;
-    }
-  });
-}
 
 // UI 업데이트 함수
 function updateUI(isLoggedIn, user = null) {
@@ -88,50 +40,39 @@ function updateUI(isLoggedIn, user = null) {
   }
 }
 
-// 리디렉션 결과 처리 (사용자 액션 시에만)
-// getRedirectResult는 Google 로그인 버튼 클릭 시에만 호출
-
 // 인증 상태 변경 감지 (UI 업데이트만, 자동 로그인 없음)
 auth.onAuthStateChanged((user) => {
   // UI만 업데이트하고 자동으로 모달을 열거나 로그인을 시도하지 않음
   updateUI(!!user, user);
 });
 
-// 버튼 바인딩
-function init() {
-  bindOpenButton();
-  bindGoogleButton();
-}
-
-// 초기화
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', init);
-} else {
-  init();
-}
-
-// 전역 함수들 - 즉시 정의
+// 전역 함수들 - redirect만 사용, popup 제거
 window.SoriUser = {
   logout: () => auth.signOut(),
   isLoggedIn: () => !!auth.currentUser,
   getCurrentUser: () => auth.currentUser,
-  loginWithPopup: async () => {
-    const result = await signInWithPopup(auth, provider);
-    return result;
-  },
+  // loginRedirect: 무조건 리디렉션만 사용 (COOP 경고 제거)
   loginRedirect: async () => {
-    const result = await signInWithRedirect(auth, provider);
-    return result;
-  },
-  login: async () => {
-    // 팝업 시도 후 차단되면 리디렉션
+    if (loggingIn) return;
+    loggingIn = true;
     try {
-      return await signInWithPopup(auth, provider);
-    } catch (e) {
-      if (e.code === "auth/popup-blocked") {
-        return await signInWithRedirect(auth, provider);
-      }
-      throw e;
+      await authReady;
+      await signInWithRedirect(auth, provider);
+    } catch (err) {
+      console.error("[auth] 로그인 실패:", err.message);
+      loggingIn = false;
+    }
+  },
+  // login: loginRedirect와 동일하게 리디렉션만 사용
+  login: async () => {
+    if (loggingIn) return;
+    loggingIn = true;
+    try {
+      await authReady;
+      await signInWithRedirect(auth, provider);
+    } catch (err) {
+      console.error("[auth] 로그인 실패:", err.message);
+      loggingIn = false;
     }
   },
   onAuth: (callback) => {
@@ -143,6 +84,20 @@ window.SoriUser = {
 authReady.then(() => {
   window.firebaseAuth = auth;
   window.dispatchEvent(new CustomEvent('firebaseReady'));
+  
+  // 리디렉션 결과 처리 (페이지 로드 시 한 번만)
+  getRedirectResult(auth)
+    .then((result) => {
+      loggingIn = false;
+      if (result && result.user) {
+        console.log("[auth] 리디렉션 로그인 성공:", result.user.email);
+        updateUI(true, result.user);
+      }
+    })
+    .catch((err) => {
+      loggingIn = false;
+      if (err.code !== 'auth/popup-closed-by-user') {
+        console.error("[auth] 리디렉션 결과 처리 실패:", err.message);
+      }
+    });
 });
-
-// 로드 완료

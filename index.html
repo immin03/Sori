@@ -283,7 +283,7 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 <script defer src="js/app.js?v=20251017"></script>
 
 <script>
-/* Sori Auth — final stable gate (popup→redirect, no alerts) */
+/* Sori Auth — logout cool-down + strict modal gate (mobile-safe) */
 (function () {
   const $ = (id) => document.getElementById(id);
 
@@ -296,29 +296,39 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
   const btnSaved = $("savedBtn");
   const btnSavedHidden = $("savedBtnHidden");
 
-  // modal
-  const openModal  = () => modal?.classList.add("open");
+  // state / utils
+  const now = () => Date.now();
+  const wait = (ms)=>new Promise(r=>setTimeout(r,ms));
+
+  let wired = false;
+  let isLoggingOut = false;
+
+  // 로그아웃 직후 일정 시간 동안 어떤 경로로도 모달이 뜨지 않게 막는 절대 차단 타이머
+  // 모바일 더블탭, 지연 클릭, 캡처 단계 오동작 모두 커버
+  let blockAuthModalUntil = 0;
+
+  // 로그인 재시도용
+  let pendingAction = null;
+  let bypassGate = false;
+
+  const hasAuth = () => !!window.firebaseAuth;
+  const user = () => (window.firebaseAuth ? window.firebaseAuth.currentUser : null);
+  const loggedIn = () => !!user();
+  const hasLoginAPI = () =>
+    !!(window.SoriUser &&
+       (window.SoriUser.loginRedirect || window.SoriUser.login));
+
+  // modal helpers
+  const openModal  = () => {
+    if (now() < blockAuthModalUntil || isLoggingOut) return; // 절대 차단
+    modal?.classList.add("open");
+  };
   const closeModal = () => modal?.classList.remove("open");
   btnClose?.addEventListener("click", closeModal);
   modal?.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
+  window.addEventListener("keyup", (e)=>{ if (e.key === "Escape") closeModal(); });
 
-  // state / utils
-  const now = () => Date.now();
-  let wired = false;
-  let isLoggingOut = false;
-  let suppressAutoModalUntil = 0; // 로그아웃 직후 자동 모달 방지
-  let pendingAction = null;       // 로그인 성공 후 1회 재시도
-  let bypassGate = false;         // 재시도 클릭이 게이트에 다시 걸리지 않게
-
-  const hasAuth   = () => !!window.firebaseAuth;
-  const user      = () => (window.firebaseAuth ? window.firebaseAuth.currentUser : null);
-  const loggedIn  = () => !!user();
-  const hasLoginAPI = () => !!(window.SoriUser &&
-                              (window.SoriUser.loginWithPopup ||
-                               window.SoriUser.loginRedirect ||
-                               window.SoriUser.login));
-
-  const wait = (ms)=>new Promise(r=>setTimeout(r,ms));
+  // 공용 대기
   async function waitUntil(cond, {timeout=12000, step=60}={}) {
     const t0 = now();
     while (!cond()) {
@@ -328,49 +338,64 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
     return true;
   }
 
-  // header button
+  // 헤더 버튼 페인팅
   function paintHeaderBtn() {
     if (!btnOpen) return;
+
+    // 먼저 리스너 제거해서 동일 탭에서 핸들러 전환 중 중복 실행되는 모바일 이슈 방지
+    btnOpen.replaceWith(btnOpen.cloneNode(true));
+    const fresh = $("openLogin");
+
     if (loggedIn()) {
-      btnOpen.textContent = "Logout";
-      btnOpen.onclick = async (ev) => {
-        ev?.preventDefault?.();
-        ev?.stopPropagation?.();
+      fresh.textContent = "Logout";
+      fresh.addEventListener("pointerup", async (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
         try {
+          // 로그아웃 시작: 모달 완전 차단 + 포커스 제거
           isLoggingOut = true;
-          pendingAction = null;        // 로그아웃 시작 시 즉시 취소
-          suppressAutoModalUntil = now() + 2500;
+          pendingAction = null;
+          blockAuthModalUntil = now() + 4000;   // 4초 절대차단
+          closeModal();
+          document.activeElement?.blur();
+
           await window.SoriUser?.logout?.();
+
         } finally {
-          // 약간의 여유를 두고 플래그 해제
-          setTimeout(()=>{ isLoggingOut = false; }, 600);
+          // 약간의 여유 후 플래그 해제
+          setTimeout(()=>{ isLoggingOut = false; }, 800);
         }
-      };
+      }, {passive:false});
     } else {
-      btnOpen.textContent = "Login";
-      btnOpen.onclick = (ev) => {
-        ev?.preventDefault?.();
-        // 로그아웃 직후 같은 클릭이 여기로 들어와도 무시
-        if (now() < suppressAutoModalUntil || isLoggingOut) return;
+      fresh.textContent = "Login";
+      fresh.addEventListener("pointerup", (ev) => {
+        ev.preventDefault();
+        // 로그아웃 직후/쿨다운 중에는 절대 열지 않음
+        if (now() < blockAuthModalUntil || isLoggingOut) return;
         openModal();
-      };
+      }, {passive:false});
     }
   }
 
-  // 게이트: 로그인 안돼 있으면 모달만 띄우고 원 클릭은 차단
+  // 게이트: 미로그인 상태에서 특정 버튼 클릭 시 모달을 띄우되, 쿨다운 중이면 아무 것도 하지 않음
   function guard(el, action) {
     if (!el) return;
     el.addEventListener("click", (e) => {
-      if (bypassGate || loggedIn()) return; // 재시도 or 로그인 상태면 통과
+      if (bypassGate || loggedIn()) return; // 로그인 상태 또는 재시도 통과
       e.stopImmediatePropagation();
       e.preventDefault();
+
+      // 로그아웃 직후에는 모달도 열지 않음
+      if (now() < blockAuthModalUntil || isLoggingOut) {
+        pendingAction = null;
+        return;
+      }
       pendingAction = action;
-      // 로그아웃 직후 자동 모달 금지
-      if (now() >= suppressAutoModalUntil) openModal();
-    }, true); // capture에서 먼저 막기
+      openModal();
+    }, true);
   }
 
-  // 실제 리스너만 태우는 synthetic click (게이트는 건너뛰기)
+  // 실제 리스너만 태우는 synthetic click
   function fireClick(el) {
     if (!el) return;
     bypassGate = true;
@@ -378,7 +403,6 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
       const evt = new MouseEvent("click", {bubbles:true, cancelable:true});
       el.dispatchEvent(evt);
     } finally {
-      // 다음 틱에 해제(혹시 다른 핸들러에서 또 클릭을 만드는 경우 방지)
       setTimeout(()=>{ bypassGate = false; }, 0);
     }
   }
@@ -386,39 +410,42 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
   guard(btnScrap, () => fireClick(btnScrap));
   guard(btnSaved, () => fireClick(btnSavedHidden));
 
-  // Google sign-in: redirect만 사용 (COOP 경고 제거)
+  // Google sign-in: redirect만 사용 (COOP 경고 회피)
   async function doSignIn() {
     const ready = await waitUntil(()=> hasAuth() && hasLoginAPI());
-    if (!ready) return; // 조용히 포기(다음 클릭에서 다시 시도)
-
+    if (!ready) return;
     const S = window.SoriUser;
-    if (S?.loginRedirect) return S.loginRedirect();  // <- 무조건 redirect
+    if (S?.loginRedirect) return S.loginRedirect();
     if (S?.login)         return S.login();
   }
-
-  btnGoogle?.addEventListener("click", (e) => {
-    e?.preventDefault?.();
-    doSignIn();
-  });
+  btnGoogle?.addEventListener("click", (e) => { e.preventDefault(); doSignIn(); });
 
   // auth wiring
+  function resetScrapUI() {
+    const star = document.getElementById('scrapBtn');
+    if (star) {
+      star.classList.remove('active');
+      star.textContent = '☆';
+    }
+  }
+
   function onAuthChanged(u) {
     paintHeaderBtn();
-
     if (u) {
       // 로그인 확정
       closeModal();
       if (pendingAction) {
         const act = pendingAction; pendingAction = null;
-        // currentUser 전파가 모두 끝난 뒤 1회만 재시도
         waitUntil(()=>loggedIn(), {timeout:4000, step:80})
           .then(()=> setTimeout(()=>{ try{ act(); }catch(_){ } }, 60));
       }
     } else {
-      // 로그아웃 → 즐겨찾기 표시 초기화
+      // 로그아웃 확정
       resetScrapUI();
-      // 혹시 남아있을 수 있는 후속 동작도 무효화
       pendingAction = null;
+      // 추가 안전장치: 로그아웃이 확인된 시점에도 모달 차단 연장
+      blockAuthModalUntil = Math.max(blockAuthModalUntil, now() + 1500);
+      closeModal();
     }
   }
 
@@ -433,18 +460,9 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
   }
 
   window.addEventListener("firebaseReady", wire);
-  wire(); // 이미 준비된 경우 대비
+  wire(); // 이미 준비된 경우
 
-  // 별표 UI 초기화
-  function resetScrapUI() {
-    const star = document.getElementById('scrapBtn');
-    if (star) {
-      star.classList.remove('active'); // 빨간 별 제거
-      star.textContent = '☆';         // 아이콘도 원복(혹시 내부에서 바꿨을 때 대비)
-    }
-  }
-
-  // 디버깅용(원하면 삭제)
+  // 디버깅용
   window.SoriAuth = { loggedIn, fireClick };
 })();
 </script>
