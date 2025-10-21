@@ -87,6 +87,8 @@ h1{font-size:26px;margin:0 0 4px;color:#7c3aed;font-weight:800}
 .picker-item:hover,.picker-item.active{background:#7c3aed;color:#fff}
 .saved-btn{height:44px;padding:0 18px;border-radius:12px;background:#fff;color:#7c3aed;border:2px solid #e9defd;font-weight:800;cursor:pointer;white-space:nowrap}
 .saved-btn:hover{background:#f7f2ff}
+.saved-btn.selected{background:#7c3aed;color:#fff;border-color:#7c3aed}
+.picker-trigger.dim{background:#ede9fe;color:#6b21a8}
 
 .sub-filters{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
 .sub-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:14px;background:#fff;border:2px solid #e5e7eb;color:#374151;font-size:12px;font-weight:600;cursor:pointer;user-select:none}
@@ -336,6 +338,7 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
         ev?.stopPropagation?.();
         try {
           isLoggingOut = true;
+          pendingAction = null;        // 로그아웃 시작 시 즉시 취소
           suppressAutoModalUntil = now() + 2500;
           await window.SoriUser?.logout?.();
         } finally {
@@ -383,22 +386,13 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
   guard(btnScrap, () => fireClick(btnScrap));
   guard(btnSaved, () => fireClick(btnSavedHidden));
 
-  // Google sign-in: popup 우선, 실패 시 redirect/login 폴백. 알럿 없음.
+  // Google sign-in: redirect만 사용 (COOP 경고 제거)
   async function doSignIn() {
     const ready = await waitUntil(()=> hasAuth() && hasLoginAPI());
     if (!ready) return; // 조용히 포기(다음 클릭에서 다시 시도)
 
     const S = window.SoriUser;
-    // popup 먼저
-    if (S?.loginWithPopup) {
-      try {
-        await S.loginWithPopup();
-        return;
-      } catch (_) {
-        // popup 차단/타임아웃 → redirect / login
-      }
-    }
-    if (S?.loginRedirect) return S.loginRedirect();
+    if (S?.loginRedirect) return S.loginRedirect();  // <- 무조건 redirect
     if (S?.login)         return S.login();
   }
 
@@ -421,8 +415,10 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
           .then(()=> setTimeout(()=>{ try{ act(); }catch(_){ } }, 60));
       }
     } else {
-      // 로그아웃 직후 자동 모달 절대 X
-      // (여기서 아무 것도 하지 않음)
+      // 로그아웃 → 즐겨찾기 표시 초기화
+      resetScrapUI();
+      // 혹시 남아있을 수 있는 후속 동작도 무효화
+      pendingAction = null;
     }
   }
 
@@ -438,6 +434,15 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 
   window.addEventListener("firebaseReady", wire);
   wire(); // 이미 준비된 경우 대비
+
+  // 별표 UI 초기화
+  function resetScrapUI() {
+    const star = document.getElementById('scrapBtn');
+    if (star) {
+      star.classList.remove('active'); // 빨간 별 제거
+      star.textContent = '☆';         // 아이콘도 원복(혹시 내부에서 바꿨을 때 대비)
+    }
+  }
 
   // 디버깅용(원하면 삭제)
   window.SoriAuth = { loggedIn, fireClick };
@@ -467,6 +472,23 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
   trigger.onclick=(e)=>{ e.stopPropagation(); menu.classList.toggle('open'); };
   document.onclick=()=>menu.classList.remove('open');
   savedBtn?.addEventListener('click',()=> savedBtnHidden?.click());
+
+  // Saved/Daily 탭 색상 반전
+  function selectSavedUI(on){
+    const saved = document.getElementById('savedBtn');
+    const daily = document.getElementById('pickerTrigger');
+    saved?.classList.toggle('selected', !!on);
+    daily?.classList.toggle('dim', !!on);
+  }
+
+  // Saved 버튼 눌렀을 때 선택 표시
+  savedBtn?.addEventListener('click', () => selectSavedUI(true));
+
+  // 다른 탭(Daily/Travel/…/Numbers)로 바뀌면 선택 해제
+  ['dailyBtn','travelBtn','trendyBtn','dramaBtn','numbersBtn'].forEach(id=>{
+    const el = document.getElementById(id);
+    el && el.addEventListener('click', ()=> selectSavedUI(false));
+  });
 
   const tips=[
     "Tip: Small daily reps beat big, rare sessions.","Tip: Shadow the sound, not the spelling.",

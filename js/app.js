@@ -215,9 +215,11 @@
   // ---------- 별(스크랩) ----------
   async function toggleScrap() {
     const user = getAuthUser();
-    console.log("저장 시도 - 사용자:", user ? user.email : "없음");
-    console.log("firebaseAuth 상태:", window.firebaseAuth ? "있음" : "없음");
-    console.log("currentUser 상태:", window.firebaseAuth?.currentUser ? "있음" : "없음");
+    if (window.DEBUG) {
+      console.log("저장 시도 - 사용자:", user ? user.email : "없음");
+      console.log("firebaseAuth 상태:", window.firebaseAuth ? "있음" : "없음");
+      console.log("currentUser 상태:", window.firebaseAuth?.currentUser ? "있음" : "없음");
+    }
     if (!user) { 
       alert("로그인 후 저장하세요."); 
       return; 
