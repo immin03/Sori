@@ -13,30 +13,34 @@ authReady.then(() => {
   console.log("[auth] ready");
 });
 
-// 리디렉션 방식 로그인
+// 리디렉션 로그인만 사용
+let inFlight = false;
 btn?.addEventListener("click", async (e) => {
   e.preventDefault();
+  if (inFlight) return;
+  inFlight = true;
   try {
-    await authReady; // 반드시 준비 보장
-    console.log("[auth] 리디렉션 로그인 시작");
+    await authReady;
+    console.log("[auth] redirect login start");
     await signInWithRedirect(auth, provider);
   } catch (e) {
-    console.error("[auth] 리디렉션 로그인 실패:", e);
-    alert("로그인 실패: " + e.message);
+    console.error("[auth] redirect error", e);
+    alert("Login failed: " + e.message);
+  } finally {
+    inFlight = false;
   }
 });
 
-// 리디렉션 복귀 처리 개선
-authReady.then(async () => {
-  try {
-    const result = await getRedirectResult(auth);
-    if (result?.user) {
-      console.log("[auth] 리디렉션 로그인 성공:", result.user.email);
+// 복귀 처리: 성공 시 UI 고정, 실패만 알림
+getRedirectResult(auth)
+  .then((res) => {
+    if (res?.user) {
+      console.log("[auth] redirect result user:", res.user.email);
       
       // 성공 메시지 표시
       const toast = document.getElementById('congrats');
       if (toast) {
-        toast.textContent = `환영합니다, ${result.user.displayName}님!`;
+        toast.textContent = `환영합니다, ${res.user.displayName}님!`;
         toast.classList.add('show');
         setTimeout(() => toast.classList.remove('show'), 3000);
       }
@@ -46,13 +50,9 @@ authReady.then(async () => {
       if (modal) {
         modal.classList.remove('open');
       }
-    } else {
-      console.log("[auth] 리디렉션 결과 없음 - 기존 세션 확인 중...");
     }
-  } catch (error) {
-    console.error("[auth] 리디렉션 처리 오류:", error);
-  }
-});
+  })
+  .catch((e) => console.error("[auth] redirect result error", e));
 
 // 기존 window 함수들도 유지 (호환성)
 window.handleGoogleLogin = async function () {
