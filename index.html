@@ -414,7 +414,15 @@ document.addEventListener('DOMContentLoaded', ()=>{
         window.SoriUser.onAuth((user) => setLoggedInUI(user));
       }
       // 초기 상태 반영
-      setLoggedInUI(window.SoriUser?.getCurrentUser() || null);
+      let currentUser = null;
+      try {
+        if (window.SoriUser && typeof window.SoriUser.getCurrentUser === 'function') {
+          currentUser = window.SoriUser.getCurrentUser();
+        }
+      } catch (e) {
+        console.warn("Initial user check error:", e);
+      }
+      setLoggedInUI(currentUser);
     } catch (e) {
       console.error("Auth state wiring error:", e);
     }
@@ -422,7 +430,15 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
   // firebaseReady가 이미 지난 시점일 수도 있으니 한 번 더 시도
   setTimeout(() => {
-    setLoggedInUI(window.SoriUser?.getCurrentUser() || null);
+    let currentUser = null;
+    try {
+      if (window.SoriUser && typeof window.SoriUser.getCurrentUser === 'function') {
+        currentUser = window.SoriUser.getCurrentUser();
+      }
+    } catch (e) {
+      console.warn("Delayed user check error:", e);
+    }
+    setLoggedInUI(currentUser);
   }, 0);
 })();
 });
