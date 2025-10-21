@@ -281,167 +281,140 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 <script defer src="js/app.js?v=20251017"></script>
 
 <script>
-document.addEventListener('DOMContentLoaded', ()=>{
-  const modal=authModal, closeBtn=authClose;
-  const open = ()=> modal.classList.add('open');
-  const close=()=> modal.classList.remove('open');
-  
-  closeBtn?.addEventListener('click', close);
-  modal?.addEventListener('click', e=>{ if(e.target===modal) close(); });
-  
-/* Sori Auth UI — drop-in fix, login only */
+/* Sori Auth — final clean build (login only) */
 (function () {
   const $ = (id) => document.getElementById(id);
+
   const modal = $("authModal");
   const btnOpen = $("openLogin");
   const btnClose = $("authClose");
   const btnGoogle = $("googleLogin");
   const btnScrap = $("scrapBtn");
-  const btnSaved = $("savedBtn");         // 상단 Saved
-  const btnSavedHidden = $("savedBtnHidden"); // 실제 탭 전환용
+  const btnSaved = $("savedBtn");
+  const btnSavedHidden = $("savedBtnHidden");
 
-  // 모달 제어
-  const openModal = () => modal?.classList.add("open");
+  // ---------- modal ----------
+  const openModal  = () => modal?.classList.add("open");
   const closeModal = () => modal?.classList.remove("open");
+  btnClose?.addEventListener("click", closeModal);
+  modal?.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
 
-  // 한 번만 바인딩되도록 기존 리스너 제거 후 재등록
-  function safeOn(el, type, fn) {
-    if (!el) return;
-    el.removeEventListener(type, fn);
-    el.addEventListener(type, fn, { passive: true });
+  // ---------- helpers ----------
+  let justLoggedOutUntil = 0;
+  let pendingAction = null; // 로그인 후 한 번만 실행할 동작
+
+  const now = () => Date.now();
+  const isReady = () => !!(window.firebaseAuth); // firebase-init.js 가 올린 전역
+  const isLoggedIn = () => !!(window.firebaseAuth && window.firebaseAuth.currentUser);
+
+  function waitAuthReady(timeoutMs = 8000) {
+    if (isReady()) return Promise.resolve();
+    return new Promise((res, rej) => {
+      const start = now();
+      const t = setInterval(() => {
+        if (isReady()) { clearInterval(t); res(); }
+        else if (now() - start > timeoutMs) { clearInterval(t); rej(new Error("auth not ready")); }
+      }, 50);
+    });
   }
 
-  // 로그인 상태에 따라 UI 스위칭
-  function setLoggedInUI(user) {
+  function setHeaderButton() {
     if (!btnOpen) return;
-    if (user) {
+    if (isLoggedIn()) {
       btnOpen.textContent = "Logout";
-      btnOpen.onclick = async () => {
-        try { await window.SoriUser?.logout?.(); }
-        catch (e) { console.error("로그아웃 실패:", e); }
+      btnOpen.onclick = async (ev) => {
+        ev?.preventDefault?.();
+        ev?.stopPropagation?.();
+        try {
+          justLoggedOutUntil = now() + 800; // 보호 구간
+          await window.SoriUser?.logout?.(); // auth.js 에서 제공
+        } catch (e) {
+          console.error("logout fail:", e);
+        }
       };
-      // 로그인 완료 후 모달 닫기
-      closeModal();
-      // 저장 버튼 아이콘 상태 클래스 동기화는 app.js가 담당하므로 여기선 미개입
     } else {
       btnOpen.textContent = "Login";
-      btnOpen.onclick = () => openModal();
+      btnOpen.onclick = (ev) => {
+        ev?.preventDefault?.();
+        // 방금 로그아웃했다면 자동 팝업 방지
+        if (now() < justLoggedOutUntil) return;
+        openModal();
+      };
     }
   }
 
-  // 즐겨찾기/저장 클릭 시 로그인 요구 게이트
-  async function requireLoginThen(action) {
-    try {
-      if (window.SoriUser && typeof window.SoriUser.getCurrentUser === 'function') {
-        const u = window.SoriUser.getCurrentUser();
-        if (u) return action?.();
-      }
-      // 아직 로그인 안됨 → 알림만 표시
-      alert("로그인 후 이용해주세요.");
-    } catch (e) {
-      console.warn("requireLoginThen error:", e);
-      alert("로그인 후 이용해주세요.");
-    }
+  // 스크랩/세이브 게이트: 미로그인 시 모달 열고, 로그인 후 한 번만 재시도
+  function gateClick(el, action) {
+    el?.addEventListener("click", (e) => {
+      if (isLoggedIn()) return; // 통과
+      e.stopImmediatePropagation();
+      e.preventDefault();
+      // 중복 보정: 이전 pendingAction 덮어쓰기
+      pendingAction = action;
+      openModal();
+    }, true);
   }
 
-  // Saved 버튼들 게이트 적용
-  safeOn(btnScrap, "click", (e) => {
-    // app.js의 실제 저장 로직을 막지 않으면서, 미로그인일 때만 가로채기
-    let isLoggedIn = false;
-    try {
-      if (window.SoriUser && typeof window.SoriUser.getCurrentUser === 'function') {
-        isLoggedIn = !!window.SoriUser.getCurrentUser();
-      }
-    } catch (e) {
-      console.warn("btnScrap login check error:", e);
-    }
-    
-    if (!isLoggedIn) {
-      e.stopImmediatePropagation();
-      e.preventDefault();
-      requireLoginThen(() => btnScrap.click());
-    }
-  });
-
-  safeOn(btnSaved, "click", (e) => {
-    let isLoggedIn = false;
-    try {
-      if (window.SoriUser && typeof window.SoriUser.getCurrentUser === 'function') {
-        isLoggedIn = !!window.SoriUser.getCurrentUser();
-      }
-    } catch (e) {
-      console.warn("btnSaved login check error:", e);
-    }
-    
-    if (!isLoggedIn) {
-      e.stopImmediatePropagation();
-      e.preventDefault();
-      requireLoginThen(() => btnSavedHidden?.click());
-    }
-  });
-
-  // 모달 바인딩
-  safeOn(btnClose, "click", closeModal);
-  safeOn(modal, "click", (e) => { if (e.target === modal) closeModal(); });
+  // Saved/★ 버튼에 게이트 적용
+  gateClick(btnScrap, () => btnScrap.click());
+  gateClick(btnSaved, () => btnSavedHidden?.click());
 
   // Google 로그인 버튼
-  safeOn(btnGoogle, "click", async () => {
+  btnGoogle?.addEventListener("click", async () => {
     try {
-      // 가능하면 팝업 로그인 우선
+      await waitAuthReady();
       if (window.SoriUser?.loginWithPopup) {
         await window.SoriUser.loginWithPopup();
       } else if (window.SoriUser?.login) {
-        await window.SoriUser.login(); // 내부에서 popup/redirect 선택
+        await window.SoriUser.login();
       } else {
-        alert("로그인 모듈이 초기화되지 않았습니다. 새로고침 후 다시 시도해 주세요.");
+        alert("로그인 모듈이 아직 준비되지 않았어요. 잠시 후 다시 시도해주세요.");
         return;
       }
-      // 성공 시 신호 발행
-      document.dispatchEvent(new CustomEvent("sori:logged-in"));
     } catch (e) {
-      console.error("Google 로그인 실패:", e);
-      alert("로그인에 실패했어요. 팝업 차단을 해제하고 다시 시도해 주세요.");
+      console.error("login error:", e);
+      alert("로그인에 실패했어요. 팝업 차단을 해제하고 다시 시도해주세요.");
     }
   });
 
-  // Firebase 준비되면 auth 상태 구독
-  window.addEventListener("firebaseReady", () => {
-    try {
-      // 자동 로그인처럼 보이는 현상 최소화: UI만 조용히 바꾸고 모달은 열지 않음
-      window.firebaseAuth?.onAuthStateChanged?.((user) => setLoggedInUI(user));
-      // 혹시 SoriUser가 자체 이벤트를 발행한다면 동기화
-      if (window.SoriUser?.onAuth) {
-        window.SoriUser.onAuth((user) => setLoggedInUI(user));
+  // ---------- auth state wiring ----------
+  function onAuthChanged(user) {
+    // 헤더 버튼 토글
+    setHeaderButton();
+    if (user) {
+      // 로그인 성공: 모달 닫기 및 대기 중 동작 1회 실행
+      closeModal();
+      if (pendingAction) {
+        const fn = pendingAction;
+        pendingAction = null;
+        // 약간 딜레이 후 실행하여 앱 내부 리스너가 준비될 시간 확보
+        setTimeout(() => { try { fn(); } catch (_) {} }, 50);
       }
+    } else {
+      // 로그아웃 시 모달 자동 오픈 금지
+      if (now() < justLoggedOutUntil) return;
+    }
+  }
+
+  // firebaseReady 신호가 오든 이미 준비돼 있든 모두 대응
+  const wire = () => {
+    if (!isReady()) return;
+    try {
+      // 중복 구독 방지: 토큰 키로 저장
+      if (window.__soriAuthWired) return;
+      window.__soriAuthWired = true;
+
+      window.firebaseAuth.onAuthStateChanged(onAuthChanged);
       // 초기 상태 반영
-      let currentUser = null;
-      try {
-        if (window.SoriUser && typeof window.SoriUser.getCurrentUser === 'function') {
-          currentUser = window.SoriUser.getCurrentUser();
-        }
-      } catch (e) {
-        console.warn("Initial user check error:", e);
-      }
-      setLoggedInUI(currentUser);
+      onAuthChanged(window.firebaseAuth.currentUser || null);
     } catch (e) {
-      console.error("Auth state wiring error:", e);
+      console.error("auth wiring error:", e);
     }
-  });
-
-  // firebaseReady가 이미 지난 시점일 수도 있으니 한 번 더 시도
-  setTimeout(() => {
-    let currentUser = null;
-    try {
-      if (window.SoriUser && typeof window.SoriUser.getCurrentUser === 'function') {
-        currentUser = window.SoriUser.getCurrentUser();
-      }
-    } catch (e) {
-      console.warn("Delayed user check error:", e);
-    }
-    setLoggedInUI(currentUser);
-  }, 0);
+  };
+  window.addEventListener("firebaseReady", wire);
+  // 혹시 이미 준비된 상태라면 즉시 연결
+  wire();
 })();
-});
 </script>
 
 <script>
