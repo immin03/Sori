@@ -37,10 +37,10 @@
 
   // ---------- 유틸 ----------
   const getAuthUser = () => {
-    // v9 방식으로 수정 - 더 강력한 체크
+    // firebaseAuth.currentUser를 직접 사용 (단일 소스)
     try {
-      if (window.SoriUser && typeof window.SoriUser.getCurrentUser === 'function') {
-        const user = window.SoriUser.getCurrentUser();
+      if (window.firebaseAuth && window.firebaseAuth.currentUser) {
+        const user = window.firebaseAuth.currentUser;
         if (user && user.email) {
           return user;
         }
@@ -216,6 +216,8 @@
   async function toggleScrap() {
     const user = getAuthUser();
     console.log("저장 시도 - 사용자:", user ? user.email : "없음");
+    console.log("firebaseAuth 상태:", window.firebaseAuth ? "있음" : "없음");
+    console.log("currentUser 상태:", window.firebaseAuth?.currentUser ? "있음" : "없음");
     if (!user) { 
       alert("로그인 후 저장하세요."); 
       return; 

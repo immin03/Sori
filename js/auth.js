@@ -119,6 +119,10 @@ window.SoriUser = {
     const result = await signInWithPopup(auth, provider);
     return result;
   },
+  loginRedirect: async () => {
+    const result = await signInWithRedirect(auth, provider);
+    return result;
+  },
   login: async () => {
     // 팝업 시도 후 차단되면 리디렉션
     try {
