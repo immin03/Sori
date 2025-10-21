@@ -1,61 +1,83 @@
 import { auth, provider, authReady } from "./firebase-init.js";
 import { signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
 
-// 버튼 캐시
-const openBtn   = document.getElementById("openLogin");   // 모달 열기
-const googleBtn = document.getElementById("googleLogin"); // 실제 로그인
-
-// 사용자 제스처 감지 (자동 실행 방지)
+let loggingIn = false;
 let lastUserGestureAt = 0;
+
+// 사용자 제스처 기록 (자동 실행 방지)
 ["pointerdown","keydown"].forEach(ev =>
   window.addEventListener(ev, () => { lastUserGestureAt = Date.now(); }, { capture:true })
 );
 
-// 모달 열기 버튼: 모달만 열고 로그인은 절대 하지 않음
-openBtn?.addEventListener("click", (e) => {
-  e.preventDefault();
-  console.log("[auth] open login modal");
-  
-  // 모달 열기
-  const modal = document.getElementById('authModal');
-  if (modal) {
-    modal.classList.add('open');
-  }
-});
+// 1) 모달 열기 버튼(헤더)은 오직 모달 열기만 담당
+function bindOpenButton() {
+  const openBtn = document.querySelector("#openLogin, [data-open-login]");
+  if (!openBtn || openBtn.dataset.wired) return;
+  openBtn.dataset.wired = "1";
+  openBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    console.log("[auth] open login modal");
+    
+    // 모달 열기
+    const modal = document.getElementById('authModal');
+    if (modal) {
+      modal.classList.add('open');
+    }
+  });
+}
 
-// 중복 클릭 방지
-let loggingIn = false;
+// 2) 구글 로그인 버튼(모달 내부)만 실제 로그인 수행
+function bindGoogleButton() {
+  const googleBtn = document.querySelector("#googleLogin, [data-google-login]");
+  if (!googleBtn || googleBtn.dataset.wired) return;
+  googleBtn.dataset.wired = "1";
 
-// 구글 로그인 버튼: 여기서만 로그인
-googleBtn?.addEventListener("click", async (e) => {
-  e.preventDefault();
+  // 절대 textContent 같은 걸 임의로 건드리지 말 것 (존재 확인 전 조작 금지)
+  googleBtn.addEventListener("click", async (e) => {
+    e.preventDefault();
 
-  // 최근 5초 이내 사용자 제스처가 없으면 거부 (자동실행 방지)
-  if (Date.now() - lastUserGestureAt > 5000) {
-    console.warn("[auth] no recent user gesture; blocking auto login");
-    return;
-  }
+    // 최근 5초 내 사용자 제스처 없으면 실행 금지 (자동 리디렉션 방지)
+    if (Date.now() - lastUserGestureAt > 5000) {
+      console.warn("[auth] no recent user gesture; block auto login");
+      return;
+    }
+    if (loggingIn) {
+      console.log("[auth] 로그인 진행 중, 중복 클릭 무시");
+      return;
+    }
+    loggingIn = true;
 
-  if (loggingIn) {
-    console.log("[auth] 로그인 진행 중, 중복 클릭 무시");
-    return;
-  }
-  
-  loggingIn = true;
+    try {
+      await authReady;
+      console.log("[auth] redirect login start");
+      await signInWithRedirect(auth, provider);
+    } catch (err) {
+      console.error("[auth] redirect error", err);
+      alert("Login failed: " + (err?.message || err));
+    } finally {
+      loggingIn = false;
+    }
+  });
+}
 
-  try {
-    await authReady;   // 준비 보장
-    console.log("[auth] redirect login start");
-    await signInWithRedirect(auth, provider);
-  } catch (err) {
-    console.error("[auth] redirect error", err);
-    alert("Login failed: " + (err?.message || err));
-  } finally {
-    loggingIn = false;
-  }
-});
+// 3) 최초 바인딩은 DOMContentLoaded 후에
+function safeBindAll() {
+  bindOpenButton();
+  bindGoogleButton();
+}
 
-// 리디렉션 결과 처리(있으면 로그만)
+// 4) 모달/동적 렌더도 잡기 위해 MutationObserver로 재바인딩
+const mo = new MutationObserver(() => safeBindAll());
+mo.observe(document.body, { childList: true, subtree: true });
+
+// 5) 초기 한 번 실행
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", safeBindAll);
+} else {
+  safeBindAll();
+}
+
+// 6) 리디렉션 복귀 로그 (성공 시 사용자 표시)
 getRedirectResult(auth)
   .then((res) => {
     if (res?.user) {
@@ -127,4 +149,4 @@ authReady.then(() => {
   window.dispatchEvent(new CustomEvent('firebaseReady'));
 });
 
-console.log("[auth] loaded with clear separation");
+console.log("[auth] loaded with safe binding");

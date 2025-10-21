@@ -282,17 +282,12 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 
 <script>
 document.addEventListener('DOMContentLoaded', ()=>{
-  const modal=authModal, loginBtn=document.getElementById('loginBtn'), closeBtn=authClose, googleBtn=document.getElementById('googleLoginBtn');
+  const modal=authModal, closeBtn=authClose;
   const open = ()=> modal.classList.add('open');
   const close=()=> modal.classList.remove('open');
-  function wireAsLogin(){ loginBtn.textContent='Login'; loginBtn.onclick=open; }
-  function wireAsLogout(){ loginBtn.textContent='Logout'; loginBtn.onclick= async ()=>{ try{ await window.SoriUser?.logout?.(); }catch(e){} }; }
+  
   closeBtn?.addEventListener('click', close);
   modal?.addEventListener('click', e=>{ if(e.target===modal) close(); });
-  googleBtn?.addEventListener('click', ()=>{ window.handleGoogleLogin && window.handleGoogleLogin(); });
-  
-  // 즉시 로그인 버튼 활성화 (Firebase 준비와 관계없이)
-  wireAsLogin();
   
   // Firebase 준비 이벤트 리스너
   window.addEventListener('firebaseReady', () => {
@@ -304,24 +299,27 @@ document.addEventListener('DOMContentLoaded', ()=>{
         // 로그인 상태에 따른 UI 업데이트
         if (user) {
           close(); // 모달 닫기
-          wireAsLogout(); // 로그아웃 버튼으로 변경
+          // 로그아웃 버튼으로 변경
+          const loginBtn = document.getElementById('openLogin');
+          if (loginBtn) {
+            loginBtn.textContent = 'Logout';
+            loginBtn.onclick = async () => { 
+              try { await window.SoriUser?.logout?.(); } catch(e){} 
+            };
+          }
         } else {
-          wireAsLogin(); // 로그인 버튼으로 변경
+          // 로그인 버튼으로 변경
+          const loginBtn = document.getElementById('openLogin');
+          if (loginBtn) {
+            loginBtn.textContent = 'Login';
+            loginBtn.onclick = open;
+          }
         }
       }); 
     } catch(e) {
       console.log("Auth state change error:", e);
-      wireAsLogin();
     }
   });
-  
-  // Firebase가 준비되지 않은 경우를 위한 폴백
-  setTimeout(() => {
-    if (!window.firebaseAuth) {
-      console.log("Firebase 준비 시간 초과, 기본 로그인 상태로 설정");
-      wireAsLogin();
-    }
-  }, 3000);
 });
 </script>
 
