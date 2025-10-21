@@ -17,7 +17,9 @@ export const auth = getAuth(app);
 export const provider = new GoogleAuthProvider();
 
 // 세션 유지 강제: 리디렉션 후에도 로그인 상태가 유지되도록
-setPersistence(auth, browserLocalPersistence).catch(console.error);
+setPersistence(auth, browserLocalPersistence)
+  .then(() => console.log("[firebase-init] 세션 퍼시스턴스 설정 완료"))
+  .catch(err => console.error("[firebase-init] 세션 퍼시스턴스 설정 실패:", err));
 
 // 팝업 차단 방지를 위한 추가 설정
 provider.setCustomParameters({

@@ -32,6 +32,21 @@ async function doGoogleLogin() {
     if (modal) {
       modal.classList.remove('open');
     }
+    
+    // 즉시 UI 업데이트 (onAuthStateChanged 대기하지 않음)
+    const loginBtn = document.getElementById('openLogin');
+    if (loginBtn) {
+      loginBtn.textContent = 'Logout';
+      loginBtn.onclick = async () => { 
+        try { 
+          await window.SoriUser?.logout?.(); 
+          console.log("[UI] 로그아웃 완료");
+        } catch(e){
+          console.error("[UI] 로그아웃 실패:", e);
+        }
+      };
+      console.log("[UI] 팝업 로그인 성공 후 버튼이 'Logout'으로 변경됨");
+    }
     return;
   } catch (e) {
     // 2) 팝업이 차단/취소됐다면 리디렉션으로 폴백
