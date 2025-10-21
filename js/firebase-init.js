@@ -1,5 +1,6 @@
-import { initializeApp, getApps } from "firebase/app";
-import { getAuth, onAuthStateChanged, GoogleAuthProvider } from "firebase/auth";
+// Firebase v9 CDN 방식으로 변경
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+import { getAuth, onAuthStateChanged, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBZsIN5q3wc_uglLODnzho-MSfqAACBlu4",

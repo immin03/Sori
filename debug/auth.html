@@ -1,0 +1,34 @@
+<!doctype html><meta charset="utf-8">
+<title>Auth Debug</title>
+<button id="login">Google Sign-in</button>
+<pre id="log"></pre>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+  import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult } 
+    from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+
+  const log = (...a)=>document.getElementById('log').textContent += a.join(' ')+'\n';
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBZsIN5q3wc_uglLODnzho-MSfqAACBlu4",
+    authDomain: "sori-533fc.firebaseapp.com",
+    projectId: "sori-533fc",
+    storageBucket: "sori-533fc.firebasestorage.app",
+    messagingSenderId: "645509054375",
+    appId: "1:645509054375:web:dddc1321e92c286e0cc082",
+    measurementId: "G-JD752VQ54Z"
+  };
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
+
+  document.getElementById('login').onclick = async ()=>{
+    try { 
+      await signInWithRedirect(auth, provider);
+    } catch(e){ log('ERR', e.code, e.message); }
+  };
+
+  getRedirectResult(auth).then(res=>{
+    if(res?.user){ log('OK user:', res.user.email); }
+  }).catch(e=>log('REDIRECT_ERR', e.code, e.message));
+</script>

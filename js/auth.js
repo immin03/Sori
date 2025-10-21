@@ -1,5 +1,5 @@
 import { auth, provider, authReady } from "./firebase-init.js";
-import { signInWithRedirect, getRedirectResult } from "firebase/auth";
+import { signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
 
 console.log("[auth] loaded");
 
