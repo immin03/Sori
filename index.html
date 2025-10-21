@@ -281,10 +281,11 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 <script defer src="js/app.js?v=20251017"></script>
 
 <script>
-/* Sori Auth — solid fix (login only, no side effects elsewhere) */
+/* Sori Auth — stable, popup fallback + safe gating */
 (function () {
   const $ = (id) => document.getElementById(id);
 
+  // DOM
   const modal = $("authModal");
   const btnOpen = $("openLogin");
   const btnClose = $("authClose");
@@ -293,22 +294,24 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
   const btnSaved = $("savedBtn");
   const btnSavedHidden = $("savedBtnHidden");
 
-  // ---------- modal ----------
+  // ---- modal ----
   const openModal  = () => modal?.classList.add("open");
   const closeModal = () => modal?.classList.remove("open");
   btnClose?.addEventListener("click", closeModal);
   modal?.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
 
-  // ---------- small utils ----------
+  // ---- utils ----
   const now = () => Date.now();
-  let justLoggedOutUntil = 0;
-  let pendingAction = null; // 로그인 후 1회 실행
+  let justLoggedOutUntil = 0;       // 로그아웃 직후 자동 팝업 방지
+  let pendingAction = null;         // 로그인 후 1회 재시도할 동작 저장
+  let wiringDone = false;
 
   const hasAuth      = () => !!window.firebaseAuth;
   const loggedIn     = () => !!(window.firebaseAuth && window.firebaseAuth.currentUser);
-  const hasSoriLogin = () => !!(window.SoriUser && (window.SoriUser.loginWithPopup || window.SoriUser.login));
+  const hasSoriLogin = () =>
+    !!(window.SoriUser && (window.SoriUser.loginWithPopup || window.SoriUser.login || window.SoriUser.loginRedirect));
 
-  function waitUntil(cond, timeoutMs = 8000, step = 50) {
+  function waitUntil(cond, timeoutMs = 12000, step = 60) {
     if (cond()) return Promise.resolve();
     return new Promise((resolve, reject) => {
       const start = now();
@@ -318,11 +321,11 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
       }, step);
     });
   }
-  const waitAuthReady  = () => waitUntil(hasAuth, 8000);
-  const waitModuleReady= () => waitUntil(hasSoriLogin, 8000);
-  const waitLoggedIn   = () => waitUntil(loggedIn, 8000, 80);
+  const waitAuthReady   = () => waitUntil(hasAuth, 12000);
+  const waitModuleReady = () => waitUntil(hasSoriLogin, 12000);
+  const waitLoggedIn    = () => waitUntil(loggedIn, 12000, 80);
 
-  // ---------- header button ----------
+  // ---- header button ----
   function paintHeaderBtn() {
     if (!btnOpen) return;
     if (loggedIn()) {
@@ -331,8 +334,9 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
         ev?.preventDefault?.();
         ev?.stopPropagation?.();
         try {
-          justLoggedOutUntil = now() + 800;     // 로그아웃 직후 자동팝업 보호
-          await window.SoriUser?.logout?.();    // auth.js 제공
+          justLoggedOutUntil = now() + 2000;     // 2초 보호 (즉시 로그인창 방지)
+          await window.SoriUser?.logout?.();
+          // 로그아웃 직후에는 모달을 절대 열지 않음
         } catch (e) {
           console.error("logout fail:", e);
         }
@@ -341,83 +345,121 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
       btnOpen.textContent = "Login";
       btnOpen.onclick = (ev) => {
         ev?.preventDefault?.();
-        if (now() < justLoggedOutUntil) return; // 보호구간
+        if (now() < justLoggedOutUntil) return; // 보호구간에서는 무시
         openModal();
       };
     }
   }
 
-  // ---------- login gate on save/saved ----------
+  // ---- login gate (★, Saved) ----
   function gate(el, action) {
     el?.addEventListener("click", (e) => {
-      if (loggedIn()) return;                  // 로그인 되어있으면 통과
+      if (loggedIn()) return;             // 로그인 상태면 통과
       e.stopImmediatePropagation();
       e.preventDefault();
-      pendingAction = action;                  // 성공 시 재시도할 동작 저장
+      pendingAction = action;             // 로그인 성공 시 1회만 재시도
       openModal();
-    }, true); // capture 단계에서 막아 app.js 이전에 차단
+    }, true); // capture 단계에서 가로채 app.js 보다 먼저 막음
   }
   gate(btnScrap, () => btnScrap.click());
   gate(btnSaved, () => btnSavedHidden?.click());
 
-  // ---------- Google sign-in ----------
-  btnGoogle?.addEventListener("click", async () => {
+  // ---- Google sign-in ----
+  async function doPopupThenFallback() {
+    // 버튼 비활성화(중복 클릭 방지)
+    const oldLabel = btnGoogle?.textContent;
+    btnGoogle && (btnGoogle.disabled = true);
+
     try {
-      // firebase + SoriUser 모듈 둘 다 준비될 때까지 기다림
       await waitAuthReady();
       await waitModuleReady();
 
+      // 1) popup 우선 시도
       if (window.SoriUser?.loginWithPopup) {
-        await window.SoriUser.loginWithPopup();
-      } else if (window.SoriUser?.login) {
-        await window.SoriUser.login();
+        try {
+          await window.SoriUser.loginWithPopup();
+          return; // 성공
+        } catch (e) {
+          console.warn("popup login failed, try redirect", e);
+          // popup 차단/타임아웃/사용자 닫기 → redirect로 대체
+          if (window.SoriUser?.loginRedirect) {
+            await window.SoriUser.loginRedirect();
+            return;
+          } else if (window.SoriUser?.login) {
+            await window.SoriUser.login(); // 내부에서 redirect 사용할 수도 있음
+            return;
+          }
+          throw e; // 대체 수단 없으면 에러 전파
+        }
       }
 
-      // 여기서 당장 pendingAction 실행하지 않음 — 진짜 로그인 확정까지 대기
-      // (onAuthChanged에서 처리)
-    } catch (e) {
-      console.error("login error:", e);
-      alert("로그인이 준비되지 않았어요. 잠시 후 다시 시도해주세요.");
-    }
-  });
+      // 2) popup 메서드가 없다면 기본 login/redirect
+      if (window.SoriUser?.login) {
+        await window.SoriUser.login();
+        return;
+      }
+      if (window.SoriUser?.loginRedirect) {
+        await window.SoriUser.loginRedirect();
+        return;
+      }
 
-  // ---------- auth state wiring ----------
-  function onAuthChanged(user) {
-    paintHeaderBtn();
-
-    if (user) {
-      closeModal();
-      if (pendingAction) {
-        const fn = pendingAction;  // 캡처
-        pendingAction = null;
-        // currentUser 전파가 100% 완료될 때까지 대기 → 그 다음 1회 실행
-        waitLoggedIn()
-          .then(() => setTimeout(() => { try { fn(); } catch(_){} }, 50))
-          .catch(() => {}); // 실패해도 조용히 무시
+      // 여기까지 오면 아직 모듈 미초기화
+      console.warn("SoriUser not ready yet");
+      // 경고창(alert) 띄우지 않고, 1초 뒤 재시도
+      setTimeout(() => { try { doPopupThenFallback(); } catch(_){} }, 1000);
+    } finally {
+      // 버튼 원복
+      if (btnGoogle) {
+        btnGoogle.disabled = false;
+        if (oldLabel) btnGoogle.textContent = oldLabel;
       }
     }
   }
 
-  function wire() {
-    if (!hasAuth()) return;
-    if (window.__soriAuthWired) return;
-    window.__soriAuthWired = true;
+  btnGoogle?.addEventListener("click", (e) => {
+    e?.preventDefault?.();
+    doPopupThenFallback();
+  });
 
+  // ---- auth state wiring ----
+  function onAuthChanged(user) {
+    paintHeaderBtn();
+
+    if (user) {
+      // 로그인 확정 → 모달 닫고, pendingAction 1회 실행
+      closeModal();
+      if (pendingAction) {
+        const fn = pendingAction;
+        pendingAction = null;
+        waitLoggedIn()
+          .then(() => setTimeout(() => { try { fn(); } catch(_){} }, 80))
+          .catch(() => {});
+      }
+    }
+    // 로그아웃 시에는 아무 것도 자동으로 열지 않음 (justLoggedOutUntil로 보호)
+  }
+
+  function wire() {
+    if (wiringDone || !hasAuth()) return;
+    wiringDone = true;
     try {
       window.firebaseAuth.onAuthStateChanged(onAuthChanged);
     } catch (e) {
       console.error("auth wiring error:", e);
     }
-    // 초기 페인트
+    // 초기 반영
     paintHeaderBtn();
     onAuthChanged(window.firebaseAuth.currentUser || null);
   }
 
+  // firebaseReady 신호 및 즉시 시도 둘 다 지원
   window.addEventListener("firebaseReady", wire);
-  // 이미 준비된 경우도 대응
   wire();
 
-  // 디버깅 도움(원하면 지워도 됨)
+  // (옵션) auth.js가 커스텀 ready 이벤트를 보낸다면 여기서도 수신
+  window.addEventListener("soriUserReady", () => { /* nothing, doPopup handles polling */ });
+
+  // 디버그 헬퍼(원하면 지워도 됨)
   window.SoriAuth = { loggedIn, paintHeaderBtn };
 })();
 </script>
