@@ -133,6 +133,14 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 .tip-card{margin-top:10px;background:#fff1f2;border-left:3px solid #e11d48;border-radius:10px;padding:10px}
 .tip-text{font-size:12px;color:#9f1239;font-weight:600}
 
+/* 명사 뜻 표시 영역 스타일 */
+.noun-definitions{background:#f8f9fa;border-radius:12px;padding:12px;margin:8px 0;border:1px solid #e5e7eb}
+.noun-list{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.noun-item{display:flex;align-items:center;gap:6px;background:#fff;border-radius:8px;padding:6px 10px;border:1px solid #e5e7eb;font-size:12px;font-weight:600}
+.noun-korean{color:#7c3aed;font-weight:800}
+.noun-english{color:#6b7280}
+.noun-roman{color:#9ca3af;font-size:11px}
+
 .hidden-tabs{display:none}
 
 .auth{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:9999;background:rgba(0,0,0,.45);padding:16px}
@@ -237,6 +245,11 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
     <p id="korean" class="ko">당신이 좋아요.</p>
     <p id="english" class="en">dangshini joayo</p>
     <p id="pronunciation" style="display:none">dangshini joayo</p>
+  </div>
+
+  <!-- 명사 뜻 표시 영역 -->
+  <div id="nounDefinitions" class="noun-definitions" style="display:none;">
+    <div class="noun-list"></div>
   </div>
 
   <div class="practice">
@@ -605,6 +618,126 @@ window.addEventListener('load',()=>{
 
 <script>
 (function(){
+  // 명사 데이터 매핑
+  const nounData = {
+    '당신이 좋아요.': [{korean: '당신', english: 'you', roman: 'dangshin'}],
+    '사랑해요.': [{korean: '사랑', english: 'love', roman: 'sarang'}],
+    '설레어요.': [{korean: '설레', english: 'heart flutter', roman: 'seolle'}],
+    '첫눈에 반했어요.': [{korean: '첫눈', english: 'first sight', roman: 'cheotnun'}],
+    '보고 싶어요.': [{korean: '보고', english: 'seeing', roman: 'bogo'}],
+    '같이 데이트할래요?': [{korean: '데이트', english: 'date', roman: 'deiteu'}],
+    '정말 예쁘네요.': [{korean: '정말', english: 'really', roman: 'jeongmal'}],
+    '정말 잘생겼어요.': [{korean: '정말', english: 'really', roman: 'jeongmal'}],
+    '손 잡아도 될까요?': [{korean: '손', english: 'hand', roman: 'son'}],
+    '내 마음이에요.': [{korean: '마음', english: 'heart', roman: 'maeum'}],
+    '안녕하세요.': [{korean: '안녕', english: 'hello', roman: 'annyeong'}],
+    '안녕!': [{korean: '안녕', english: 'hello', roman: 'annyeong'}],
+    '오랜만이에요!': [{korean: '오랜만', english: 'long time', roman: 'oraenman'}],
+    '잘 지냈어요?': [{korean: '지내', english: 'doing', roman: 'jinae'}],
+    '저는 민우예요.': [{korean: '저', english: 'I', roman: 'jeo'}, {korean: '민우', english: 'Minwoo', roman: 'minu'}],
+    '만나서 반가워요.': [{korean: '만나', english: 'meeting', roman: 'manna'}],
+    '이름이 뭐예요?': [{korean: '이름', english: 'name', roman: 'ireum'}],
+    '어디에서 오셨어요?': [{korean: '어디', english: 'where', roman: 'eodi'}],
+    '곧 다시 봬요.': [{korean: '곧', english: 'soon', roman: 'got'}],
+    '실례합니다.': [{korean: '실례', english: 'excuse', roman: 'sillye'}],
+    '아메리카노 한 잔, 주세요.': [{korean: '아메리카노', english: 'americano', roman: 'amerikano'}, {korean: '잔', english: 'cup', roman: 'jan'}],
+    '라지로 부탁드립니다.': [{korean: '라지', english: 'large', roman: 'raji'}],
+    '포장할게요.': [{korean: '포장', english: 'packaging', roman: 'pojang'}],
+    '얼음은 빼 주세요.': [{korean: '얼음', english: 'ice', roman: 'eoreum'}],
+    '커피가 정말 맛있네요!': [{korean: '커피', english: 'coffee', roman: 'keopi'}, {korean: '정말', english: 'really', roman: 'jeongmal'}],
+    '매장에서 먹고 갈게요.': [{korean: '매장', english: 'store', roman: 'maejang'}],
+    '당도는 낮게 해 주세요.': [{korean: '당도', english: 'sweetness', roman: 'dangdo'}],
+    '디카페인으로 주세요.': [{korean: '디카페인', english: 'decaf', roman: 'dikapein'}],
+    '오트밀크로 바꿔 주세요.': [{korean: '오트밀크', english: 'oat milk', roman: 'oteu milkeu'}],
+    '샷 하나 더 넣어 주세요.': [{korean: '샷', english: 'shot', roman: 'syat'}],
+    '두 명이에요.': [{korean: '명', english: 'people', roman: 'myeong'}],
+    '추천 메뉴가 있나요?': [{korean: '추천', english: 'recommendation', roman: 'chucheon'}, {korean: '메뉴', english: 'menu', roman: 'menyu'}],
+    '안 매운 걸로, 주세요.': [{korean: '매운', english: 'spicy', roman: 'maeun'}],
+    '물 좀 더 주시겠어요?': [{korean: '물', english: 'water', roman: 'mul'}],
+    '계산서 부탁드려요.': [{korean: '계산서', english: 'check', roman: 'gyesanseo'}],
+    '맵기 조절 가능해요?': [{korean: '맵기', english: 'spice level', roman: 'maepgi'}],
+    
+    // Travel 카테고리
+    '관광하러 왔습니다.': [{korean: '관광', english: 'tourism', roman: 'gwangwang'}],
+    '일주일 머물 예정입니다.': [{korean: '일주일', english: 'one week', roman: 'iljuil'}],
+    '수하물이 안 나왔어요.': [{korean: '수하물', english: 'baggage', roman: 'suhamul'}],
+    '공항버스는 어디에서 타요?': [{korean: '공항버스', english: 'airport bus', roman: 'gonghang beoseu'}],
+    '환전은 어디서 해요?': [{korean: '환전', english: 'exchange', roman: 'hwanjeon'}],
+    '예약했어요. 체크인 하고 싶어요.': [{korean: '예약', english: 'reservation', roman: 'yeyak'}, {korean: '체크인', english: 'check-in', roman: 'chekeuin'}],
+    '와이파이 비밀번호가 뭐예요?': [{korean: '와이파이', english: 'WiFi', roman: 'waipai'}, {korean: '비밀번호', english: 'password', roman: 'bimilbeonho'}],
+    '수건을 더 가져다 주세요.': [{korean: '수건', english: 'towel', roman: 'sugeon'}],
+    '온수가 나오지 않아요.': [{korean: '온수', english: 'hot water', roman: 'onsu'}],
+    '체크아웃은 몇 시예요?': [{korean: '체크아웃', english: 'check-out', roman: 'chekeuauseu'}],
+    '지하철역이 어디예요?': [{korean: '지하철역', english: 'subway station', roman: 'jihacheol yeok'}],
+    '이쪽으로 쭉 가세요.': [{korean: '쪽', english: 'direction', roman: 'jjok'}],
+    '여기서 갈아타야 해요.': [{korean: '갈아타', english: 'transfer', roman: 'garata'}],
+    '막차가 몇 시예요?': [{korean: '막차', english: 'last train', roman: 'makcha'}],
+    '교통카드 충전하고 싶어요.': [{korean: '교통카드', english: 'transit card', roman: 'gyotong kadeu'}, {korean: '충전', english: 'top up', roman: 'chungjeon'}],
+    '도와주세요!': [{korean: '도와', english: 'help', roman: 'dowa'}],
+    '경찰을 불러 주세요.': [{korean: '경찰', english: 'police', roman: 'gyeongchal'}],
+    '병원에 가야 해요.': [{korean: '병원', english: 'hospital', roman: 'byeongwon'}],
+    '지갑을 잃어버렸어요.': [{korean: '지갑', english: 'wallet', roman: 'jigap'}],
+    '길을 잃었어요.': [{korean: '길', english: 'road', roman: 'gil'}],
+    
+    // Drama 카테고리
+    '너는, 내가 잃은 모든 날들이다.': [{korean: '날', english: 'day', roman: 'nal'}],
+    '혼자였던 시간도, 나를 만들었어.': [{korean: '시간', english: 'time', roman: 'sigan'}],
+    '널 좋아한 게, 잘못이었을까?': [{korean: '게', english: 'thing', roman: 'ge'}],
+    '끝이라고 생각한 순간, 다시 시작됐어.': [{korean: '끝', english: 'end', roman: 'kkeut'}, {korean: '순간', english: 'moment', roman: 'sungan'}],
+    '나는, 내 방식대로 간다.': [{korean: '방식', english: 'way', roman: 'bangsik'}],
+    '숨 좀 쉬게 해줘.': [{korean: '숨', english: 'breath', roman: 'sum'}],
+    '부르면 가고, 안 부르면 안 가.': [{korean: '부르', english: 'call', roman: 'bureu'}],
+    '첫눈 오는 날엔, 용기가 필요해.': [{korean: '첫눈', english: 'first snow', roman: 'cheotnun'}, {korean: '용기', english: 'courage', roman: 'yonggi'}],
+    '슬픈 날엔, 내 어깨 빌려줄게요.': [{korean: '어깨', english: 'shoulder', roman: 'eokkae'}],
+    '오늘도 파이팅!': [{korean: '파이팅', english: 'fighting', roman: 'paiting'}],
+    '밥은 꼭 챙겨 먹어.': [{korean: '밥', english: 'meal', roman: 'bap'}],
+    '기러기, 토마토, 스위스, 인도인.': [{korean: '기러기', english: 'goose', roman: 'girugi'}, {korean: '토마토', english: 'tomato', roman: 'tomato'}],
+    '지금 이 순간이, 전부야.': [{korean: '순간', english: 'moment', roman: 'sungan'}],
+    '괜찮아. 버틸 수 있어.': [{korean: '수', english: 'ability', roman: 'su'}],
+    '포기하면, 거기서 끝이야.': [{korean: '끝', english: 'end', roman: 'kkeut'}],
+    
+    // Trendy 카테고리
+    '헐!': [{korean: '헐', english: 'OMG', roman: 'heol'}],
+    '말도 안 돼!': [{korean: '말', english: 'word', roman: 'mal'}],
+    '대박이다!': [{korean: '대박', english: 'awesome', roman: 'daebak'}],
+    '쩐다.': [{korean: '쩐', english: 'sick', roman: 'jjeon'}],
+    '진짜 웃겨!': [{korean: '진짜', english: 'really', roman: 'jinjja'}],
+    '이게 실화야?': [{korean: '실화', english: 'real story', roman: 'silhwa'}],
+    '뭐래?': [{korean: '뭐', english: 'what', roman: 'mwo'}],
+    '그치 그치.': [{korean: '그치', english: 'right', roman: 'geuchi'}],
+    '나도 그래.': [{korean: '나', english: 'I', roman: 'na'}],
+    '그게 되네?': [{korean: '게', english: 'thing', roman: 'ge'}],
+    '피곤해 죽겠어.': [{korean: '피곤', english: 'tired', roman: 'pigon'}],
+    '귀찮아 죽겠어.': [{korean: '귀찮', english: 'bothersome', roman: 'gwichan'}],
+    '답답해 미치겠어.': [{korean: '답답', english: 'stuffy', roman: 'dapdap'}],
+    '노답이야.': [{korean: '답', english: 'answer', roman: 'dap'}],
+    '현타 왔다.': [{korean: '현타', english: 'reality hit', roman: 'hyeonta'}],
+    '킹받네.': [{korean: '킹받', english: 'annoying', roman: 'kingbad'}],
+    '어쩔 수 없지.': [{korean: '수', english: 'way', roman: 'su'}],
+    '완전 좋아!': [{korean: '완전', english: 'completely', roman: 'wanjeon'}],
+    '답정너잖아.': [{korean: '답', english: 'answer', roman: 'dap'}],
+    '긴장돼.': [{korean: '긴장', english: 'nervous', roman: 'ginjang'}],
+    
+    // Numbers 카테고리
+    '하나, 둘, 셋, 넷, 다섯': [{korean: '하나', english: 'one', roman: 'hana'}, {korean: '둘', english: 'two', roman: 'dul'}, {korean: '셋', english: 'three', roman: 'set'}, {korean: '넷', english: 'four', roman: 'net'}, {korean: '다섯', english: 'five', roman: 'daseot'}],
+    '여섯, 일곱, 여덟, 아홉, 열': [{korean: '여섯', english: 'six', roman: 'yeoseot'}, {korean: '일곱', english: 'seven', roman: 'ilgop'}, {korean: '여덟', english: 'eight', roman: 'yeodeol'}, {korean: '아홉', english: 'nine', roman: 'ahop'}, {korean: '열', english: 'ten', roman: 'yeol'}],
+    '일, 이, 삼, 사, 오': [{korean: '일', english: 'one', roman: 'il'}, {korean: '이', english: 'two', roman: 'i'}, {korean: '삼', english: 'three', roman: 'sam'}, {korean: '사', english: 'four', roman: 'sa'}, {korean: '오', english: 'five', roman: 'o'}],
+    '육, 칠, 팔, 구, 십': [{korean: '육', english: 'six', roman: 'yuk'}, {korean: '칠', english: 'seven', roman: 'chil'}, {korean: '팔', english: 'eight', roman: 'pal'}, {korean: '구', english: 'nine', roman: 'gu'}, {korean: '십', english: 'ten', roman: 'sip'}],
+    '사과 한 개': [{korean: '사과', english: 'apple', roman: 'sagwa'}, {korean: '개', english: 'piece', roman: 'gae'}],
+    '책 두 권': [{korean: '책', english: 'book', roman: 'chaek'}, {korean: '권', english: 'volume', roman: 'gwon'}],
+    '컵 세 개': [{korean: '컵', english: 'cup', roman: 'keop'}, {korean: '개', english: 'piece', roman: 'gae'}],
+    '티켓 네 장': [{korean: '티켓', english: 'ticket', roman: 'tiket'}, {korean: '장', english: 'sheet', roman: 'jang'}],
+    '아메리카노 한 잔 주세요.': [{korean: '아메리카노', english: 'americano', roman: 'amerikano'}, {korean: '잔', english: 'cup', roman: 'jan'}],
+    '라떼 두 잔 주세요.': [{korean: '라떼', english: 'latte', roman: 'latte'}, {korean: '잔', english: 'cup', roman: 'jan'}],
+    '손님 한 분 오셨어요.': [{korean: '손님', english: 'guest', roman: 'sonnim'}, {korean: '분', english: 'person', roman: 'bun'}],
+    '학생 다섯 명이에요.': [{korean: '학생', english: 'student', roman: 'haksaeng'}, {korean: '명', english: 'people', roman: 'myeong'}],
+    '스무 살이에요.': [{korean: '살', english: 'years old', roman: 'sal'}],
+    '서른한 살이에요.': [{korean: '살', english: 'years old', roman: 'sal'}],
+    '지금 세 시예요.': [{korean: '시', english: 'o\'clock', roman: 'si'}],
+    '네 시 반이에요.': [{korean: '시', english: 'o\'clock', roman: 'si'}, {korean: '반', english: 'thirty', roman: 'ban'}],
+    '일곱 시 십오 분이에요.': [{korean: '시', english: 'o\'clock', roman: 'si'}, {korean: '분', english: 'minute', roman: 'bun'}]
+  };
+
   const quote = s => `"${String(s||'').replace(/^"+|"+$/g,'').trim()}"`;
   let map=null, applying=false, timer=null;
 
@@ -631,6 +764,32 @@ window.addEventListener('load',()=>{
   function hideLines(){ document.getElementById('lessonCard')?.classList.remove('lesson-ready'); }
   function showLines(){ document.getElementById('lessonCard')?.classList.add('lesson-ready'); }
 
+  function updateNounDefinitions(koreanText) {
+    const nounDefsEl = document.getElementById('nounDefinitions');
+    const nounListEl = nounDefsEl?.querySelector('.noun-list');
+    
+    if (!nounDefsEl || !nounListEl) return;
+    
+    const nouns = nounData[koreanText];
+    
+    if (nouns && nouns.length > 0) {
+      nounListEl.innerHTML = '';
+      nouns.forEach(noun => {
+        const nounItem = document.createElement('div');
+        nounItem.className = 'noun-item';
+        nounItem.innerHTML = `
+          <span class="noun-korean">${noun.korean}</span>
+          <span class="noun-english">${noun.english}</span>
+          <span class="noun-roman">${noun.roman}</span>
+        `;
+        nounListEl.appendChild(nounItem);
+      });
+      nounDefsEl.style.display = 'block';
+    } else {
+      nounDefsEl.style.display = 'none';
+    }
+  }
+
   function applyOnce(){
     if(applying) return;
     const ctx=context, en=english, pr=pronunciation, koEl=korean;
@@ -646,6 +805,10 @@ window.addEventListener('load',()=>{
       if(meaning) ctx.textContent=quote(meaning);
       if(roman)   en.textContent=roman;
       pr.style.display='none';
+      
+      // 명사 정의 업데이트
+      updateNounDefinitions(ko);
+      
       showLines();
     }finally{
       setTimeout(()=>{ applying=false; },0);
