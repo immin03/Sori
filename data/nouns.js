@@ -6,7 +6,7 @@
     '사랑해요.': [{korean: '사랑', english: 'love', roman: 'sarang'}],
     '설레어요.': [{korean: '설레다', english: 'heart flutter', roman: 'seolleda'}],
     '첫눈에 반했어요.': [{korean: '첫눈', english: 'first sight', roman: 'cheotnun'}],
-    '보고 싶어요.': [{korean: '보고', english: 'seeing', roman: 'bogo'}],
+    '보고 싶어요.': [{korean: '보다', english: 'see', roman: 'boda'}],
     '같이 데이트할래요?': [{korean: '데이트', english: 'date', roman: 'deiteu'}],
     '정말 예쁘네요.': [{korean: '정말', english: 'really', roman: 'jeongmal'}],
     '정말 잘생겼어요.': [{korean: '정말', english: 'really', roman: 'jeongmal'}],
@@ -17,9 +17,9 @@
     '안녕하세요.': [{korean: '안녕', english: 'hello', roman: 'annyeong'}],
     '안녕!': [{korean: '안녕', english: 'hello', roman: 'annyeong'}],
     '오랜만이에요!': [{korean: '오랜만', english: 'long time', roman: 'oraenman'}],
-    '잘 지냈어요?': [{korean: '지내', english: 'doing', roman: 'jinae'}],
+    '잘 지냈어요?': [{korean: '지내다', english: 'live', roman: 'jinaeda'}],
     '저는 민우예요.': [{korean: '저', english: 'I', roman: 'jeo'}, {korean: '민우', english: 'Minwoo', roman: 'minu'}],
-    '만나서 반가워요.': [{korean: '만나', english: 'meeting', roman: 'manna'}],
+    '만나서 반가워요.': [{korean: '만나다', english: 'meet', roman: 'mannada'}],
     '이름이 뭐예요?': [{korean: '이름', english: 'name', roman: 'ireum'}],
     '어디에서 오셨어요?': [{korean: '어디', english: 'where', roman: 'eodi'}],
     '곧 다시 봬요.': [{korean: '곧', english: 'soon', roman: 'got'}],
@@ -43,7 +43,7 @@
     '안 매운 걸로, 주세요.': [{korean: '맵다', english: 'spicy', roman: 'maepda'}],
     '물 좀 더 주시겠어요?': [{korean: '물', english: 'water', roman: 'mul'}],
     '계산서 부탁드려요.': [{korean: '계산서', english: 'check', roman: 'gyesanseo'}],
-    '맵기 조절 가능해요?': [{korean: '맵기', english: 'spice level', roman: 'maepgi'}],
+    '맵기 조절 가능해요?': [{korean: '맵기', english: 'spiciness', roman: 'maepgi'}],
     '알레르기가 있어요.': [{korean: '알레르기', english: 'allergy', roman: 'allerugi'}],
     '채식 메뉴 있나요?': [{korean: '채식', english: 'vegetarian', roman: 'chaesik'}, {korean: '메뉴', english: 'menu', roman: 'menyu'}],
     '각자 계산할게요.': [{korean: '각자', english: 'separately', roman: 'gakja'}, {korean: '계산', english: 'bill', roman: 'gyesan'}],
@@ -79,10 +79,10 @@
     '미안하지만, 오늘은 어려워요.': [{korean: '오늘', english: 'today', roman: 'oneul'}],
     '내일 시간, 괜찮으세요?': [{korean: '내일', english: 'tomorrow', roman: 'naeil'}, {korean: '시간', english: 'time', roman: 'sigan'}],
     '도와주셔서 감사합니다.': [{korean: '도와주다', english: 'help', roman: 'dowajuda'}],
-    '사진 좀 찍어 주실래요?': [{korean: '사진', english: 'photo', roman: 'sajin'}],
+    '사진 좀 찍어 주실래요?': [{korean: '사진', english: 'photo', roman: 'sajin'}, {korean: '찍다', english: 'take', roman: 'jjikda'}],
     '죄송합니다.': [],
     '한국어가 아직 서툴러요.': [{korean: '한국어', english: 'Korean language', roman: 'hangugeo'}],
-    '다시 한번 말씀해 주세요.': [{korean: '말씀', english: 'speaking', roman: 'malsseum'}],
+    '다시 한번 말씀해 주세요.': [{korean: '말씀하다', english: 'speak', roman: 'malsseumada'}],
     '오늘 정말 즐거웠어요.': [{korean: '오늘', english: 'today', roman: 'oneul'}, {korean: '정말', english: 'really', roman: 'jeongmal'}],
     
     // Daily - Work
@@ -165,9 +165,9 @@
     
     // Travel - Market
     '맛 좀 봐도 돼요?': [{korean: '맛', english: 'taste', roman: 'mat'}],
-    '반 근만 주세요.': [{korean: '근', english: 'geun', roman: 'geun'}],
+    '반 근만 주세요.': [{korean: '근', english: 'geun (unit)', roman: 'geun'}],
     '오늘 들어온 건가요?': [{korean: '오늘', english: 'today', roman: 'oneul'}],
-    '조금만 깎아 주실 수 있나요?': [{korean: '깎다', english: 'lower', roman: 'kkakda'}],
+    '조금만 깎아 주실 수 있나요?': [{korean: '깎다', english: 'reduce', roman: 'kkakda'}],
     '봉투 필요해요.': [{korean: '봉투', english: 'bag', roman: 'bongtu'}],
     
     // Travel - Duty Free
