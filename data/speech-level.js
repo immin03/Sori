@@ -157,18 +157,13 @@
       }
     }
     
-    // 디버깅용 로그
-    console.log('updateSpeechLevelTag - koreanText:', koreanText, 'category:', category);
-    
     const speechLevel = detectSpeechLevel(koreanText, category);
-    console.log('detectSpeechLevel 결과:', speechLevel);
     
     if (speechLevel) {
       const tag = document.createElement('span');
       tag.className = `speech-level-tag ${speechLevel}`;
       tag.textContent = speechLevel === 'polite' ? 'Polite' : 'Casual';
       badgeContainer.appendChild(tag);
-      console.log('태그 추가됨:', speechLevel);
     }
   }
 
