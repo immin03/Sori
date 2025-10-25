@@ -76,6 +76,13 @@
       /감사합니다$/, /죄송합니다$/, /실례합니다$/, /안녕하세요$/, /합니다$/
     ];
     
+    // 경어 우선 확인 (가장 먼저 체크)
+    if (text.endsWith('세요') || text.endsWith('해요') || text.endsWith('이에요') || 
+        text.endsWith('예요') || text.endsWith('어요') || text.endsWith('아요') || 
+        text.endsWith('요') || text.endsWith('습니다') || text.endsWith('합니다')) {
+      return 'polite';
+    }
+    
     // 반말 패턴 (더 정확한 패턴들)
     const casualPatterns = [
       /어$/, /아$/, /지$/, /야$/, /해$/, /야$/, /어$/, /아$/,
