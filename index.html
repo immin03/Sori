@@ -187,6 +187,25 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 .brand-row{display:flex;justify-content:flex-end;align-items:center;margin-bottom:6px}
 .brand{display:inline-flex;align-items:center;gap:8px;background:#f5f3ff;border:1.5px solid #e9defd;padding:6px 10px;border-radius:999px;color:#7c3aed;font-weight:800;font-size:12px}
 .brand svg{display:block}
+
+/* speech level tags */
+.speech-level-tag {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 600;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+.speech-level-tag.polite {
+  background: #EDE9FE;
+  color: #7C3AED;
+}
+.speech-level-tag.casual {
+  background: #F3F4F6;
+  color: #4B5563;
+}
 </style>
 </head>
 <body>
@@ -673,6 +692,83 @@ window.addEventListener('load',()=>{
     }
   }
 
+  // 경어/반말 레벨 감지 함수
+  function detectSpeechLevel(koreanText) {
+    if (!koreanText || typeof koreanText !== 'string') return null;
+    
+    const text = koreanText.trim();
+    
+    // 숫자나 중립적인 표현인지 확인
+    if (/^[0-9\s\-\.]+$/.test(text) || text.length <= 2) {
+      return null; // 중립
+    }
+    
+    // 경어 패턴 (-요, -습니다, -해요, -이에요, -예요 등)
+    const politePatterns = [
+      /요$/, /습니다$/, /해요$/, /이에요$/, /예요$/, /어요$/, /아요$/,
+      /세요$/, /으세요$/, /주세요$/, /드릴게요$/, /할게요$/, /할래요$/,
+      /있어요$/, /없어요$/, /되나요$/, /가능해요$/, /있나요$/, /없나요$/,
+      /할까요$/, /될까요$/, /하세요$/, /하시나요$/, /하시는지$/, /하시는$/,
+      /하시는군요$/, /입니다$/
+    ];
+    
+    // 반말 패턴 (-어, -아, -지, -야 등)
+    const casualPatterns = [
+      /어$/, /아$/, /지$/, /야$/, /해$/, /야$/, /어$/, /아$/,
+      /지$/, /야$/, /해$/, /야$/, /어$/, /아$/, /지$/, /야$/,
+      /해$/, /야$/, /어$/, /아$/, /지$/, /야$/, /해$/, /야$/,
+      /어$/, /아$/, /지$/, /야$/, /해$/, /야$/, /어$/, /아$/,
+      /지$/, /야$/, /해$/, /야$/, /어$/, /아$/, /지$/, /야$/,
+      /해$/, /야$/, /어$/, /아$/, /지$/, /야$/, /해$/, /야$/
+    ];
+    
+    // 경어 패턴 확인
+    for (const pattern of politePatterns) {
+      if (pattern.test(text)) {
+        return 'polite';
+      }
+    }
+    
+    // 반말 패턴 확인
+    for (const pattern of casualPatterns) {
+      if (pattern.test(text)) {
+        return 'casual';
+      }
+    }
+    
+    // 특별한 경우들
+    if (text.includes('요') || text.includes('습니다') || text.includes('해요')) {
+      return 'polite';
+    }
+    
+    if (text.includes('어') || text.includes('아') || text.includes('지') || text.includes('야')) {
+      return 'casual';
+    }
+    
+    return null; // 중립
+  }
+
+  // 카테고리 태그에 경어/반말 레벨 태그 추가
+  function updateSpeechLevelTag(koreanText) {
+    const badgeEl = document.getElementById('badge');
+    if (!badgeEl) return;
+    
+    // 기존 speech level 태그 제거
+    const existingTag = badgeEl.querySelector('.speech-level-tag');
+    if (existingTag) {
+      existingTag.remove();
+    }
+    
+    const speechLevel = detectSpeechLevel(koreanText);
+    
+    if (speechLevel) {
+      const tag = document.createElement('span');
+      tag.className = `speech-level-tag ${speechLevel}`;
+      tag.textContent = speechLevel === 'polite' ? 'Polite' : 'Casual';
+      badgeEl.appendChild(tag);
+    }
+  }
+
   function applyOnce(){
     if(applying) return;
     const ctx=context, en=english, pr=pronunciation, koEl=korean;
@@ -691,6 +787,9 @@ window.addEventListener('load',()=>{
       
       // 명사 정의 업데이트
       updateNounDefinitions(ko);
+      
+      // 경어/반말 레벨 태그 업데이트
+      updateSpeechLevelTag(ko);
       
       showLines();
     }finally{
