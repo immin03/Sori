@@ -173,6 +173,11 @@ body{font-family:'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', 
 
 <!-- TinyMCE Editor -->
 <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+<script>
+// TinyMCE API 키 경고 무시
+window.tinymce = window.tinymce || {};
+window.tinymce.suffix = '.min';
+</script>
 
 <!-- Firebase SDK -->
 <script type="module" src="/js/firebase-init.js"></script>

@@ -18,6 +18,9 @@ export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const provider = new GoogleAuthProvider();
 
+// 전역으로도 노출 (다른 파일에서 사용)
+window.db = db;
+
 // 전역으로 설정 노출 (state.js에서 사용)
 window.firebaseConfig = firebaseConfig;
 
