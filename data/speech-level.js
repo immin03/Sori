@@ -30,12 +30,28 @@
       '시월, 십일월, 십이월', '원, 십 원, 백 원', '천 원, 만 원',
       '십만, 백만', '천만, 일 억', '이십일, 이십이, 이십삼', '삼십, 사십, 오십',
       '육십, 칠십, 팔십, 구십', '백, 이백, 삼백', '천, 이천, 삼천',
-      '첫째 날, 둘째 날', '셋째 날, 넷째 날', '삼월 오일', '유월 십구일'
+      '첫째 날, 둘째 날', '셋째 날, 넷째 날', '삼월 오일', '유월 십구일',
+      '금요일 오후 세 시', '금요일', '오후', '세 시', '안녕'
     ];
     
     // 중립 표현들 확인
     for (const expression of neutralExpressions) {
       if (text === expression || text.includes(expression)) {
+        return null; // 중립
+      }
+    }
+    
+    // 명사형 패턴 확인 (시간, 요일, 숫자 등)
+    const nounPatterns = [
+      /요일$/, /월$/, /시$/, /분$/, /원$/, /일$/, /년$/, /개$/, /권$/, /장$/,
+      /^\d+/, /^\w+요일/, /^\w+월/, /^\w+시/, /^\w+분/, /^\w+원/,
+      /오후|오전|새벽|밤|낮|아침|저녁/,
+      /월요일|화요일|수요일|목요일|금요일|토요일|일요일/,
+      /일월|이월|삼월|사월|오월|유월|칠월|팔월|구월|시월|십일월|십이월/
+    ];
+    
+    for (const pattern of nounPatterns) {
+      if (pattern.test(text)) {
         return null; // 중립
       }
     }
@@ -72,7 +88,7 @@
     
     // 특별한 반말 표현들
     const casualExpressions = [
-      '안녕!', '안녕', '헐!', '대박!', '쩐다', '진짜?', '뭐야?', '어때?', '뭐해?', '어디야?',
+      '안녕!', '헐!', '대박!', '쩐다', '진짜?', '뭐야?', '어때?', '뭐해?', '어디야?',
       '말도 안 돼!', '대박이다!', '진짜 웃겨!', '이게 실화야?', '뭐래?', '그치 그치.',
       '나도 그래.', '그게 되네?', '피곤해 죽겠어.', '귀찮아 죽겠어.', '답답해 미치겠어.',
       '노답이야.', '현타 왔다.', '킹받네.', '어쩔 수 없지.', '완전 좋아!', '답정너잖아.',
@@ -163,11 +179,6 @@
     const category = activeTab ? activeTab.textContent.trim() : null;
     
     const speechLevel = detectSpeechLevel(koreanText, category);
-    
-    // 디버깅용 로그
-    console.log('Korean text:', koreanText);
-    console.log('Category:', category);
-    console.log('Speech level:', speechLevel);
     
     if (speechLevel) {
       const tag = document.createElement('span');
