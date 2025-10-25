@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Sori Newsletter</title>
+<meta name="theme-color" content="#7c3aed"/>
+
+<!-- Webfont -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+*{box-sizing:border-box}
+body{font-family:'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;max-width:720px;margin:0 auto;padding:16px;background:#faf8ff;min-height:100vh;color:#111827}
+
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;padding:20px;background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.1)}
+.header h1{font-size:28px;margin:0;color:#7c3aed;font-weight:800}
+.header .back-link{color:#6b7280;text-decoration:none;font-size:14px;}
+
+.card{background:#fff;border-radius:12px;padding:24px;margin:20px 0;box-shadow:0 1px 3px rgba(0,0,0,0.1)}
+
+.newsletter-list{display:grid;gap:16px;margin-top:16px}
+.newsletter-item{background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:16px;cursor:pointer;transition:all 0.2s}
+.newsletter-item:hover{background:#f3f4f6;border-color:#7c3aed}
+.newsletter-item h3{margin:0 0 8px;font-size:16px;color:#1f2937;font-weight:700}
+.newsletter-meta{color:#6b7280;font-size:12px;margin-bottom:8px}
+.newsletter-preview{color:#4b5563;font-size:14px;line-height:1.5;margin-bottom:8px}
+.newsletter-type{display:inline-block;background:#ede9fe;color:#7c3aed;font-size:11px;font-weight:600;padding:4px 8px;border-radius:6px;margin-right:8px}
+
+.newsletter-content{margin-top:16px}
+.newsletter-body{white-space:pre-wrap;line-height:1.6;color:#374151}
+
+.btn{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border:none;border-radius:8px;font-weight:600;font-size:14px;cursor:pointer;text-decoration:none;transition:all 0.2s}
+.btn-secondary{background:#6b7280;color:#fff}
+.btn-secondary:hover{background:#4b5563}
+
+.subscribe-form{background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:20px;margin:16px 0;text-align:center}
+.subscribe-form h3{margin:0 0 12px;color:#1f2937;font-size:18px}
+.subscribe-form p{margin:0 0 16px;color:#6b7280;font-size:14px}
+.subscribe-form input{width:100%;max-width:300px;padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;margin-bottom:12px}
+.subscribe-form input:focus{outline:none;border-color:#7c3aed;box-shadow:0 0 0 3px rgba(124,58,237,0.1)}
+
+.hidden{display:none}
+
+#alertContainer{position:fixed;top:20px;right:20px;z-index:9999}
+.alert{background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:12px;border-radius:8px;margin-bottom:20px}
+.alert.success{background:#f0fdf4;border-color:#bbf7d0;color:#166534}
+.alert.info{background:#dbeafe;border-color:#93c5fd;color:#1e40af}
+</style>
+</head>
+<body>
+<header class="header">
+  <div>
+    <h1>📧 Sori Newsletter</h1>
+    <a href="../index.html" class="back-link">← 메인 앱으로 돌아가기</a>
+  </div>
+  <button id="subscribeBtn" class="btn btn-secondary">구독하기</button>
+</header>
+
+<div id="newsletterList" class="newsletter-list">
+  <!-- 뉴스레터 목록이 여기에 로드됩니다 -->
+</div>
+
+<div id="newsletterContent" class="newsletter-content hidden">
+  <button id="backToList" class="btn btn-secondary" style="margin-bottom: 16px;">← 목록으로</button>
+  <h3 id="newsletterTitle"></h3>
+  <div id="newsletterMeta" class="newsletter-meta"></div>
+  <div id="newsletterBody" class="newsletter-body"></div>
+</div>
+
+<div id="alertContainer"></div>
+
+<!-- Firebase SDK -->
+<script type="module" src="../js/firebase-init.js"></script>
+<script type="module" src="newsletter.js"></script>
+</body>
+</html>
