@@ -6,7 +6,7 @@
   function detectSpeechLevel(koreanText, category = null) {
     if (!koreanText || typeof koreanText !== 'string') return null;
     
-    const text = koreanText.trim();
+    const text = koreanText.trim().replace(/[.!?]$/, ''); // 마침표 제거
     
     // 숫자나 중립적인 표현인지 확인
     if (/^[0-9\s\-\.]+$/.test(text) || text.length <= 2) {
@@ -163,6 +163,11 @@
     const category = activeTab ? activeTab.textContent.trim() : null;
     
     const speechLevel = detectSpeechLevel(koreanText, category);
+    
+    // 디버깅용 로그
+    console.log('Korean text:', koreanText);
+    console.log('Category:', category);
+    console.log('Speech level:', speechLevel);
     
     if (speechLevel) {
       const tag = document.createElement('span');
