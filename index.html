@@ -194,7 +194,7 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 .brand{display:inline-flex;align-items:center;gap:8px;background:#f5f3ff;border:1.5px solid #e9defd;padding:6px 10px;border-radius:999px;color:#7c3aed;font-weight:800;font-size:12px}
 .brand svg{display:block}
 
-/* speech level tags - 별도 라벨로 분리 */
+/* speech level tags - 카테고리 태그와 별도로 나란히 배치 */
 .speech-level-tag {
   display: inline-block;
   padding: 5px 10px;
@@ -205,6 +205,8 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
   vertical-align: middle;
   height: 28px;
   line-height: 18px;
+  position: relative;
+  z-index: 1;
 }
 .speech-level-tag.polite {
   background: #EDE9FE;
@@ -213,6 +215,13 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 .speech-level-tag.casual {
   background: #F3F4F6;
   color: #4B5563;
+}
+
+/* 카테고리 태그와 경어/반말 태그를 나란히 배치 */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 </style>
 </head>
