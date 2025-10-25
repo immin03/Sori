@@ -129,13 +129,15 @@
     ];
     
     // 특별한 반말 표현들 먼저 확인
-    console.log('casualExpressions 체크 중, text:', text);
     for (const expression of casualExpressions) {
-      console.log('비교:', text, '===', expression, '->', text === expression);
       if (text === expression) {
-        console.log('매칭됨! casual 반환');
         return 'casual';
       }
+    }
+    
+    // "안녕"으로 시작하는 경우도 캐주얼로 처리
+    if (text === '안녕' || text.startsWith('안녕')) {
+      return 'casual';
     }
     
     // 경어 패턴 확인 (우선순위)
