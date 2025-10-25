@@ -130,7 +130,7 @@
     
     // 특별한 반말 표현들 먼저 확인
     for (const expression of casualExpressions) {
-      if (text === expression || text.includes(expression)) {
+      if (text === expression) {
         return 'casual';
       }
     }
