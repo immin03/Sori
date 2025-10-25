@@ -119,6 +119,11 @@
       }
     }
     
+    // 추가 경어 패턴 확인
+    if (text.endsWith('합니다') || text.endsWith('드립니다') || text.endsWith('습니다')) {
+      return 'polite';
+    }
+    
     // 반말 패턴 확인
     for (const pattern of casualPatterns) {
       if (pattern.test(text)) {
@@ -143,8 +148,12 @@
     const badgeEl = document.getElementById('badge');
     if (!badgeEl) return;
     
+    // badge-container 찾기
+    const badgeContainer = badgeEl.parentElement;
+    if (!badgeContainer) return;
+    
     // 기존 speech level 태그 제거
-    const existingTag = badgeEl.querySelector('.speech-level-tag');
+    const existingTag = badgeContainer.querySelector('.speech-level-tag');
     if (existingTag) {
       existingTag.remove();
     }
@@ -159,7 +168,7 @@
       const tag = document.createElement('span');
       tag.className = `speech-level-tag ${speechLevel}`;
       tag.textContent = speechLevel === 'polite' ? 'Polite' : 'Casual';
-      badgeEl.appendChild(tag);
+      badgeContainer.appendChild(tag);
     }
   }
 

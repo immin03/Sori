@@ -218,10 +218,20 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 }
 
 /* 카테고리 태그와 경어/반말 태그를 나란히 배치 */
-.badge {
-  display: inline-flex;
+.badge-container {
+  display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.badge {
+  display: inline-block;
+  background: #7c3aed;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 5px 10px;
+  border-radius: 12px;
 }
 </style>
 </head>
@@ -257,7 +267,9 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 
 <section class="card" id="lessonCard">
   <div class="row-between">
-    <div id="badge" class="badge">Love</div>
+    <div class="badge-container">
+      <div id="badge" class="badge">Love</div>
+    </div>
 
     <div style="display:flex;gap:6px;align-items:center;">
       <!-- 공유 버튼 (별표와 동일한 디자인) -->
