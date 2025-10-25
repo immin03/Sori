@@ -8,7 +8,7 @@
     const text = koreanText.trim().replace(/[.!?]$/, '');
     
     // 1. 카테고리 우선 체크
-    if (category === 'Trendy' || category === 'trendy' || category === 'Trendy Talk') {
+    if (category === 'Trendy' || category === 'trendy' || category === 'Trendy Talk' || category === 'trendyBtn') {
       return 'casual';
     }
     
@@ -131,17 +131,44 @@
       existingTag.remove();
     }
     
-    // 현재 카테고리 확인
+    // 현재 카테고리 확인 - 여러 방법으로 시도
+    let category = null;
+    
+    // 방법 1: .tab-button.active 찾기
     const activeTab = document.querySelector('.tab-button.active');
-    const category = activeTab ? activeTab.textContent.trim() : null;
+    if (activeTab) {
+      category = activeTab.textContent.trim();
+    }
+    
+    // 방법 2: app.js의 currentCategory 사용
+    if (!category && window.SoriApp && window.SoriApp.currentCategory) {
+      category = window.SoriApp.currentCategory;
+    }
+    
+    // 방법 3: 버튼 ID로 매핑
+    if (!category) {
+      const tabButtons = ['dailyBtn', 'travelBtn', 'dramaBtn', 'trendyBtn', 'numbersBtn'];
+      for (const btnId of tabButtons) {
+        const btn = document.getElementById(btnId);
+        if (btn && btn.classList.contains('active')) {
+          category = btn.textContent.trim();
+          break;
+        }
+      }
+    }
+    
+    // 디버깅용 로그
+    console.log('updateSpeechLevelTag - koreanText:', koreanText, 'category:', category);
     
     const speechLevel = detectSpeechLevel(koreanText, category);
+    console.log('detectSpeechLevel 결과:', speechLevel);
     
     if (speechLevel) {
       const tag = document.createElement('span');
       tag.className = `speech-level-tag ${speechLevel}`;
       tag.textContent = speechLevel === 'polite' ? 'Polite' : 'Casual';
       badgeContainer.appendChild(tag);
+      console.log('태그 추가됨:', speechLevel);
     }
   }
 
