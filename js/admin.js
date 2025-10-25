@@ -1,4 +1,4 @@
-뉴스레터변경2
+// 관리자 페이지 JavaScript
 import { auth, db } from "./firebase-init.js";
 import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
 import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, orderBy, where, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
