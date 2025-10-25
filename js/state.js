@@ -1,8 +1,9 @@
 /* js/state.js — auth + saved(glue) for app.js (Firestore savedList array) */
 (function () {
   // --- Firebase (compat) ---
-  const firebaseConfig = {
-    apiKey: "AIzaSyBZsIN5q3wc_uglLODnzho-MSfqAACBlu4",
+  // Firebase 설정은 firebase-init.js에서 가져옴
+  const firebaseConfig = window.firebaseConfig || {
+    apiKey: "YOUR_FIREBASE_API_KEY",
     authDomain: "sori-533fc.firebaseapp.com",
     projectId: "sori-533fc",
     storageBucket: "sori-533fc.firebasestorage.app",

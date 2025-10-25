@@ -1,6 +1,7 @@
 // Firebase v9 CDN 방식으로 변경
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
 import { getAuth, onAuthStateChanged, GoogleAuthProvider, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBZsIN5q3wc_uglLODnzho-MSfqAACBlu4",
@@ -14,7 +15,11 @@ const firebaseConfig = {
 
 export const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
 export const auth = getAuth(app);
+export const db = getFirestore(app);
 export const provider = new GoogleAuthProvider();
+
+// 전역으로 설정 노출 (state.js에서 사용)
+window.firebaseConfig = firebaseConfig;
 
 // 세션 유지 강제: 리디렉션 후에도 로그인 상태가 유지되도록
 setPersistence(auth, browserLocalPersistence).catch(console.error);

@@ -233,6 +233,128 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
   padding: 5px 10px;
   border-radius: 12px;
 }
+
+/* 뉴스레터 스타일 */
+.newsletter-list {
+  display: grid;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.newsletter-item {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.newsletter-item:hover {
+  background: #f3f4f6;
+  border-color: #7c3aed;
+}
+
+.newsletter-item h3 {
+  margin: 0 0 8px;
+  font-size: 16px;
+  color: #1f2937;
+  font-weight: 700;
+}
+
+.newsletter-meta {
+  color: #6b7280;
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
+.newsletter-preview {
+  color: #4b5563;
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+.newsletter-type {
+  display: inline-block;
+  background: #ede9fe;
+  color: #7c3aed;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 6px;
+  margin-right: 8px;
+}
+
+.newsletter-content {
+  margin-top: 16px;
+}
+
+.newsletter-body {
+  white-space: pre-wrap;
+  line-height: 1.6;
+  color: #374151;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.btn-secondary {
+  background: #6b7280;
+  color: #fff;
+}
+
+.btn-secondary:hover {
+  background: #4b5563;
+}
+
+.subscribe-form {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 16px 0;
+  text-align: center;
+}
+
+.subscribe-form h3 {
+  margin: 0 0 12px;
+  color: #1f2937;
+  font-size: 18px;
+}
+
+.subscribe-form p {
+  margin: 0 0 16px;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.subscribe-form input {
+  width: 100%;
+  max-width: 300px;
+  padding: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.subscribe-form input:focus {
+  outline: none;
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 3px rgba(124,58,237,0.1);
+}
 </style>
 </head>
 <body>
@@ -241,7 +363,10 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
     <h1>Sori <span style="font-size:14px;color:#9ca3af;font-weight:600;">(beta)</span></h1>
     <div class="intro">Learn Korean naturally by repeating real sounds</div>
   </div>
-  <button id="openLogin" class="top-btn primary">Login</button>
+  <div style="display: flex; gap: 8px; align-items: center;">
+    <a href="admin.html" class="top-btn" style="background: #6b7280; color: #fff; text-decoration: none; padding: 8px 14px; border-radius: 12px; font-size: 12px; font-weight: 700;">Admin</a>
+    <button id="openLogin" class="top-btn primary">Login</button>
+  </div>
 </header>
 
 <section class="card">
@@ -259,6 +384,7 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
     <button id="trendyBtn"   class="tab-button">Trendy Talk</button>
     <button id="dramaBtn"    class="tab-button">K-Drama</button>
     <button id="numbersBtn"  class="tab-button">Numbers</button>
+    <button id="newsletterBtn" class="tab-button">Newsletter</button>
     <button id="savedBtnHidden" class="tab-button">Saved</button>
   </div>
 
@@ -325,6 +451,25 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
   </div>
 </section>
 
+<!-- 뉴스레터 섹션 -->
+<section class="card" id="newsletterSection" style="display: none;">
+  <div class="row-between">
+    <h2 style="margin: 0; color: #7c3aed; font-size: 20px;">📧 Newsletter</h2>
+    <button id="subscribeBtn" class="top-btn primary">구독하기</button>
+  </div>
+  
+  <div id="newsletterList" class="newsletter-list">
+    <!-- 뉴스레터 목록이 여기에 로드됩니다 -->
+  </div>
+  
+  <div id="newsletterContent" class="newsletter-content" style="display: none;">
+    <button id="backToList" class="btn btn-secondary" style="margin-bottom: 16px;">← 목록으로</button>
+    <h3 id="newsletterTitle"></h3>
+    <div id="newsletterMeta" class="newsletter-meta"></div>
+    <div id="newsletterBody" class="newsletter-body"></div>
+  </div>
+</section>
+
 <div id="authModal" class="auth">
   <div class="auth-card">
     <button id="authClose" class="auth-close" aria-label="Close">×</button>
@@ -353,6 +498,7 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 <!-- app scripts -->
 <script type="module" src="/js/firebase-init.js" defer></script>
 <script type="module" src="/js/auth.js" defer></script>
+<script type="module" src="/js/newsletter.js" defer></script>
 <script defer src="js/state.js?v=20251017"></script>
 <script defer src="js/tts.js?v=20251017"></script>
 <script defer src="js/app.js?v=20251017"></script>

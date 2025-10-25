@@ -15,6 +15,7 @@
     dramaBtn: $("dramaBtn"),
     trendyBtn: $("trendyBtn"),
     numbersBtn: $("numbersBtn"),  // ★ 추가
+    newsletterBtn: $("newsletterBtn"),  // ★ 뉴스레터 추가
     savedBtn: $("savedBtn"),
     scrapBtn: $("scrapBtn"),
     badge: $("badge"),
@@ -160,7 +161,7 @@
 
   // ---------- 탭 ----------
   function setActiveTab(tab) {
-    ["daily","travel","drama","trendy","numbers","saved"].forEach(function(id){
+    ["daily","travel","drama","trendy","numbers","newsletter","saved"].forEach(function(id){
       var b = $(id + "Btn");
       if (b) b.classList.toggle("active", id === tab);
     });
@@ -169,6 +170,21 @@
   function handleTab(tab) {
     currentCategory = tab;
     currentIndex = 0;              // 카테고리 전환 시 1부터
+    
+    // 뉴스레터 탭 처리
+    if (tab === "newsletter") {
+      if (window.showNewsletterTab) {
+        window.showNewsletterTab();
+      }
+      setActiveTab(tab);
+      return;
+    }
+    
+    // 다른 탭들은 뉴스레터 탭 숨기기
+    if (window.hideNewsletterTab) {
+      window.hideNewsletterTab();
+    }
+    
     // drama/saved는 서브 없음, 그 외는 All 기본
     if (tab === "drama" || tab === "saved") {
       currentSub = null;
@@ -358,6 +374,7 @@
     els.dramaBtn   && els.dramaBtn  .addEventListener("click", function(){ handleTab("drama");   });
     els.trendyBtn  && els.trendyBtn .addEventListener("click", function(){ handleTab("trendy");  });
     els.numbersBtn && els.numbersBtn.addEventListener("click", function(){ handleTab("numbers"); }); // ★ 추가
+    els.newsletterBtn && els.newsletterBtn.addEventListener("click", function(){ handleTab("newsletter"); }); // ★ 뉴스레터 추가
     els.savedBtn   && els.savedBtn  .addEventListener("click", function(){ handleTab("saved");   });
 
     // 서브필터 델리게이션
