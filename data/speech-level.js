@@ -129,8 +129,11 @@
     ];
     
     // 특별한 반말 표현들 먼저 확인
+    console.log('casualExpressions 체크 중, text:', text);
     for (const expression of casualExpressions) {
+      console.log('비교:', text, '===', expression, '->', text === expression);
       if (text === expression) {
+        console.log('매칭됨! casual 반환');
         return 'casual';
       }
     }
