@@ -1,5 +1,5 @@
 // 뉴스레터 기능 JavaScript
-import { auth, db } from "./firebase-init.js";
+import { auth, db } from "../js/firebase-init.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
 import { collection, addDoc, getDocs, query, where, orderBy, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 

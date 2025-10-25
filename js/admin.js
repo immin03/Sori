@@ -2,7 +2,7 @@
 import { auth, db } from "./firebase-init.js";
 import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
 import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, orderBy, where, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
-import { sendNewsletterEmail, createEmailTemplate } from "./email-service.js";
+import { sendNewsletterEmail, createEmailTemplate } from "../newsletter/email-service.js";
 
 // 관리자 이메일 목록 (실제 운영 시에는 환경변수나 설정 파일에서 관리)
 const ADMIN_EMAILS = [

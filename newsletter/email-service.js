@@ -1,6 +1,6 @@
 // 이메일 발송 서비스 (개발용 - 실제 운영에서는 Firebase Functions 사용 권장)
 import { collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
-import { db } from "./firebase-init.js";
+import { db } from "../js/firebase-init.js";
 
 // 이메일 발송 함수 (개발용)
 export async function sendNewsletterEmail(newsletterId, newsletterData) {
