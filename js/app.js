@@ -137,15 +137,23 @@
     if (currentCategory === "saved" || currentCategory === "drama") {
       els.subFilters.style.display = "none";
       els.subFilters.innerHTML = "";
+      els.subFilters.classList.remove('visible');
+      const toggleBtn = document.getElementById('subFiltersToggle');
+      if (toggleBtn) toggleBtn.style.display = 'none';
       return;
     }
     const list = SUBS[currentCategory] || [];
     if (!list.length) {
       els.subFilters.style.display = "none";
       els.subFilters.innerHTML = "";
+      els.subFilters.classList.remove('visible');
+      const toggleBtn = document.getElementById('subFiltersToggle');
+      if (toggleBtn) toggleBtn.style.display = 'none';
       return;
     }
-    els.subFilters.style.display = "flex";
+    
+    const toggleBtn = document.getElementById('subFiltersToggle');
+    if (toggleBtn) toggleBtn.style.display = 'block';
 
     const chips = ["All"].concat(list);
     var html = chips.map(function(lbl){
@@ -156,6 +164,7 @@
       return '<div class="sub-chip ' + (active?'active':'') + '" data-sub="'+ value +'">'+ icon + lbl +'</div>';
     }).join("");
     els.subFilters.innerHTML = html;
+    els.subFilters.classList.remove('visible'); // 기본값: 숨김
   }
 
   // ---------- 탭 ----------
