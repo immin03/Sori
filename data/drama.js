@@ -3,8 +3,8 @@
   window.SORI_DATA = window.SORI_DATA || {};
 
   window.SORI_DATA.drama = [
-    {t:'Goblin',c:'Kim Shin to Eun-tak',k:'너는, 내가 잃은 모든 날들이다.',e:'You are all the days I lost.',p:'neoneun, naega ireun modeun naldeulida',sub:'Goblin'},
-    {t:'Goblin',c:'Eun-tak reflection',k:'혼자였던 시간도, 나를 만들었어.',e:'Even my lonely days shaped me.',p:'honjayotteon sigando, nareul mandeureosseo',sub:'Goblin'},
+    {t:'Guardian',c:'Kim Shin to Eun-tak',k:'너는, 내가 잃은 모든 날들이다.',e:'You are all the days I lost.',p:'neoneun, naega ireun modeun naldeulida',sub:'Guardian'},
+    {t:'Guardian',c:'Eun-tak reflection',k:'혼자였던 시간도, 나를 만들었어.',e:'Even my lonely days shaped me.',p:'honjayotteon sigando, nareul mandeureosseo',sub:'Guardian'},
     {t:'Crash Landing on You',c:'Ri Jeong-hyeok',k:'널 좋아한 게, 잘못이었을까?',e:'Was it wrong that I liked you?',p:'neol joahan ge, jalmosieosseulkka',sub:'Crash Landing'},
     {t:'Crash Landing on You',c:'Yoon Se-ri',k:'끝이라고 생각한 순간, 다시 시작됐어.',e:'When I thought it was over, it began again.',p:'kkeutirago saenggakan sungan, dasi sijakdwaesseo',sub:'Crash Landing'},
     {t:'Itaewon Class',c:'Park Sae-ro-yi',k:'나는, 내 방식대로 간다.',e:'I go my own way.',p:'naneun, nae bangsikdaero ganda',sub:'Itaewon'},
