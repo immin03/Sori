@@ -44,7 +44,7 @@ function bindGoogleButton() {
       }
     } catch (err) {
       console.error("[auth] 로그인 실패:", err.message);
-      alert("로그인 실패: " + err.message);
+      // alert 제거됨
     } finally {
       loggingIn = false;
     }

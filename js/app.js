@@ -221,7 +221,7 @@
       console.log("currentUser 상태:", window.firebaseAuth?.currentUser ? "있음" : "없음");
     }
     if (!user) { 
-      alert("로그인 후 저장하세요."); 
+      // alert 제거됨
       return; 
     }
     

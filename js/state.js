@@ -67,13 +67,13 @@
 
   // --- 공개 API (모달/헤더에서 사용) ---
   window.handleGoogleLogin = async function handleGoogleLogin() {
-    if (!auth) return alert("Auth not ready. Please retry.");
+    if (!auth) return; // alert 제거됨
     try {
       const provider = new firebase.auth.GoogleAuthProvider();
       await auth.signInWithPopup(provider);
       document.getElementById("authModal")?.classList.add("hidden");
     } catch (e) {
-      alert("Login failed: " + (e?.message || e));
+      // alert 제거됨
     }
   };
 
