@@ -9,6 +9,10 @@
     const quizOptions = document.querySelectorAll('.quiz-option');
     const quizSubmit = document.querySelector('.quiz-submit');
     const quizCategories = document.querySelectorAll('.quiz-category');
+    const quizSpeed = document.getElementById('quizSpeed');
+    const quizSpeedVal = document.getElementById('quizSpeedVal');
+    const quizPrevBtn = document.getElementById('quizPrevBtn');
+    const quizNextBtn = document.getElementById('quizNextBtn');
     
     if (!quizPlayBtn || !quizKorean || !quizOptions.length) {
       return; // Elements not ready yet
@@ -19,10 +23,38 @@
     }
     initialized = true;
     
+    // Quiz state
+    let currentQuestions = [];
+    let currentQuestionIndex = -1;
+    let triesCount = 0;
+    
     // TTS API endpoint
     const ENDPOINT = "https://asia-northeast3-sori-tts.cloudfunctions.net/tts";
     const audio = new Audio();
     let lastUrl = null;
+    let currentSpeed = 0.80;
+    
+    // Get speed
+    function getSpeed() {
+      return currentSpeed;
+    }
+    
+    // Set audio rate
+    function setAudioRate() {
+      audio.playbackRate = getSpeed();
+    }
+    
+    // Speed control
+    if (quizSpeed) {
+      currentSpeed = parseFloat(quizSpeed.value);
+      quizSpeed.addEventListener('input', (e) => {
+        currentSpeed = parseFloat(e.target.value);
+        if (quizSpeedVal) {
+          quizSpeedVal.textContent = currentSpeed.toFixed(2) + 'x';
+        }
+        setAudioRate();
+      });
+    }
     
     // Play Korean text
     async function playKorean(text) {
@@ -48,6 +80,7 @@
         const url = URL.createObjectURL(b);
         lastUrl = url;
         audio.src = url;
+        setAudioRate();
         await audio.play();
       } catch(e) {
         console.error('TTS Error:', e);
@@ -91,26 +124,44 @@
         return null;
       }
       
-      // Get random item from category
-      const randomIndex = Math.floor(Math.random() * data.length);
-      return data[randomIndex];
+      return data;
     }
     
-    // Update quiz question
-    function updateQuestion(category) {
-      const questionData = getQuizData(category);
-      
-      if (!questionData) {
+    // Load questions for category
+    function loadQuestions(category) {
+      const data = getQuizData(category);
+      if (!data) {
         console.error('No data available for category:', category);
         return;
       }
+      
+      // Get 10 random questions
+      const shuffled = [...data].sort(() => Math.random() - 0.5);
+      currentQuestions = shuffled.slice(0, 10);
+      currentQuestionIndex = 0;
+      triesCount = 0;
+      
+      // Update navigation buttons
+      updateNavButtons();
+      
+      // Load first question
+      loadCurrentQuestion();
+    }
+    
+    // Load current question
+    function loadCurrentQuestion() {
+      if (currentQuestions.length === 0 || currentQuestionIndex < 0 || currentQuestionIndex >= currentQuestions.length) {
+        return;
+      }
+      
+      const questionData = currentQuestions[currentQuestionIndex];
       
       // Update Korean text
       if (quizKorean) {
         quizKorean.textContent = questionData.k;
       }
       
-      // Generate wrong answers (random from other items)
+      // Get all questions for wrong answers
       const catMap = {
         'daily': 'daily',
         'travel': 'travel',
@@ -118,6 +169,8 @@
         'drama': 'drama',
         'numbers': 'numbers'
       };
+      const activeCategory = document.querySelector('.quiz-category.active');
+      const category = activeCategory ? activeCategory.dataset.category : 'daily';
       const catKey = catMap[category] || 'daily';
       const categoryData = window.SORI_DATA && window.SORI_DATA[catKey];
       
@@ -133,13 +186,18 @@
         const answers = [questionData.e, ...wrongAnswers];
         answers.sort(() => Math.random() - 0.5);
         
-        // Update option buttons
+        // Update option buttons and reset styles
         quizOptions.forEach((option, index) => {
           if (answers[index]) {
             option.textContent = answers[index];
             option.dataset.answer = answers[index];
             option.dataset.isCorrect = answers[index] === questionData.e;
             option.classList.remove('selected');
+            
+            // Reset all button styles to default
+            option.style.background = '';
+            option.style.color = '';
+            option.style.borderColor = '';
           }
         });
         
@@ -147,6 +205,84 @@
         if (quizSubmit) {
           quizSubmit.disabled = true;
         }
+        
+        selectedOption = null;
+      }
+    }
+    
+    // Update navigation buttons
+    function updateNavButtons() {
+      if (quizPrevBtn) {
+        quizPrevBtn.disabled = currentQuestionIndex === 0;
+      }
+      if (quizNextBtn) {
+        quizNextBtn.disabled = currentQuestionIndex >= currentQuestions.length - 1;
+      }
+    }
+    
+    // Previous question
+    if (quizPrevBtn) {
+      quizPrevBtn.addEventListener('click', () => {
+        if (currentQuestionIndex > 0) {
+          currentQuestionIndex--;
+          triesCount = 0;
+          loadCurrentQuestion();
+        }
+      });
+    }
+    
+    // Next question
+    if (quizNextBtn) {
+      quizNextBtn.addEventListener('click', () => {
+        if (currentQuestionIndex < currentQuestions.length - 1) {
+          currentQuestionIndex++;
+          triesCount = 0;
+          loadCurrentQuestion();
+        }
+      });
+    }
+    
+    // Play sound effect
+    function playSoundEffect(type) {
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      
+      if (type === 'correct') {
+        // Correct answer: brighter, more joyful ascending melody
+        const freqs = [523.25, 659.25, 783.99]; // C, E, G major triad
+        let time = audioContext.currentTime;
+        
+        freqs.forEach((freq, i) => {
+          const oscillator = audioContext.createOscillator();
+          const gainNode = audioContext.createGain();
+          
+          oscillator.connect(gainNode);
+          gainNode.connect(audioContext.destination);
+          
+          oscillator.frequency.value = freq;
+          oscillator.type = 'sine';
+          
+          gainNode.gain.setValueAtTime(0, time);
+          gainNode.gain.linearRampToValueAtTime(0.2, time + 0.05);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, time + 0.2);
+          
+          oscillator.start(time);
+          oscillator.stop(time + 0.2);
+          time += 0.1;
+        });
+      } else {
+        // Wrong answer: lower, descending tone
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.value = 400;
+        oscillator.type = 'sawtooth';
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        oscillator.frequency.exponentialRampToValueAtTime(200, audioContext.currentTime + 0.3);
+        oscillator.start();
+        oscillator.stop(audioContext.currentTime + 0.3);
       }
     }
     
@@ -156,10 +292,13 @@
         const isCorrect = selectedOption.dataset.isCorrect === 'true';
         
         if (isCorrect) {
-          // Correct answer - show feedback and move to next question
-          selectedOption.style.background = '#10b981';
+          // Play success sound
+          playSoundEffect('correct');
+          
+          // Correct answer - show feedback (purple)
+          selectedOption.style.background = '#7c3aed';
           selectedOption.style.color = '#fff';
-          selectedOption.style.borderColor = '#10b981';
+          selectedOption.style.borderColor = '#7c3aed';
           
           // Update score
           const scoreEl = document.getElementById('quizScore');
@@ -168,37 +307,52 @@
             scoreEl.textContent = currentScore + 1;
           }
           
-          // Wait a bit then load next question
+          triesCount = 0; // Reset tries for next question
+          
+          // Wait a bit then load next question automatically
           setTimeout(() => {
-            const activeCategory = document.querySelector('.quiz-category.active');
-            if (activeCategory) {
-              selectedOption = null;
-              updateQuestion(activeCategory.dataset.category);
+            if (currentQuestionIndex < currentQuestions.length - 1) {
+              currentQuestionIndex++;
+              loadCurrentQuestion();
             }
-          }, 1000);
+          }, 1500);
         } else {
-          // Wrong answer - show feedback
+          // Play failure sound
+          playSoundEffect('wrong');
+          triesCount++;
+          
+          // Wrong answer - show feedback (red)
           selectedOption.style.background = '#ef4444';
           selectedOption.style.color = '#fff';
           selectedOption.style.borderColor = '#ef4444';
           
-          // Highlight correct answer
+          // Highlight correct answer in purple
           quizOptions.forEach(option => {
             if (option.dataset.isCorrect === 'true') {
-              option.style.background = '#10b981';
+              option.style.background = '#7c3aed';
               option.style.color = '#fff';
-              option.style.borderColor = '#10b981';
+              option.style.borderColor = '#7c3aed';
             }
           });
           
-          // Wait a bit then reload same question
+          // Reset for another try (no timeout, just let user retry)
           setTimeout(() => {
             selectedOption = null;
-            const activeCategory = document.querySelector('.quiz-category.active');
-            if (activeCategory) {
-              updateQuestion(activeCategory.dataset.category);
+            quizOptions.forEach((option, index) => {
+              // Keep correct answer purple, reset others
+              if (option.dataset.isCorrect !== 'true') {
+                option.style.background = '';
+                option.style.color = '';
+                option.style.borderColor = '';
+              }
+              option.classList.remove('selected');
+            });
+            
+            // Enable submit button for retry
+            if (quizSubmit) {
+              quizSubmit.disabled = true;
             }
-          }, 2000);
+          }, 1200);
         }
       }
     });
@@ -214,15 +368,15 @@
         const selectedCategory = this.dataset.category;
         console.log('Category selected:', selectedCategory);
         
-        // Load new question for selected category
-        updateQuestion(selectedCategory);
+        // Load questions for selected category
+        loadQuestions(selectedCategory);
       });
     });
     
     // Initialize first question
     const activeCategory = document.querySelector('.quiz-category.active');
     if (activeCategory) {
-      updateQuestion(activeCategory.dataset.category);
+      loadQuestions(activeCategory.dataset.category);
     }
   }
   

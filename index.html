@@ -455,9 +455,17 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
         <button class="quiz-category" data-category="numbers">Numbers</button>
       </div>
       
-      <div class="quiz-question">
-        <button id="quizPlayBtn" class="quiz-play-btn">🔊</button>
-        <p class="quiz-korean">안녕하세요</p>
+      <div class="quiz-question-container">
+        <div class="quiz-question">
+          <button id="quizPlayBtn" class="quiz-play-btn"></button>
+          <p class="quiz-korean">안녕하세요</p>
+        </div>
+        
+        <div class="quiz-speed-control">
+          <label>Speed:</label>
+          <input id="quizSpeed" type="range" min="0.6" max="1.0" step="0.05" value="0.80"/>
+          <span id="quizSpeedVal" class="speed-val">0.80x</span>
+        </div>
       </div>
       
       <div class="quiz-options">
@@ -467,7 +475,11 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
         <button class="quiz-option">See you</button>
       </div>
       
-      <button class="quiz-submit" disabled>Check Answer</button>
+      <div class="quiz-actions">
+        <button id="quizPrevBtn" class="quiz-nav-btn" disabled>◀ Previous</button>
+        <button class="quiz-submit" disabled>Check Answer</button>
+        <button id="quizNextBtn" class="quiz-nav-btn">Next ▶</button>
+      </div>
     </div>
   </section>
 </div>
