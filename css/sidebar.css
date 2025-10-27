@@ -138,7 +138,15 @@
   align-items: flex-start;
   justify-content: center;
   flex-direction: column;
-  padding: 8px 16px;
+  padding: 0 16px;
+}
+
+.newsletter-view #quizView {
+  padding-top: 0;
+}
+
+.newsletter-view .card {
+  margin: 6px 0;
 }
 
 @media (max-width: 480px) {
