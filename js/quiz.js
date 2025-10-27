@@ -207,6 +207,9 @@
         }
         
         selectedOption = null;
+        
+        // Update navigation buttons
+        updateNavButtons();
       }
     }
     
