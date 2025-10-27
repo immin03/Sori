@@ -323,7 +323,10 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
     text-align: left;
   }
 }
+
 </style>
+
+<link rel="stylesheet" href="css/sidebar.css">
 </head>
 <body>
 <header class="header">
@@ -331,9 +334,19 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
     <h1>Sori <span style="font-size:14px;color:#111827;font-weight:600;">소리</span></h1>
     <div class="intro">Learn Korean naturally by repeating real sounds</div>
   </div>
-  <button id="openLogin" class="top-btn primary">Login</button>
+  <div class="header-actions">
+    <button id="openLogin" class="top-btn primary">Login</button>
+    <button id="menuToggle" class="menu-btn" aria-label="Menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <line x1="3" y1="12" x2="21" y2="12"/>
+        <line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+  </div>
 </header>
 
+<div class="main-content" id="mainContent">
 <section class="card">
   <div class="category-bar">
     <div class="picker-wrap">
@@ -417,6 +430,17 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
     <button id="nextBtn" class="nav-btn">Next <span class="caret">▶</span></button>
   </div>
 </section>
+</div>
+
+<div id="newsletterView" class="newsletter-view" style="display: none;">
+  <section class="card">
+    <div class="korea101-content">
+      <h2 class="korea101-title">Korea101</h2>
+      <p class="korea101-description">A newsletter delivering Korean news, information, and insights.</p>
+      <p class="korea101-subtitle">Coming soon</p>
+    </div>
+  </section>
+</div>
 
 <div id="authModal" class="auth">
   <div class="auth-card">
@@ -429,6 +453,24 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
       </span>
       Continue with Google
     </button>
+  </div>
+</div>
+
+<!-- Sidebar -->
+<div id="sidebarOverlay" class="sidebar-overlay"></div>
+<div id="sidebar" class="sidebar">
+  <div class="sidebar-header">
+    <h2 class="sidebar-title">Menu</h2>
+    <button id="sidebarClose" class="sidebar-close" aria-label="Close">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="6" x2="6" y2="18"/>
+        <line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+  </div>
+  <div class="sidebar-menu">
+    <button class="menu-item active" data-view="listen">Listen & Repeat</button>
+    <button class="menu-item" data-view="newsletter">Korea101</button>
   </div>
 </div>
 
@@ -449,6 +491,7 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 <script defer src="js/state.js?v=20251017"></script>
 <script defer src="js/tts.js?v=20251017"></script>
 <script defer src="js/app.js?v=20251017"></script>
+<script defer src="js/sidebar.js"></script>
 
 <script>
 /* Sori Auth — final stable gate (popup→redirect, no alerts) */
