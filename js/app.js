@@ -404,6 +404,16 @@
         if (currentCategory === "saved") handleTab("saved");
       });
     }
+    
+    // Listen for savedList changes from Quiz
+    window.addEventListener('savedListChanged', function(e) {
+      if (e.detail && e.detail.savedList) {
+        savedList = e.detail.savedList;
+        if (currentCategory === "saved") {
+          handleTab("saved");
+        }
+      }
+    });
   }
 
   // ---------- 초기화 ----------

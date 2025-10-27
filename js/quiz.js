@@ -506,6 +506,11 @@
           console.log('Updated savedList:', savedList);
           localStorage.setItem(LOCAL_KEY, JSON.stringify(savedList));
           
+          // Trigger a custom event to notify app.js
+          window.dispatchEvent(new CustomEvent('savedListChanged', { 
+            detail: { savedList: savedList } 
+          }));
+          
           // Cloud save
           if (window.db && user.uid) {
             try {
