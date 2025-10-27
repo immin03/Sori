@@ -166,23 +166,34 @@
         const category = activeCategory ? activeCategory.dataset.category : 'daily';
         const catData = window.SoriDataIndex && window.SoriDataIndex[category];
         
-        if (!catData) return;
+        if (!catData) {
+          console.log('No category data found');
+          return;
+        }
         
         // Find the actual item with id from SoriDataIndex
         const foundItem = catData.find(item => 
           item.k === currentQuestionData.k && item.e === currentQuestionData.e
         );
         
-        if (!foundItem || !foundItem.id) return;
+        console.log('Found item:', foundItem);
+        
+        if (!foundItem || !foundItem.id) {
+          console.log('No item or ID found');
+          return;
+        }
         
         const LOCAL_KEY = "soriSaved";
         const savedList = JSON.parse(localStorage.getItem(LOCAL_KEY) || "[]");
         const isSaved = savedList.indexOf(foundItem.id) >= 0;
         
+        console.log('Checking save state for ID:', foundItem.id, 'Is saved:', isSaved);
+        
         btn.classList.toggle('active', isSaved);
         const favoriteText = btn.querySelector('.quiz-favorite-text');
         if (favoriteText) {
           favoriteText.textContent = isSaved ? '★' : '☆';
+          console.log('Updated star icon to:', favoriteText.textContent);
         }
       } catch(e) {
         console.error('updateFavoriteButtonState error:', e);
@@ -480,12 +491,19 @@
           let savedList = JSON.parse(localStorage.getItem(LOCAL_KEY) || "[]");
           const i = savedList.indexOf(foundItem.id);
           
+          console.log('Current savedList:', savedList);
+          console.log('Looking for ID:', foundItem.id);
+          console.log('Index found:', i);
+          
           if (i >= 0) {
             savedList.splice(i, 1);
+            console.log('Removed from saved list');
           } else {
             savedList.push(foundItem.id);
+            console.log('Added to saved list:', foundItem.id);
           }
           
+          console.log('Updated savedList:', savedList);
           localStorage.setItem(LOCAL_KEY, JSON.stringify(savedList));
           
           // Cloud save
