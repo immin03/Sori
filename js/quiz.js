@@ -153,6 +153,24 @@
       
       // Load first question
       loadCurrentQuestion();
+      
+      // Update favorite button state
+      updateFavoriteButtonState();
+    }
+    
+    function updateFavoriteButtonState() {
+      if (!currentQuestionData || !quizFavoriteBtn) return;
+      
+      const LOCAL_KEY = "soriSaved";
+      const savedList = JSON.parse(localStorage.getItem(LOCAL_KEY) || "[]");
+      const id = currentQuestionData.id;
+      const isSaved = id && savedList.indexOf(id) >= 0;
+      
+      quizFavoriteBtn.classList.toggle('active', isSaved);
+      const favoriteText = quizFavoriteBtn.querySelector('.quiz-favorite-text');
+      if (favoriteText) {
+        favoriteText.textContent = isSaved ? '★' : '☆';
+      }
     }
     
     // Load current question
@@ -163,6 +181,9 @@
       
       const questionData = currentQuestions[currentQuestionIndex];
       currentQuestionData = questionData; // Store for favorite button
+      
+      // Update favorite button state
+      updateFavoriteButtonState();
       
       // Update Korean text
       if (quizKorean) {
@@ -202,10 +223,8 @@
             option.dataset.isCorrect = answers[index] === questionData.e;
             option.classList.remove('selected');
             
-            // Reset all button styles to default
-            option.style.background = '';
-            option.style.color = '';
-            option.style.borderColor = '';
+            // Reset all button styles to default - important!
+            option.removeAttribute('style');
           }
         });
         
@@ -427,16 +446,42 @@
         if (!currentQuestionData) return;
         
         try {
-          // Save to favorites using existing scrap functionality
-          const id = currentQuestionData.id || currentQuestionData.k;
-          const savedBtn = document.getElementById('scrapBtn');
-          if (savedBtn) {
-            savedBtn.click(); // Trigger existing save functionality
-            quizFavoriteBtn.classList.toggle('active');
-            const favoriteText = quizFavoriteBtn.querySelector('.quiz-favorite-text');
-            if (favoriteText) {
-              favoriteText.textContent = quizFavoriteBtn.classList.contains('active') ? '★' : '☆';
+          // Get saved list
+          const LOCAL_KEY = "soriSaved";
+          const savedList = JSON.parse(localStorage.getItem(LOCAL_KEY) || "[]");
+          const id = currentQuestionData.id;
+          
+          if (!id) return;
+          
+          // Toggle in saved list
+          const i = savedList.indexOf(id);
+          let isActive;
+          if (i >= 0) {
+            savedList.splice(i, 1);
+            isActive = false;
+          } else {
+            savedList.push(id);
+            isActive = true;
+          }
+          
+          // Save to localStorage
+          localStorage.setItem(LOCAL_KEY, JSON.stringify(savedList));
+          
+          // Save to cloud
+          const user = window.firebaseAuth?.currentUser;
+          if (user && user.uid && window.db) {
+            try {
+              await window.db.collection("users").doc(user.uid).set({ savedList: savedList }, { merge: true });
+            } catch (e) {
+              console.error('Cloud save error:', e);
             }
+          }
+          
+          // Update UI
+          quizFavoriteBtn.classList.toggle('active', isActive);
+          const favoriteText = quizFavoriteBtn.querySelector('.quiz-favorite-text');
+          if (favoriteText) {
+            favoriteText.textContent = isActive ? '★' : '☆';
           }
         } catch(e) {
           console.error('Save error:', e);
