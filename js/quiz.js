@@ -465,7 +465,6 @@
           try {
             const LOCAL_KEY = "soriSaved";
             let savedList = JSON.parse(localStorage.getItem(LOCAL_KEY) || "[]");
-            const uniqueId = id || (currentQuestionData.k + '_' + currentQuestionData.e);
             
             console.log('Before save - savedList:', savedList);
             console.log('Looking for uniqueId:', uniqueId);
