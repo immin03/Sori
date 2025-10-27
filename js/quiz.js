@@ -153,21 +153,19 @@
       
       // Load first question
       loadCurrentQuestion();
-      
-      // Update favorite button state
-      updateFavoriteButtonState();
     }
     
     function updateFavoriteButtonState() {
-      if (!currentQuestionData || !quizFavoriteBtn) return;
+      const btn = document.getElementById('quizFavoriteBtn');
+      if (!currentQuestionData || !btn) return;
       
       const LOCAL_KEY = "soriSaved";
       const savedList = JSON.parse(localStorage.getItem(LOCAL_KEY) || "[]");
       const id = currentQuestionData.id;
       const isSaved = id && savedList.indexOf(id) >= 0;
       
-      quizFavoriteBtn.classList.toggle('active', isSaved);
-      const favoriteText = quizFavoriteBtn.querySelector('.quiz-favorite-text');
+      btn.classList.toggle('active', isSaved);
+      const favoriteText = btn.querySelector('.quiz-favorite-text');
       if (favoriteText) {
         favoriteText.textContent = isSaved ? '★' : '☆';
       }
@@ -182,13 +180,13 @@
       const questionData = currentQuestions[currentQuestionIndex];
       currentQuestionData = questionData; // Store for favorite button
       
-      // Update favorite button state
-      updateFavoriteButtonState();
-      
       // Update Korean text
       if (quizKorean) {
         quizKorean.textContent = questionData.k;
       }
+      
+      // Update favorite button state after DOM updates
+      setTimeout(() => updateFavoriteButtonState(), 50);
       
       // Get all questions for wrong answers
       const catMap = {
@@ -429,31 +427,33 @@
       });
     });
     
-    // Quiz favorite button
-    if (quizFavoriteBtn) {
-      quizFavoriteBtn.addEventListener('click', async () => {
-        const loggedIn = () => !!window.firebaseAuth?.currentUser;
-        
-        if (!loggedIn()) {
-          // Show login modal
-          const modal = document.getElementById('authModal');
-          if (modal) {
-            modal.classList.add('open');
-          }
-          return;
+    // Quiz favorite button click handler
+    function handleQuizFavoriteClick(e) {
+      if (!e.target.closest('#quizFavoriteBtn')) return;
+      
+      const btn = document.getElementById('quizFavoriteBtn');
+      if (!btn) return;
+      
+      const loggedIn = !!window.firebaseAuth?.currentUser;
+      
+      if (!loggedIn()) {
+        const modal = document.getElementById('authModal');
+        if (modal) {
+          modal.classList.add('open');
         }
-        
-        if (!currentQuestionData) return;
-        
+        return;
+      }
+      
+      if (!currentQuestionData) return;
+      
+      (async () => {
         try {
-          // Get saved list
           const LOCAL_KEY = "soriSaved";
           const savedList = JSON.parse(localStorage.getItem(LOCAL_KEY) || "[]");
           const id = currentQuestionData.id;
           
           if (!id) return;
           
-          // Toggle in saved list
           const i = savedList.indexOf(id);
           let isActive;
           if (i >= 0) {
@@ -464,10 +464,8 @@
             isActive = true;
           }
           
-          // Save to localStorage
           localStorage.setItem(LOCAL_KEY, JSON.stringify(savedList));
           
-          // Save to cloud
           const user = window.firebaseAuth?.currentUser;
           if (user && user.uid && window.db) {
             try {
@@ -478,16 +476,15 @@
           }
           
           // Update UI
-          quizFavoriteBtn.classList.toggle('active', isActive);
-          const favoriteText = quizFavoriteBtn.querySelector('.quiz-favorite-text');
-          if (favoriteText) {
-            favoriteText.textContent = isActive ? '★' : '☆';
-          }
+          updateFavoriteButtonState();
         } catch(e) {
           console.error('Save error:', e);
         }
-      });
+      })();
     }
+    
+    // Only add listener once
+    document.addEventListener('click', handleQuizFavoriteClick);
     
     
     // Initialize first question
