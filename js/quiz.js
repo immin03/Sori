@@ -429,115 +429,65 @@
     });
     
     // Quiz favorite button
-    const favoriteBtnEl = document.getElementById('quizFavoriteBtn');
-    console.log('Quiz favorite button:', favoriteBtnEl);
-    
-    if (favoriteBtnEl && !favoriteButtonListenerAdded) {
+    if (quizFavoriteBtn && !favoriteButtonListenerAdded) {
       favoriteButtonListenerAdded = true;
-      console.log('Adding listener to favorite button');
       
-      favoriteBtnEl.addEventListener('click', function(e) {
-        console.log('Favorite button clicked!', e);
-        
+      quizFavoriteBtn.addEventListener('click', async function() {
         const user = window.firebaseAuth?.currentUser;
-        console.log('User:', user);
         
         if (!user) {
-          console.log('No user, showing modal');
           const modal = document.getElementById('authModal');
           if (modal) modal.classList.add('open');
           return;
         }
         
-        console.log('Current question data:', currentQuestionData);
         if (!currentQuestionData) return;
         
-        const id = currentQuestionData.id;
-        console.log('Question ID:', id);
-        
-        // If no ID, use a combination of k and e as unique identifier
-        const uniqueId = id || (currentQuestionData.k + '_' + currentQuestionData.e);
-        console.log('Using unique ID:', uniqueId);
-        
-        if (!uniqueId) return;
-        
-        (async () => {
-          try {
-            const LOCAL_KEY = "soriSaved";
-            let savedList = JSON.parse(localStorage.getItem(LOCAL_KEY) || "[]");
-            
-            console.log('Before save - savedList:', savedList);
-            console.log('Looking for uniqueId:', uniqueId);
-            
-            // Also search for the id format
-            const i = savedList.indexOf(uniqueId);
-            const iById = currentQuestionData.id ? savedList.indexOf(currentQuestionData.id) : -1;
-            const searchIndex = i >= 0 ? i : iById;
-            
-            console.log('Search index:', searchIndex, 'i:', i, 'iById:', iById);
-            
-            // Remove if exists in either format
-            if (searchIndex >= 0) {
-              savedList.splice(searchIndex, 1);
-              console.log('Removed from saved list');
-            } else {
-              // Find the id from the original data structure
-              const catMap = {
-                'daily': 'daily',
-                'travel': 'travel',
-                'trendy': 'trendy',
-                'drama': 'drama',
-                'numbers': 'numbers'
-              };
-              const activeCategory = document.querySelector('.quiz-category.active');
-              const category = activeCategory ? activeCategory.dataset.category : 'daily';
-              const catKey = catMap[category] || 'daily';
-              const categoryData = window.SoriDataIndex && window.SoriDataIndex[catKey];
-              
-              // Find the original item with id
-              let saveId = null;
-              if (categoryData) {
-                const found = categoryData.find(item => 
-                  item.k === currentQuestionData.k && item.e === currentQuestionData.e
-                );
-                if (found) {
-                  saveId = found.id;
-                  console.log('Found original ID:', saveId);
-                }
-              }
-              
-              // Use found id or fallback to uniqueId
-              if (!saveId) {
-                saveId = currentQuestionData.id || uniqueId;
-              }
-              
-              savedList.push(saveId);
-              console.log('Added to saved list:', saveId);
-            }
-            
-            console.log('After save - savedList:', savedList);
-            
-            localStorage.setItem(LOCAL_KEY, JSON.stringify(savedList));
-            console.log('Saved to localStorage');
-            
-            if (window.db && user.uid) {
-              try {
-                await window.db.collection("users").doc(user.uid).set({ savedList: savedList }, { merge: true });
-                console.log('Saved to cloud');
-              } catch (e) {
-                console.error('Cloud save error:', e);
-              }
-            }
-            
-            updateFavoriteButtonState();
-            console.log('UI updated');
-          } catch(e) {
-            console.error('Save error:', e);
+        try {
+          // Get category
+          const activeCategory = document.querySelector('.quiz-category.active');
+          const category = activeCategory ? activeCategory.dataset.category : 'daily';
+          const catData = window.SoriDataIndex && window.SoriDataIndex[category];
+          
+          if (!catData) return;
+          
+          // Find the actual item with id from SoriDataIndex
+          const foundItem = catData.find(item => 
+            item.k === currentQuestionData.k && item.e === currentQuestionData.e
+          );
+          
+          if (!foundItem || !foundItem.id) return;
+          
+          // Toggle save
+          const LOCAL_KEY = "soriSaved";
+          let savedList = JSON.parse(localStorage.getItem(LOCAL_KEY) || "[]");
+          const i = savedList.indexOf(foundItem.id);
+          
+          if (i >= 0) {
+            savedList.splice(i, 1);
+          } else {
+            savedList.push(foundItem.id);
           }
-        })();
+          
+          localStorage.setItem(LOCAL_KEY, JSON.stringify(savedList));
+          
+          // Cloud save
+          if (window.db && user.uid) {
+            try {
+              await window.db.collection("users").doc(user.uid).set({ savedList: savedList }, { merge: true });
+            } catch (e) {
+              console.error('Cloud save error:', e);
+            }
+          }
+          
+          updateFavoriteButtonState();
+        } catch(e) {
+          console.error('Quiz favorite error:', e);
+        }
       });
+    } else {
+      console.log('Quiz favorite button not found');
     }
-    
     
     // Initialize first question
     const activeCategory = document.querySelector('.quiz-category.active');
