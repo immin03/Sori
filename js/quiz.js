@@ -160,15 +160,32 @@
       const btn = document.getElementById('quizFavoriteBtn');
       if (!currentQuestionData || !btn) return;
       
-      const LOCAL_KEY = "soriSaved";
-      const savedList = JSON.parse(localStorage.getItem(LOCAL_KEY) || "[]");
-      const uniqueId = currentQuestionData.id || (currentQuestionData.k + '_' + currentQuestionData.e);
-      const isSaved = uniqueId && savedList.indexOf(uniqueId) >= 0;
-      
-      btn.classList.toggle('active', isSaved);
-      const favoriteText = btn.querySelector('.quiz-favorite-text');
-      if (favoriteText) {
-        favoriteText.textContent = isSaved ? '★' : '☆';
+      try {
+        // Get the actual id from SoriDataIndex
+        const activeCategory = document.querySelector('.quiz-category.active');
+        const category = activeCategory ? activeCategory.dataset.category : 'daily';
+        const catData = window.SoriDataIndex && window.SoriDataIndex[category];
+        
+        if (!catData) return;
+        
+        // Find the actual item with id from SoriDataIndex
+        const foundItem = catData.find(item => 
+          item.k === currentQuestionData.k && item.e === currentQuestionData.e
+        );
+        
+        if (!foundItem || !foundItem.id) return;
+        
+        const LOCAL_KEY = "soriSaved";
+        const savedList = JSON.parse(localStorage.getItem(LOCAL_KEY) || "[]");
+        const isSaved = savedList.indexOf(foundItem.id) >= 0;
+        
+        btn.classList.toggle('active', isSaved);
+        const favoriteText = btn.querySelector('.quiz-favorite-text');
+        if (favoriteText) {
+          favoriteText.textContent = isSaved ? '★' : '☆';
+        }
+      } catch(e) {
+        console.error('updateFavoriteButtonState error:', e);
       }
     }
     
