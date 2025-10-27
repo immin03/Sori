@@ -74,11 +74,132 @@
       });
     });
     
+    // Get quiz data
+    function getQuizData(category) {
+      const catMap = {
+        'daily': 'daily',
+        'travel': 'travel',
+        'trendy': 'trendy',
+        'drama': 'drama',
+        'numbers': 'numbers'
+      };
+      
+      const catKey = catMap[category] || 'daily';
+      const data = window.SORI_DATA && window.SORI_DATA[catKey];
+      
+      if (!data || data.length === 0) {
+        return null;
+      }
+      
+      // Get random item from category
+      const randomIndex = Math.floor(Math.random() * data.length);
+      return data[randomIndex];
+    }
+    
+    // Update quiz question
+    function updateQuestion(category) {
+      const questionData = getQuizData(category);
+      
+      if (!questionData) {
+        console.error('No data available for category:', category);
+        return;
+      }
+      
+      // Update Korean text
+      if (quizKorean) {
+        quizKorean.textContent = questionData.k;
+      }
+      
+      // Generate wrong answers (random from other items)
+      const catMap = {
+        'daily': 'daily',
+        'travel': 'travel',
+        'trendy': 'trendy',
+        'drama': 'drama',
+        'numbers': 'numbers'
+      };
+      const catKey = catMap[category] || 'daily';
+      const categoryData = window.SORI_DATA && window.SORI_DATA[catKey];
+      
+      if (categoryData && quizOptions.length >= 4) {
+        // Shuffle all items and pick 3 wrong answers
+        const shuffled = [...categoryData].sort(() => Math.random() - 0.5);
+        const wrongAnswers = shuffled
+          .filter(item => item.e !== questionData.e)
+          .slice(0, 3)
+          .map(item => item.e);
+        
+        // Create answer options: correct answer + 3 wrong answers
+        const answers = [questionData.e, ...wrongAnswers];
+        answers.sort(() => Math.random() - 0.5);
+        
+        // Update option buttons
+        quizOptions.forEach((option, index) => {
+          if (answers[index]) {
+            option.textContent = answers[index];
+            option.dataset.answer = answers[index];
+            option.dataset.isCorrect = answers[index] === questionData.e;
+            option.classList.remove('selected');
+          }
+        });
+        
+        // Disable submit button until new answer is selected
+        if (quizSubmit) {
+          quizSubmit.disabled = true;
+        }
+      }
+    }
+    
     // Quiz submit
     quizSubmit?.addEventListener('click', () => {
       if (selectedOption) {
-        console.log('Selected:', selectedOption.textContent);
-        // TODO: Implement answer checking
+        const isCorrect = selectedOption.dataset.isCorrect === 'true';
+        
+        if (isCorrect) {
+          // Correct answer - show feedback and move to next question
+          selectedOption.style.background = '#10b981';
+          selectedOption.style.color = '#fff';
+          selectedOption.style.borderColor = '#10b981';
+          
+          // Update score
+          const scoreEl = document.getElementById('quizScore');
+          if (scoreEl) {
+            const currentScore = parseInt(scoreEl.textContent) || 0;
+            scoreEl.textContent = currentScore + 1;
+          }
+          
+          // Wait a bit then load next question
+          setTimeout(() => {
+            const activeCategory = document.querySelector('.quiz-category.active');
+            if (activeCategory) {
+              selectedOption = null;
+              updateQuestion(activeCategory.dataset.category);
+            }
+          }, 1000);
+        } else {
+          // Wrong answer - show feedback
+          selectedOption.style.background = '#ef4444';
+          selectedOption.style.color = '#fff';
+          selectedOption.style.borderColor = '#ef4444';
+          
+          // Highlight correct answer
+          quizOptions.forEach(option => {
+            if (option.dataset.isCorrect === 'true') {
+              option.style.background = '#10b981';
+              option.style.color = '#fff';
+              option.style.borderColor = '#10b981';
+            }
+          });
+          
+          // Wait a bit then reload same question
+          setTimeout(() => {
+            selectedOption = null;
+            const activeCategory = document.querySelector('.quiz-category.active');
+            if (activeCategory) {
+              updateQuestion(activeCategory.dataset.category);
+            }
+          }, 2000);
+        }
       }
     });
     
@@ -89,18 +210,38 @@
         quizCategories.forEach(c => c.classList.remove('active'));
         // Add active class to clicked category
         this.classList.add('active');
-        console.log('Category selected:', this.getAttribute('data-category'));
-        // TODO: Load questions for selected category
+        
+        const selectedCategory = this.dataset.category;
+        console.log('Category selected:', selectedCategory);
+        
+        // Load new question for selected category
+        updateQuestion(selectedCategory);
       });
     });
+    
+    // Initialize first question
+    const activeCategory = document.querySelector('.quiz-category.active');
+    if (activeCategory) {
+      updateQuestion(activeCategory.dataset.category);
+    }
   }
   
-  // Initialize when DOM is ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initQuiz);
-  } else {
-    initQuiz();
-  }
+    // Initialize when DOM is ready
+    function tryInit() {
+      // Check if SORI_DATA is available
+      if (window.SORI_DATA) {
+        initQuiz();
+      } else {
+        // Wait for data to load
+        setTimeout(tryInit, 100);
+      }
+    }
+    
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', tryInit);
+    } else {
+      tryInit();
+    }
 })();
 
 /* Logo Click to Home */
