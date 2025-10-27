@@ -428,46 +428,61 @@
       });
     });
     
-    // Quiz favorite button - same as Listen & Repeat
-    if (quizFavoriteBtn && !favoriteButtonListenerAdded) {
+    // Quiz favorite button
+    const favoriteBtnEl = document.getElementById('quizFavoriteBtn');
+    console.log('Quiz favorite button:', favoriteBtnEl);
+    
+    if (favoriteBtnEl && !favoriteButtonListenerAdded) {
       favoriteButtonListenerAdded = true;
+      console.log('Adding listener to favorite button');
       
-      quizFavoriteBtn.addEventListener('click', async function() {
+      favoriteBtnEl.addEventListener('click', function(e) {
+        console.log('Favorite button clicked!', e);
+        
         const user = window.firebaseAuth?.currentUser;
+        console.log('User:', user);
+        
         if (!user) {
+          console.log('No user, showing modal');
           const modal = document.getElementById('authModal');
           if (modal) modal.classList.add('open');
           return;
         }
         
+        console.log('Current question data:', currentQuestionData);
         if (!currentQuestionData) return;
         
         const id = currentQuestionData.id;
+        console.log('Question ID:', id);
         if (!id) return;
         
-        const LOCAL_KEY = "soriSaved";
-        let savedList = JSON.parse(localStorage.getItem(LOCAL_KEY) || "[]");
-        const i = savedList.indexOf(id);
-        
-        if (i >= 0) {
-          savedList.splice(i, 1);
-        } else {
-          savedList.push(id);
-        }
-        
-        localStorage.setItem(LOCAL_KEY, JSON.stringify(savedList));
-        
-        // Cloud save
-        if (window.db && user.uid) {
+        (async () => {
           try {
-            await window.db.collection("users").doc(user.uid).set({ savedList: savedList }, { merge: true });
-          } catch (e) {
-            console.error('Cloud save error:', e);
+            const LOCAL_KEY = "soriSaved";
+            let savedList = JSON.parse(localStorage.getItem(LOCAL_KEY) || "[]");
+            const i = savedList.indexOf(id);
+            
+            if (i >= 0) {
+              savedList.splice(i, 1);
+            } else {
+              savedList.push(id);
+            }
+            
+            localStorage.setItem(LOCAL_KEY, JSON.stringify(savedList));
+            
+            if (window.db && user.uid) {
+              try {
+                await window.db.collection("users").doc(user.uid).set({ savedList: savedList }, { merge: true });
+              } catch (e) {
+                console.error('Cloud save error:', e);
+              }
+            }
+            
+            updateFavoriteButtonState();
+          } catch(e) {
+            console.error('Save error:', e);
           }
-        }
-        
-        // Update UI
-        updateFavoriteButtonState();
+        })();
       });
     }
     
