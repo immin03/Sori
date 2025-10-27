@@ -469,14 +469,50 @@
             console.log('Before save - savedList:', savedList);
             console.log('Looking for uniqueId:', uniqueId);
             
+            // Also search for the id format
             const i = savedList.indexOf(uniqueId);
+            const iById = currentQuestionData.id ? savedList.indexOf(currentQuestionData.id) : -1;
+            const searchIndex = i >= 0 ? i : iById;
             
-            if (i >= 0) {
-              savedList.splice(i, 1);
+            console.log('Search index:', searchIndex, 'i:', i, 'iById:', iById);
+            
+            // Remove if exists in either format
+            if (searchIndex >= 0) {
+              savedList.splice(searchIndex, 1);
               console.log('Removed from saved list');
             } else {
-              savedList.push(uniqueId);
-              console.log('Added to saved list');
+              // Find the id from the original data structure
+              const catMap = {
+                'daily': 'daily',
+                'travel': 'travel',
+                'trendy': 'trendy',
+                'drama': 'drama',
+                'numbers': 'numbers'
+              };
+              const activeCategory = document.querySelector('.quiz-category.active');
+              const category = activeCategory ? activeCategory.dataset.category : 'daily';
+              const catKey = catMap[category] || 'daily';
+              const categoryData = window.SoriDataIndex && window.SoriDataIndex[catKey];
+              
+              // Find the original item with id
+              let saveId = null;
+              if (categoryData) {
+                const found = categoryData.find(item => 
+                  item.k === currentQuestionData.k && item.e === currentQuestionData.e
+                );
+                if (found) {
+                  saveId = found.id;
+                  console.log('Found original ID:', saveId);
+                }
+              }
+              
+              // Use found id or fallback to uniqueId
+              if (!saveId) {
+                saveId = currentQuestionData.id || uniqueId;
+              }
+              
+              savedList.push(saveId);
+              console.log('Added to saved list:', saveId);
             }
             
             console.log('After save - savedList:', savedList);
