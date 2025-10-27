@@ -70,7 +70,7 @@
 
 <style>
 *{box-sizing:border-box}
-body{font-family:'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;max-width:720px;margin:0 auto;padding:16px;background:#faf8ff;min-height:100vh;color:#111827}
+body{font-family:'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;max-width:720px;margin:0 auto;padding:16px 16px 280px 16px;background:#faf8ff;min-height:100vh;color:#111827}
 h1{font-size:26px;margin:0 0 4px;color:#7c3aed;font-weight:800}
 .intro{color:#9ca3af;font-size:12px;margin-bottom:10px;line-height:1.3;font-weight:500}
 
@@ -238,6 +238,95 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
   font-weight: 800;
   padding: 5px 10px;
   border-radius: 12px;
+}
+
+/* Footer */
+#appFooter {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border-top: 1px solid #e5e7eb;
+  padding: 20px 16px;
+  box-shadow: 0 -2px 12px rgba(0,0,0,.04);
+  z-index: 100;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.footer-content {
+  max-width: 720px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  text-align: center;
+}
+
+.footer-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.footer-title {
+  font-size: 12px;
+  font-weight: 800;
+  color: #7c3aed;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.footer-text {
+  font-size: 11px;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.footer-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #6b7280;
+  text-decoration: none;
+  font-size: 11px;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.footer-link:hover {
+  color: #7c3aed;
+}
+
+.footer-link svg {
+  flex-shrink: 0;
+}
+
+.footer-copyright {
+  grid-column: 1 / -1;
+  font-size: 10px;
+  color: #9ca3af;
+  margin-top: 8px;
+  padding-top: 16px;
+  border-top: 1px solid #f3f4f6;
+}
+
+@media (max-width: 600px) {
+  #appFooter {
+    padding: 16px;
+  }
+  
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .footer-section {
+    text-align: left;
+  }
 }
 </style>
 </head>
@@ -871,5 +960,35 @@ document.addEventListener('DOMContentLoaded', function(){
 </script>
 
 <div id="congrats" aria-live="polite"></div>
+
+<footer id="appFooter">
+  <div class="footer-content">
+    <div class="footer-section">
+      <h3 class="footer-title">About Sori</h3>
+      <p class="footer-text">Sori helps people around the world feel closer to Korea through sound and stories.<br>
+      Made in Seoul, for everyone who loves Korea.</p>
+    </div>
+    
+    <div class="footer-section">
+      <h3 class="footer-title">Contact</h3>
+      <a href="mailto:sori.korea.official@gmail.com" class="footer-link">sori.korea.official@gmail.com</a>
+    </div>
+    
+    <div class="footer-section">
+      <h3 class="footer-title">Follow Us</h3>
+      <a href="https://www.threads.com/@sori_by_minwoo" target="_blank" rel="noopener noreferrer" class="footer-link">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 2a8 8 0 110 16 8 8 0 010-16zm0 2a6 6 0 000 12 6 6 0 000-12z"/>
+        </svg>
+        @sori_by_minwoo
+      </a>
+    </div>
+    
+    <div class="footer-copyright">
+      © 2025 Sori. All rights reserved.
+    </div>
+  </div>
+</footer>
+
 </body>
 </html>
