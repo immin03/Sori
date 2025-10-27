@@ -1,4 +1,9 @@
 /* Daily Quiz Styles */
+#quizView .card {
+  margin-top: 0;
+  padding: 14px 16px;
+}
+
 .quiz-content {
   text-align: center;
   display: flex;
@@ -173,8 +178,9 @@
 
 .quiz-submit {
   width: 100%;
-  margin-top: 10px;
-  margin-bottom: 8px;
+  margin-top: 6px;
+  margin-bottom: 6px;
+  padding: 12px 20px;
 }
 
 .quiz-actions {
@@ -211,7 +217,7 @@
 
 @media (max-width: 480px) {
   .quiz-actions {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
     gap: 8px;
   }
   

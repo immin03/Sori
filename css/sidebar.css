@@ -145,9 +145,6 @@
   padding-top: 0;
 }
 
-.newsletter-view .card {
-  margin: 6px 0;
-}
 
 @media (max-width: 480px) {
   .newsletter-view {
