@@ -13,6 +13,8 @@
     const quizSpeedVal = document.getElementById('quizSpeedVal');
     const quizPrevBtn = document.getElementById('quizPrevBtn');
     const quizNextBtn = document.getElementById('quizNextBtn');
+    const quizFavoriteBtn = document.getElementById('quizFavoriteBtn');
+    const quizInfoBtn = document.getElementById('quizInfoBtn');
     
     if (!quizPlayBtn || !quizKorean || !quizOptions.length) {
       return; // Elements not ready yet
@@ -22,6 +24,8 @@
       return; // Already initialized
     }
     initialized = true;
+    
+    let currentQuestionData = null;
     
     // Quiz state
     let currentQuestions = [];
@@ -158,6 +162,7 @@
       }
       
       const questionData = currentQuestions[currentQuestionIndex];
+      currentQuestionData = questionData; // Store for favorite button
       
       // Update Korean text
       if (quizKorean) {
@@ -404,6 +409,41 @@
         loadQuestions(selectedCategory);
       });
     });
+    
+    // Quiz favorite button
+    if (quizFavoriteBtn) {
+      quizFavoriteBtn.addEventListener('click', async () => {
+        const loggedIn = () => !!window.firebaseAuth?.currentUser;
+        
+        if (!loggedIn()) {
+          // Show login modal
+          const modal = document.getElementById('authModal');
+          if (modal) {
+            modal.classList.add('open');
+          }
+          return;
+        }
+        
+        if (!currentQuestionData) return;
+        
+        try {
+          // Save to favorites using existing scrap functionality
+          const id = currentQuestionData.id || currentQuestionData.k;
+          const savedBtn = document.getElementById('scrapBtn');
+          if (savedBtn) {
+            savedBtn.click(); // Trigger existing save functionality
+            quizFavoriteBtn.classList.toggle('active');
+            const favoriteText = quizFavoriteBtn.querySelector('.quiz-favorite-text');
+            if (favoriteText) {
+              favoriteText.textContent = quizFavoriteBtn.classList.contains('active') ? '★' : '☆';
+            }
+          }
+        } catch(e) {
+          console.error('Save error:', e);
+        }
+      });
+    }
+    
     
     // Initialize first question
     const activeCategory = document.querySelector('.quiz-category.active');
