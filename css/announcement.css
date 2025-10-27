@@ -1,0 +1,143 @@
+/* Quiz Announcement Popup */
+.announcement-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  border-radius: 20px;
+  padding: 32px 28px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  z-index: 10000;
+  max-width: 380px;
+  width: calc(100% - 40px);
+  display: none;
+}
+
+.announcement-popup.show {
+  display: block;
+  animation: slideIn 0.3s ease;
+}
+
+.announcement-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  display: none;
+}
+
+.announcement-overlay.show {
+  display: block;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -40%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.announcement-content {
+  text-align: center;
+}
+
+.announcement-icon {
+  width: 64px;
+  height: 64px;
+  background: #f7f2ff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  font-size: 32px;
+}
+
+.announcement-title {
+  font-size: 22px;
+  font-weight: 900;
+  color: #7c3aed;
+  margin: 0 0 8px 0;
+}
+
+.announcement-message {
+  font-size: 15px;
+  color: #6b7280;
+  line-height: 1.6;
+  margin: 0 0 24px 0;
+}
+
+.announcement-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.announcement-btn {
+  padding: 14px 24px;
+  border-radius: 12px;
+  border: 0;
+  font-weight: 800;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.announcement-btn.primary {
+  background: #7c3aed;
+  color: #fff;
+}
+
+.announcement-btn.primary:hover {
+  background: #6d28d9;
+}
+
+.announcement-btn.secondary {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.announcement-btn.secondary:hover {
+  background: #e5e7eb;
+}
+
+.announcement-dismiss {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #9ca3af;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.announcement-dismiss:hover {
+  color: #6b7280;
+}
+
+@media (max-width: 480px) {
+  .announcement-popup {
+    padding: 24px 20px;
+  }
+  
+  .announcement-title {
+    font-size: 20px;
+  }
+  
+  .announcement-message {
+    font-size: 14px;
+  }
+}
+
