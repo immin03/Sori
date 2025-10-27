@@ -465,26 +465,37 @@
           try {
             const LOCAL_KEY = "soriSaved";
             let savedList = JSON.parse(localStorage.getItem(LOCAL_KEY) || "[]");
-            const uniqueId = currentQuestionData.id || (currentQuestionData.k + '_' + currentQuestionData.e);
+            const uniqueId = id || (currentQuestionData.k + '_' + currentQuestionData.e);
+            
+            console.log('Before save - savedList:', savedList);
+            console.log('Looking for uniqueId:', uniqueId);
+            
             const i = savedList.indexOf(uniqueId);
             
             if (i >= 0) {
               savedList.splice(i, 1);
+              console.log('Removed from saved list');
             } else {
               savedList.push(uniqueId);
+              console.log('Added to saved list');
             }
             
+            console.log('After save - savedList:', savedList);
+            
             localStorage.setItem(LOCAL_KEY, JSON.stringify(savedList));
+            console.log('Saved to localStorage');
             
             if (window.db && user.uid) {
               try {
                 await window.db.collection("users").doc(user.uid).set({ savedList: savedList }, { merge: true });
+                console.log('Saved to cloud');
               } catch (e) {
                 console.error('Cloud save error:', e);
               }
             }
             
             updateFavoriteButtonState();
+            console.log('UI updated');
           } catch(e) {
             console.error('Save error:', e);
           }
