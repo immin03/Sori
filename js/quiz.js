@@ -27,6 +27,7 @@
     let currentQuestions = [];
     let currentQuestionIndex = -1;
     let triesCount = 0;
+    let currentStreak = 0;
     
     // TTS API endpoint
     const ENDPOINT = "https://asia-northeast3-sori-tts.cloudfunctions.net/tts";
@@ -140,6 +141,8 @@
       currentQuestions = shuffled.slice(0, 10);
       currentQuestionIndex = 0;
       triesCount = 0;
+      currentStreak = 0; // Reset streak
+      updateStreakDisplay();
       
       // Update navigation buttons
       updateNavButtons();
@@ -298,6 +301,10 @@
           // Play success sound
           playSoundEffect('correct');
           
+          // Increment streak
+          currentStreak++;
+          updateStreakDisplay();
+          
           // Correct answer - show feedback (purple)
           selectedOption.style.background = '#7c3aed';
           selectedOption.style.color = '#fff';
@@ -308,6 +315,9 @@
           if (scoreEl) {
             const currentScore = parseInt(scoreEl.textContent) || 0;
             scoreEl.textContent = currentScore + 1;
+            // Animate score
+            scoreEl.style.transform = 'scale(1.3)';
+            setTimeout(() => scoreEl.style.transform = 'scale(1)', 200);
           }
           
           triesCount = 0; // Reset tries for next question
@@ -323,6 +333,10 @@
           // Play failure sound
           playSoundEffect('wrong');
           triesCount++;
+          
+          // Reset streak on wrong answer
+          currentStreak = 0;
+          updateStreakDisplay();
           
           // Wrong answer - show feedback (red)
           selectedOption.style.background = '#ef4444';
@@ -357,6 +371,23 @@
             }
           }, 1200);
         }
+      }
+    });
+    
+    // Update streak display with animation
+    function updateStreakDisplay() {
+      const streakEl = document.getElementById('quizStreak');
+      if (streakEl) {
+        streakEl.textContent = currentStreak;
+        if (currentStreak > 0) {
+          streakEl.parentElement.style.transform = 'scale(1.15)';
+          streakEl.parentElement.style.transition = 'transform 0.2s ease';
+          setTimeout(() => {
+            streakEl.parentElement.style.transform = 'scale(1)';
+          }, 200);
+        }
+      }
+    }
       }
     });
     
