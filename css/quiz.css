@@ -7,6 +7,7 @@
   max-width: 460px;
   width: 100%;
   margin: 0 auto;
+  padding-top: 4px;
 }
 
 .quiz-header {
@@ -183,12 +184,12 @@
 }
 
 .quiz-nav-btn {
-  padding: 14px 20px;
-  border-radius: 14px;
+  padding: 10px 16px;
+  border-radius: 10px;
   border: 2px solid #e5e7eb;
   background: #fff;
   font-weight: 700;
-  font-size: 14px;
+  font-size: 13px;
   color: #374151;
   cursor: pointer;
   transition: all 0.2s ease;
