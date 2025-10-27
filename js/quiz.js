@@ -26,6 +26,7 @@
     initialized = true;
     
     let currentQuestionData = null;
+    let favoriteButtonListenerAdded = false;
     
     // Quiz state
     let currentQuestions = [];
@@ -427,64 +428,48 @@
       });
     });
     
-    // Quiz favorite button click handler
-    function handleQuizFavoriteClick(e) {
-      if (!e.target.closest('#quizFavoriteBtn')) return;
+    // Quiz favorite button - same as Listen & Repeat
+    if (quizFavoriteBtn && !favoriteButtonListenerAdded) {
+      favoriteButtonListenerAdded = true;
       
-      const btn = document.getElementById('quizFavoriteBtn');
-      if (!btn) return;
-      
-      const loggedIn = !!window.firebaseAuth?.currentUser;
-      
-      if (!loggedIn) {
-        const modal = document.getElementById('authModal');
-        if (modal) {
-          modal.classList.add('open');
+      quizFavoriteBtn.addEventListener('click', async function() {
+        const user = window.firebaseAuth?.currentUser;
+        if (!user) {
+          const modal = document.getElementById('authModal');
+          if (modal) modal.classList.add('open');
+          return;
         }
-        return;
-      }
-      
-      if (!currentQuestionData) return;
-      
-      (async () => {
-        try {
-          const LOCAL_KEY = "soriSaved";
-          const savedList = JSON.parse(localStorage.getItem(LOCAL_KEY) || "[]");
-          const id = currentQuestionData.id;
-          
-          if (!id) return;
-          
-          const i = savedList.indexOf(id);
-          let isActive;
-          if (i >= 0) {
-            savedList.splice(i, 1);
-            isActive = false;
-          } else {
-            savedList.push(id);
-            isActive = true;
-          }
-          
-          localStorage.setItem(LOCAL_KEY, JSON.stringify(savedList));
-          
-          const user = window.firebaseAuth?.currentUser;
-          if (user && user.uid && window.db) {
-            try {
-              await window.db.collection("users").doc(user.uid).set({ savedList: savedList }, { merge: true });
-            } catch (e) {
-              console.error('Cloud save error:', e);
-            }
-          }
-          
-          // Update UI
-          updateFavoriteButtonState();
-        } catch(e) {
-          console.error('Save error:', e);
+        
+        if (!currentQuestionData) return;
+        
+        const id = currentQuestionData.id;
+        if (!id) return;
+        
+        const LOCAL_KEY = "soriSaved";
+        let savedList = JSON.parse(localStorage.getItem(LOCAL_KEY) || "[]");
+        const i = savedList.indexOf(id);
+        
+        if (i >= 0) {
+          savedList.splice(i, 1);
+        } else {
+          savedList.push(id);
         }
-      })();
+        
+        localStorage.setItem(LOCAL_KEY, JSON.stringify(savedList));
+        
+        // Cloud save
+        if (window.db && user.uid) {
+          try {
+            await window.db.collection("users").doc(user.uid).set({ savedList: savedList }, { merge: true });
+          } catch (e) {
+            console.error('Cloud save error:', e);
+          }
+        }
+        
+        // Update UI
+        updateFavoriteButtonState();
+      });
     }
-    
-    // Only add listener once
-    document.addEventListener('click', handleQuizFavoriteClick);
     
     
     // Initialize first question
