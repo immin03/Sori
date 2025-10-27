@@ -388,8 +388,6 @@
         }
       }
     }
-      }
-    });
     
     // Quiz category selection
     quizCategories.forEach(category => {
