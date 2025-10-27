@@ -23,9 +23,15 @@
   function switchView(view) {
     if (view === 'newsletter') {
       mainContent.style.display = 'none';
+      document.getElementById('quizView').style.display = 'none';
       newsletterView.style.display = 'flex';
+    } else if (view === 'quiz') {
+      mainContent.style.display = 'none';
+      newsletterView.style.display = 'none';
+      document.getElementById('quizView').style.display = 'flex';
     } else {
       newsletterView.style.display = 'none';
+      document.getElementById('quizView').style.display = 'none';
       mainContent.style.display = 'block';
     }
     closeSidebar();

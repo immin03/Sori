@@ -327,11 +327,12 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 </style>
 
 <link rel="stylesheet" href="css/sidebar.css">
+<link rel="stylesheet" href="css/quiz.css">
 </head>
 <body>
 <header class="header">
   <div>
-    <h1>Sori <span style="font-size:14px;color:#111827;font-weight:600;">소리</span></h1>
+    <h1 class="logo-home" style="cursor: pointer;">Sori <span style="font-size:14px;color:#111827;font-weight:600;">소리</span></h1>
     <div class="intro">Learn Korean naturally by repeating real sounds</div>
   </div>
   <div class="header-actions">
@@ -432,6 +433,45 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 </section>
 </div>
 
+<div id="quizView" class="newsletter-view" style="display: none;">
+  <section class="card">
+    <div class="quiz-content">
+      <div class="quiz-header">
+        <div>
+          <h2 class="quiz-title">Daily Quiz</h2>
+          <p class="quiz-description">Test your Korean knowledge</p>
+        </div>
+        <div class="quiz-progress">
+          <p>Score: <span id="quizScore">0</span> / <span id="quizTotal">5</span></p>
+        </div>
+      </div>
+      
+      <div class="quiz-category-selector">
+        <p class="quiz-category-label">Category:</p>
+        <button class="quiz-category active" data-category="daily">Daily</button>
+        <button class="quiz-category" data-category="travel">Travel</button>
+        <button class="quiz-category" data-category="trendy">Trendy Talk</button>
+        <button class="quiz-category" data-category="drama">K-Drama</button>
+        <button class="quiz-category" data-category="numbers">Numbers</button>
+      </div>
+      
+      <div class="quiz-question">
+        <button id="quizPlayBtn" class="quiz-play-btn">🔊</button>
+        <p class="quiz-korean">안녕하세요</p>
+      </div>
+      
+      <div class="quiz-options">
+        <button class="quiz-option">Hello</button>
+        <button class="quiz-option">Goodbye</button>
+        <button class="quiz-option">Thank you</button>
+        <button class="quiz-option">See you</button>
+      </div>
+      
+      <button class="quiz-submit" disabled>Check Answer</button>
+    </div>
+  </section>
+</div>
+
 <div id="newsletterView" class="newsletter-view" style="display: none;">
   <section class="card">
     <div class="korea101-content">
@@ -470,6 +510,7 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
   </div>
   <div class="sidebar-menu">
     <button class="menu-item active" data-view="listen">Listen & Repeat</button>
+    <button class="menu-item" data-view="quiz">Daily Quiz</button>
     <button class="menu-item" data-view="newsletter">Korea101</button>
   </div>
 </div>
@@ -492,6 +533,7 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 <script defer src="js/tts.js?v=20251017"></script>
 <script defer src="js/app.js?v=20251017"></script>
 <script defer src="js/sidebar.js"></script>
+<script defer src="js/quiz.js"></script>
 
 <script>
 /* Sori Auth — final stable gate (popup→redirect, no alerts) */
