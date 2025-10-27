@@ -162,8 +162,8 @@
       
       const LOCAL_KEY = "soriSaved";
       const savedList = JSON.parse(localStorage.getItem(LOCAL_KEY) || "[]");
-      const id = currentQuestionData.id;
-      const isSaved = id && savedList.indexOf(id) >= 0;
+      const uniqueId = currentQuestionData.id || (currentQuestionData.k + '_' + currentQuestionData.e);
+      const isSaved = uniqueId && savedList.indexOf(uniqueId) >= 0;
       
       btn.classList.toggle('active', isSaved);
       const favoriteText = btn.querySelector('.quiz-favorite-text');
@@ -454,18 +454,24 @@
         
         const id = currentQuestionData.id;
         console.log('Question ID:', id);
-        if (!id) return;
+        
+        // If no ID, use a combination of k and e as unique identifier
+        const uniqueId = id || (currentQuestionData.k + '_' + currentQuestionData.e);
+        console.log('Using unique ID:', uniqueId);
+        
+        if (!uniqueId) return;
         
         (async () => {
           try {
             const LOCAL_KEY = "soriSaved";
             let savedList = JSON.parse(localStorage.getItem(LOCAL_KEY) || "[]");
-            const i = savedList.indexOf(id);
+            const uniqueId = currentQuestionData.id || (currentQuestionData.k + '_' + currentQuestionData.e);
+            const i = savedList.indexOf(uniqueId);
             
             if (i >= 0) {
               savedList.splice(i, 1);
             } else {
-              savedList.push(id);
+              savedList.push(uniqueId);
             }
             
             localStorage.setItem(LOCAL_KEY, JSON.stringify(savedList));
