@@ -436,7 +436,7 @@
       
       const loggedIn = !!window.firebaseAuth?.currentUser;
       
-      if (!loggedIn()) {
+      if (!loggedIn) {
         const modal = document.getElementById('authModal');
         if (modal) {
           modal.classList.add('open');
