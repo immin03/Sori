@@ -194,3 +194,15 @@
   margin: 0;
 }
 
+.korea101-link {
+  text-decoration: none;
+  display: inline-block;
+  cursor: pointer;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.korea101-link:hover {
+  color: #7c3aed;
+  transform: translateY(-1px);
+}
+
