@@ -4,7 +4,7 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <title>Sori · Korean language & life in Korea</title>
-<meta name="sori-release" content="2026-11-19-editorial-v1">
+<meta name="sori-release" content="2026-11-19-speak-first-v2">
 <meta name="theme-color" content="#ffffff"/>
 <!-- Webfont for consistent capture rendering -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -55,7 +55,7 @@
 <!-- PWA Manifest -->
 <link rel="manifest" href="/manifest.webmanifest">
 
-<script src="js/config.js?v=20261119r3"></script>
+<script src="js/config.js?v=20261119r4"></script>
 <script>window.GA_ID='G-X1Q98DBKR5';</script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-X1Q98DBKR5"></script>
 <script>
@@ -328,16 +328,16 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 
 </style>
 
-<link rel="stylesheet" href="css/sidebar.css?v=20261119r3">
-<link rel="stylesheet" href="css/quiz.css?v=20261119r3">
-<link rel="stylesheet" href="css/announcement.css?v=20261119r3">
-<link rel="stylesheet" href="css/sori-v1.css?v=20261119r3">
+<link rel="stylesheet" href="css/sidebar.css?v=20261119r4">
+<link rel="stylesheet" href="css/quiz.css?v=20261119r4">
+<link rel="stylesheet" href="css/announcement.css?v=20261119r4">
+<link rel="stylesheet" href="css/sori-v1.css?v=20261119r4">
 </head>
 <body>
 <header class="header">
   <div>
     <h1 class="logo-home" style="cursor: pointer;">Sori <span style="font-size:14px;color:#111827;font-weight:600;">소리</span></h1>
-    <div class="intro">Korean language & life in Korea.</div>
+    <div class="intro">A little Korean, every day.</div>
   </div>
   <div class="header-actions">
     <button id="shareSori" class="top-btn">Share Sori</button>
@@ -346,21 +346,17 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
   </div>
 </header>
 
-<nav class="sori-nav" aria-label="Sori services"><button data-go="home" class="active">Sori</button><button data-go="listen">Learn Korean</button><button data-go="guide">Seoul guide</button></nav>
-<nav class="mobile-nav" aria-label="Main navigation"><button data-go="home" class="active">Sori</button><button data-go="listen">Learn Korean</button><button data-go="guide">Seoul guide</button></nav>
-<div id="homeView" class="sori-home">
-  <section class="home-hero" aria-labelledby="homeTitle">
-    <div class="hero-welcome"><p class="edition-line">Language, places & everyday life</p><h1 id="homeTitle">A closer look<br>at Korea.</h1><p class="hero-intro">Korean expressions to use out loud.<br>A Seoul itinerary to make with friends.</p><div class="home-actions"><button class="sori-primary" data-go="listen">Learn Korean</button><button class="text-button" data-go="guide">Plan your Seoul trip</button></div><p class="founder-byline">By Minwoo, in Seoul</p></div>
-    <figure class="hero-scene"><img class="hero-photo" src="assets/photos/seoul-hero-960.webp" srcset="assets/photos/seoul-hero-480.webp 480w, assets/photos/seoul-hero-960.webp 960w" sizes="(min-width:900px) 55vw, 100vw" width="960" height="640" alt="Palace rooftops and autumn trees beside Seoul’s modern skyline" fetchpriority="high"><figcaption>Old rooftops, a very modern city. Seoul.</figcaption></figure>
-  </section>
-  <section class="daily-expression" aria-labelledby="expressionTitle"><div class="expression-label">A useful expression<br><span>Shopping in Korea</span></div><div class="expression-copy"><h2 id="expressionTitle" lang="ko">얼마예요?</h2><p>How much is it?</p></div><button class="text-button" data-korean="얼마예요?" aria-label="Learn how to say How much is it in Korean">Learn this phrase</button></section>
-  <section class="seoul-stories" aria-labelledby="storiesTitle"><div class="section-heading"><div><p class="edition-line">The Seoul guide</p><h2 id="storiesTitle">Leave some of the day open.</h2></div><p>Start with what you enjoy.<br>Put a few places on the calendar.</p></div><div class="story-grid"><button class="story-card" data-go="guide"><img src="assets/photos/palace.jpg" width="800" height="533" alt="Gyeongbokgung Palace with the mountains behind it" loading="lazy"><span class="story-caption"><small>Culture & walking</small><strong>A morning around<br>the palace.</strong><span>Find a starting point for your Seoul itinerary.</span></span></button><button class="story-card" data-go="guide"><img src="assets/photos/seoul-coffee.jpg" width="800" height="1067" alt="Sunlight falling across a coffee cup in a Seoul cafe" loading="lazy"><span class="story-caption"><small>Cafes & unhurried afternoons</small><strong>Time for<br>one more coffee.</strong><span>Make space between the things you want to see.</span></span></button></div></section>
-  <section class="editorial-index" aria-label="Explore Sori"><article><p class="edition-line">Learn Korean</p><h2>Start with something<br>you’d actually say.</h2><p>358 expressions for ordering, getting around, everyday conversations and more. Listen at your own pace and save the ones you need.</p><button class="text-button" data-category="travel">Open travel Korean</button></article><article><p class="edition-line">Korea 101, by Sori</p><h2>A note from Korea.</h2><p>Why leave a phone on a cafe table? What happens at Seollal? Stories about the small things that make more sense when someone explains them.</p><button class="text-button" data-go="newsletter">Read Korea 101</button></article></section>
-  <section class="founder-note"><p class="edition-line">A personal project</p><p>I made Sori to help a friend learn Korean. I’ve kept working on it because there’s so much more to share about life here.</p><span>Minwoo · Seoul</span></section>
-  <div class="photo-credits">Photographs by <a href="https://unsplash.com/photos/LZwPn12XDNo" target="_blank" rel="noopener noreferrer">zero take</a>, <a href="https://unsplash.com/photos/bhEvws_PHAw" target="_blank" rel="noopener noreferrer">Bundo Kim</a> and <a href="https://unsplash.com/photos/HOt8287J36o" target="_blank" rel="noopener noreferrer">Andreea Rusu</a> / Unsplash</div>
+<nav class="sori-nav" aria-label="Sori services"><button data-go="home" class="active">Sori</button><button data-go="listen">Learn Korean</button><button data-go="guide">Korea guide</button></nav>
+<nav class="mobile-nav" aria-label="Main navigation"><button data-go="home" class="active">Sori</button><button data-go="listen">Learn Korean</button><button data-go="guide">Korea guide</button></nav>
+<div id="homeView" class="sori-home speak-first">
+<section class="practice-home" aria-labelledby="homeTitle"><div class="practice-intro"><p class="edition-line">Korean, a little every day.</p><h1 id="homeTitle">Less studying.<br>More saying it.</h1><p>Hear it. Say it. Make it yours.<br>Real Korean for the moments that matter.</p><button class="text-button" data-go="listen">Explore all 358 expressions</button></div>
+<div class="today-practice"><div class="practice-kicker"><span>Today, at a cafe</span><span lang="ko">오늘의 한국어</span></div><h2 lang="ko">아메리카노 한 잔, 주세요.</h2><p class="home-romanization">amerikano han jan, juseyo</p><p>One americano, please.</p><div class="audio-choices"><button class="sori-primary" data-audio="아메리카노 한 잔, 주세요." data-rate="1">Listen</button><button class="sori-secondary" data-audio="아메리카노 한 잔, 주세요." data-rate="0.65">Slowly</button></div><p class="practice-instruction">Your turn. Say it out loud, then listen again.</p><button class="text-button" data-korean="아메리카노 한 잔, 주세요.">Practice this expression</button></div></section>
+<section class="situation-section" aria-labelledby="situationTitle"><div class="section-heading"><div><p class="edition-line">Start with your day</p><h2 id="situationTitle">What would you like to say?</h2></div></div><div class="situation-grid"><button data-category="daily" data-situation="Cafe"><span>At a cafe</span><small>Order your usual, in Korean.</small></button><button data-category="daily" data-situation="Restaurant"><span>Over a meal</span><small>Find the words before the food.</small></button><button data-category="daily" data-situation="Shopping"><span>Out shopping</span><small>Ask a price. Find your size.</small></button><button data-category="travel" data-situation="Transport"><span>Getting around</span><small>A little confidence on the way.</small></button></div></section>
+<section class="connected-services" aria-label="Use and understand your Korean"><article class="journey-card"><img src="assets/photos/haeundae.jpg" width="640" height="960" alt="Haeundae Beach in Busan" loading="lazy"><div><p class="edition-line">Put your Korean to use</p><h2>A day out,<br>with words to match.</h2><p>Choose Seoul or Busan. Get a photo-led plan, open it in Google Maps, and learn what to say at each stop.</p><button class="sori-primary" data-go="guide">Make a Korea plan</button></div></article><article class="newsletter-card"><span class="edition-line">Korea 101 · Free newsletter</span><h2>The story behind<br>the words.</h2><p>Why leave a phone on a cafe table? What happens at Seollal? Minwoo shares the everyday things that help Korea make sense.</p><div class="newsletter-topics"><span>Language</span><span>Food</span><span>Everyday culture</span></div><button class="text-button" data-go="newsletter">Read & subscribe to Korea 101</button><p class="founder-byline">By Minwoo, from Seoul.</p></article></section>
+<p class="home-signoff">Made to help a friend learn Korean. Still made with that same care. <span>Minwoo · Sori</span></p>
 </div>
 <div id="guideView" style="display:none"></div>
-<div class="main-content" id="mainContent" style="display:none"><div class="learn-heading"><span class="eyebrow">Listen & practice</span><h1>Korean, for everyday life.</h1><p>Start with a situation. Listen slowly, say it out loud, and keep the expressions you want to use.</p><label class="sr-only" for="phraseSearch">Search Korean expressions</label><input class="learn-search" id="phraseSearch" type="search" placeholder="Search this category in Korean or English" autocomplete="off"></div>
+<div class="main-content" id="mainContent" style="display:none"><div class="learning-trip-bridge" hidden><span>Learning for your day out</span><button class="text-button" data-go="guide">Back to our trip</button></div><div class="learn-heading"><span class="eyebrow">Listen & practice</span><h1>Korean, for everyday life.</h1><p>Start with a situation. Listen slowly, say it out loud, and keep the expressions you want to use.</p><label class="sr-only" for="phraseSearch">Search Korean expressions</label><input class="learn-search" id="phraseSearch" type="search" placeholder="Search this category in Korean or English" autocomplete="off"></div>
 <section class="card">
   <div class="category-bar">
     <div class="picker-wrap">
@@ -421,7 +417,7 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
   </div>
 
   <button id="playBtn" class="big">Listen & Repeat</button>
-  <div class="row">
+  <div class="lesson-speeds" role="group" aria-label="Listening speed"><button type="button" data-listen-rate="0.65">Slow</button><button type="button" data-listen-rate="0.8" aria-pressed="true">Comfortable</button><button type="button" data-listen-rate="1">Natural</button></div><p id="lessonAudioStatus" class="audio-status" role="status" aria-live="polite"></p><div class="row">
     <label>Speed:</label>
     <input id="speed" type="range" min="0.6" max="1.0" step="0.05" value="0.80"/>
     <span id="speedTxt" class="speed-val">0.80x</span>
@@ -437,7 +433,7 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
     <button id="nextBtn" class="nav-btn">Next</button>
   </div>
 </section>
-</div>
+<section class="learn-next"><span class="edition-line">Keep the words in context</span><h2>A little more Korea.</h2><p>Learn the customs behind the conversation in Korea 101, or try these expressions on a day out.</p><div><button class="text-button" data-go="newsletter">Korea 101 newsletter</button><button class="text-button" data-go="guide">Plan a day out</button></div></section></div>
 
 <div id="quizView" class="newsletter-view" style="display: none; padding-top: 0;">
   <section class="card">
@@ -507,9 +503,9 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 <div id="newsletterView" class="newsletter-view" style="display: none;">
   <section class="card">
     <div class="korea101-content">
-      <h2 class="korea101-title">Korea101</h2>
+      <span class="edition-line">Korea 101 · A free newsletter by Sori</span><h2 class="korea101-title">Know the story.<br>Find the words.</h2>
       <p class="korea101-description">Stories about Korean language, culture, food and everyday life. Written by Minwoo in Seoul.</p>
-      <a href="https://sorikorea.beehiiv.com/" target="_blank" rel="noopener noreferrer" class="korea101-subtitle korea101-link">Read the newsletter</a>
+      <a href="https://sorikorea.beehiiv.com/" target="_blank" rel="noopener noreferrer" class="sori-primary">Read & subscribe for free</a><div class="newsletter-topics"><span>Language</span><span>Food & cafes</span><span>Customs</span><span>Life in Korea</span></div><p class="small-note">Written by Minwoo in Seoul. Subscribe with your email on Korea 101.</p><button class="text-button" data-category="daily" data-situation="Cafe">Try Korean for your next coffee</button>
     </div>
   </section>
 </div>
@@ -562,7 +558,7 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
   </div>
   <div class="sidebar-menu">
     <button class="menu-item" data-view="home">Sori</button>
-    <button class="menu-item" data-view="guide">Seoul guide</button>
+    <button class="menu-item" data-view="guide">Korea guide</button>
     <button class="menu-item" data-view="listen">Listen & Repeat</button>
     <button class="menu-item" data-view="quiz">Daily Quiz</button>
     <button class="menu-item" data-view="newsletter">Korea101</button>
@@ -581,13 +577,13 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 <script defer src="data/data-processor.js?v=20251019"></script>
 
 <!-- app scripts -->
-<script type="module" src="/js/firebase-init.js?v=20261119r3" defer></script>
-<script type="module" src="/js/auth.js?v=20261119r3" defer></script>
-<script defer src="js/tts.js?v=20261119r3"></script>
-<script defer src="js/app.js?v=20261119r3"></script>
-<script defer src="js/sidebar.js?v=20261119r3"></script>
-<script type="module" src="js/guide/ui.js?v=20261119r3"></script>
-<script defer src="js/quiz.js?v=20261119r3"></script>
+<script type="module" src="/js/firebase-init.js?v=20261119r4" defer></script>
+<script type="module" src="/js/auth.js?v=20261119r4" defer></script>
+<script defer src="js/tts.js?v=20261119r4"></script>
+<script defer src="js/app.js?v=20261119r4"></script><script defer src="js/practice.js?v=20261119r4"></script>
+<script defer src="js/sidebar.js?v=20261119r4"></script>
+<script type="module" src="js/guide/ui.js?v=20261119r4"></script>
+<script defer src="js/quiz.js?v=20261119r4"></script>
 
 
 <script>

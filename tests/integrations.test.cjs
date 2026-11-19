@@ -69,6 +69,11 @@ test('new playback cancels old request and ignores late audio',async()=>{
   const first=h.tts.speak('one');const rejected=assert.rejects(first,e=>e.name==='AbortError');const second=h.tts.speak('two');await rejected;
   slow.resolve(audioResponse);await tick();assert.equal(h.audios[0].src,undefined);h.audios[1].onended();await second;
 });
+test('repeat listening reuses the validated audio and preserves natural pitch at slower speeds',async()=>{
+ let requests=0;const h=audioHarness(async()=>{requests++;return audioResponse;});let starts=0;
+ const first=h.tts.speak('반복',{rate:1,onPlaying(){starts++;}});await tick();h.audios[0].onended();await first;
+ const again=h.tts.speak('반복',{rate:0.65,onPlaying(){starts++;}});await tick();assert.equal(requests,1);assert.equal(h.audios[1].preservesPitch,true);assert.equal(h.audios[1].playbackRate,0.65);h.audios[1].onended();await again;assert.equal(starts,2);assert.equal(h.revoked.length,2);
+});
 test('HTTP error, invalid content, playback rejection and timeout all reject',async()=>{
   for(const response of [{ok:false,status:500},{ok:true,blob:async()=>({size:1,type:'application/json'})}]) {
     const h=audioHarness(async()=>response);await assert.rejects(h.tts.speak('test'));

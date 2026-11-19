@@ -8,6 +8,16 @@ test('planner validates dates, respects base area, excludes Tuesday palace, and 
  assert.throws(()=>generatePlan({...input,start:'2026-02-30'},catalog));assert.throws(()=>generatePlan({...input,end:'2026-12-08'},catalog));
 });
 test('guide Korean phrases are connected to actual learning data',async()=>{const {PHRASES}=await load();const c={window:{},console:{log(){}}};vm.createContext(c);for(const name of ['daily','travel','drama','trendy','numbers','dataindex'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../data/'+name+'.js'),'utf8'),c);const text=new Set(Object.values(c.window.SoriDataIndex).flat().map(x=>x.k));for(const p of PHRASES)assert.ok(text.has(p.ko),p.ko);});
+test('city choices keep Busan and Seoul separate and maps target the correct city',async()=>{
+ const {generatePlan,cityForArea,mapLink,naverLink,phraseForPlace,PHRASES}=await load();
+ for(const [city,area] of [['busan','haeundae'],['seoul','gangnam']]){
+  const plan=generatePlan({city,area,areas:[area],start:'2026-11-26',end:'2026-11-28',pace:'balanced',food:'local',interests:['culture','cafes']},catalog);
+  assert.equal(plan.days[0].area,area);assert.equal(new Set(plan.days.map(d=>d.area)).size,3);
+  for(const day of plan.days)for(const id of day.stops){const place=catalog.find(p=>p.id===id);assert.equal(cityForArea(place.area),city);assert.equal(new URL(mapLink(place)).hostname,'www.google.com');assert.ok(decodeURIComponent(mapLink(place)).includes(city==='busan'?'Busan':'Seoul'));assert.ok(PHRASES.includes(phraseForPlace(place)));assert.ok(fs.existsSync(path.join(__dirname,'..',place.photo)));}
+ }
+ assert.throws(()=>generatePlan({city:'busan',area:'gangnam',start:'2026-11-26',end:'2026-11-26',pace:'balanced',food:'local'},catalog));
+ assert.ok(decodeURIComponent(naverLink(catalog.find(p=>p.id==='gamcheon'))).includes('부산'));
+});
 test('two participants share edits and comments; unrelated visitors cannot read; invites are single-use',()=>harness(async call=>{
  const owner=(await call('trips','POST',{name:'Owner',plan:tripPlan})).data;assert.equal(owner.trip.members.length,1);const route='trips/'+owner.trip.id;
  assert.equal((await call(route)).status,401);const invite=(await call(route+'/invites','POST',{},owner.memberToken)).data.invite;
