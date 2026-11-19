@@ -96,3 +96,12 @@ test('local module graph never initializes one file under two different query UR
   for(const match of html.matchAll(/<script\b[^>]*type="module"[^>]*src="([^"]+)"/g))visit(new URL(match[1],'https://sori.test/'));
   assert.ok(paths.has('/js/state.js'));assert.ok(paths.has('/js/saved-store.js'));
 });
+
+test('analytics page views omit private invitation fragments and query strings',()=>{
+  const html=source('index.html');const block=[...html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)].map(m=>m[1]).find(s=>s.includes('function buildPath()'));
+  const events=[],handlers={};
+  const context={window:{},location:{href:'https://sorikorea.com/?private=hidden#invite=private-invitation',origin:'https://sorikorea.com',pathname:'/'},document:{title:'Sori',visibilityState:'visible',querySelector:()=>({id:'dailyBtn'}),getElementById:()=>null,addEventListener:(n,f)=>{handlers[n]=f;}},badge:{textContent:'Shopping'},prog:{textContent:'1 / 100'},nextBtn:null,prevBtn:null,speed:null,setTimeout:f=>f(),gtag:(...args)=>events.push(args)};
+  vm.runInNewContext(block,context);handlers.DOMContentLoaded();handlers.visibilitychange();
+  const pageViews=events.filter(e=>e[1]==='page_view');assert.equal(pageViews.length,2);
+  for(const event of pageViews)assert.equal(event[2].page_location,'https://sorikorea.com/');
+});

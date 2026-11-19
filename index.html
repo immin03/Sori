@@ -62,7 +62,7 @@
   window.dataLayer=window.dataLayer||[];
   function gtag(){dataLayer.push(arguments);}
   gtag('js',new Date());
-  gtag('config',window.GA_ID,{send_page_view:false});
+  gtag('config',window.GA_ID,{send_page_view:false,page_location:location.origin+location.pathname});
 </script>
 
 <!-- Firebase v9 모듈 방식으로 로딩 -->
@@ -866,7 +866,7 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
     const m=(prog?.textContent||'1 / 1').match(/(\d+)\s*\/\s*(\d+)/); const idx=m?parseInt(m[1],10):1;
     return `/${cat}/${sub}/${idx}`;
   }
-  function sendPV(title){ try{ gtag('event','page_view',{page_title:title||document.title,page_location:location.href,page_path:buildPath(),send_to:'G-X1Q98DBKR5'});}catch(e){} }
+  function sendPV(title){ try{ gtag('event','page_view',{page_title:title||document.title,page_location:location.origin+location.pathname,page_path:buildPath(),send_to:'G-X1Q98DBKR5'});}catch(e){} }
   function sendSessionStart(){ try{ gtag('event','session_start',{send_to:'G-X1Q98DBKR5'});}catch(e){} }
   document.addEventListener('DOMContentLoaded',()=>{ setTimeout(()=>{ sendSessionStart(); sendPV('Sori'); },0); });
   ['dailyBtn','travelBtn','dramaBtn','trendyBtn','numbersBtn','savedBtnHidden'].forEach(id=>{ const el=document.getElementById(id); el&&el.addEventListener('click',()=> setTimeout(()=>sendPV(`Sori - ${el.textContent.trim()}`),0)); });
