@@ -20,7 +20,9 @@ Existing GitHub Pages/static hosting cannot run `/api/trips`. A static-only depl
 
 ## Verified and pending
 
-Offline tests cover generator validation, Tuesday palace exclusion, actual lesson references, owner/guest permissions, one-time/expired invites, participant cap, cross-participant notes/edits, member revocation and stale-write conflicts. Browser checks cover the landing, form, trip creation, group-note save and guide-to-learning navigation. Live Google login/TTS, isolated real-device collaboration, mobile viewport layout and production Supabase have not been fully verified.
+Offline tests cover generator validation, Tuesday palace exclusion, actual lesson references, owner/guest permissions, one-time/expired invites, participant cap, cross-participant notes/edits, member revocation and stale-write conflicts. Browser checks cover the landing, form, trip creation, group-note save and guide-to-learning navigation. Live Google login/TTS, isolated real-device collaboration, real phone hardware behavior and production Supabase have not been fully verified.
+
+The mobile-first redesign adds a photo-led home, a fixed Discover/Learn/Guide bottom navigation, safe-area spacing, large touch targets and single-column trip forms/itineraries. Browser-frame checks at 360, 390, 430 and 768 CSS pixels found no horizontal overflow on the home and shared trip. A 390-pixel frame also verified trip creation and the home expression opening its actual Korean lesson. These checks do not emulate iOS/Android hardware or prove native sharing, mobile Google login, keyboard layout or audio playback. The developer-only `/debug/mobile.html` page provides repeatable frame sizes; it is not the customer-facing service. See `photo-credits.md` for downloaded image sources and licensing.
 
 Place descriptions are brief original summaries; `data/places.json` stores exact primary-source links and the checked date. Opening hours/availability/prices are not asserted live. Palace holiday exceptions and dietary restrictions require confirmation. Some catalog entries are district suggestions, not specific restaurant recommendations. Catalog maintenance, broader routing, verified dietary venues, event feeds and localization remain future work.
 
@@ -29,3 +31,11 @@ Place descriptions are brief original summaries; `data/places.json` stores exact
 ![Sori home](sori-v1-home.jpg)
 
 ![Shared trip](sori-v1-guide.jpg)
+
+## Mobile-first review
+
+![Mobile home](sori-mobile-home.jpg)
+
+![Mobile trip form](sori-mobile-form.jpg)
+
+![Mobile shared itinerary](sori-mobile-trip.jpg)
