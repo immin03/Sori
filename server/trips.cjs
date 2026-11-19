@@ -6,11 +6,8 @@ const secret=()=>crypto.randomBytes(32).toString('base64url');
 const hash=s=>crypto.createHash('sha256').update(String(s)).digest('hex');
 function fail(status,message){throw Object.assign(new Error(message),{status});}
 function name(value){if(typeof value!=='string'||!value.trim()||value.length>40)fail(400,'Enter a name of 1–40 characters.');return value.trim();}
-function plan(value){
-  if(!value||typeof value.title!=='string'||value.title.length>80||!['local','mild','vegetarian'].includes(value.food)||!Array.isArray(value.days)||value.days.length<1||value.days.length>3)fail(400,'Invalid trip.');
-  for(const day of value.days)if(!/^\d{4}-\d{2}-\d{2}$/.test(day.date||'')||!Array.isArray(day.stops)||day.stops.length>6||new Set(day.stops).size!==day.stops.length||day.stops.some(x=>!ids.has(x))||!Number.isFinite(Date.parse(day.date+'T12:00:00Z'))||new Date(day.date+'T12:00:00Z').toISOString().slice(0,10)!==day.date)fail(400,'Invalid trip stops.');
-  return {title:value.title,food:value.food,pace:value.pace==='relaxed'?'relaxed':'balanced',days:value.days.map(d=>({date:d.date,area:String(d.area||'').slice(0,40),stops:d.stops}))};
-}
+const {validateTrip}=require('../supabase/functions/sori-trips/validation.js');
+function plan(value){try{return validateTrip(value,catalog);}catch(e){fail(400,e.message);}}
 function createTripsApi(filename=':memory:',clock=Date.now){
  const db=new DatabaseSync(filename);db.exec(`PRAGMA foreign_keys=ON;
  CREATE TABLE IF NOT EXISTS trips(id TEXT PRIMARY KEY,plan TEXT NOT NULL,version INTEGER NOT NULL DEFAULT 1);

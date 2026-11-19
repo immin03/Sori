@@ -1,0 +1,136 @@
+[
+  {
+    "id": "one-coffee-in-korean",
+    "title": "One coffee. Your first little win in Korean.",
+    "category": "Useful Korean",
+    "excerpt": "You do not need a perfect sentence to order your usual.",
+    "photo": "assets/photos/seoul-coffee.jpg",
+    "photoAlt": "Coffee in a Seoul cafe",
+    "minutes": 3,
+    "question": "What would you like to order in Korean?",
+    "phrase": "아메리카노 한 잔, 주세요.",
+    "paragraphs": [
+      "You reach the counter. You know what you want. Then the menu, the queue and the thought of getting the words wrong arrive all at once. A small sentence helps: 아메리카노 한 잔, 주세요. One americano, please.",
+      "The useful part is 주세요, juseyo. It makes a request polite and gives you a starting point you can reuse. You are asking for something, not delivering a speech. A pause or a second try is completely fine.",
+      "Listen once at a comfortable speed. Say the sentence without the audio. Then listen again and notice where the words run together. That small comparison is more useful than trying to memorise every sound perfectly at once.",
+      "At the cafe, the next question might be about the size, temperature or whether you are staying. It is all right to point at the menu or ask for a moment. This phrase is the beginning of a conversation, not a promise that you will understand every reply.",
+      "Try it today, even if today’s cafe is your kitchen. Tomorrow, come back and see whether the sentence arrives a little more easily."
+    ],
+    "sources": [],
+    "published": "2026-11-19",
+    "author": "Korea 101 by Sori",
+    "photoContext": false,
+    "status": "published"
+  },
+  {
+    "id": "seoul-cafe-table",
+    "title": "A phone on the table. Where did its owner go?",
+    "category": "Everyday culture",
+    "excerpt": "A small cafe moment opens a bigger conversation about trust.",
+    "photo": "assets/photos/seoul-coffee.jpg",
+    "photoAlt": "A quiet cafe table",
+    "minutes": 3,
+    "question": "What surprises you most about cafes in Korea?",
+    "phrase": "아메리카노 한 잔, 주세요.",
+    "paragraphs": [
+      "In some Seoul cafes you may notice a laptop, a bag or a phone on a table while its owner is briefly away. For visitors used to carrying everything even to the bathroom, it can be an unexpectedly memorable detail.",
+      "Sometimes the person is ordering. Sometimes they have stepped away for a moment. An object can also signal that a seat is taken. It is an informal habit, not a written rule shared by every cafe.",
+      "The interesting question is not whether every belonging is safe. No place can promise that. It is how people interpret the same small scene: one visitor sees a risk, another sees a seat being held, and someone else barely notices.",
+      "If you are visiting, choose the level of care you are comfortable with and keep passports, valuables and essential belongings with you. You can enjoy noticing a custom without having to copy it.",
+      "And if a busy cafe’s seating system is unclear, ask the staff before settling in. The best cultural discoveries often start with a simple question."
+    ],
+    "sources": [],
+    "published": "2026-11-19",
+    "author": "Korea 101 by Sori",
+    "photoContext": false,
+    "status": "published"
+  },
+  {
+    "id": "tteokguk-seollal",
+    "title": "The New Year arrives in a bowl.",
+    "category": "Food & traditions",
+    "excerpt": "Why tteokguk belongs at the Seollal table.",
+    "photo": "assets/photos/palace.jpg",
+    "photoAlt": "Gyeongbokgung Palace in Seoul; context image",
+    "minutes": 3,
+    "question": "Which food feels like a new beginning to you?",
+    "phrase": "안 매운 걸로, 주세요.",
+    "paragraphs": [
+      "A holiday can announce itself through a sound, a journey or a smell from the kitchen. During Seollal, Korea’s Lunar New Year, one familiar sign is a bowl of tteokguk: soup with sliced rice cakes.",
+      "Eating it on New Year’s morning carries a traditional connection with becoming a year older. The expression is part of the holiday’s story. A bowl of soup does not change your official birthday or age.",
+      "Rice cake soup is only one part of the table. Depending on the household, you may also see pancakes, dumplings or other dishes prepared for sharing. There is no single meal that represents every family.",
+      "For a visitor, the useful lesson is to leave a little room in the plan. A holiday can change opening hours and the rhythm of a neighbourhood. Check the places you want to visit rather than assuming an ordinary weekday schedule.",
+      "You do not need to know every tradition to enjoy learning about it. Start with a bowl, a question and the stories people choose to tell you."
+    ],
+    "sources": [
+      {
+        "label": "Korea Tourism Organization · Seollal customs",
+        "url": "https://english.visitkorea.or.kr/svc/contents/contentsView.do?vcontsId=220321"
+      }
+    ],
+    "published": "2026-11-19",
+    "author": "Korea 101 by Sori",
+    "photoContext": true,
+    "status": "published"
+  },
+  {
+    "id": "busan-two-kinds-of-day",
+    "title": "In Busan, choose the kind of day before the places.",
+    "category": "Places",
+    "excerpt": "A beach morning and a hillside afternoon need room between them.",
+    "photo": "assets/photos/gamcheon.jpg",
+    "photoAlt": "Gamcheon Culture Village in Busan",
+    "minutes": 3,
+    "question": "Sea views or little streets: what is your kind of afternoon?",
+    "phrase": "지하철역이 어디예요?",
+    "paragraphs": [
+      "A list can make every place in a city look equally close. A map quickly tells a different story. In Busan, the beach districts around Haeundae and Gwangalli and the older downtown around Nampo belong to different parts of the day.",
+      "Try choosing a mood first. A coastal day might leave time for the beach and a cafe. A downtown day might bring together markets and a neighbourhood walk. You do not have to collect every landmark to feel that you have been somewhere.",
+      "Gamcheon’s hillside lanes ask for a different pace from a flat promenade. It is also a residential neighbourhood. Follow visitor routes, keep your voice down and allow time for slopes, stairs and transport.",
+      "Put your hotel on the map before adding the third or fourth stop. The journey back is part of the plan, too. Compare actual transport options in your map app rather than judging a trip only by a straight line.",
+      "Then invite a friend. Sometimes the most useful part of a shared itinerary is discovering that both of you would rather sit with a view for another half hour."
+    ],
+    "sources": [
+      {
+        "label": "Korea Tourism Organization · Busan",
+        "url": "https://english.visitkorea.or.kr/svc/contents/contentsView.do?menuSn=219&vcontsId=1593337"
+      }
+    ],
+    "published": "2026-11-19",
+    "author": "Korea 101 by Sori",
+    "photoContext": false,
+    "status": "published"
+  },
+  {
+    "id": "airport-first-journey",
+    "title": "Your first Korean journey starts before the city.",
+    "category": "Getting around",
+    "excerpt": "A hotel pin can make an airport arrival feel a little less complicated.",
+    "photo": "assets/photos/seoul-hero-960.webp",
+    "photoAlt": "Seoul rooftops and skyline",
+    "minutes": 3,
+    "question": "What makes arriving in a new country easier for you?",
+    "phrase": "지하철역이 어디예요?",
+    "paragraphs": [
+      "There is a particular feeling to arriving in a new country: excitement, tiredness and a phone full of information you suddenly need at the same time. Before choosing what to visit, save where you are sleeping.",
+      "If you arrive at Incheon, choose the correct terminal. AREX connects the airport with Seoul, and the all-stop service connects at places including Hongik University and Gimpo. An express train to Seoul Station is not automatically the most convenient option for every hotel.",
+      "Gimpo has airport rail and Metro 5 and 9 connections. For Busan’s Gimhae Airport, light rail connects with Metro 2 at Sasang and Metro 3 at Daejeo. The last connection to your accommodation still matters.",
+      "Schedules, luggage, accessibility and how you feel can all change the best choice. Open current directions and compare a train connection with other options. A static travel tip cannot promise a live departure.",
+      "Once the first journey is settled, the city feels a little more manageable. The cafes and beautiful streets can wait until you have put down the bag."
+    ],
+    "sources": [
+      {
+        "label": "AREX · All-stop train",
+        "url": "https://www.airportrailroad.com/train/normal/introduce"
+      },
+      {
+        "label": "Gimhae Airport · Public transport",
+        "url": "https://www.airport.co.kr/gimhaeeng/cms/frCon/index.do?CONTENTS_NO=3&MENU_ID=110"
+      }
+    ],
+    "published": "2026-11-19",
+    "author": "Korea 101 by Sori",
+    "photoContext": true,
+    "status": "published"
+  }
+]
