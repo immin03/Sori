@@ -1,4 +1,11 @@
 const {test}=require('node:test');const assert=require('node:assert/strict');const {createDevBucket}=require('../server/dev-bucket.cjs');const catalog=require('../data/places.json');
+test('the legacy lesson enhancer preserves translation, context and one separate pronunciation line',()=>{
+ const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
+ const nodes={context:{textContent:'Order'},english:{textContent:'"One americano, please"'},pronunciation:{textContent:'amerikano han jan, juseyo',style:{display:'none',removeProperty(name){delete this[name];}}},korean:{textContent:'아메리카노 한 잔, 주세요.'}};
+ const c={window:{},document:{getElementById:id=>nodes[id]||null,addEventListener(){}},setTimeout(fn){fn();}};vm.createContext(c);vm.runInContext(fs.readFileSync(path.join(__dirname,'../data/data-processor.js'),'utf8'),c);
+ c.window.applyOnce();c.window.applyOnce();
+ assert.equal(nodes.context.textContent,'Order');assert.equal(nodes.english.textContent,'"One americano, please"');assert.equal(nodes.pronunciation.textContent,'amerikano han jan, juseyo');assert.equal(nodes.pronunciation.style.display,undefined);
+});
 test('trip bases survive storage validation without storing a device location',async()=>{
  const {validateTrip}=await import('../supabase/functions/sori-trips/validation.js');const base={title:'Our map',food:'local',days:[{date:'2026-11-26',area:'north',stops:['palace']}],journey:{arrival:'gmp',origin:'current',hotel:{label:'A public hotel',lat:37.56,lng:126.98},currentLocation:{lat:37.5,lng:127},returnToHotel:true}};
  const p=validateTrip(base,catalog);assert.equal(p.journey.hotel.label,'A public hotel');assert.equal(p.journey.currentLocation,undefined);assert.equal(p.journey.origin,'current');

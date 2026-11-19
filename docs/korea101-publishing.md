@@ -27,3 +27,7 @@ The optional confirmation adapter needs a verified sending identity in SORI_MAIL
 ## Current launch checks
 
 Story reader, local save, public sharing shape, durable anonymous reaction totals, waitlist consent and cancellation, and mocked double opt-in are covered by the release verification. Account-specific learning progress is stored locally and is not a cloud learning-history sync. Native Google login and real phone hardware remain separate checks.
+
+## Active publication schedule
+
+The owner-linked publication task is enabled for Monday, Wednesday and Friday at 09:00 Asia/Seoul, starting 2026-11-20. It updates this frontend repository through the connected GitHub writer. A successful scheduled task must report a verified public story URL; creation of the schedule alone is not evidence that a later run published. This schedule publishes web stories, not email campaigns.
