@@ -19,7 +19,7 @@ for (const [,attrs,inline] of scriptTags) {
   compiled++;
 }
 // Check all source files too, including modules imported transitively.
-for (const dir of ['js','data','server']) for (const file of fs.readdirSync(path.join(root,dir),{recursive:true}).filter(x=>/\.(js|cjs)$/.test(x))) {
+for (const dir of ['js','data','server','supabase/functions']) for (const file of fs.readdirSync(path.join(root,dir),{recursive:true}).filter(x=>/\.(js|cjs)$/.test(x))) {
   const text=read(dir+'/'+file);
   const result=spawnSync(process.execPath,['--check',...(/^(import|export)\b/m.test(text)?['--input-type=module']:[])],{input:text,encoding:'utf8'});
   assert.equal(result.status,0,`${dir}/${file}: ${result.stderr}`);

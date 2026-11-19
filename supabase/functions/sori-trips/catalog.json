@@ -1,0 +1,167 @@
+[
+  {
+    "id": "palace",
+    "name": "Gyeongbokgung Palace",
+    "ko": "경복궁",
+    "area": "north",
+    "tag": "culture",
+    "description": "Start with the palace courtyards.",
+    "note": "Usually closed Tuesdays; holiday exceptions apply. Check the official calendar.",
+    "source": "https://english.visitkorea.or.kr/svc/whereToGo/locIntrdn/rgnContentsView.do?vcontsId=87740",
+    "reviewedOn": "2026-11-19"
+  },
+  {
+    "id": "insadong",
+    "name": "Insadong craft streets",
+    "ko": "인사동",
+    "area": "north",
+    "tag": "crafts",
+    "description": "Browse traditional crafts and small galleries.",
+    "note": "Individual shops set their own hours.",
+    "source": "https://english.visitseoul.net/eat/Insadong-Course/ENN000653",
+    "reviewedOn": "2026-11-19"
+  },
+  {
+    "id": "tea",
+    "name": "Jeontong Dawon",
+    "ko": "전통다원",
+    "area": "north",
+    "tag": "cafes",
+    "description": "Take a break with Korean tea in Insadong.",
+    "note": "Check the menu and current opening hours before visiting.",
+    "source": "https://english.visitkorea.or.kr/svc/whereToGo/locIntrdn/rgnContentsView.do?vcontsId=75508",
+    "reviewedOn": "2026-11-19"
+  },
+  {
+    "id": "market",
+    "name": "Gwangjang Market",
+    "ko": "광장시장",
+    "area": "north",
+    "tag": "food",
+    "description": "Look for mung-bean pancakes and gimbap stalls.",
+    "note": "Ask about ingredients, prices and portions before ordering.",
+    "source": "https://english.visitseoul.net/mvp/IfyouvisitSeoulforthefirsttime_/43817",
+    "reviewedOn": "2026-11-19"
+  },
+  {
+    "id": "myeongdong",
+    "name": "Myeongdong shopping streets",
+    "ko": "명동",
+    "area": "central",
+    "tag": "beauty",
+    "description": "Explore beauty shops and compare products.",
+    "note": "Store hours and tax-refund eligibility vary.",
+    "source": "https://english.visitseoul.net/mvp/IfyouvisitSeoulforthefirsttime_/43817",
+    "reviewedOn": "2026-11-19"
+  },
+  {
+    "id": "noodles",
+    "name": "Myeongdong Kyoja",
+    "ko": "명동교자",
+    "area": "central",
+    "tag": "food",
+    "description": "A noodle-soup and dumpling stop to consider.",
+    "note": "Confirm ingredients and queue time. Mild soup does not mean allergen-free.",
+    "source": "https://english.visitseoul.net/City-Hall-Area/Myeongdong-Kyoja-EN/ENP008570",
+    "reviewedOn": "2026-11-19"
+  },
+  {
+    "id": "ddp",
+    "name": "Dongdaemun Design Plaza",
+    "ko": "동대문디자인플라자",
+    "area": "central",
+    "tag": "design",
+    "description": "Visit the design landmark and check current exhibitions.",
+    "note": "Exhibition tickets and opening hours vary.",
+    "source": "https://english.visitseoul.net/mvp/IfyouvisitSeoulforthefirsttime_/43817",
+    "reviewedOn": "2026-11-19"
+  },
+  {
+    "id": "namsan",
+    "name": "Namsan & N Seoul Tower",
+    "ko": "남산 서울타워",
+    "area": "central",
+    "tag": "parks",
+    "description": "Consider the hilltop view if the weather is clear.",
+    "note": "Check transport and ticket details; leave extra travel time.",
+    "source": "https://english.visitseoul.net/mvp/IfyouvisitSeoulforthefirsttime_/43817",
+    "reviewedOn": "2026-11-19"
+  },
+  {
+    "id": "forest",
+    "name": "Seoul Forest",
+    "ko": "서울숲",
+    "area": "east",
+    "tag": "parks",
+    "description": "Make room for a park walk in Seongsu.",
+    "note": "Shorten outdoor stops in poor weather.",
+    "source": "https://english.visitkorea.or.kr/svc/whereToGo/hdrdslt/hdrdsltView.do?crsSn=209",
+    "reviewedOn": "2026-11-19"
+  },
+  {
+    "id": "coffee",
+    "name": "Center Coffee, Seoul Forest",
+    "ko": "센터커피 서울숲점",
+    "area": "east",
+    "tag": "cafes",
+    "description": "A coffee stop near Seoul Forest.",
+    "note": "Check current opening hours and access arrangements.",
+    "source": "https://english.visitkorea.or.kr/svc/contents/contentsView.do?vcontsId=177422",
+    "reviewedOn": "2026-11-19"
+  },
+  {
+    "id": "seongsu",
+    "name": "Seongsu cafe streets",
+    "ko": "성수동 카페거리",
+    "area": "east",
+    "tag": "design",
+    "description": "Explore the cafe district at your own pace.",
+    "note": "Pop-ups and individual shops change frequently.",
+    "source": "https://english.visitkorea.or.kr/svc/whereToGo/hdrdslt/hdrdsltView.do?crsSn=209",
+    "reviewedOn": "2026-11-19"
+  },
+  {
+    "id": "shoes",
+    "name": "Seongsu handmade-shoe streets",
+    "ko": "성수동 수제화거리",
+    "area": "east",
+    "tag": "shopping",
+    "description": "Browse the area’s shoe workshops and shops.",
+    "note": "Individual businesses may not offer walk-in visits.",
+    "source": "https://english.visitkorea.or.kr/svc/whereToGo/hdrdslt/hdrdsltView.do?crsSn=209",
+    "reviewedOn": "2026-11-19"
+  },
+  {
+    "id": "hongdae",
+    "name": "Hongdae streets",
+    "ko": "홍대",
+    "area": "west",
+    "tag": "design",
+    "description": "Browse fashion and the university-area streets.",
+    "note": "Performances are informal, not guaranteed events.",
+    "source": "https://english.visitseoul.net/mvp/IfyouvisitSeoulforthefirsttime_/43817",
+    "reviewedOn": "2026-11-19"
+  },
+  {
+    "id": "hongdae-cafe",
+    "name": "Hongdae cafe break",
+    "ko": "홍대 카페",
+    "area": "west",
+    "tag": "cafes",
+    "description": "Choose a cafe in the same district for a flexible break.",
+    "note": "This is an area suggestion, not a booked venue.",
+    "source": "https://english.visitseoul.net/mvp/IfyouvisitSeoulforthefirsttime_/43817",
+    "reviewedOn": "2026-11-19"
+  },
+  {
+    "id": "hongdae-food",
+    "name": "Hongdae meal break",
+    "ko": "홍대 식당",
+    "area": "west",
+    "tag": "food",
+    "description": "Choose a nearby restaurant that suits your group.",
+    "note": "This is a meal slot, not a specific restaurant recommendation.",
+    "source": "https://english.visitseoul.net/mvp/IfyouvisitSeoulforthefirsttime_/43817",
+    "reviewedOn": "2026-11-19"
+  }
+]

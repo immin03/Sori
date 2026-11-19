@@ -198,7 +198,8 @@
     if (!els.scrapBtn) return;
     var active = !!(id && savedList.indexOf(id) >= 0);
     els.scrapBtn.classList.toggle("active", active);
-    els.scrapBtn.textContent = active ? "★" : "☆";
+    els.scrapBtn.textContent = active ? "Saved" : "Save";
+    els.scrapBtn.setAttribute("aria-pressed",String(active));
   }
 
   function renderPhrase() {

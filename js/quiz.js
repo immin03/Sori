@@ -150,7 +150,7 @@
         btn.classList.toggle('active', isSaved);
         const favoriteText = btn.querySelector('.quiz-favorite-text');
         if (favoriteText) {
-          favoriteText.textContent = isSaved ? '★' : '☆';
+          favoriteText.textContent = isSaved ? 'Saved' : 'Save';
           console.log('Updated star icon to:', favoriteText.textContent);
         }
       } catch(e) {
@@ -316,9 +316,9 @@
           updateStreakDisplay();
           
           // Correct answer - show feedback (purple)
-          selectedOption.style.background = '#7c3aed';
+          selectedOption.style.background = '#243b30';
           selectedOption.style.color = '#fff';
-          selectedOption.style.borderColor = '#7c3aed';
+          selectedOption.style.borderColor = '#243b30';
           
           // Update score
           const scoreEl = document.getElementById('quizScore');
@@ -356,9 +356,9 @@
           // Highlight correct answer in purple
           quizOptions.forEach(option => {
             if (option.dataset.isCorrect === 'true') {
-              option.style.background = '#7c3aed';
+              option.style.background = '#243b30';
               option.style.color = '#fff';
-              option.style.borderColor = '#7c3aed';
+              option.style.borderColor = '#243b30';
             }
           });
           

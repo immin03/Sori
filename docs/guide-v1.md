@@ -39,3 +39,11 @@ Place descriptions are brief original summaries; `data/places.json` stores exact
 ![Mobile trip form](sori-mobile-form.jpg)
 
 ![Mobile shared itinerary](sori-mobile-trip.jpg)
+
+## Editorial release preparation
+
+The next release replaces rounded purple cards and pictorial navigation with a restrained serif/sans layout, text controls, original founder copy and separated photographs. Korean learning, quiz, newsletter and itinerary screens share the same visual language. The Postgres/Edge Function collaboration implementation and locally verified release steps are described in `production-release.md`. It is prepared code, not a live Supabase deployment until the dedicated project is selected, provisioned, migrated, verified and configured.
+
+![Editorial mobile home](sori-editorial-home.jpg)
+
+![Editorial shared itinerary](sori-editorial-trip.jpg)
