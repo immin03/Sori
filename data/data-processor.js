@@ -66,14 +66,14 @@
 
     const ko = (koEl.textContent || '').trim();
     const hit = map?.get(ko) || {};
-    const meaning = hit.e || (ctx.textContent || '').replace(/(^"+|"+$)/g, '').trim();
-    const roman = hit.p || (pr.textContent || '').trim() || (en.textContent || '').trim();
+    const meaning = hit.e || (en.textContent || '').replace(/(^"+|"+$)/g, '').trim();
+    const roman = hit.p || (pr.textContent || '').trim();
 
     applying = true;
     try {
-      if (meaning) ctx.textContent = quote(meaning);
-      if (roman) en.textContent = roman;
-      pr.style.display = 'none';
+      en.textContent = meaning ? quote(meaning) : '';
+      pr.textContent = roman;
+      pr.style.removeProperty('display');
       
       // 명사 정의 업데이트
       updateNounDefinitions(ko);

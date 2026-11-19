@@ -1,4 +1,4 @@
-import {PracticeProgress} from './progress.js?v=20261119r5';
+import {PracticeProgress} from './progress.js?v=20261119r6';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let rows=[],byId=new Map(),progress=null,phase='prompt',sessionView=false,currentScope=null;
 function feedback(){return progress.error?'<p class="small-note" role="status">This browser could not save your progress. Your current practice still works.</p>':'';}

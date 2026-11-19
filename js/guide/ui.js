@@ -1,6 +1,6 @@
-import {generatePlan,AREAS,PHRASES,mapLink,naverLink,phraseForPlace,CITIES,cityForArea} from './planner.js?v=20261119r5';
-import {AIRPORTS,CITY_CENTRES,isKoreaPoint,kmBetween,googleLeg,basePoint,routePoints,nearbyOrder,transferHint} from './geo.js?v=20261119r5';
-import {createJourneyMap} from './map.js?v=20261119r5';
+import {generatePlan,AREAS,PHRASES,mapLink,naverLink,phraseForPlace,CITIES,cityForArea} from './planner.js?v=20261119r6';
+import {AIRPORTS,CITY_CENTRES,isKoreaPoint,kmBetween,googleLeg,basePoint,routePoints,nearbyOrder,transferHint} from './geo.js?v=20261119r6';
+import {createJourneyMap} from './map.js?v=20261119r6';
 const root=document.getElementById('guideView');
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const storage={get(k){try{return JSON.parse(localStorage.getItem(k));}catch{return null;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true;}catch{return false;}}};
@@ -37,7 +37,9 @@ function validateStep(){const f=root.querySelector('#tripForm'),d=new FormData(f
 function selectedPlace(){return catalog.find(p=>p.id===selectedStop);}
 function updateTripMap(fit=true){if(!current||!map)return;const day=current.plan.days[activeDay],points=routePoints(day,catalog,journeyDraft,devicePoint),base=basePoint(journeyDraft,devicePoint);const visible=day.stops.map((id,i)=>({...catalog.find(p=>p.id===id),number:i+1}));if(base&&!journeyDraft.hotel||base&&journeyDraft.origin!=='hotel')visible.unshift({...base,id:'start',kind:'base',label:base.label||'This device'});map.update({points:visible,route:points,hotel:journeyDraft.hotel,airports:Object.values(AIRPORTS).filter(a=>a.city===cityNow()),selected:selectedStop,fit});}
 function selectStop(id){
+ const wasAirport=Boolean(AIRPORTS[selectedStop]);
  selectedStop=id;map?.select(id);root.querySelectorAll('[data-select-stop]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.selectStop===id)));
+ if(wasAirport&&!AIRPORTS[id])updateTripMap(true);
  if(AIRPORTS[id]&&journeyDraft.hotel){const day=current.plan.days[activeDay];map.update({points:day.stops.map((pid,i)=>({...catalog.find(p=>p.id===pid),number:i+1})),route:[AIRPORTS[id],journeyDraft.hotel],hotel:journeyDraft.hotel,fit:true});map.select(id);}
  renderSelected();
 }
@@ -70,7 +72,7 @@ root.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)retur
  if(b.dataset.selectStop){selectStop(b.dataset.selectStop);return;}
  if(b.dataset.travelMode){travelMode=b.dataset.travelMode;renderSelected();return;}
  if(b.dataset.phrase!==undefined){window.SoriLearn?.openKorean(PHRASES[Number(b.dataset.phrase)].ko);window.SoriNav?.show('listen');window.scrollTo({top:0,behavior:'instant'});return;}
- if(b.hasAttribute('data-map-fit')){map?.fit();return;}if(b.hasAttribute('data-map-airports')){if(current&&AIRPORTS[journeyDraft.arrival])selectStop(journeyDraft.arrival);map?.fit(true);return;}
+ if(b.hasAttribute('data-map-fit')){if(current){selectStop(current.plan.days[activeDay].stops[0]||(journeyDraft.hotel?'hotel':null));updateTripMap(true);}else map?.fit();return;}if(b.hasAttribute('data-map-airports')){if(current&&AIRPORTS[journeyDraft.arrival])selectStop(journeyDraft.arrival);map?.fit(true);return;}
  if(b.hasAttribute('data-map-size')){root.classList.toggle('expanded-map');b.textContent=root.classList.contains('expanded-map')?'Smaller map':'Expand map';map?.refresh();return;}
  if(b.hasAttribute('data-open-stay')){root.querySelector('[data-edit-stay]').open=true;root.querySelector('[data-edit-stay]').scrollIntoView({block:'center',behavior:'instant'});return;}
  if(b.hasAttribute('data-pick-hotel')){picking=true;map?.pick(true);message('Tap your accommodation’s position on the map. Use + to zoom in first.');root.querySelector('.journey-map').scrollIntoView({block:'center',behavior:'instant'});return;}
@@ -98,6 +100,6 @@ window.addEventListener('sori-view',e=>{if(e.detail.view==='guide')map?.refresh(
 async function restore(){const params=new URLSearchParams(location.hash.slice(1));if(params.has('trip')){window.SoriNav?.show('guide');await resume(params.get('trip'));return;}if(params.has('invite')){joinInvite=params.get('invite');if(!/^[A-Za-z0-9_-]{43}$/.test(joinInvite))throw Error('This invitation is not valid.');window.SoriNav?.show('guide');const preview=await api('invitation','POST',{invite:joinInvite},null);const existing=storage.get('sori:trip:'+preview.tripId);if(existing){try{await resume(preview.tripId);return;}catch{}}
  destroyMap();root.querySelector('#tripContent').innerHTML='<div class="join-panel"><span class="eyebrow">You’re invited</span><h1>Make this day together.</h1><p>Join to see the group’s hotel and places, edit the itinerary and leave notes.</p><form id="joinForm"><label>Your name<input name="name" maxlength="40" required autocomplete="nickname"></label><button class="sori-primary">Join trip</button></form><p class="small-note">Guest access stays in this browser. No email is sent.</p></div>';}}
 shell();
-try{const response=await fetch('data/places.json?v=20261119r5');if(!response.ok)throw Error('Could not load the Korea collection.');catalog=await response.json();setupMap();await restore();}catch(e){message(e.message);}
+try{const response=await fetch('data/places.json?v=20261119r6');if(!response.ok)throw Error('Could not load the Korea collection.');catalog=await response.json();setupMap();await restore();}catch(e){message(e.message);}
 window.addEventListener('hashchange',()=>safe(restore));
 setInterval(async()=>{if(!current||busy||picking||document.hidden||root.style.display==='none'||root.querySelector('[data-edit-stay][open]')||document.activeElement?.closest('input,textarea,select'))return;try{const next=await api('trips/'+current.id);if(next.version!==current.version){current=next;renderTrip();message('A friend updated the trip.');}}catch(e){message(e.message);}},7000);
