@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Sori - Learn Korean by Sound</title>
+<title>Sori · Learn Korean. Make Korea yours.</title>
 <meta name="theme-color" content="#7c3aed"/>
 <!-- Webfont for consistent capture rendering -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -329,14 +329,16 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 <link rel="stylesheet" href="css/sidebar.css">
 <link rel="stylesheet" href="css/quiz.css">
 <link rel="stylesheet" href="css/announcement.css">
+<link rel="stylesheet" href="css/sori-v1.css">
 </head>
 <body>
 <header class="header">
   <div>
     <h1 class="logo-home" style="cursor: pointer;">Sori <span style="font-size:14px;color:#111827;font-weight:600;">소리</span></h1>
-    <div class="intro">Learn Korean naturally by repeating real sounds</div>
+    <div class="intro">Learn the words. Share the journey.</div>
   </div>
   <div class="header-actions">
+    <button id="shareSori" class="top-btn">Share Sori</button>
     <button id="openLogin" class="top-btn primary">Login</button>
     <button id="menuToggle" class="menu-btn" aria-label="Menu">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -348,7 +350,10 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
   </div>
 </header>
 
-<div class="main-content" id="mainContent">
+<nav class="sori-nav" aria-label="Sori services"><button data-go="home" class="active">Discover Sori</button><button data-go="listen">Learn Korean</button><button data-go="guide">Korea Guide</button></nav>
+<div id="homeView" class="sori-home"><section class="home-hero"><div><span class="eyebrow">A LITTLE KOREAN. A LOT MORE KOREA.</span><h1>Make Korea<br>feel a little<br><em>more yours.</em></h1><p>Learn the words you’ll actually use. Plan a Seoul trip with your people. Let one lead to the other.</p><div class="home-actions"><button class="sori-primary" data-go="listen">Start learning Korean</button><button class="sori-secondary" data-go="guide">Plan with friends</button></div></div><div class="trip-preview"><span class="eyebrow">YOUR SEOUL, TOGETHER</span><h2>Good places.<br>Even better company.</h2><div class="preview-stop"><span>MORNING</span>Palace courtyards</div><div class="preview-stop"><span>LUNCH</span>Something local</div><div class="preview-stop"><span>AFTERNOON</span>A little cafe time</div><div class="preview-note"><strong lang="ko">안 매운 걸로, 주세요.</strong><br>Not spicy, please.</div><p class="small-note">An example of how a day could feel. Your actual plan starts with your preferences.</p></div></section><section class="home-pillars"><article class="home-pillar"><span class="eyebrow">LEARN KOREAN</span><h2>Less memorizing.<br>More saying it.</h2><p>358 everyday expressions. Listen, slow it down, and make the words feel familiar.</p><button class="sori-secondary" data-category="travel">Try travel Korean</button></article><article class="home-pillar"><span class="eyebrow">KOREA GUIDE</span><h2>A trip you make<br>together.</h2><p>Tell us what you enjoy. Invite a friend, swap stops, and keep everyone’s ideas in one place.</p><button class="sori-secondary" data-go="guide">Create a Seoul trip</button></article></section></div>
+<div id="guideView" style="display:none"></div>
+<div class="main-content" id="mainContent" style="display:none"><div class="learn-heading"><span class="eyebrow">SORI · KOREAN BY SOUND</span><h1>A few words. Real connection.</h1><p>Start with a situation. Listen slowly, say it out loud, and keep the expressions you want to use.</p><label class="sr-only" for="phraseSearch">Search Korean expressions</label><input class="learn-search" id="phraseSearch" type="search" placeholder="Search this category in Korean or English" autocomplete="off"></div>
 <section class="card">
   <div class="category-bar">
     <div class="picker-wrap">
@@ -556,7 +561,9 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
     </button>
   </div>
   <div class="sidebar-menu">
-    <button class="menu-item active" data-view="listen">Listen & Repeat</button>
+    <button class="menu-item" data-view="home">Discover Sori</button>
+    <button class="menu-item" data-view="guide">Korea Guide</button>
+    <button class="menu-item" data-view="listen">Listen & Repeat</button>
     <button class="menu-item" data-view="quiz">Daily Quiz</button>
     <button class="menu-item" data-view="newsletter">Korea101</button>
   </div>
@@ -579,8 +586,9 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 <script defer src="js/tts.js?v=20261119"></script>
 <script defer src="js/app.js?v=20261119"></script>
 <script defer src="js/sidebar.js"></script>
+<script type="module" src="js/guide/ui.js"></script>
 <script defer src="js/quiz.js"></script>
-<script defer src="js/announcement.js"></script>
+
 
 <script>
 /* Sori Auth — final stable gate (popup→redirect, no alerts) */
@@ -1077,7 +1085,7 @@ document.addEventListener('DOMContentLoaded', function(){
     </div>
     
     <div class="footer-copyright">
-      © 2025 Sori. All rights reserved.
+      © 2026 Sori. All rights reserved.
     </div>
   </div>
 </footer>

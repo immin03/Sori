@@ -1,80 +1,29 @@
-/* Sidebar and Menu Toggle */
-(function() {
-  const menuToggle = document.getElementById('menuToggle');
-  const sidebar = document.getElementById('sidebar');
-  const sidebarOverlay = document.getElementById('sidebarOverlay');
-  const sidebarClose = document.getElementById('sidebarClose');
-  const menuItems = document.querySelectorAll('.menu-item');
-  const newsletterView = document.getElementById('newsletterView');
-  const mainContent = document.getElementById('mainContent');
-  const quizView = document.getElementById('quizView');
-
-  function openSidebar() {
-    sidebar.classList.add('open');
-    sidebarOverlay.classList.add('open');
-    document.body.style.overflow = 'hidden';
+/* Navigation shared by learning, guide, quiz and newsletter. */
+(function(){
+  const views={home:'homeView',guide:'guideView',listen:'mainContent',quiz:'quizView',newsletter:'newsletterView'};
+  const sidebar=document.getElementById('sidebar'),overlay=document.getElementById('sidebarOverlay');
+  function close(){sidebar.classList.remove('open');overlay.classList.remove('open');document.body.style.overflow='';}
+  function show(view){
+    if(!Object.hasOwn(views,view))view='home';window.SORI?.TTS?.cancel();
+    for(const [name,id] of Object.entries(views)){const element=document.getElementById(id);if(element)element.style.display=name===view?'block':'none';}
+    document.querySelectorAll('[data-view],.sori-nav [data-go]').forEach(b=>b.classList.toggle('active',(b.dataset.view||b.dataset.go)===view));
+    try{sessionStorage.setItem('currentView',view);}catch{}close();
   }
-
-  function closeSidebar() {
-    sidebar.classList.remove('open');
-    sidebarOverlay.classList.remove('open');
-    document.body.style.overflow = '';
-  }
-
-  function switchView(view) {
-    // Save current view to sessionStorage
-    sessionStorage.setItem('currentView', view);
-    
-    if (view === 'newsletter') {
-      mainContent.style.display = 'none';
-      if (quizView) quizView.style.display = 'none';
-      newsletterView.style.display = 'flex';
-    } else if (view === 'quiz') {
-      mainContent.style.display = 'none';
-      newsletterView.style.display = 'none';
-      if (quizView) quizView.style.display = 'flex';
-    } else {
-      newsletterView.style.display = 'none';
-      if (quizView) quizView.style.display = 'none';
-      mainContent.style.display = 'block';
-    }
-    closeSidebar();
-  }
-  
-  // Restore view on page load
-  function restoreView() {
-    const savedView = sessionStorage.getItem('currentView');
-    if (savedView) {
-      switchView(savedView);
-      // Update active menu item
-      menuItems.forEach(item => {
-        if (item.getAttribute('data-view') === savedView) {
-          item.classList.add('active');
-        } else {
-          item.classList.remove('active');
-        }
-      });
-    }
-  }
-  
-  // Wait for DOM to be ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', restoreView);
-  } else {
-    restoreView();
-  }
-
-  menuToggle?.addEventListener('click', openSidebar);
-  sidebarClose?.addEventListener('click', closeSidebar);
-  sidebarOverlay?.addEventListener('click', closeSidebar);
-
-  menuItems?.forEach(item => {
-    item.addEventListener('click', function() {
-      const view = this.getAttribute('data-view');
-      menuItems.forEach(i => i.classList.remove('active'));
-      this.classList.add('active');
-      switchView(view);
-    });
+  window.SoriNav={show};
+  document.getElementById('shareSori')?.addEventListener('click',async()=>{
+    const url=location.origin+location.pathname;
+    try { if(navigator.share)await navigator.share({title:'Sori · Learn Korean and plan Seoul together',url});
+      else {await navigator.clipboard.writeText(url);let note=document.getElementById('shareStatus');if(!note){note=document.createElement('p');note.id='shareStatus';note.setAttribute('role','status');document.querySelector('.header').after(note);}note.textContent='Sori link copied. Your private trip invitation was not included.';}
+    } catch(error){if(error.name!=='AbortError'){let note=document.getElementById('shareStatus');if(!note){note=document.createElement('p');note.id='shareStatus';document.querySelector('.header').after(note);}note.textContent='Share this service: '+url;}}
   });
+  document.getElementById('menuToggle').addEventListener('click',()=>{sidebar.classList.add('open');overlay.classList.add('open');document.body.style.overflow='hidden';});
+  document.getElementById('sidebarClose').addEventListener('click',close);overlay.addEventListener('click',close);
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
+  document.addEventListener('click',e=>{
+    const button=e.target.closest('[data-go],[data-view],[data-category],.logo-home');if(!button)return;
+    if(button.dataset.category){show('listen');window.SoriLearn?.openCategory(button.dataset.category);}
+    else show(button.classList.contains('logo-home')?'home':button.dataset.go||button.dataset.view);
+  });
+  function restore(){let view='home';try{view=sessionStorage.getItem('currentView')||'home';}catch{}show(view);}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',restore);else restore();
 })();
-

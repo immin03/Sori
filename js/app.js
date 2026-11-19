@@ -6,6 +6,7 @@
   let currentSub = null;                 // All 기본: null이면 All로 처리
   let phrases = [];
   let savedList = [];
+  let searchQuery = "";
 
   // ---------- 엘리먼트 캐시 ----------
   const $ = (id) => document.getElementById(id);
@@ -101,6 +102,8 @@
       const want = norm(currentSub);
       phrases = base.filter(function(p){ return norm(p.sub || p.t) === want; });
     }
+
+    if(searchQuery) phrases=phrases.filter(p=>[p.k,p.e,p.p].some(v=>norm(v).includes(searchQuery)));
 
     // 진행도 안전 보정
     currentIndex = Math.min(currentIndex, Math.max(0, phrases.length - 1));
@@ -368,6 +371,17 @@
       }
     });
   }
+
+  window.SoriLearn = {
+    openCategory(category){searchQuery='';if(document.getElementById('phraseSearch'))document.getElementById('phraseSearch').value='';handleTab(category);},
+    openKorean(text){
+      for(const [category,rows] of Object.entries(getAllData())){
+        const match=rows.find(p=>p.k===text);if(!match)continue;
+        searchQuery='';document.getElementById('phraseSearch').value='';currentSub=null;currentCategory=category;rebuildSubFilters();loadData();currentIndex=phrases.findIndex(p=>p.id===match.id);renderPhrase();return true;
+      }return false;
+    }
+  };
+  document.getElementById('phraseSearch')?.addEventListener('input',e=>{searchQuery=norm(e.target.value);currentIndex=0;loadData();});
 
   // ---------- 초기화 ----------
   window.addEventListener("DOMContentLoaded", function(){
