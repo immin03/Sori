@@ -5,5 +5,5 @@
     "dev": "node scripts/dev-server.cjs",
     "test": "node scripts/check.cjs && node --test tests/*.test.cjs"
   },
-  "engines": { "node": ">=22" }
+  "engines": { "node": ">=24" }
 }

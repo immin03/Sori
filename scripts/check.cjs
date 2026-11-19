@@ -19,7 +19,7 @@ for (const [,attrs,inline] of scriptTags) {
   compiled++;
 }
 // Check all source files too, including modules imported transitively.
-for (const dir of ['js','data']) for (const file of fs.readdirSync(path.join(root,dir)).filter(x=>x.endsWith('.js'))) {
+for (const dir of ['js','data','server']) for (const file of fs.readdirSync(path.join(root,dir),{recursive:true}).filter(x=>/\.(js|cjs)$/.test(x))) {
   const text=read(dir+'/'+file);
   const result=spawnSync(process.execPath,['--check',...(/^(import|export)\b/m.test(text)?['--input-type=module']:[])],{input:text,encoding:'utf8'});
   assert.equal(result.status,0,`${dir}/${file}: ${result.stderr}`);
@@ -42,7 +42,7 @@ for (const [,href] of html.matchAll(/<link\b[^>]*\bhref=["']([^"']+)/gi)) {
   assert.ok(fs.existsSync(path.join(root,href.split('?')[0].replace(/^\//,''))), `Missing linked asset: ${href}`);
 }
 async function checkServer() {
-  process.env.PORT='0'; const server=require('./dev-server.cjs');
+  process.env.PORT='0'; process.env.SORI_DB_FILE=':memory:'; const server=require('./dev-server.cjs');
   try {
     await new Promise((resolve,reject) => { server.once('listening',resolve); server.once('error',reject); });
     const base=`http://127.0.0.1:${server.address().port}`;

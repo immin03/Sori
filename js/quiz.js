@@ -102,6 +102,7 @@
       const shuffled = [...data].sort(() => Math.random() - 0.5);
       currentQuestions = shuffled.slice(0, 10);
       currentQuestionIndex = 0;
+      document.getElementById("quizTotal").textContent = currentQuestions.length;
       triesCount = 0;
       currentStreak = 0; // Reset streak
       updateStreakDisplay();
@@ -478,30 +479,5 @@
     } else {
       tryInit();
     }
-})();
-
-/* Logo Click to Home */
-(function() {
-  const logoHome = document.querySelector('.logo-home');
-  const newsletterView = document.getElementById('newsletterView');
-  const quizView = document.getElementById('quizView');
-  const mainContent = document.getElementById('mainContent');
-  const menuItems = document.querySelectorAll('.menu-item');
-  
-  logoHome?.addEventListener('click', () => {
-    // Show Listen & Repeat view
-    newsletterView.style.display = 'none';
-    quizView.style.display = 'none';
-    mainContent.style.display = 'block';
-    
-    // Update active menu item
-    menuItems.forEach(item => {
-      if (item.getAttribute('data-view') === 'listen') {
-        item.classList.add('active');
-      } else {
-        item.classList.remove('active');
-      }
-    });
-  });
 })();
 
