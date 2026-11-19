@@ -34,65 +34,22 @@
     let triesCount = 0;
     let currentStreak = 0;
     
-    // TTS API endpoint
-    const ENDPOINT = "https://asia-northeast3-sori-tts.cloudfunctions.net/tts";
-    const audio = new Audio();
-    let lastUrl = null;
-    let currentSpeed = 0.80;
-    
-    // Get speed
-    function getSpeed() {
-      return currentSpeed;
-    }
-    
-    // Set audio rate
-    function setAudioRate() {
-      audio.playbackRate = getSpeed();
-    }
-    
-    // Speed control
-    if (quizSpeed) {
-      currentSpeed = parseFloat(quizSpeed.value);
-      quizSpeed.addEventListener('input', (e) => {
-        currentSpeed = parseFloat(e.target.value);
-        if (quizSpeedVal) {
-          quizSpeedVal.textContent = currentSpeed.toFixed(2) + 'x';
-        }
-        setAudioRate();
-      });
-    }
-    
-    // Play Korean text
+    const quizAudio = window.SORI.TTS;
+    let currentSpeed = parseFloat(quizSpeed?.value || '0.8');
+    quizSpeed?.addEventListener('input', e => {
+      currentSpeed=parseFloat(e.target.value);
+      if (quizSpeedVal) quizSpeedVal.textContent=currentSpeed.toFixed(2)+'x';
+      quizAudio.setRate(currentSpeed);
+    });
     async function playKorean(text) {
-      try {
-        audio.pause();
-      } catch(_) {}
-      
-      if (lastUrl) {
-        try { URL.revokeObjectURL(lastUrl); } catch(_) {}
-        lastUrl = null;
-      }
-      
-      const t = (text || '').trim();
-      if (!t) return;
-      
-      try {
-        const r = await fetch(ENDPOINT, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: t })
-        });
-        const b = await r.blob();
-        const url = URL.createObjectURL(b);
-        lastUrl = url;
-        audio.src = url;
-        setAudioRate();
-        await audio.play();
-      } catch(e) {
-        console.error('TTS Error:', e);
+      try { await quizAudio.speak(text,{rate:currentSpeed}); }
+      catch(error) {
+        if (error.name === 'AbortError') return;
+        let message=document.getElementById('quizAudioError');
+        if (!message) { message=document.createElement('p'); message.id='quizAudioError'; message.setAttribute('role','alert'); quizPlayBtn.after(message); }
+        message.textContent='Audio playback failed. Please try again.';
       }
     }
-    
     // Quiz play button
     quizPlayBtn.addEventListener('click', () => {
       if (quizKorean) {
@@ -145,6 +102,7 @@
       const shuffled = [...data].sort(() => Math.random() - 0.5);
       currentQuestions = shuffled.slice(0, 10);
       currentQuestionIndex = 0;
+      document.getElementById("quizTotal").textContent = currentQuestions.length;
       triesCount = 0;
       currentStreak = 0; // Reset streak
       updateStreakDisplay();
@@ -184,7 +142,7 @@
         }
         
         const LOCAL_KEY = "soriSaved";
-        const savedList = JSON.parse(localStorage.getItem(LOCAL_KEY) || "[]");
+        const savedList = window.SoriSaved?.list || [];
         const isSaved = savedList.indexOf(foundItem.id) >= 0;
         
         console.log('Checking save state for ID:', foundItem.id, 'Is saved:', isSaved);
@@ -192,7 +150,7 @@
         btn.classList.toggle('active', isSaved);
         const favoriteText = btn.querySelector('.quiz-favorite-text');
         if (favoriteText) {
-          favoriteText.textContent = isSaved ? '★' : '☆';
+          favoriteText.textContent = isSaved ? 'Saved' : 'Save';
           console.log('Updated star icon to:', favoriteText.textContent);
         }
       } catch(e) {
@@ -202,6 +160,7 @@
     
     // Load current question
     function loadCurrentQuestion() {
+      quizAudio.cancel();
       if (currentQuestions.length === 0 || currentQuestionIndex < 0 || currentQuestionIndex >= currentQuestions.length) {
         return;
       }
@@ -357,9 +316,9 @@
           updateStreakDisplay();
           
           // Correct answer - show feedback (purple)
-          selectedOption.style.background = '#7c3aed';
+          selectedOption.style.background = '#243b30';
           selectedOption.style.color = '#fff';
-          selectedOption.style.borderColor = '#7c3aed';
+          selectedOption.style.borderColor = '#243b30';
           
           // Update score
           const scoreEl = document.getElementById('quizScore');
@@ -397,9 +356,9 @@
           // Highlight correct answer in purple
           quizOptions.forEach(option => {
             if (option.dataset.isCorrect === 'true') {
-              option.style.background = '#7c3aed';
+              option.style.background = '#243b30';
               option.style.color = '#fff';
-              option.style.borderColor = '#7c3aed';
+              option.style.borderColor = '#243b30';
             }
           });
           
@@ -486,40 +445,7 @@
           
           if (!foundItem || !foundItem.id) return;
           
-          // Toggle save
-          const LOCAL_KEY = "soriSaved";
-          let savedList = JSON.parse(localStorage.getItem(LOCAL_KEY) || "[]");
-          const i = savedList.indexOf(foundItem.id);
-          
-          console.log('Current savedList:', savedList);
-          console.log('Looking for ID:', foundItem.id);
-          console.log('Index found:', i);
-          
-          if (i >= 0) {
-            savedList.splice(i, 1);
-            console.log('Removed from saved list');
-          } else {
-            savedList.push(foundItem.id);
-            console.log('Added to saved list:', foundItem.id);
-          }
-          
-          console.log('Updated savedList:', savedList);
-          localStorage.setItem(LOCAL_KEY, JSON.stringify(savedList));
-          
-          // Trigger a custom event to notify app.js
-          window.dispatchEvent(new CustomEvent('savedListChanged', { 
-            detail: { savedList: savedList } 
-          }));
-          
-          // Cloud save
-          if (window.db && user.uid) {
-            try {
-              await window.db.collection("users").doc(user.uid).set({ savedList: savedList }, { merge: true });
-            } catch (e) {
-              console.error('Cloud save error:', e);
-            }
-          }
-          
+          window.SoriSaved?.toggle(foundItem.id);
           updateFavoriteButtonState();
         } catch(e) {
           console.error('Quiz favorite error:', e);
@@ -529,6 +455,7 @@
       console.log('Quiz favorite button not found');
     }
     
+    window.addEventListener('savedListChanged', updateFavoriteButtonState);
     // Initialize first question
     const activeCategory = document.querySelector('.quiz-category.active');
     if (activeCategory) {
@@ -552,30 +479,5 @@
     } else {
       tryInit();
     }
-})();
-
-/* Logo Click to Home */
-(function() {
-  const logoHome = document.querySelector('.logo-home');
-  const newsletterView = document.getElementById('newsletterView');
-  const quizView = document.getElementById('quizView');
-  const mainContent = document.getElementById('mainContent');
-  const menuItems = document.querySelectorAll('.menu-item');
-  
-  logoHome?.addEventListener('click', () => {
-    // Show Listen & Repeat view
-    newsletterView.style.display = 'none';
-    quizView.style.display = 'none';
-    mainContent.style.display = 'block';
-    
-    // Update active menu item
-    menuItems.forEach(item => {
-      if (item.getAttribute('data-view') === 'listen') {
-        item.classList.add('active');
-      } else {
-        item.classList.remove('active');
-      }
-    });
-  });
 })();
 

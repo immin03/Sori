@@ -33,14 +33,14 @@
 .quiz-streak {
   font-size: 14px;
   font-weight: 800;
-  color: #7c3aed;
+  color: #294735;
   display: flex;
   align-items: center;
   gap: 4px;
   padding: 4px 10px;
-  background: #f7f2ff;
+  background: #f3f5f1;
   border-radius: 12px;
-  border: 1.5px solid #e9defd;
+  border: 1.5px solid #dce0da;
 }
 
 .quiz-streak span {
@@ -50,7 +50,7 @@
 .quiz-title {
   font-size: 18px;
   font-weight: 900;
-  color: #7c3aed;
+  color: #294735;
   margin: 0 0 2px 0;
 }
 
@@ -62,7 +62,7 @@
 
 .quiz-question-container {
   background: #fff;
-  border: 2px solid #e9defd;
+  border: 2px solid #dce0da;
   border-radius: 14px;
   padding: 16px 14px;
   margin: 2px 0;
@@ -98,13 +98,13 @@
   height: 0;
   border-style: solid;
   border-width: 8px 0 8px 14px;
-  border-color: transparent transparent transparent #7c3aed;
+  border-color: transparent transparent transparent #294735;
   margin-left: 2px;
 }
 
 .quiz-play-btn:hover {
-  background: #f7f2ff;
-  border-color: #7c3aed;
+  background: #f3f5f1;
+  border-color: #294735;
   transform: scale(1.05);
 }
 
@@ -154,7 +154,7 @@
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: #7c3aed;
+  background: #294735;
   color: #fff;
   font-size: 8px;
   font-weight: 700;
@@ -234,7 +234,7 @@
   text-align: left;
   font-size: 13px;
   font-weight: 600;
-  color: #7c3aed;
+  color: #294735;
 }
 
 .quiz-options {
@@ -257,14 +257,14 @@
 }
 
 .quiz-option:hover {
-  border-color: #7c3aed;
-  background: #f7f2ff;
+  border-color: #294735;
+  background: #f3f5f1;
 }
 
 .quiz-option.selected {
-  border-color: #7c3aed;
-  background: #f7f2ff;
-  color: #7c3aed;
+  border-color: #294735;
+  background: #f3f5f1;
+  color: #294735;
 }
 
 .quiz-submit {
@@ -275,7 +275,7 @@
   cursor: pointer;
   font-weight: 800;
   font-size: 15px;
-  background: #7c3aed;
+  background: #294735;
   color: #fff;
   margin-top: 20px;
 }
@@ -317,9 +317,9 @@
 }
 
 .quiz-nav-btn:hover:not(:disabled) {
-  border-color: #7c3aed;
-  background: #f7f2ff;
-  color: #7c3aed;
+  border-color: #294735;
+  background: #f3f5f1;
+  color: #294735;
 }
 
 .quiz-nav-btn:disabled {
@@ -391,9 +391,9 @@
 }
 
 .quiz-category.active {
-  border-color: #7c3aed;
-  background: #f7f2ff;
-  color: #7c3aed;
+  border-color: #294735;
+  background: #f3f5f1;
+  color: #294735;
 }
 
 .quiz-progress {
@@ -408,6 +408,6 @@
 }
 
 .quiz-progress span {
-  color: #7c3aed;
+  color: #294735;
 }
 

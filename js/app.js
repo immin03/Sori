@@ -6,6 +6,7 @@
   let currentSub = null;                 // All 기본: null이면 All로 처리
   let phrases = [];
   let savedList = [];
+  let searchQuery = "";
 
   // ---------- 엘리먼트 캐시 ----------
   const $ = (id) => document.getElementById(id);
@@ -102,6 +103,8 @@
       phrases = base.filter(function(p){ return norm(p.sub || p.t) === want; });
     }
 
+    if(searchQuery) phrases=phrases.filter(p=>[p.k,p.e,p.p].some(v=>norm(v).includes(searchQuery)));
+
     // 진행도 안전 보정
     currentIndex = Math.min(currentIndex, Math.max(0, phrases.length - 1));
   }
@@ -195,10 +198,12 @@
     if (!els.scrapBtn) return;
     var active = !!(id && savedList.indexOf(id) >= 0);
     els.scrapBtn.classList.toggle("active", active);
-    els.scrapBtn.textContent = active ? "★" : "☆";
+    els.scrapBtn.textContent = active ? "Saved" : "Save";
+    els.scrapBtn.setAttribute("aria-pressed",String(active));
   }
 
   function renderPhrase() {
+    window.SORI?.TTS?.cancel();
     if (!phrases || phrases.length === 0) {
       els.korean.textContent = "";
       els.english.textContent = "";
@@ -237,26 +242,7 @@
     const p = phrases[currentIndex];
     if (!p) return;
     
-    const id = p.id;
-    const i = savedList.indexOf(id);
-    if (i >= 0) {
-      savedList.splice(i, 1);
-    } else {
-      savedList.push(id);
-    }
-    renderScrapStar(id);
-
-    // 로컬 저장
-    localStorage.setItem("soriSaved", JSON.stringify(savedList));
-    
-    // 클라우드 저장 (선택적)
-    try {
-      if (window.db && user.uid) {
-        await db.collection("users").doc(user.uid).set({ savedList: savedList }, { merge: true });
-      }
-    } catch (e) { 
-      // 클라우드 저장 실패해도 로컬은 저장됨
-    }
+    window.SoriSaved?.toggle(p.id);
   }
 
   function findPhraseById(id) {
@@ -284,29 +270,7 @@
       await window.SORI.TTS.speak(text, { rate: rate });
       return;
     }
-    return new Promise(function(resolve, reject){
-      try {
-        if (!("speechSynthesis" in window)) return reject(new Error("No speechSynthesis"));
-        var synth = window.speechSynthesis;
-        synth.cancel();
-        var u = new SpeechSynthesisUtterance(text);
-        u.lang = "ko-KR";
-        u.rate = rate || 0.75;
-        var pick = function(){
-          var vs = synth.getVoices();
-          var ko = vs && vs.find ? vs.find(function(v){
-            return (v.lang && v.lang.toLowerCase().indexOf("ko")===0) ||
-                   (v.name && (v.name.toLowerCase().indexOf("korean")>=0 || v.name.indexOf("한국")>=0));
-          }) : null;
-          if (ko) u.voice = ko;
-          synth.speak(u);
-        };
-        u.onerror = function(e){ reject(e.error || e); };
-        u.onend = function(){ resolve(); };
-        if ((synth.getVoices()||[]).length === 0) synth.onvoiceschanged = function(){ pick(); };
-        else pick();
-      } catch(e){ reject(e); }
-    });
+    throw new Error('Audio service is not ready');
   }
 
   async function playAudio() {
@@ -315,10 +279,11 @@
     try {
       const rate = parseFloat(els.speed.value || "0.75");
       await speak(p.k, rate);
-      markDotAndAward(p);
+      if (phrases[currentIndex]?.id === p.id) markDotAndAward(p);
     } catch (e) {
+      if (e?.name === "AbortError") return;
       console.warn(e);
-      showError("Audio playback failed.");
+      showError("Audio playback failed. Please try again.");
     }
   }
 
@@ -387,28 +352,20 @@
 
     els.speed && els.speed.addEventListener("input", function(){
       var v = parseFloat(els.speed.value || "0.75");
+      window.SORI?.TTS?.setRate(v);
       els.speedTxt.textContent = (Math.round(v * 100) / 100).toFixed(2) + "x";
     });
 
-    // 로그인 상태 변화 → savedList 동기화 (v9 방식)
-    if (window.firebaseAuth) {
-      window.firebaseAuth.onAuthStateChanged(function(user){
-        if (user && window.db) {
-          db.collection("users").doc(user.uid).get().then(function(snap){
-            if (snap.exists && snap.data() && snap.data().savedList) {
-              savedList = snap.data().savedList || [];
-              localStorage.setItem("soriSaved", JSON.stringify(savedList));
-            }
-          }).catch(function(e){ console.warn("load savedList error", e); });
-        }
-        if (currentCategory === "saved") handleTab("saved");
-      });
-    }
-    
+    window.addEventListener('sori-auth-changed', () => { if (currentCategory === 'saved') handleTab('saved'); });
+    window.addEventListener('sori-sync-status', e => {
+      if (e.detail.status === 'offline') showError('Cloud sync is unavailable. Please try again when connected.');
+      if (e.detail.status === 'local-error') showError('Device storage is unavailable. Keep this page open until cloud sync completes.');
+    });
     // Listen for savedList changes from Quiz
     window.addEventListener('savedListChanged', function(e) {
       if (e.detail && e.detail.savedList) {
         savedList = e.detail.savedList;
+        renderScrapStar(phrases[currentIndex]?.id);
         if (currentCategory === "saved") {
           handleTab("saved");
         }
@@ -416,11 +373,21 @@
     });
   }
 
+  window.SoriLearn = {
+    openCategory(category){searchQuery='';if(document.getElementById('phraseSearch'))document.getElementById('phraseSearch').value='';handleTab(category);},
+    openKorean(text){
+      for(const [category,rows] of Object.entries(getAllData())){
+        const match=rows.find(p=>p.k===text);if(!match)continue;
+        searchQuery='';document.getElementById('phraseSearch').value='';currentSub=null;currentCategory=category;rebuildSubFilters();loadData();currentIndex=phrases.findIndex(p=>p.id===match.id);renderPhrase();return true;
+      }return false;
+    }
+  };
+  document.getElementById('phraseSearch')?.addEventListener('input',e=>{searchQuery=norm(e.target.value);currentIndex=0;loadData();});
+
   // ---------- 초기화 ----------
   window.addEventListener("DOMContentLoaded", function(){
     try {
-      var local = localStorage.getItem("soriSaved");
-      if (local) savedList = JSON.parse(local) || [];
+      savedList = window.SoriSaved ? window.SoriSaved.list.slice() : [];
     } catch(_){}
 
     // 첫 진입: Daily 탭 + All 서브가 기본
