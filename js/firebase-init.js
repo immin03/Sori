@@ -28,7 +28,7 @@ provider.setCustomParameters({
 export const authReady = new Promise((resolve) => {
   let settled = false;
   onAuthStateChanged(auth, (u) => {
-    console.log("[auth] state changed:", u ? `IN as ${u.email || u.uid}` : "OUT");
+
     if (!settled) { settled = true; resolve(); }
   });
   // 로딩 순서/확장프로그램 영향 시 안전망

@@ -576,9 +576,8 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 <!-- app scripts -->
 <script type="module" src="/js/firebase-init.js" defer></script>
 <script type="module" src="/js/auth.js" defer></script>
-<script defer src="js/state.js?v=20251017"></script>
-<script defer src="js/tts.js?v=20251017"></script>
-<script defer src="js/app.js?v=20251017"></script>
+<script defer src="js/tts.js?v=20261119"></script>
+<script defer src="js/app.js?v=20261119"></script>
 <script defer src="js/sidebar.js"></script>
 <script defer src="js/quiz.js"></script>
 <script defer src="js/announcement.js"></script>
@@ -606,6 +605,7 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
   // state / utils
   const now = () => Date.now();
   let wired = false;
+  let loginPending = false;
   let isLoggingOut = false;
   let suppressAutoModalUntil = 0; // 로그아웃 직후 자동 모달 방지
   let pendingAction = null;       // 로그인 성공 후 1회 재시도
@@ -687,21 +687,31 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
   guard(btnScrap, () => fireClick(btnScrap));
   guard(btnSaved, () => fireClick(btnSavedHidden));
 
-  // Google sign-in: redirect만 사용 (COOP 경고 제거)
+  // Single sign-in owner; popup first, redirect only if blocked.
   async function doSignIn() {
     const ready = await waitUntil(()=> hasAuth() && hasLoginAPI());
-    if (!ready) return; // 조용히 포기(다음 클릭에서 다시 시도)
+    if (!ready) throw new Error('Authentication unavailable');
 
     const S = window.SoriUser;
-    if (S?.loginRedirect) return S.loginRedirect();  // <- 무조건 redirect
-    if (S?.login)         return S.login();
+    if (S?.login) return S.login();
   }
 
   btnGoogle?.addEventListener("click", (e) => {
     e?.preventDefault?.();
-    doSignIn();
+    if (loginPending) return;
+    loginPending = true;
+    doSignIn().catch(() => {
+      let error = document.getElementById('authError');
+      if (!error) { error=document.createElement('p'); error.id='authError'; error.setAttribute('role','alert'); modal?.appendChild(error); }
+      error.textContent='Sign-in failed. Please try again.';
+    }).finally(() => { loginPending=false; });
   });
 
+  window.addEventListener('sori-auth-error', () => {
+    let error=document.getElementById('authError');
+    if (!error) { error=document.createElement('p'); error.id='authError'; error.setAttribute('role','alert'); modal?.appendChild(error); }
+    error.textContent='Sign-in could not be restored. Please try again.';
+  });
   // auth wiring
   function onAuthChanged(u) {
     paintHeaderBtn();
@@ -727,7 +737,7 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
     if (wired || !hasAuth()) return;
     wired = true;
     try {
-      window.firebaseAuth.onAuthStateChanged(onAuthChanged);
+      window.SoriUser.onAuth(onAuthChanged);
     } catch (e) { console.error("auth wiring error:", e); }
     paintHeaderBtn();
     onAuthChanged(user());
@@ -868,52 +878,6 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
   window.buildPath = buildPath;
 })();
 </script>
-
-<!-- TTS API 0.6~1.0 with toast -->
-<script>
-window.addEventListener('load',()=>{
-  const ENDPOINT="https://asia-northeast3-sori-tts.cloudfunctions.net/tts";
-  const audio=new Audio(); let lastUrl=null;
-  const speedEl=document.getElementById('speed');
-
-  function getRate(){ const v=parseFloat(speedEl?.value||'1'); return Math.max(0.6, Math.min(1.0, v)); }
-  function setAudioRate(){ audio.playbackRate=getRate(); }
-  speedEl?.addEventListener('input', setAudioRate);
-
-  async function playKo(text){
-    try{ audio.pause(); }catch(_){}
-    if(lastUrl){ try{ URL.revokeObjectURL(lastUrl);}catch(_){ } lastUrl=null; }
-    const t=(text||'').trim(); if(!t) return;
-    const r=await fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:t})});
-    const b=await r.blob(); const url=URL.createObjectURL(b); lastUrl=url; audio.src=url; setAudioRate(); await audio.play();
-  }
-
-  document.getElementById('playBtn')?.addEventListener('click', async (e)=>{
-    e.preventDefault(); e.stopImmediatePropagation();
-    const ko=(document.getElementById('korean')?.textContent||'').trim();
-    await playKo(ko);
-
-    const cntEl=document.getElementById('repCount');
-    let n=parseInt(cntEl.textContent||'0',10);
-    if(n<5){ n++; cntEl.textContent=String(n); }
-    document.querySelectorAll('.rep-dot').forEach((d,i)=> d.classList.toggle('completed', i < n));
-
-    if(n===5){
-      const toast=document.getElementById('congrats');
-      if(toast){
-        toast.textContent="Nice work!";
-        toast.classList.add('show');
-        setTimeout(()=>toast.classList.remove('show'), 1800);
-      }
-    }
-  }, true);
-
-  if('speechSynthesis' in window){
-    try{ window.speechSynthesis.speak = ()=>{}; window.speechSynthesis.cancel = ()=>{}; }catch(_){}
-  }
-});
-</script>
-
 
 <!-- Threads 1-클릭: 카드 캡처(+가능하면 파일 공유) -> Threads 텍스트 열기 -->
 <script>

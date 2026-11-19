@@ -18,6 +18,12 @@ for (const [,attrs,inline] of scriptTags) {
   assert.equal(result.status,0, `${file || 'inline script'}: ${result.stderr}`);
   compiled++;
 }
+// Check all source files too, including modules imported transitively.
+for (const dir of ['js','data']) for (const file of fs.readdirSync(path.join(root,dir)).filter(x=>x.endsWith('.js'))) {
+  const text=read(dir+'/'+file);
+  const result=spawnSync(process.execPath,['--check',...(/^(import|export)\b/m.test(text)?['--input-type=module']:[])],{input:text,encoding:'utf8'});
+  assert.equal(result.status,0,`${dir}/${file}: ${result.stderr}`);
+}
 const sandbox = {window:{}, console:{log(){}}};
 vm.createContext(sandbox);
 for (const cat of ['daily','travel','drama','trendy','numbers']) vm.runInContext(read(`data/${cat}.js`),sandbox);
