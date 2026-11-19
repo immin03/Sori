@@ -1,5 +1,5 @@
-import {auth, provider, authReady} from './firebase-init.js?v=20261119r3';
-import './state.js?v=20261119r3';
+import {auth, provider, authReady} from './firebase-init.js?v=20261119r4';
+import './state.js?v=20261119r4';
 import {signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged} from 'https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js';
 // The inline modal gate owns buttons. This module owns the authentication API only.
 let pending = null;

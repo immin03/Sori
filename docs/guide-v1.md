@@ -47,3 +47,13 @@ The next release replaces rounded purple cards and pictorial navigation with a r
 ![Editorial mobile home](sori-editorial-home.jpg)
 
 ![Editorial shared itinerary](sori-editorial-trip.jpg)
+
+## Speak-first V2, 19 November 2026
+
+Korean speaking practice is the primary daily use. The home opens with a real expression, natural/slow listening and situation shortcuts. Travel is a place to use those expressions, and Korea 101 explains the customs behind them. Each trip stop includes an appropriate expression, direct audio, the actual lesson and a return-to-trip control. No speech recognition or pronunciation grading is claimed.
+
+The phone-first guide now uses four short steps: city/areas, dates/pace, interests/food and name/review. It supports Seoul (Jongno/Insadong, central Seoul, Seongsu, Hongdae and Gangnam/COEX) and Busan (Haeundae, Gwangalli and Nampo/Gamcheon), still one to three days in one city. The planner gives each day a district, ranks preferred areas and avoids mixing cities. These are suggestions rather than measured routes. The catalog contains 29 entries, including explicitly labelled flexible cafe and meal slots.
+
+Every result stop has a downloaded photo, credit and source. Context photos are explicitly labelled where they do not depict the individual venue. Google Maps search and directions are primary actions; an expandable Google area map is embedded. Naver is an optional secondary link. No Maps API key or paid Places API is introduced; photos are licensed static assets, not live Google place photos.
+
+Cloud TTS stays on the existing Firebase Cloud Functions endpoint. The client adds a bounded in-memory LRU audio cache (32 phrases, 8 MB), loading/playing/completion feedback, natural/comfortable/slow controls and pitch preservation. Caching avoids repeat synthesis requests in the same page session; it does not replace the server voice model. Login and saved phrase IDs remain unchanged. The newsletter is linked from home, learning, trips and its own reading/subscription view, using the existing Beehiiv destination.

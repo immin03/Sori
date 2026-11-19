@@ -163,8 +163,7 @@
       var value = (lbl === "All") ? "" : lbl;
       var effectiveSub = currentSub;               // null이면 All 활성
       var active = value ? (norm(value) === norm(effectiveSub)) : (!effectiveSub);
-      var icon = (lbl !== "All" && ICONS[lbl]) ? (ICONS[lbl] + " ") : "";
-      return '<div class="sub-chip ' + (active?'active':'') + '" data-sub="'+ value +'">'+ icon + lbl +'</div>';
+      return '<button type="button" class="sub-chip ' + (active?'active':'') + '" aria-pressed="'+active+'" data-sub="'+ value +'">'+ lbl +'</button>';
     }).join("");
     els.subFilters.innerHTML = html;
     els.subFilters.classList.remove('visible'); // 기본값: 숨김
@@ -276,15 +275,18 @@
   async function playAudio() {
     const p = phrases[currentIndex];
     if (!p) return;
+    const status=document.getElementById('lessonAudioStatus');if(status)status.textContent='Getting the audio ready…';
+    els.playBtn.textContent='Loading…';
     try {
       const rate = parseFloat(els.speed.value || "0.75");
-      await speak(p.k, rate);
-      if (phrases[currentIndex]?.id === p.id) markDotAndAward(p);
+      await window.SORI.TTS.speak(p.k,{rate,onPlaying(){els.playBtn.textContent='Playing…';if(status)status.textContent='Listen, then say it out loud.';}});
+      if (phrases[currentIndex]?.id === p.id){markDotAndAward(p);if(status)status.textContent='Your turn. Say it once, then listen again.';}
     } catch (e) {
       if (e?.name === "AbortError") return;
       console.warn(e);
       showError("Audio playback failed. Please try again.");
-    }
+      if(status)status.textContent='Audio could not play. Tap Listen & Repeat to try again.';
+    } finally {els.playBtn.textContent='Listen & Repeat';}
   }
 
   function markDotAndAward(p) {
@@ -374,7 +376,7 @@
   }
 
   window.SoriLearn = {
-    openCategory(category){searchQuery='';if(document.getElementById('phraseSearch'))document.getElementById('phraseSearch').value='';handleTab(category);},
+    openCategory(category,situation){searchQuery='';if(document.getElementById('phraseSearch'))document.getElementById('phraseSearch').value='';handleTab(category);if(situation){currentSub=situation;currentIndex=0;rebuildSubFilters();loadData();}},
     openKorean(text){
       for(const [category,rows] of Object.entries(getAllData())){
         const match=rows.find(p=>p.k===text);if(!match)continue;

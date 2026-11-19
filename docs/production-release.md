@@ -5,7 +5,7 @@
 - Public frontend: https://sorikorea.com, source immin03/Sori main branch.
 - Trip API: https://sori-shared-trips-api.flutedsloth32.chatgpt.site/api . Public API entry, private trip records.
 - Server hosting project: appgprj_6afea68eebbc819194f31bbb0b53b610. Source snapshot: hosting/trips-api; deployed source repository is also retained by Sites.
-- Server source commit: 078e4ad36b04606fbcd9b8e802889b31d623e5ac; saved version 1. Manifest r2 binding is the string BUCKET; d1 is unused.
+- Server source commit: b41e70733ddb15111d8d5126f903346ab2e68a90; saved version 2. Manifest r2 binding is the string BUCKET; d1 is unused.
 - Trips are server-only R2 JSON documents. ETag compare-and-swap commits all membership, invitation, plan and note changes together. Stale plan versions return 409; concurrent notes retry rather than disappear. Invite lookups never grant access without the matching current trip invitation.
 - Random membership and invitation secrets are hashed before server storage. Responses omit stored hashes and invitation state. Invite links are single-use, expire after seven days and can be revoked. Up to eight active members; a maximum of 100 historical memberships bounds document growth. Notes are capped at 200, with the latest 60 returned.
 - Creation budgets: 20 per peer hash/hour plus a shared 200/hour initial global budget. The Worker uses the platform-provided client address header and stores only its hash. This is a beta budget, not a comprehensive abuse or WAF service.
@@ -32,4 +32,11 @@ The complete host source is in hosting/trips-api. Its src files are a deployment
 
 Local tests cover SQLite, actual Postgres execution, whole-document CAS conflicts, permissions, expiry, revocation and private response filtering. Native server deployment succeeded; browser API health and actual trip creation work through the deployed Worker/R2 binding. Some non-browser HTTP probes are rejected at the hosting edge and do not reach the Worker; browser flows remain the release verification path.
 
-V1: Seoul, one to three days, English and Korean, fifteen sourced suggestions, browser-scoped guest memberships and periodic updates. Venue availability, measured transit routes, verified dietary matching, account recovery, scheduled social publishing and multilingual rollout require further development. No PDF/print travel feature exists.
+V2: Seoul and Busan, one to three days per city, English and Korean learning, 29 catalog entries including explicitly labelled flexible cafe/meal slots, browser-scoped guest memberships and periodic updates. Venue availability, measured transit routes, verified dietary matching, account recovery, scheduled social publishing and multilingual rollout require further development. No PDF/print travel feature exists.
+
+
+## Speak-first release verification
+
+The second release prioritizes Korean listening and out-loud practice on the home screen, with direct slow/natural audio and situation shortcuts. Four-step mobile trip setup connects to photo-led itineraries, primary Google Maps search/directions, embedded area maps, context-specific Korean phrases and Korea 101. Existing phrase IDs, Firebase login and saved words are retained. Audio adds bounded session caching and playback feedback, without claiming a new voice model or speech assessment.
+
+Offline: 39 tests cover existing account isolation, TTS cancellation/cache, city separation, image paths, map destinations and production storage authorization/concurrency. Browser frame checks at 360/390/430/768/1100 pixels found no horizontal overflow on a shared trip. A phone frame created a Busan trip, rendered an actual Google map, opened a real Korean lesson, completed cloud audio playback and returned to the same trip. These are browser-frame checks, not Android/iOS hardware certification.
