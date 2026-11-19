@@ -14,9 +14,9 @@ The travel product is a web service. There is no PDF export, print flow or downl
 
 ## Development persistence and production boundary
 
-`npm run dev` now starts a Node.js 24 server and a development SQLite database (`.sori-dev.sqlite`, ignored by Git). Shared trips are stored on this server, not just in browser state; two clients can read and edit the same trip. They are not saved to the production Firestore or Supabase database. The development workspace is not a production hosting or backup service.
+`npm run dev` now starts a Node.js 24 server and a development SQLite database (`.sori-dev.sqlite`, ignored by Git). Shared trips are stored on this server, not just in browser state; two clients can read and edit the same trip. They are not saved to production storage. Production uses a separate Worker/R2 API selected in js/config.js; the loopback preview stays isolated unless ?liveTrips=1 is explicitly set. The development workspace is not a production hosting or backup service.
 
-Existing GitHub Pages/static hosting cannot run `/api/trips`. A static-only deployment will keep the landing/learning pages but cannot create shared trips; the UI reports this rather than pretending invites worked. Production release requires a durable shared server/database, HTTPS, service URL setup, backup/restore, operational rate limits, abuse controls and guest/verified-account policy review. The preferred production datastore can be Supabase once the target project is connected; the collaboration persistence adapter still needs porting and live verification. Existing Supabase saved-phrase adapter is separate from this trip backend.
+Existing GitHub Pages/static hosting cannot run `/api/trips`. A static-only deployment will keep the landing/learning pages but cannot create shared trips; the UI reports this rather than pretending invites worked. Production release requires a durable shared server/database, HTTPS, service URL setup, backup/restore, operational rate limits, abuse controls and guest/verified-account policy review. The public release uses the deployed Worker/R2 whole-trip store. The dedicated Supabase project could not be created under the free-project quota; its Postgres implementation remains a migration candidate. Existing Supabase saved-phrase adapter is separate from this trip backend.
 
 ## Verified and pending
 
@@ -42,7 +42,7 @@ Place descriptions are brief original summaries; `data/places.json` stores exact
 
 ## Editorial release preparation
 
-The next release replaces rounded purple cards and pictorial navigation with a restrained serif/sans layout, text controls, original founder copy and separated photographs. Korean learning, quiz, newsletter and itinerary screens share the same visual language. The Postgres/Edge Function collaboration implementation and locally verified release steps are described in `production-release.md`. It is prepared code, not a live Supabase deployment until the dedicated project is selected, provisioned, migrated, verified and configured.
+The next release replaces rounded purple cards and pictorial navigation with a restrained serif/sans layout, text controls, original founder copy and separated photographs. Korean learning, quiz, newsletter and itinerary screens share the same visual language. The Postgres/Edge Function collaboration implementation and locally verified release steps are described in `production-release.md`. The Supabase implementation is retained as a tested candidate. Production collaboration instead uses the deployed server-only R2 document implementation described in production-release.md.
 
 ![Editorial mobile home](sori-editorial-home.jpg)
 

@@ -1,28 +1,35 @@
-# Production release checklist
+# Sori production deployment
 
-Target: the existing sorikorea.com service and immin03/Sori main branch. This is a public release; the SQLite preview is not the production datastore.
+## Active architecture
 
-## Prepared
+- Public frontend: https://sorikorea.com, source immin03/Sori main branch.
+- Trip API: https://sori-shared-trips-api.flutedsloth32.chatgpt.site/api . Public API entry, private trip records.
+- Server hosting project: appgprj_6afea68eebbc819194f31bbb0b53b610. Source snapshot: hosting/trips-api; deployed source repository is also retained by Sites.
+- Server source commit: 078e4ad36b04606fbcd9b8e802889b31d623e5ac; saved version 1. Manifest r2 binding is the string BUCKET; d1 is unused.
+- Trips are server-only R2 JSON documents. ETag compare-and-swap commits all membership, invitation, plan and note changes together. Stale plan versions return 409; concurrent notes retry rather than disappear. Invite lookups never grant access without the matching current trip invitation.
+- Random membership and invitation secrets are hashed before server storage. Responses omit stored hashes and invitation state. Invite links are single-use, expire after seven days and can be revoked. Up to eight active members; a maximum of 100 historical memberships bounds document growth. Notes are capped at 200, with the latest 60 returned.
+- Creation budgets: 20 per peer hash/hour plus a shared 200/hour initial global budget. The Worker uses the platform-provided client address header and stores only its hash. This is a beta budget, not a comprehensive abuse or WAF service.
+- Korean learning retains Firebase authentication, Firestore saved words and the existing Cloud Functions audio service. No credentials were copied into client code.
 
-- Editorial, mobile-first home, learning, quiz, newsletter and Seoul trip screens.
-- `supabase/trip-storage.sql`: dedicated private-schema tables, RLS, explicit privilege revocation, service-role-only SECURITY INVOKER RPC, database locks, optimistic versions, one-time invitations, member revocation and shared creation budgets.
-- `supabase/functions/sori-trips/`: bounded JSON handler, approved-origin CORS, capability authentication through the RPC, date/catalog validation and server-only database credentials. Deploy with verify_jwt=false because this function checks its own random trip membership capabilities, rather than using Supabase Auth JWTs. Existing Korean-learning login remains Firebase.
-- `tests/production-trips.test.cjs`: actual Postgres execution with PGlite, including permissions, shared edits, revoked access, reused/expired invitations, concurrent redemption, eight-person cap and rate budget. This is local Postgres verification, not hosted-project verification.
+## Why no active Supabase project
 
-## Release sequence
+Creation in the selected organization was quoted at $0/month but rejected by the provider because an administrator had reached the two-free-project account limit. No project was created, no company project was paused/deleted and no paid plan was accepted. The alternative Worker/R2 API was implemented to complete the public trip service without requiring changes to existing business databases.
 
-1. Select the owner's Supabase organization and obtain a project cost quote. Do not reuse unrelated business databases. Obtain agreement before a nonzero charge.
-2. Create the dedicated Sori project in Seoul (ap-northeast-2), wait until healthy, inspect its tables, and apply the reviewed SQL once using apply_migration.
-3. Deploy the Edge Function and include index.js, handler.js, validation.js, catalog.json and package.json. Read the new secret-key environment map; the legacy server key is a compatibility fallback. Never copy these credentials to the browser or GitHub.
-4. Verify hosted creation, two distinct guest capabilities, comments, stale writes, reused/expired invites, revocation and rejection of direct anonymous table/RPC access. Run Supabase security/performance advisors and resolve relevant notices.
-5. Set js/config.js tripsApiBase to the deployed function URL. This public endpoint is not a credential. No secret key or publishable key is needed in the trip frontend because each trip operation has its own capability.
-6. Run npm ci, npm test and mobile browser checks. Recheck main's head for intervening changes, merge the release PR, and confirm the live domain serves the new HTML and assets.
-7. Verify the live app's create/join/comment flows and existing audio. Keep the previous main SHA for a reversible rollback. Do not label the release complete from a Git commit alone.
+The Supabase SQL/RPC/Edge Function implementation remains an optional future migration. Its private schema, RLS and privileges were executed locally using PGlite; it was not applied to a hosted Supabase project.
 
-## Known V1 boundaries
+## Rebuild and update the API
 
-Seoul only, 1–3 days, English and Korean, fifteen sourced suggestions, browser-scoped guest access and periodic updates. No live venue availability, measured transit routes, account recovery, automatic social posting or multilingual rollout. These need separate implementation; they are not silently enabled by this release. Automated metadata/card generation, Japanese and simplified/traditional Chinese localization remain on the roadmap. No PDF or print export is part of the travel product.
+The complete host source is in hosting/trips-api. Its src files are a deployment snapshot of server/object-trips.js, supabase/functions/sori-trips/handler.js, validation.js and data/places.json. Keep these synchronized when changing the API.
 
-## Local validation on 19 November 2026
+1. Run npm test from the Sori root.
+2. Run npm run build in hosting/trips-api; the build emits a single dependency-free Worker at dist/server/index.js plus the manifest copy.
+3. Obtain a fresh source repository write credential for the same Site. Keep it in memory and pass it through stdin only; scripts/sync.mjs uses a per-process Git header, never a persisted token. Do not create a second Site.
+4. Push the exact reviewed source. Package root .openai/hosting.json and dist/server/index.js together in the deployment archive. Packing only server/index.js without dist is not supported.
+5. Save and deploy that pushed commit with the archive. Preserve the existing public API audience because it serves the public Sori app; trip authorization remains inside the API. Never turn on raw bucket public access.
+6. Verify with actual browser create, refresh, invite, guest comments, editing and revocation, then update frontend js/config.js only if the API origin changed.
 
-`npm test` passes 30 tests. The editorial home fits browser frames at 360, 390, 430 and 768 CSS px; the 390 px itinerary renders and creates successfully on the local development API. Cloud TTS playback completed and advanced the practice counter from 0 to 1. These results do not establish hosted Supabase readiness or live-domain deployment.
+## Verification and boundaries
+
+Local tests cover SQLite, actual Postgres execution, whole-document CAS conflicts, permissions, expiry, revocation and private response filtering. Native server deployment succeeded; browser API health and actual trip creation work through the deployed Worker/R2 binding. Some non-browser HTTP probes are rejected at the hosting edge and do not reach the Worker; browser flows remain the release verification path.
+
+V1: Seoul, one to three days, English and Korean, fifteen sourced suggestions, browser-scoped guest memberships and periodic updates. Venue availability, measured transit routes, verified dietary matching, account recovery, scheduled social publishing and multilingual rollout require further development. No PDF/print travel feature exists.

@@ -1,4 +1,4 @@
-import {generatePlan,AREAS,PHRASES,mapLink} from './planner.js';
+import {generatePlan,AREAS,PHRASES,mapLink} from './planner.js?v=20261119r3';
 const root=document.getElementById('guideView');
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let catalog=[],current=null,identity=null,joinInvite=null,busy=false;
@@ -55,9 +55,10 @@ async function restore(){
  const existing=storage.get('sori:trip:'+invitation.tripId);
  if(existing){try{const trip=await api('trips/'+invitation.tripId,'GET',null,existing.token);identity=existing;current=trip;location.hash='trip='+trip.id;renderTrip();message('You already belong to this trip. Send the invitation to your friend.');return;}catch{}}
  document.getElementById('tripContent').innerHTML='<div class="join-panel"><span class="eyebrow">YOU’RE INVITED</span><h1>Seoul is better<br>with your people.</h1><p>Join this trip to see the itinerary, add ideas and make changes together. Your display name is shown to the group.</p><form id="joinForm"><label>Your name<input name="name" maxlength="40" required autocomplete="nickname"></label><button class="sori-primary">Join the trip</button></form><p class="small-note">Guest access stays in this browser. No email is sent. A used invitation cannot be used by another person.</p></div>';return;}
- if(params.has('trip')){const id=params.get('trip');identity=storage.get('sori:trip:'+id);window.SoriNav?.show('guide');if(!identity){message('Use a fresh invitation from the trip creator to join on this browser.');return;}current=await api('trips/'+id);renderTrip();}
+ if(params.has('trip')){const id=params.get('trip');identity=storage.get('sori:trip:'+id);window.SoriNav?.show('guide');if(!identity){document.getElementById('tripContent').innerHTML='<div class="join-panel"><h1>Join this trip.</h1><p>Ask the trip creator for a new invitation to join on this browser.</p></div>';message('Use a fresh invitation from the trip creator to join on this browser.');return;}current=await api('trips/'+id);renderTrip();}
 }
 shell();
-try{const response=await fetch('data/places.json');if(!response.ok)throw Error('Could not load the Seoul collection.');catalog=await response.json();await restore();}catch(e){message(e.message);}
+if(/(?:^|[&#])(trip|invite)=/.test(location.hash))document.getElementById('tripContent').innerHTML='<p class="small-note">Opening your trip…</p>';
+try{const response=await fetch('data/places.json');if(!response.ok)throw Error('Could not load the Seoul collection.');catalog=await response.json();await restore();}catch(e){document.getElementById('tripContent').innerHTML='<div class="join-panel"><h1>We couldn’t open this trip.</h1><p>Try refreshing the page, or ask the creator for a new invitation.</p></div>';message(e.message);}
 window.addEventListener('hashchange',()=>safe(restore));
 setInterval(async()=>{if(!current||busy||document.hidden||root.style.display==='none'||document.activeElement?.closest('input,textarea,select'))return;try{const updated=await api('trips/'+current.id);if(updated.version!==current.version){current=updated;renderTrip();message('A friend updated the trip.');}}catch(e){message(e.message);}},7000);

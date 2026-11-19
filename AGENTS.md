@@ -16,4 +16,4 @@ See README.md for the current setup, verification scope and known integration li
 
 ## Korea Guide V1
 
-Travel guides are collaborative web trips. Do not add PDF/print exports. Public service links and private editing invitations have different purposes. Keep Learn Korean a primary service. The local Node/SQLite trip backend is a development implementation, not the production Supabase connection. Read docs/guide-v1.md before altering collaboration or deploying.
+Travel guides are collaborative web trips. Do not add PDF/print exports. Public service links and private editing invitations have different purposes. Keep Learn Korean a primary service. The local Node/SQLite backend is isolated development storage. Production trips use a separate Sites Worker and server-only R2 whole-trip documents with ETag conditional writes. Supabase code is a migration candidate, not an active project. Read docs/guide-v1.md before altering collaboration or deploying.

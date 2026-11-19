@@ -13,7 +13,7 @@ export function createHandler({url,key,catalog,fetcher=fetch}){
   try{
    if(origin&&!allowedOrigins.has(origin))return reply(403,{error:'This origin is not allowed.'});
    if(request.method==='OPTIONS')return new Response(null,{status:204,headers});
-   const path=new URL(request.url).pathname.replace(/^\/functions\/v1\/sori-trips/,'');
+   const path=new URL(request.url).pathname.replace(/^\/(?:functions\/v1\/sori-trips|api)/,'');
    if(path==='/health'&&request.method==='GET')return reply(200,{collaboration:true,mode:'production'});
    let body={};
    if(!['GET','HEAD'].includes(request.method)){

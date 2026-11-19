@@ -1,8 +1,8 @@
-import {app, auth} from './firebase-init.js';
+import {app, auth} from './firebase-init.js?v=20261119r3';
 import {onAuthStateChanged} from 'https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js';
 import {getFirestore, doc, getDoc, setDoc, arrayUnion, arrayRemove, serverTimestamp} from 'https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js';
-import {SavedStore} from './saved-store.js';
-import {createSupabaseAdapter} from './supabase-adapter.js';
+import {SavedStore} from './saved-store.js?v=20261119r3';
+import {createSupabaseAdapter} from './supabase-adapter.js?v=20261119r3';
 
 const db = getFirestore(app);
 const firestoreAdapter = {
