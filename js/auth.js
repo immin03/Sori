@@ -1,5 +1,5 @@
-import {auth, provider, authReady} from './firebase-init.js?v=20261119r4';
-import './state.js?v=20261119r4';
+import {auth, provider, authReady} from './firebase-init.js?v=20261119r5';
+import './state.js?v=20261119r5';
 import {signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged} from 'https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js';
 // The inline modal gate owns buttons. This module owns the authentication API only.
 let pending = null;
@@ -19,3 +19,5 @@ getRedirectResult(auth).catch(() => {
   window.dispatchEvent(new CustomEvent('sori-auth-error'));
 });
 authReady.then(() => { window.firebaseAuth=auth; window.dispatchEvent(new CustomEvent('firebaseReady')); });
+
+onAuthStateChanged(auth,user=>window.dispatchEvent(new CustomEvent('sori-auth-changed',{detail:{uid:user?.uid||null}})));

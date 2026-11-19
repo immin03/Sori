@@ -4,7 +4,7 @@ const hash=async value=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',
 const secret=()=>btoa(String.fromCharCode(...crypto.getRandomValues(new Uint8Array(32)))).replaceAll('+','-').replaceAll('/','_').replaceAll('=','');
 const uuid=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
 const fail=(status,message)=>{throw Object.assign(Error(message),{status});};
-export function createHandler({url,key,catalog,fetcher=fetch}){
+export function createHandler({url,key,catalog,fetcher=fetch,placeSearch,community}){
  return async request=>{
   const origin=request.headers.get('origin');
   const headers={'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Vary':'Origin'};
@@ -15,6 +15,7 @@ export function createHandler({url,key,catalog,fetcher=fetch}){
    if(request.method==='OPTIONS')return new Response(null,{status:204,headers});
    const path=new URL(request.url).pathname.replace(/^\/(?:functions\/v1\/sori-trips|api)/,'');
    if(path==='/health'&&request.method==='GET')return reply(200,{collaboration:true,mode:'production'});
+   if(path==='/places/search'&&request.method==='GET'){if(!placeSearch)return reply(503,{error:'Hotel search is unavailable. Please place a pin on the map.'});const params=new URL(request.url).searchParams;const result=await placeSearch({q:params.get('q'),city:params.get('city')});return reply(result.status,result.data);}
    let body={};
    if(!['GET','HEAD'].includes(request.method)){
     const reader=request.body?.getReader();let size=0;const chunks=[];
@@ -23,6 +24,7 @@ export function createHandler({url,key,catalog,fetcher=fetch}){
     try{body=JSON.parse(new TextDecoder().decode(bytes)||'{}');}catch{fail(400,'Invalid JSON.');}
     if(!body||typeof body!=='object'||Array.isArray(body))fail(400,'Invalid request.');
    }
+   if(/^\/(stories\/|newsletter\/)/.test(path)&&community){const result=await community({path,method:request.method,body,peer:request.headers.get('x-forwarded-for')||'unknown-peer'});return reply(result.status,result.data);}
    let action,trip=null,token='',newToken=null,newHash='';
    const auth=request.headers.get('authorization')||'';
    if(path==='/trips'&&request.method==='POST')action='create';

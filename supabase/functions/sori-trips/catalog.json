@@ -14,7 +14,11 @@
     "photoAlt": "Gyeongbokgung Palace",
     "photoCredit": "Bundo Kim",
     "photoSource": "https://unsplash.com/photos/bhEvws_PHAw",
-    "photoContext": false
+    "photoContext": false,
+    "lat": 37.5796,
+    "lng": 126.977,
+    "transitHint": "Gyeongbokgung · Metro 3",
+    "pinAccuracy": "approximate"
   },
   {
     "id": "insadong",
@@ -31,7 +35,11 @@
     "photoAlt": "Insadong streets",
     "photoCredit": "Skyler W",
     "photoSource": "https://unsplash.com/photos/tg6uE64lEJs",
-    "photoContext": false
+    "photoContext": false,
+    "lat": 37.574,
+    "lng": 126.9853,
+    "transitHint": "Anguk · Metro 3",
+    "pinAccuracy": "approximate"
   },
   {
     "id": "tea",
@@ -48,7 +56,11 @@
     "photoAlt": "Insadong streets",
     "photoCredit": "Skyler W",
     "photoSource": "https://unsplash.com/photos/tg6uE64lEJs",
-    "photoContext": true
+    "photoContext": true,
+    "lat": 37.5745,
+    "lng": 126.9851,
+    "transitHint": "Anguk · Metro 3",
+    "pinAccuracy": "area"
   },
   {
     "id": "market",
@@ -65,7 +77,11 @@
     "photoAlt": "Gwangjang Market",
     "photoCredit": "Luo Jin Hong",
     "photoSource": "https://unsplash.com/photos/fq5MfSKCTkk",
-    "photoContext": false
+    "photoContext": false,
+    "lat": 37.57,
+    "lng": 126.999,
+    "transitHint": "Jongno 5-ga · Metro 1",
+    "pinAccuracy": "approximate"
   },
   {
     "id": "myeongdong",
@@ -82,7 +98,11 @@
     "photoAlt": "Myeongdong shopping streets",
     "photoCredit": "Harry Angara",
     "photoSource": "https://unsplash.com/photos/HAI-xwFpFg4",
-    "photoContext": false
+    "photoContext": false,
+    "lat": 37.5636,
+    "lng": 126.985,
+    "transitHint": "Myeongdong · Metro 4",
+    "pinAccuracy": "approximate"
   },
   {
     "id": "noodles",
@@ -99,7 +119,11 @@
     "photoAlt": "Myeongdong shopping streets",
     "photoCredit": "Harry Angara",
     "photoSource": "https://unsplash.com/photos/HAI-xwFpFg4",
-    "photoContext": true
+    "photoContext": true,
+    "lat": 37.5634,
+    "lng": 126.985,
+    "transitHint": "Myeongdong · Metro 4",
+    "pinAccuracy": "area"
   },
   {
     "id": "ddp",
@@ -116,7 +140,11 @@
     "photoAlt": "Dongdaemun Design Plaza",
     "photoCredit": "Yumi Kim",
     "photoSource": "https://unsplash.com/photos/ux4yPZRN1g4",
-    "photoContext": false
+    "photoContext": false,
+    "lat": 37.5663,
+    "lng": 127.0095,
+    "transitHint": "Dongdaemun History & Culture Park · Metro 2 / 4 / 5",
+    "pinAccuracy": "approximate"
   },
   {
     "id": "namsan",
@@ -133,7 +161,11 @@
     "photoAlt": "Namsan & N Seoul Tower",
     "photoCredit": "Wonhong Jang",
     "photoSource": "https://unsplash.com/photos/fCsZgoFjqs4",
-    "photoContext": false
+    "photoContext": false,
+    "lat": 37.5512,
+    "lng": 126.9882,
+    "transitHint": "Uphill access; compare bus, cable car and walking options",
+    "pinAccuracy": "approximate"
   },
   {
     "id": "forest",
@@ -150,7 +182,11 @@
     "photoAlt": "Seoul Forest",
     "photoCredit": "Yonghyun Lee",
     "photoSource": "https://unsplash.com/photos/JQC6_cyrGhI",
-    "photoContext": false
+    "photoContext": false,
+    "lat": 37.5445,
+    "lng": 127.0374,
+    "transitHint": "Seoul Forest · Suin–Bundang Line",
+    "pinAccuracy": "approximate"
   },
   {
     "id": "coffee",
@@ -167,7 +203,11 @@
     "photoAlt": "Seoul cafe atmosphere; not a venue photograph",
     "photoCredit": "Andreea Rusu",
     "photoSource": "https://unsplash.com/photos/HOt8287J36o",
-    "photoContext": false
+    "photoContext": false,
+    "lat": 37.546,
+    "lng": 127.042,
+    "transitHint": "Seoul Forest · Suin–Bundang Line",
+    "pinAccuracy": "approximate"
   },
   {
     "id": "seongsu",
@@ -184,7 +224,11 @@
     "photoAlt": "Seoul Forest",
     "photoCredit": "Yonghyun Lee",
     "photoSource": "https://unsplash.com/photos/JQC6_cyrGhI",
-    "photoContext": true
+    "photoContext": true,
+    "lat": 37.5446,
+    "lng": 127.055,
+    "transitHint": "Seongsu · Metro 2",
+    "pinAccuracy": "area"
   },
   {
     "id": "shoes",
@@ -201,7 +245,11 @@
     "photoAlt": "Seoul Forest",
     "photoCredit": "Yonghyun Lee",
     "photoSource": "https://unsplash.com/photos/JQC6_cyrGhI",
-    "photoContext": true
+    "photoContext": true,
+    "lat": 37.5415,
+    "lng": 127.052,
+    "transitHint": "Seongsu · Metro 2",
+    "pinAccuracy": "area"
   },
   {
     "id": "hongdae",
@@ -218,7 +266,11 @@
     "photoAlt": "Hongdae streets",
     "photoCredit": "Paul Ast",
     "photoSource": "https://unsplash.com/photos/74ii3BHkPtw",
-    "photoContext": false
+    "photoContext": false,
+    "lat": 37.5559,
+    "lng": 126.9239,
+    "transitHint": "Hongik University · Metro 2 / AREX",
+    "pinAccuracy": "approximate"
   },
   {
     "id": "hongdae-cafe",
@@ -235,7 +287,11 @@
     "photoAlt": "Hongdae streets",
     "photoCredit": "Paul Ast",
     "photoSource": "https://unsplash.com/photos/74ii3BHkPtw",
-    "photoContext": true
+    "photoContext": true,
+    "lat": 37.557,
+    "lng": 126.924,
+    "transitHint": "Hongik University · Metro 2 / AREX",
+    "pinAccuracy": "area"
   },
   {
     "id": "hongdae-food",
@@ -252,7 +308,11 @@
     "photoAlt": "Hongdae streets",
     "photoCredit": "Paul Ast",
     "photoSource": "https://unsplash.com/photos/74ii3BHkPtw",
-    "photoContext": true
+    "photoContext": true,
+    "lat": 37.5545,
+    "lng": 126.923,
+    "transitHint": "Hongik University · Metro 2 / AREX",
+    "pinAccuracy": "area"
   },
   {
     "id": "library",
@@ -269,7 +329,11 @@
     "photoAlt": "Starfield Library at COEX",
     "photoCredit": "Josip Ivanković",
     "photoSource": "https://unsplash.com/photos/jpeTs-VfP68",
-    "photoContext": false
+    "photoContext": false,
+    "lat": 37.5101,
+    "lng": 127.0598,
+    "transitHint": "Bongeunsa · Metro 9 / Samseong · Metro 2",
+    "pinAccuracy": "approximate"
   },
   {
     "id": "bongeunsa",
@@ -286,7 +350,11 @@
     "photoAlt": "Lanterns at Bongeunsa Temple",
     "photoCredit": "Valery Rabchenyuk",
     "photoSource": "https://unsplash.com/photos/LTCrk-gZIJk",
-    "photoContext": false
+    "photoContext": false,
+    "lat": 37.5146,
+    "lng": 127.0574,
+    "transitHint": "Bongeunsa · Metro 9",
+    "pinAccuracy": "approximate"
   },
   {
     "id": "coex-shops",
@@ -303,7 +371,11 @@
     "photoAlt": "Starfield Library at COEX",
     "photoCredit": "Josip Ivanković",
     "photoSource": "https://unsplash.com/photos/jpeTs-VfP68",
-    "photoContext": true
+    "photoContext": true,
+    "lat": 37.5112,
+    "lng": 127.0596,
+    "transitHint": "Bongeunsa · Metro 9 / Samseong · Metro 2",
+    "pinAccuracy": "area"
   },
   {
     "id": "coex-food",
@@ -320,7 +392,11 @@
     "photoAlt": "Starfield Library at COEX",
     "photoCredit": "Josip Ivanković",
     "photoSource": "https://unsplash.com/photos/jpeTs-VfP68",
-    "photoContext": true
+    "photoContext": true,
+    "lat": 37.5107,
+    "lng": 127.0586,
+    "transitHint": "Bongeunsa · Metro 9 / Samseong · Metro 2",
+    "pinAccuracy": "area"
   },
   {
     "id": "haeundae-beach",
@@ -337,7 +413,11 @@
     "photoAlt": "Haeundae Beach",
     "photoCredit": "patrick kim",
     "photoSource": "https://unsplash.com/photos/Uwi0llpXQy4",
-    "photoContext": false
+    "photoContext": false,
+    "lat": 35.1587,
+    "lng": 129.1604,
+    "transitHint": "Haeundae · Busan Metro 2",
+    "pinAccuracy": "approximate"
   },
   {
     "id": "mipo",
@@ -354,7 +434,11 @@
     "photoAlt": "Haeundae Beach",
     "photoCredit": "patrick kim",
     "photoSource": "https://unsplash.com/photos/Uwi0llpXQy4",
-    "photoContext": true
+    "photoContext": true,
+    "lat": 35.1603,
+    "lng": 129.1733,
+    "transitHint": "Leave time for the walk from Haeundae Metro 2",
+    "pinAccuracy": "area"
   },
   {
     "id": "haeundae-cafe",
@@ -371,7 +455,11 @@
     "photoAlt": "Haeundae Beach",
     "photoCredit": "patrick kim",
     "photoSource": "https://unsplash.com/photos/Uwi0llpXQy4",
-    "photoContext": true
+    "photoContext": true,
+    "lat": 35.1601,
+    "lng": 129.1635,
+    "transitHint": "Haeundae · Busan Metro 2",
+    "pinAccuracy": "area"
   },
   {
     "id": "haeundae-food",
@@ -388,7 +476,11 @@
     "photoAlt": "Haeundae Beach",
     "photoCredit": "patrick kim",
     "photoSource": "https://unsplash.com/photos/Uwi0llpXQy4",
-    "photoContext": true
+    "photoContext": true,
+    "lat": 35.162,
+    "lng": 129.1607,
+    "transitHint": "Haeundae · Busan Metro 2",
+    "pinAccuracy": "area"
   },
   {
     "id": "gwangalli-beach",
@@ -405,7 +497,11 @@
     "photoAlt": "Gwangalli & Gwangan Bridge",
     "photoCredit": "Shibin Joseph",
     "photoSource": "https://unsplash.com/photos/z4mLlmfDzbw",
-    "photoContext": false
+    "photoContext": false,
+    "lat": 35.1531,
+    "lng": 129.1186,
+    "transitHint": "Gwangan / Geumnyeonsan · Busan Metro 2",
+    "pinAccuracy": "approximate"
   },
   {
     "id": "gwangalli-cafe",
@@ -422,7 +518,11 @@
     "photoAlt": "Gwangalli & Gwangan Bridge",
     "photoCredit": "Shibin Joseph",
     "photoSource": "https://unsplash.com/photos/z4mLlmfDzbw",
-    "photoContext": true
+    "photoContext": true,
+    "lat": 35.1545,
+    "lng": 129.1201,
+    "transitHint": "Gwangan · Busan Metro 2",
+    "pinAccuracy": "area"
   },
   {
     "id": "gwangalli-food",
@@ -439,7 +539,11 @@
     "photoAlt": "Gwangalli & Gwangan Bridge",
     "photoCredit": "Shibin Joseph",
     "photoSource": "https://unsplash.com/photos/z4mLlmfDzbw",
-    "photoContext": true
+    "photoContext": true,
+    "lat": 35.1555,
+    "lng": 129.1221,
+    "transitHint": "Gwangan · Busan Metro 2",
+    "pinAccuracy": "area"
   },
   {
     "id": "gamcheon",
@@ -456,7 +560,11 @@
     "photoAlt": "Gamcheon Culture Village",
     "photoCredit": "Jimmy Moon",
     "photoSource": "https://unsplash.com/photos/KpIgjFZmp0E",
-    "photoContext": false
+    "photoContext": false,
+    "lat": 35.0975,
+    "lng": 129.0106,
+    "transitHint": "Toseong · Busan Metro 1, then local bus or taxi; steep lanes",
+    "pinAccuracy": "approximate"
   },
   {
     "id": "jagalchi",
@@ -473,7 +581,11 @@
     "photoAlt": "Inside Jagalchi Fish Market",
     "photoCredit": "Luke Ow",
     "photoSource": "https://unsplash.com/photos/zv5ToKNraHw",
-    "photoContext": false
+    "photoContext": false,
+    "lat": 35.0966,
+    "lng": 129.0306,
+    "transitHint": "Jagalchi · Busan Metro 1",
+    "pinAccuracy": "approximate"
   },
   {
     "id": "nampo",
@@ -490,6 +602,10 @@
     "photoAlt": "Gamcheon Culture Village",
     "photoCredit": "Jimmy Moon",
     "photoSource": "https://unsplash.com/photos/KpIgjFZmp0E",
-    "photoContext": true
+    "photoContext": true,
+    "lat": 35.098,
+    "lng": 129.0325,
+    "transitHint": "Nampo / Jagalchi · Busan Metro 1",
+    "pinAccuracy": "area"
   }
 ]

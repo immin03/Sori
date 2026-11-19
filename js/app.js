@@ -90,13 +90,13 @@
   function applyFilter() {
     if (currentCategory === "saved") return;
 
-    const raw = rawFor(currentCategory) || [];
+    const raw = searchQuery ? Object.values(getAllData()).flat() : rawFor(currentCategory) || [];
     const base = Array.isArray(raw)
       ? raw.slice()
       : (raw && Array.isArray(raw.data)) ? raw.data.slice() : [];
 
     // currentSub이 없으면 All 처리
-    if (!currentSub || currentSub === "All") {
+    if (searchQuery || !currentSub || currentSub === "All") {
       phrases = base;
     } else {
       const want = norm(currentSub);
@@ -171,6 +171,7 @@
 
   // ---------- 탭 ----------
   function setActiveTab(tab) {
+    const labels={daily:"Daily",travel:"Travel",drama:"K-Drama",trendy:"Trendy Talk",numbers:"Numbers",saved:"Saved"};const picker=document.getElementById("pickerTrigger");if(picker)picker.textContent=labels[tab]||"Daily";
     ["daily","travel","drama","trendy","numbers","saved"].forEach(function(id){
       var b = $(id + "Btn");
       if (b) b.classList.toggle("active", id === tab);
@@ -178,6 +179,7 @@
   }
 
   function handleTab(tab) {
+    window.SoriPractice?.library();
     currentCategory = tab;
     currentIndex = 0;              // 카테고리 전환 시 1부터
     // drama/saved는 서브 없음, 그 외는 All 기본
@@ -203,6 +205,7 @@
 
   function renderPhrase() {
     window.SORI?.TTS?.cancel();
+    const status=document.getElementById("lessonAudioStatus");if(status)status.textContent="";if(els.playBtn)els.playBtn.textContent="Listen & Repeat";
     if (!phrases || phrases.length === 0) {
       els.korean.textContent = "";
       els.english.textContent = "";
@@ -223,6 +226,8 @@
     els.prog.textContent = (currentIndex + 1) + " / " + phrases.length;
     renderScrapStar(p.id);
     resetDots(true);
+    const repeat=document.getElementById("repeatPhrase");if(repeat)repeat.dataset.audioText=p.k;
+    window.dispatchEvent(new CustomEvent("sori-phrase-shown",{detail:{id:p.id}}));
   }
 
   // ---------- 별(스크랩) ----------
@@ -375,16 +380,22 @@
     });
   }
 
+  function openId(id){window.SoriPractice?.library();const all=getAllData();for(const [category,list] of Object.entries(all)){const i=list.findIndex(p=>p.id===id);if(i<0)continue;searchQuery="";document.getElementById("phraseSearch").value="";const results=document.getElementById("searchResults");if(results)results.innerHTML="";currentCategory=category;currentSub=null;rebuildSubFilters();loadData();currentIndex=phrases.findIndex(p=>p.id===id);setActiveTab(category);renderPhrase();return true;}return false;}
+  window.addEventListener('sori-repeat-ended',e=>{const p=phrases[currentIndex];if(p&&p.k===e.detail.text)markDotAndAward(p);});
   window.SoriLearn = {
+    openId,
     openCategory(category,situation){searchQuery='';if(document.getElementById('phraseSearch'))document.getElementById('phraseSearch').value='';handleTab(category);if(situation){currentSub=situation;currentIndex=0;rebuildSubFilters();loadData();}},
     openKorean(text){
+      window.SoriPractice?.library();
       for(const [category,rows] of Object.entries(getAllData())){
         const match=rows.find(p=>p.k===text);if(!match)continue;
-        searchQuery='';document.getElementById('phraseSearch').value='';currentSub=null;currentCategory=category;rebuildSubFilters();loadData();currentIndex=phrases.findIndex(p=>p.id===match.id);renderPhrase();return true;
+        searchQuery='';document.getElementById('phraseSearch').value='';currentSub=null;currentCategory=category;rebuildSubFilters();loadData();currentIndex=phrases.findIndex(p=>p.id===match.id);setActiveTab(category);renderPhrase();return true;
       }return false;
     }
   };
-  document.getElementById('phraseSearch')?.addEventListener('input',e=>{searchQuery=norm(e.target.value);currentIndex=0;loadData();});
+  document.getElementById('phraseSearch')?.addEventListener('input',e=>{searchQuery=norm(e.target.value);currentIndex=0;loadData();const box=document.getElementById('searchResults');box.replaceChildren();if(!searchQuery)return;const count=document.createElement('p');count.textContent=phrases.length+' matching expressions';box.appendChild(count);for(const p of phrases.slice(0,6)){const button=document.createElement('button');button.type='button';button.textContent=p.k;const translation=document.createElement('span');translation.textContent=p.e;button.appendChild(translation);button.addEventListener('click',()=>openId(p.id));box.appendChild(button);}});
+  document.getElementById('showTranslation')?.addEventListener('change',e=>document.getElementById('mainContent').classList.toggle('translation-off',!e.target.checked));
+  document.getElementById('showRomanization')?.addEventListener('change',e=>document.getElementById('mainContent').classList.toggle('romanization-off',!e.target.checked));
 
   // ---------- 초기화 ----------
   window.addEventListener("DOMContentLoaded", function(){

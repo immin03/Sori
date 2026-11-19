@@ -8,7 +8,7 @@
     for(const [name,id] of Object.entries(views)){const element=document.getElementById(id);if(element)element.style.display=name===view?'block':'none';}
     const bridge=document.querySelector('.learning-trip-bridge');if(bridge)bridge.hidden=!window.SoriGuide?.hasTrip();
     document.querySelectorAll('[data-view],.sori-nav [data-go],.mobile-nav [data-go]').forEach(b=>{const active=(b.dataset.view||b.dataset.go)===view;b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});
-    try{sessionStorage.setItem('currentView',view);}catch{}close();
+    try{sessionStorage.setItem('currentView',view);}catch{}close();window.dispatchEvent(new CustomEvent('sori-view',{detail:{view}}));
   }
   window.SoriNav={show};
   document.getElementById('shareSori')?.addEventListener('click',async()=>{
