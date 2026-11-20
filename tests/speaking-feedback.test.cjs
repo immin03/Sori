@@ -260,3 +260,41 @@ test('silence, a blocked mic, recognition timeout and leaving a vocabulary quest
   assert.match(unsupported.query('[role=status]').textContent, /type your answer/);
   fallback.dispose();
 });
+
+test('opening vocabulary from home plays the question before listening, and the next question does the same', async () => {
+  const {DailyVocabulary} = await import('../js/learning/vocabulary.js');
+  const {mountVocabulary} = await import('../js/learning/vocabulary-ui.js');
+  const f = fixture(), daily = new DailyVocabulary(f.env.localStorage, null);
+  const target = {
+    querySelector(selector) {
+      const node = f.query(selector);
+      node.focus ||= () => {};
+      node.setAttribute ||= () => {};
+      node.querySelector ||= key => target.querySelector(key);
+      node.dataset ||= {};
+      return node;
+    },
+    set innerHTML(markup) {
+      this.markup = markup;
+      this.querySelector('[data-after-answer]').hidden = true;
+      this.querySelector('[data-record-reply]').hidden = false;
+    }
+  };
+  const audio = target.querySelector('[data-question-player]');
+  let plays = 0;
+  audio.play = () => { plays++; audio.ended = false; return Promise.resolve(); };
+  const lesson = mountVocabulary(target, daily, f.env, {start:true});
+  assert.match(target.markup, /new-clothes\.mp3/);
+  assert.equal(plays, 1); assert.equal(f.readers.length, 0);
+  audio.onplaying(); assert.match(f.query('[data-question-status]').textContent, /Playing question/);
+  assert.equal(f.readers.length, 0);
+  audio.ended = true; audio.onended(); assert.equal(f.readers.length, 1);
+  f.readers[0].final('옷');
+  f.query('[data-next-word]').onclick();
+  assert.match(target.markup, /some-water\.mp3/);
+  assert.equal(plays, 2); assert.equal(f.readers.length, 1);
+  audio.onplaying(); audio.ended = true; audio.onended(); assert.equal(f.readers.length, 2);
+  f.query('[data-hear-question]').onclick(); assert.ok(f.readers[1].aborted);
+  const late = audio.onended; lesson.dispose(); audio.ended = true; late();
+  assert.equal(f.readers.length, 2);
+});
