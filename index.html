@@ -6,10 +6,6 @@
 <title>Sori · Korean language & life in Korea</title>
 <meta name="sori-release" content="2026-11-20-conversations-itineraries-reading">
 <meta name="theme-color" content="#ffffff"/>
-<!-- Webfont for consistent capture rendering -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@700;800;900&display=swap" rel="stylesheet">
 
 <!-- Favicon / Shortcut icon -->
 <link rel="icon" type="image/svg+xml"
@@ -332,13 +328,11 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 <link rel="stylesheet" href="css/quiz.css?v=20261119r6">
 <link rel="stylesheet" href="css/announcement.css?v=20261119r6">
 <link rel="stylesheet" href="css/sori-v1.css?v=20261119r6"><link rel="stylesheet" href="assets/vendor/leaflet/leaflet.css?v=1.9.4"><link rel="stylesheet" href="css/sori-map.css?v=20261120ux1"><link rel="stylesheet" href="css/sori-learning.css?v=20261120ux1"><link rel="stylesheet" href="css/sori-stories.css?v=20261120ux1">
+<link rel="stylesheet" href="css/sori-speaking.css?v=20261120s1">
 </head>
 <body>
 <header class="header">
-  <div>
-    <h1 class="logo-home" style="cursor: pointer;">Sori <span style="font-size:14px;color:#111827;font-weight:600;">소리</span></h1>
-    <div class="intro">A little Korean, every day.</div>
-  </div>
+  <button type="button" class="logo-home" aria-label="Sori, speaking home"><span class="soundmark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>sori</button>
   <div class="header-actions">
     <button id="shareSori" class="top-btn">Share Sori</button>
     <button id="openLogin" class="top-btn primary">Login</button>
@@ -346,15 +340,15 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
   </div>
 </header>
 
-<nav class="sori-nav" aria-label="Sori services"><button data-go="home" class="active">Sori</button><button data-go="listen">Learn Korean</button><button data-go="guide">Travel map</button><button data-go="newsletter">Korea 101</button></nav>
-<nav class="mobile-nav" aria-label="Main navigation"><button data-go="listen">Practice</button><button data-go="newsletter">Korea 101</button><button data-go="guide">Travel map</button></nav>
-<div id="homeView" class="sori-home speak-first"><header class="home-welcome"><h1 id="homeTitle">A little Korea, every day.</h1><p>Practise a conversation, read a story or find a day out.</p></header><div class="home-service-choices" aria-label="What would you like to do?"><button data-go="listen"><strong>Practice</strong><span>Speak a little</span></button><button data-go="newsletter"><strong>Korea 101</strong><span>Read a story</span></button><button data-go="guide"><strong>Plan</strong><span>Explore a day</span></button></div>
-<section id="practiceDashboard" class="practice-dashboard" aria-label="Daily Korean practice"></section><section id="homeStories" class="home-stories" aria-label="Korea 101 stories"></section><section class="home-expression"><div class="today-practice"><div class="practice-kicker"><span>Today, at a cafe</span><span lang="ko">오늘의 한국어</span></div><h2 lang="ko">아메리카노 한 잔, 주세요.</h2><p class="home-romanization">amerikano han jan, juseyo</p><p>One americano, please.</p><div class="audio-choices"><button class="sori-primary" data-audio="아메리카노 한 잔, 주세요." data-rate="1">Listen</button><button class="sori-secondary" data-audio="아메리카노 한 잔, 주세요." data-rate="0.65">Slowly</button></div><p class="practice-instruction">Your turn. Say it out loud, then listen again.</p><button class="text-button" data-korean="아메리카노 한 잔, 주세요.">Practice this expression</button></div></section><section class="situation-section" aria-labelledby="situationTitle"><div class="section-heading"><div><p class="edition-line">Start with your day</p><h2 id="situationTitle">What would you like to say?</h2></div></div><div class="situation-grid"><button data-category="daily" data-situation="Cafe"><span>At a cafe</span><small>Order your usual, in Korean.</small></button><button data-category="daily" data-situation="Restaurant"><span>Over a meal</span><small>Find the words before the food.</small></button><button data-category="daily" data-situation="Shopping"><span>Out shopping</span><small>Ask a price. Find your size.</small></button><button data-category="travel" data-situation="Transport"><span>Getting around</span><small>A little confidence on the way.</small></button></div></section>
-<section class="connected-services" aria-label="Use and understand your Korean"><article class="journey-card"><img src="assets/photos/haeundae.jpg" width="640" height="960" alt="Haeundae Beach in Busan" loading="lazy"><div><p class="edition-line">Put your Korean to use</p><h2>A day out,<br>with words to match.</h2><p>Choose Seoul or Busan. Set your hotel, see your day on one map, and learn what to say at each stop.</p><button class="sori-primary" data-go="guide">Make a Korea plan</button></div></article><article class="newsletter-card"><span class="edition-line">Korea 101 · Free newsletter</span><h2>The story behind<br>the words.</h2><p>Why leave a phone on a cafe table? What happens at Seollal? Minwoo shares the everyday things that help Korea make sense.</p><div class="newsletter-topics"><span>Language</span><span>Food</span><span>Everyday culture</span></div><button class="text-button" data-go="newsletter">Read & subscribe to Korea 101</button><p class="founder-byline">By Minwoo, from Seoul.</p></article></section>
-<p class="home-signoff">Made to help a friend learn Korean. Still made with that same care. <span>Minwoo · Sori</span></p>
-</div>
+<nav class="sori-nav" aria-label="Sori services"><button data-go="home" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10v4m4-8v12m5-16v20m5-16v12m4-8v4"/></svg>Speak</button><button data-go="newsletter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4.7c3.7-.8 6.5-.3 9 1.5 2.5-1.8 5.3-2.3 9-1.5v14c-3.7-.8-6.5-.3-9 1.5-2.5-1.8-5.3-2.3-9-1.5zM12 6.2v13.4"/></svg>Korea 101</button><button data-go="guide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m16.1 7.9-2.6 5.6-5.6 2.6 2.6-5.6z"/></svg>Explore</button></nav>
+<nav class="mobile-nav" aria-label="Main navigation"><button data-go="home" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10v4m4-8v12m5-16v20m5-16v12m4-8v4"/></svg>Speak</button><button data-go="newsletter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4.7c3.7-.8 6.5-.3 9 1.5 2.5-1.8 5.3-2.3 9-1.5v14c-3.7-.8-6.5-.3-9 1.5-2.5-1.8-5.3-2.3-9-1.5zM12 6.2v13.4"/></svg>Korea 101</button><button data-go="guide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m16.1 7.9-2.6 5.6-5.6 2.6 2.6-5.6z"/></svg>Explore</button></nav>
+<main id="homeView" class="sori-home speak-first">
+  <header class="speak-heading"><h1 id="homeTitle">Speak Korean.</h1></header>
+  <section class="phrase-finder" data-phrase-finder="home"><div class="finder-title"><label for="homePhraseSearch">Find a phrase</label><button type="button" class="text-button" data-browse-phrases>Browse all <span aria-hidden="true">↗</span></button></div><div class="search-field"><span aria-hidden="true"></span><input id="homePhraseSearch" type="search" placeholder="Try hello, 안녕 or annyeong" autocomplete="off"></div><div class="phrase-topics" data-topics aria-label="Filter by situation"></div><p role="status" aria-live="polite"></p><div data-phrase-list></div><button type="button" class="text-button" data-more-phrases hidden>Show more expressions</button></section>
+  <section id="practiceDashboard" aria-label="Conversation practice"></section>
+</main>
 <div id="guideView" style="display:none"></div>
-<div class="main-content" id="mainContent" style="display:none"><div class="learning-trip-bridge" hidden><span>Learning for your day out</span><button class="text-button" data-go="guide">Back to our trip</button></div><section id="practiceSession" hidden></section><div class="learn-heading"><span class="eyebrow">Listen & practice</span><h1>Korean, for everyday life.</h1><p>Take a turn in a conversation, or look up a phrase for today.</p><label class="sr-only" for="phraseSearch">Search Korean expressions</label><input class="learn-search" id="phraseSearch" type="search" placeholder="Find any expression in Korean or English" autocomplete="off"><div id="searchResults" class="search-results" role="region" aria-label="Expression search results"></div><div id="learnPracticeEntry" class="learn-practice-entry"></div></div>
+<div class="main-content" id="mainContent" style="display:none"><div class="learning-trip-bridge" hidden><span>Learning for your day out</span><button class="text-button" data-go="guide">Back to our trip</button></div><section id="practiceSession" hidden></section><div class="learn-heading"><button class="text-button" data-go="home">‹ Speak</button><h1>Phrasebook</h1><section class="phrase-finder" data-phrase-finder="library"><label class="sr-only" for="phraseSearch">Search all expressions</label><div class="search-field"><span aria-hidden="true"></span><input id="phraseSearch" type="search" placeholder="Try hello, 안녕 or annyeong" autocomplete="off"></div><div class="phrase-topics" data-topics aria-label="Filter by situation"></div><p role="status" aria-live="polite"></p><div data-phrase-list></div><button type="button" class="text-button" data-more-phrases hidden>Show more expressions</button></section><div id="learnPracticeEntry" class="learn-practice-entry"></div></div>
 <section class="card">
   <div class="category-bar">
     <div class="picker-wrap">
@@ -380,6 +374,7 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 </section>
 
 <section class="card" id="lessonCard">
+  <button type="button" class="text-button lesson-back" data-to-phrasebook>‹ Phrasebook</button>
   <div class="row-between">
     <div class="badge-container">
       <div id="badge" class="badge">Love</div>
@@ -398,10 +393,11 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 
   <div class="learn-display-controls"><label><input type="checkbox" id="showTranslation" checked>Translation</label><label><input type="checkbox" id="showRomanization" checked>Pronunciation guide</label></div><div class="kbox">
     <p id="korean" class="ko">당신이 좋아요.</p>
-    <p id="english" class="en">dangshini joayo</p>
-    <p id="pronunciation" style="display:none">dangshini joayo</p>
+    <p id="pronunciation">dangshini joayo</p>
+    <p id="english" class="en">I like you.</p>
   </div>
 
+  <section id="lessonVoice" aria-label="Speaking practice"><div class="voice-slot"></div></section>
   <!-- 명사 뜻 표시 영역 -->
   <div id="nounDefinitions" class="noun-definitions" style="display:none;">
     <div class="noun-list"></div>
@@ -421,7 +417,7 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
     <span id="speedTxt" class="speed-val">0.80x</span>
   </div>
 
-  <div class="repeat-practice"><button type="button" class="sori-secondary" id="repeatPhrase" data-repeat-current>Listen, pause & repeat · 3 times</button></div><details id="lessonVoice"><summary>Record &amp; compare my voice</summary><div class="voice-slot"></div></details><div class="tip-card"><div id="tipText" class="tip-text">Listen once, then try saying it yourself.</div></div>
+  <div class="repeat-practice"><button type="button" class="sori-secondary" id="repeatPhrase" data-repeat-current>Listen, pause & repeat · 3 times</button></div><div class="tip-card"><div id="tipText" class="tip-text">Listen once, then try saying it yourself.</div></div>
 </section>
 
 <section class="card">
@@ -547,11 +543,11 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
     </button>
   </div>
   <div class="sidebar-menu">
-    <button class="menu-item" data-view="home">Sori</button>
-    <button class="menu-item" data-view="guide">Korea guide</button>
-    <button class="menu-item" data-view="listen">Listen & Repeat</button>
+    <button class="menu-item" data-view="home">Speak</button>
+    <button class="menu-item" data-view="guide">Explore</button>
+    <button class="menu-item" data-view="listen">Phrasebook</button>
     <button class="menu-item" data-view="quiz">Daily Quiz</button>
-    <button class="menu-item" data-view="newsletter">Korea101</button>
+    <button class="menu-item" data-view="newsletter">Korea 101</button>
   </div>
 </div>
 
@@ -570,9 +566,9 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 <script type="module" src="/js/firebase-init.js?v=20261119r6" defer></script>
 <script type="module" src="/js/auth.js?v=20261119r6" defer></script>
 <script defer src="js/tts.js?v=20261119r6"></script>
-<script defer src="js/app.js?v=20261119r6"></script><script defer src="js/practice.js?v=20261120ux1"></script>
-<script defer src="js/sidebar.js?v=20261120ux1"></script>
-<script defer src="assets/vendor/leaflet/leaflet.js?v=1.9.4"></script><script type="module" src="js/guide/ui.js?v=20261120ux1"></script><script type="module" src="js/learning/ui.js?v=20261120ux1"></script><script type="module" src="js/stories/ui.js?v=20261120ux1"></script>
+<script defer src="js/app.js?v=20261120s1"></script><script defer src="js/practice.js?v=20261120s1"></script>
+<script defer src="js/sidebar.js?v=20261120s1"></script>
+<script defer src="assets/vendor/leaflet/leaflet.js?v=1.9.4"></script><script type="module" src="js/guide/ui.js?v=20261120ux1"></script><script type="module" src="js/learning/ui.js?v=20261120s1"></script><script type="module" src="js/stories/ui.js?v=20261120s1"></script>
 <script defer src="js/quiz.js?v=20261119r6"></script>
 
 

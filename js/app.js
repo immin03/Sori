@@ -6,7 +6,6 @@
   let currentSub = null;                 // All 기본: null이면 All로 처리
   let phrases = [];
   let savedList = [];
-  let searchQuery = "";
 
   // ---------- 엘리먼트 캐시 ----------
   const $ = (id) => document.getElementById(id);
@@ -90,20 +89,19 @@
   function applyFilter() {
     if (currentCategory === "saved") return;
 
-    const raw = searchQuery ? Object.values(getAllData()).flat() : rawFor(currentCategory) || [];
+    const raw = rawFor(currentCategory) || [];
     const base = Array.isArray(raw)
       ? raw.slice()
       : (raw && Array.isArray(raw.data)) ? raw.data.slice() : [];
 
     // currentSub이 없으면 All 처리
-    if (searchQuery || !currentSub || currentSub === "All") {
+    if (!currentSub || currentSub === "All") {
       phrases = base;
     } else {
       const want = norm(currentSub);
       phrases = base.filter(function(p){ return norm(p.sub || p.t) === want; });
     }
 
-    if(searchQuery) phrases=phrases.filter(p=>[p.k,p.e,p.p].some(v=>norm(v).includes(searchQuery)));
 
     // 진행도 안전 보정
     currentIndex = Math.min(currentIndex, Math.max(0, phrases.length - 1));
@@ -214,12 +212,13 @@
       els.context.textContent = "";
       els.prog.textContent = "";
       renderScrapStar(null);
+      window.dispatchEvent(new CustomEvent('sori-phrase-shown',{detail:{id:null}}));
       resetDots(true);
       return;
     }
     var p = phrases[currentIndex];
     els.korean.textContent = p.k || "";
-    els.english.textContent = p.e ? '"' + p.e + '"' : "";
+    els.english.textContent = p.e || "";
     els.pronunciation.textContent = p.p || "";
     els.badge.textContent = p.t || (p.sub || "");
     els.context.textContent = p.c || "";
@@ -380,20 +379,33 @@
     });
   }
 
-  function openId(id){window.SoriPractice?.library();const all=getAllData();for(const [category,list] of Object.entries(all)){const i=list.findIndex(p=>p.id===id);if(i<0)continue;searchQuery="";document.getElementById("phraseSearch").value="";const results=document.getElementById("searchResults");if(results)results.innerHTML="";currentCategory=category;currentSub=null;rebuildSubFilters();loadData();currentIndex=phrases.findIndex(p=>p.id===id);setActiveTab(category);renderPhrase();return true;}return false;}
+  function openId(id) {
+    for (const [category, list] of Object.entries(getAllData())) {
+      if (!list.some(p => p.id === id)) continue;
+      window.SoriPractice?.library();
+      currentCategory = category;
+      currentSub = null;
+      rebuildSubFilters();
+      applyFilter();
+      currentIndex = phrases.findIndex(p => p.id === id);
+      setActiveTab(category);
+      renderPhrase();
+      return true;
+    }
+    return false;
+  }
   window.addEventListener('sori-repeat-ended',e=>{const p=phrases[currentIndex];if(p&&p.k===e.detail.text)markDotAndAward(p);});
   window.SoriLearn = {
     openId,
-    openCategory(category,situation){searchQuery='';if(document.getElementById('phraseSearch'))document.getElementById('phraseSearch').value='';handleTab(category);if(situation){currentSub=situation;currentIndex=0;rebuildSubFilters();loadData();}},
-    openKorean(text){
-      window.SoriPractice?.library();
-      for(const [category,rows] of Object.entries(getAllData())){
-        const match=rows.find(p=>p.k===text);if(!match)continue;
-        searchQuery='';document.getElementById('phraseSearch').value='';currentSub=null;currentCategory=category;rebuildSubFilters();loadData();currentIndex=phrases.findIndex(p=>p.id===match.id);setActiveTab(category);renderPhrase();return true;
-      }return false;
+    openCategory(category,situation) {
+      handleTab(category);
+      if (situation) { currentSub=situation; currentIndex=0; rebuildSubFilters(); loadData(); }
+    },
+    openKorean(text) {
+      const match = Object.values(getAllData()).flat().find(p => p.k === text);
+      return match ? openId(match.id) : false;
     }
   };
-  document.getElementById('phraseSearch')?.addEventListener('input',e=>{searchQuery=norm(e.target.value);currentIndex=0;loadData();const box=document.getElementById('searchResults');box.replaceChildren();if(!searchQuery)return;const count=document.createElement('p');count.textContent=phrases.length+' matching expressions';box.appendChild(count);for(const p of phrases.slice(0,6)){const button=document.createElement('button');button.type='button';button.textContent=p.k;const translation=document.createElement('span');translation.textContent=p.e;button.appendChild(translation);button.addEventListener('click',()=>openId(p.id));box.appendChild(button);}});
   document.getElementById('showTranslation')?.addEventListener('change',e=>document.getElementById('mainContent').classList.toggle('translation-off',!e.target.checked));
   document.getElementById('showRomanization')?.addEventListener('change',e=>document.getElementById('mainContent').classList.toggle('romanization-off',!e.target.checked));
 

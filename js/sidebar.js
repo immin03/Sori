@@ -7,7 +7,8 @@
     if(!Object.hasOwn(views,view))view='home';window.SORI?.TTS?.cancel();
     for(const [name,id] of Object.entries(views)){const element=document.getElementById(id);if(element)element.style.display=name===view?'block':'none';}
     const bridge=document.querySelector('.learning-trip-bridge');if(bridge)bridge.hidden=!window.SoriGuide?.hasTrip();
-    document.querySelectorAll('[data-view],.sori-nav [data-go],.mobile-nav [data-go]').forEach(b=>{const active=(b.dataset.view||b.dataset.go)===view;b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});
+    document.querySelectorAll('[data-view],.sori-nav [data-go],.mobile-nav [data-go]').forEach(b=>{const target=b.dataset.view||b.dataset.go;
+      const active=target===view||(b.dataset.go==='home'&&view==='listen');b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});
     try{sessionStorage.setItem('currentView',view);}catch{}close();window.dispatchEvent(new CustomEvent('sori-view',{detail:{view}}));
   }
   window.SoriNav={show};
@@ -22,11 +23,15 @@
   document.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
   document.addEventListener('click',e=>{
     const button=e.target.closest('[data-go],[data-view],[data-category],[data-korean],.logo-home');if(!button)return;
-    if(button.dataset.korean){show('listen');window.SoriLearn?.openKorean(button.dataset.korean);}
-    else if(button.dataset.category){show('listen');window.SoriLearn?.openCategory(button.dataset.category,button.dataset.situation);}
+    if(button.dataset.korean){
+      const row=Object.values(window.SoriDataIndex||{}).flat().find(p=>p.k===button.dataset.korean);
+      if(row&&window.SoriPractice?.openPhrase){window.SoriPractice.openPhrase(row.id);return;}
+      show('listen');window.SoriLearn?.openKorean(button.dataset.korean);
+    }
+    else if(button.dataset.category){if(button.closest('#quizView'))return;show('listen');window.SoriLearn?.openCategory(button.dataset.category,button.dataset.situation);}
     else {
       const view=button.classList.contains('logo-home')?'home':button.dataset.go||button.dataset.view;
-      if(view==='listen')window.SoriPractice?.library();
+      if(view==='listen'&&window.SoriPractice?.browse){window.SoriPractice.browse();return;}
       if(view==='newsletter')window.SoriReader?.openFeed();
       const hash=view==='guide'?(window.SoriGuide?.route?.()||'#guide'):({home:'#home',listen:'#speak',newsletter:'#read',quiz:'#quiz'})[view];
       if(hash&&location.hash!==hash)history.pushState(null,'',hash);
@@ -37,7 +42,7 @@
   });
   function routeView(){
   const p=new URLSearchParams(location.hash.slice(1));
-  if(p.has('practice')||location.hash==='#speak')return 'listen';
+  if(p.has('practice')||p.has('phrase')||['#speak','#phrases','#collection'].includes(location.hash))return 'listen';
   if(p.has('story')||p.has('subscribe')||p.has('unsubscribe')||location.hash==='#read')return 'newsletter';
   if(p.has('day')||p.has('trip')||p.has('invite')||location.hash==='#guide')return 'guide';
   return ({'#home':'home','#quiz':'quiz'})[location.hash]||null;
