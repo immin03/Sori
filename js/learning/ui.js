@@ -1,8 +1,8 @@
 import {PracticeProgress} from './progress.js?v=20261120s1';
 import {scenes} from './scenes.js?v=20261120s1';
 import {attachVoiceReply,recorderControls} from './voice-reply.js?v=20261121vocab';
-import {DailyVocabulary} from './vocabulary.js?v=20261121vocab';
-import {vocabularyCard,mountVocabulary} from './vocabulary-ui.js?v=20261121vocab';
+import {DailyVocabulary} from './vocabulary.js?v=20261121q1';
+import {vocabularyCard,mountVocabulary} from './vocabulary-ui.js?v=20261121q1';
 import {mountPhraseSearch} from './phrase-search.js?v=20261120s1';
 import {sharePublic} from '../share-public.js?v=20261121trip';
 

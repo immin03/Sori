@@ -232,3 +232,7 @@ button, input { font-family: var(--type); }
   .vocab-card > button { width: 100%; }
   .vocab-next .sori-primary { flex: 1; }
 }
+.vocab-audio-row { display: flex; align-items: center; flex-wrap: wrap; gap: 7px 12px; margin-top: 15px; }
+.vocab-audio-toggle { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 8px 16px; font-size: 15px; }
+.vocab-audio-toggle svg { flex: none; }
+.cue-status { color: var(--muted); font-size: 14px; }
