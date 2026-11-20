@@ -10,7 +10,7 @@ export const isKoreaPoint=p=>p&&typeof p.lat==='number'&&typeof p.lng==='number'
 export function kmBetween(a,b){if(!a||!b)return 0;const r=Math.PI/180,dlat=(b.lat-a.lat)*r,dlng=(b.lng-a.lng)*r,x=Math.sin(dlat/2)**2+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(dlng/2)**2;return 6371*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));}
 export function googleLeg(from,to,mode='transit'){
  const point=p=>p?(p.lat!=null?`${p.lat},${p.lng}`:p.label||p.name):'';
- const q=new URLSearchParams({api:'1',destination:point(to),travelmode:['walking','driving','transit'].includes(mode)?mode:'transit'});if(from)q.set('origin',point(from));
+ const q=new URLSearchParams({api:'1',hl:'en',destination:point(to),travelmode:['walking','driving','transit'].includes(mode)?mode:'transit'});if(from)q.set('origin',point(from));
  return 'https://www.google.com/maps/dir/?'+q;
 }
 export function basePoint(journey={},currentPoint=null){if(journey.origin==='current')return currentPoint;if(journey.origin==='airport')return AIRPORTS[journey.arrival]||journey.hotel||null;return journey.hotel||null;}

@@ -1,4 +1,4 @@
-import {sharePublic} from '../share-public.js?v=20261120ux1';
+import {sharePublic} from '../share-public.js?v=20261121trip';
 import {matchingStories,nextStory} from './archive.js?v=20261120ux1';
 /* Korea 101 lives inside Sori. Public story sharing never includes trip invites. */
 const root=document.getElementById('newsletterView'),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

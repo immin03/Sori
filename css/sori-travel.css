@@ -1,0 +1,108 @@
+/* Photo-led city guides. All controls stay in the normal reading order on a phone. */
+#guideView { --travel-ink: #28251f; --travel-line: #d8d4ca; }
+#guideView .guide-message:empty, #guideView .share-feedback:empty { display: none; }
+#guideView .city-intro { padding: clamp(22px, 5vw, 56px) 0 21px; }
+#guideView .city-intro h1, #guideView .trip-cover h1 {
+  margin: 0; font: 680 clamp(2.15rem, 6vw, 4rem)/1.08 var(--type);
+  letter-spacing: -.055em; text-wrap: balance;
+}
+#guideView .city-intro p, #guideView .trip-invitation {
+  margin: 10px 0 0; color: var(--muted); font-size: 1.05rem; line-height: 1.55;
+}
+#guideView .city-postcards { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(12px, 2.4vw, 26px); }
+#guideView .city-postcard, #guideView .trip-cover {
+  position: relative; overflow: hidden; isolation: isolate; border-radius: 14px;
+  background: #44463d; color: #fff; min-width: 0;
+}
+#guideView .city-postcard {
+  display: block; text-align: left; width: 100%; aspect-ratio: 1.35;
+  padding: 0; border: 0; cursor: pointer;
+}
+#guideView .city-postcard > img, #guideView .trip-cover > img {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2;
+}
+#guideView .city-postcard::after, #guideView .trip-cover::after {
+  position: absolute; inset: 0; content: ""; z-index: -1;
+  background: linear-gradient(180deg, transparent 24%, rgb(18 21 19 / .16) 46%, rgb(12 16 14 / .84) 100%);
+}
+#guideView .city-card-text, #guideView .trip-cover > div {
+  position: absolute; left: clamp(18px, 3vw, 32px); right: 18px; bottom: clamp(16px, 2.7vw, 29px);
+}
+#guideView .city-card-text strong { display: block; font-size: clamp(2.15rem, 5vw, 3.55rem); line-height: 1.1; letter-spacing: -.05em; font-weight: 680; }
+#guideView .city-card-text span { display: block; margin-top: 4px; font-size: 1rem; line-height: 1.45; }
+#guideView .custom-plan, #guideView .trip-setup-panel, #guideView .more-days { margin-top: 26px; }
+#guideView .custom-plan { border-block: 1px solid var(--travel-line); }
+#guideView .custom-plan > summary, #guideView .trip-preferences > summary, #guideView .english-map > summary {
+  min-height: 48px; padding: 14px 0; font-size: 1rem; font-weight: 640; cursor: pointer;
+}
+#guideView .quick-form { padding: 2px 0 20px; max-width: 760px; }
+#guideView .plan-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(132px, 1fr)); gap: 8px 16px; }
+#guideView .plan-fields label { min-width: 0; font-size: .94rem; font-weight: 550; }
+#guideView .plan-fields :is(input,select) { box-sizing: border-box; width: 100%; min-width: 0; }
+#guideView .trip-preferences { margin: 6px 0 15px; }
+#guideView .quick-form fieldset { border: 0; padding: 0; margin: 15px 0; }
+#guideView .quick-form legend { font-weight: 600; }
+#guideView .plan-chips, #guideView .map-stop-picks { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 14px; }
+#guideView .plan-chips label { position: relative; cursor: pointer; }
+#guideView .plan-chips input { position: absolute; opacity: 0; }
+#guideView .plan-chips span, #guideView .map-stop-picks button {
+  display: inline-flex; align-items: center; min-height: 44px; padding: 7px 12px; box-sizing: border-box;
+  border: 1px solid var(--travel-line); border-radius: 8px; color: var(--ink); background: var(--paper); font-size: .94rem;
+}
+#guideView .plan-chips input:checked + span, #guideView .map-stop-picks button[aria-pressed=true] { color: #fff; border-color: var(--sori); background: var(--sori); }
+#guideView :is(button,a,summary):focus-visible, #guideView .plan-chips input:focus-visible + span { outline: 3px solid #955420; outline-offset: 3px; }
+#guideView .last-trip { margin: 10px 0; }
+#guideView .trip-back { display: inline-block; min-height: 44px; padding: 10px 0; color: var(--muted); }
+#guideView .trip-cover { min-height: 228px; height: clamp(230px, 29vw, 315px); }
+#guideView .trip-cover h1 { color: #fff; font-size: clamp(2rem, 4.5vw, 3.5rem); margin-top: 5px; }
+#guideView .trip-cover > div > span { font-size: .9375rem; line-height: 1.5; font-weight: 580; }
+#guideView .trip-invitation { max-width: 730px; margin-top: 15px; color: var(--travel-ink); }
+#guideView .postcard-actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0 20px; }
+#guideView .postcard-actions button, #guideView .quick-form > button { min-height: 46px; padding: 10px 20px; border-radius: 8px; font-weight: 640; font-size: 1rem; }
+#guideView .postcard-actions .sori-primary, #guideView .quick-form > button { background: var(--sori); color: #fff; border: 1px solid var(--sori); }
+#guideView .postcard-actions .sori-secondary { background: transparent; color: var(--ink); border: 1px solid #aaa398; }
+#guideView .share-feedback { padding: 0 0 12px; color: var(--sori); overflow-wrap: anywhere; }
+#guideView .share-feedback input { width: 100%; min-width: 0; }
+#guideView .travel-columns { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: clamp(20px, 4vw, 42px); align-items: start; }
+#guideView .travel-route, #guideView .travel-details { min-width: 0; }
+#guideView .postcard-stops h2, #guideView .more-days h2 { font-size: 1.35rem; letter-spacing: -.035em; line-height: 1.25; margin: 4px 0 9px; }
+#guideView .postcard-stops ol { list-style: none; padding: 0; margin: 0; }
+#guideView .postcard-stops li { border-top: 1px solid var(--travel-line); }
+#guideView .postcard-stops li:last-child { border-bottom: 1px solid var(--travel-line); }
+#guideView .postcard-stops button {
+  display: grid; grid-template-columns: 28px minmax(0, 1fr) 60px; width: 100%; gap: 12px; align-items: center;
+  min-height: 76px; border: 0; padding: 10px 4px; background: transparent; color: var(--ink); text-align: left; cursor: pointer;
+}
+#guideView .stop-number { border: 1px solid #938b80; border-radius: 50%; width: 26px; height: 26px; display: grid; place-items: center; font-size: .875rem; }
+#guideView .postcard-stops button[aria-pressed=true] .stop-number { background: var(--sori); border-color: var(--sori); color: #fff; }
+#guideView .stop-words strong, #guideView .stop-words small { display: block; }
+#guideView .stop-words strong { font-size: 1.02rem; line-height: 1.35; }
+#guideView .stop-words small { color: var(--muted); font-size: .9rem; line-height: 1.45; margin-top: 3px; }
+#guideView .postcard-stops img { width: 60px; height: 56px; object-fit: cover; border-radius: 6px; }
+#guideView .english-map { margin-top: 13px; border-bottom: 1px solid var(--travel-line); }
+#guideView .english-map, #guideView #selectedPlace { scroll-margin-block-start: 12px; }
+#guideView .google-map-canvas { min-height: 245px; background: var(--wash); border-radius: 8px; overflow: hidden; }
+#guideView .google-map-canvas iframe { display: block; border: 0; width: 100%; height: clamp(245px, 36vw, 400px); }
+#guideView .google-map-link { color: var(--sori); display: inline-block; font-weight: 620; min-height: 44px; padding: 10px 0; }
+#guideView .more-days > div { display: flex; gap: 10px; flex-wrap: wrap; }
+#guideView .more-days button { display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 0 12px 0 0; font-size: .96rem; color: var(--ink); background: transparent; border-radius: 8px; overflow: hidden; border: 1px solid var(--travel-line); text-align: left; }
+#guideView .more-days img { width: 70px; height: 58px; object-fit: cover; }
+#guideView .selected-place { background: transparent; }
+#guideView .stop-tools { margin: 10px 0; border-top: 1px solid var(--travel-line); }
+#guideView .stop-tools summary { min-height: 44px; padding: 10px 0; cursor: pointer; }
+#guideView .day-tabs { background: transparent; margin: 0 0 15px; }
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  #guideView .city-postcard > img { transition: transform .24s ease-out; }
+  #guideView .city-postcard:hover > img { transform: scale(1.035); }
+}
+@media (max-width: 750px) {
+  #guideView .travel-columns { grid-template-columns: minmax(0,1fr); }
+}
+@media (max-width: 565px) {
+  #guideView .city-postcards { grid-template-columns: minmax(0,1fr); gap: 11px; }
+  #guideView .city-postcard { aspect-ratio: 2.05; }
+  #guideView .city-intro { padding-top: 17px; }
+  #guideView .trip-cover { min-height: 195px; height: 29vh; max-height: 260px; }
+  #guideView .postcard-actions button { flex: 1 1 110px; padding-inline: 12px; }
+  #guideView .more-days button { width: 100%; }
+}

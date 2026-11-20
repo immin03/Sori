@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Our Busan itinerary · Busan | Sori</title>
+  <meta name="description" content="Open the itinerary to see the places we picked in Busan, in visit order.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Sori">
+  <meta property="og:title" content="Our Busan itinerary · Busan | Sori">
+  <meta property="og:description" content="Open the itinerary to see the places we picked in Busan, in visit order.">
+  <meta property="og:image" content="https://sorikorea.com/assets/photos/gamcheon.jpg">
+  <meta property="og:image:alt" content="Busan travel photograph">
+  <meta property="og:url" content="https://sorikorea.com/explore/busan/">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="https://sorikorea.com/explore/busan/">
+  <style>body{max-width:48rem;margin:2rem auto;padding:0 1rem;font:1.1rem/1.6 system-ui;color:#28251f}img{max-width:100%;height:auto}a{color:#923822}</style>
+</head>
+<body>
+  <h1>Our Busan itinerary</h1><p>Open the itinerary to see the places we picked in Busan, in visit order.</p>
+  <p><a href="/#day=busan">Open itinerary in Sori</a></p>
+  <img src="/assets/photos/gamcheon.jpg" alt="Busan">
+  <script>
+    const target = new URLSearchParams("day=busan");
+    for (const stops of new URLSearchParams(location.search).getAll('stops')) target.append('stops', stops);
+    location.replace('/#' + target.toString());
+  </script>
+</body>
+</html>
