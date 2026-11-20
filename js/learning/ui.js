@@ -1,8 +1,9 @@
 import {PracticeProgress} from './progress.js?v=20261120s1';
 import {scenes} from './scenes.js?v=20261120s1';
-import {attachVoiceReply,recorderControls} from './voice-reply.js?v=20261121vocab';
-import {DailyVocabulary} from './vocabulary.js?v=20261121q1';
-import {vocabularyCard,mountVocabulary} from './vocabulary-ui.js?v=20261121q1';
+import {attachVoiceReply,recorderControls} from './voice-reply.js?v=20261121library';
+import {DailyVocabulary} from './vocabulary.js?v=20261121library';
+import {vocabularyCard,mountVocabulary} from './vocabulary-ui.js?v=20261121library';
+import {showVocabularyLibrary} from './vocabulary-library.js?v=20261121library';
 import {mountPhraseSearch} from './phrase-search.js?v=20261120s1';
 import {sharePublic} from '../share-public.js?v=20261121trip';
 
@@ -86,7 +87,12 @@ function openVocabulary(start = false) {
   viewRoot().classList.add('practice-session-active');
   const target = el('practiceSession');
   target.hidden = false;
-  voice = mountVocabulary(target, dailyWords, window, {start, onProgress:paintHome});
+  const params = new URLSearchParams(location.hash.slice(1)), page = params.get('view');
+  if (['topics','topic','words'].includes(page) || (page === 'round' && !dailyWords.custom())) {
+    showVocabularyLibrary(target,dailyWords,params);
+  } else {
+    voice = mountVocabulary(target, dailyWords, window, {start, custom:page === 'round', onProgress:paintHome});
+  }
   window.scrollTo({top:0,behavior:'instant'});
 }
 function view(kind, {fresh = false, pool, play = false} = {}) {
@@ -161,7 +167,24 @@ function boot() {
 }
 document.addEventListener('click',event => {
   const b = event.target.closest('button'); if (!b || !progress) return;
-  if (b.hasAttribute('data-open-vocabulary')) { changeHash('#practice=vocabulary'); openVocabulary(true); }
+  if (b.hasAttribute('data-vocab-difficulty')) {
+    if (dailyWords.difficulty() !== b.dataset.vocabDifficulty) {
+      dailyWords.setDifficulty(b.dataset.vocabDifficulty); paintHome();
+      if (new URLSearchParams(location.hash.slice(1)).get('practice') === 'vocabulary') openVocabulary();
+    }
+    return;
+  }
+  if (b.hasAttribute('data-vocab-start') || b.hasAttribute('data-vocab-review')) {
+    const round = b.hasAttribute('data-vocab-review') ? dailyWords.startReview(b.dataset.vocabReview) :
+      dailyWords.startTopic(b.dataset.vocabStart,b.dataset.vocabLevel || dailyWords.difficulty(),b.dataset.vocabWord);
+    if (round) { changeHash('#practice=vocabulary&view=round'); openVocabulary(true); }
+    return;
+  }
+  if (b.hasAttribute('data-open-vocabulary')) {
+    const day = dailyWords.today();
+    if (day.index === day.words.length) { dailyWords.setIndex(0,day.day); paintHome(); }
+    changeHash('#practice=vocabulary'); openVocabulary(true);
+  }
   if (b.matches('[data-audio],[data-repeat-current],#playBtn')) { voice?.onModel(); lessonVoice?.onModel(); }
   if (Object.hasOwn(scenes,b.dataset.scene)) { changeHash('#practice=' + b.dataset.scene); view(b.dataset.scene,{play:true}); }
   if (b.matches('[data-practice-start],[data-practice-new]')) view('daily',{fresh:b.hasAttribute('data-practice-new')});
