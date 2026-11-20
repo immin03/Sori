@@ -328,7 +328,7 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 <link rel="stylesheet" href="css/quiz.css?v=20261119r6">
 <link rel="stylesheet" href="css/announcement.css?v=20261119r6">
 <link rel="stylesheet" href="css/sori-v1.css?v=20261119r6"><link rel="stylesheet" href="assets/vendor/leaflet/leaflet.css?v=1.9.4"><link rel="stylesheet" href="css/sori-map.css?v=20261120ux1"><link rel="stylesheet" href="css/sori-learning.css?v=20261120ux1"><link rel="stylesheet" href="css/sori-stories.css?v=20261120ux1">
-<link rel="stylesheet" href="css/sori-speaking.css?v=20261120s1">
+<link rel="stylesheet" href="css/sori-speaking.css?v=20261121vocab">
 <link rel="stylesheet" href="css/sori-travel.css?v=20261121trip">
 </head>
 <body>
@@ -345,6 +345,7 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 <nav class="mobile-nav" aria-label="Main navigation"><button data-go="home" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10v4m4-8v12m5-16v20m5-16v12m4-8v4"/></svg>Speak</button><button data-go="newsletter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4.7c3.7-.8 6.5-.3 9 1.5 2.5-1.8 5.3-2.3 9-1.5v14c-3.7-.8-6.5-.3-9 1.5-2.5-1.8-5.3-2.3-9-1.5zM12 6.2v13.4"/></svg>Korea 101</button><button data-go="guide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m16.1 7.9-2.6 5.6-5.6 2.6 2.6-5.6z"/></svg>Explore</button></nav>
 <main id="homeView" class="sori-home speak-first">
   <header class="speak-heading"><h1 id="homeTitle">Speak Korean.</h1></header>
+  <section id="dailyVocabulary" aria-label="Daily speaking practice"></section>
   <section class="phrase-finder" data-phrase-finder="home"><div class="finder-title"><label for="homePhraseSearch">Find a phrase</label><button type="button" class="text-button" data-browse-phrases>Browse all <span aria-hidden="true">↗</span></button></div><div class="search-field"><span aria-hidden="true"></span><input id="homePhraseSearch" type="search" placeholder="Try hello, 안녕 or annyeong" autocomplete="off"></div><div class="phrase-topics" data-topics aria-label="Filter by situation"></div><p role="status" aria-live="polite"></p><div data-phrase-list></div><button type="button" class="text-button" data-more-phrases hidden>Show more expressions</button></section>
   <section id="practiceDashboard" aria-label="Conversation practice"></section>
 </main>
@@ -567,9 +568,9 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 <script type="module" src="/js/firebase-init.js?v=20261119r6" defer></script>
 <script type="module" src="/js/auth.js?v=20261119r6" defer></script>
 <script defer src="js/tts.js?v=20261119r6"></script>
-<script defer src="js/app.js?v=20261120s1"></script><script defer src="js/practice.js?v=20261120s1"></script>
+<script defer src="js/app.js?v=20261120s1"></script><script defer src="js/practice.js?v=20261121vocab"></script>
 <script defer src="js/sidebar.js?v=20261121trip"></script>
-<script defer src="assets/vendor/leaflet/leaflet.js?v=1.9.4"></script><script type="module" src="js/guide/ui.js?v=20261121trip"></script><script type="module" src="js/learning/ui.js?v=20261121trip"></script><script type="module" src="js/stories/ui.js?v=20261121trip"></script>
+<script defer src="assets/vendor/leaflet/leaflet.js?v=1.9.4"></script><script type="module" src="js/guide/ui.js?v=20261121trip"></script><script type="module" src="js/learning/ui.js?v=20261121vocab"></script><script type="module" src="js/stories/ui.js?v=20261121trip"></script>
 <script defer src="js/quiz.js?v=20261119r6"></script>
 
 

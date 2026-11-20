@@ -26,24 +26,30 @@ export function speechService(env) {
 }
 
 // A user can stop the recorder before the browser returns its final transcript.
-export function listenForWords(env, track, onResult, onUnavailable) {
+export function listenForWords(env, track, onResult, onUnavailable, {onInterim, onStart, onSpeechEnd} = {}) {
   const Recognition = speechService(env);
   const reader = new Recognition();
   reader.lang = 'ko-KR';
   reader.continuous = false;
-  reader.interimResults = false;
+  reader.interimResults = Boolean(onInterim);
   reader.maxAlternatives = 1;
   let ended = false;
   function finish(callback) {
     if (ended) return;
     ended = true;
-    reader.onresult = reader.onerror = reader.onend = null;
+    reader.onresult = reader.onerror = reader.onend = reader.onstart = reader.onspeechend = null;
     callback();
   }
   reader.onresult = event => {
-    const result = Array.from(event.results).slice(event.resultIndex || 0).find(row => row.isFinal);
-    if (result?.[0]) finish(() => onResult(result[0].transcript.trim(), result[0].confidence));
+    if (ended) return;
+    const rows = Array.from(event.results).filter(row => row[0]);
+    if (!rows.length) return;
+    const text = rows.map(row => row[0].transcript.trim()).join(' ');
+    if (rows.every(row => row.isFinal)) finish(() => onResult(text, rows.at(-1)[0].confidence));
+    else onInterim?.(text);
   };
+  reader.onstart = () => { if (!ended) onStart?.(); };
+  reader.onspeechend = () => { if (!ended) onSpeechEnd?.(); };
   reader.onerror = event => finish(() => onUnavailable(event.error));
   reader.onend = () => finish(() => onUnavailable('no-speech'));
   try {
@@ -57,7 +63,7 @@ export function listenForWords(env, track, onResult, onUnavailable) {
     stop() { if (!ended) { try { reader.stop(); } catch { finish(() => onUnavailable('no-speech')); } } },
     cancel() {
       ended = true;
-      reader.onresult = reader.onerror = reader.onend = null;
+      reader.onresult = reader.onerror = reader.onend = reader.onstart = reader.onspeechend = null;
       try { reader.abort(); } catch {}
     }
   };

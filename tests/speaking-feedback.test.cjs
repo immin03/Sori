@@ -170,3 +170,93 @@ test('on-device checking keeps silence ungraded and cancels unfinished model loa
   await assert.rejects(loading,{name:'AbortError'});
   assert.equal(jobs[0].terminated,true);
 });
+
+test('daily vocabulary introduces clothes, rotates by local date and resumes only the learner’s own lesson', async () => {
+  const {DailyVocabulary, vocabulary} = await import('../js/learning/vocabulary.js');
+  const {vocabularyCard} = await import('../js/learning/vocabulary-ui.js');
+  const {checkWords} = await import('../js/learning/word-check.js');
+  const raw = new Map();
+  const storage = {getItem:key => raw.get(key), setItem:(key, value) => raw.set(key, value)};
+  let date = new Date(2026, 10, 20, 23, 50);
+  const make = (user = null) => new DailyVocabulary(storage, user, () => date);
+  const lesson = make(), first = lesson.today();
+  assert.deepEqual(first.words.map(q => q.word), ['옷','물','지하철역']);
+  assert.match(vocabularyCard(lesson), /I need to buy new clothes/);
+  assert.doesNotMatch(vocabularyCard(lesson), /옷/);
+  for (const q of vocabulary) {
+    assert.equal(q.sentence, q.before + q.word + q.after);
+    for (const answer of [q.sentence, ...q.accepted]) assert.equal(checkWords(q.sentence, answer, q.accepted).kind, 'correct');
+  }
+  for (const answer of ['새 옷을 사야 돼요.', '옷', '옷을', '새옷을사야해요']) {
+    const q = first.words[0];
+    assert.equal(checkWords(q.sentence, answer, q.accepted).kind, 'correct');
+  }
+  for (const answer of ['신발', '새 옷을 사면 안 돼요', '헌 옷을 사야 해요', '옷을 팔아야 해요']) {
+    const q = first.words[0];
+    assert.equal(checkWords(q.sentence, answer, q.accepted).kind, 'retry');
+  }
+  lesson.setIndex(1, first.day); assert.equal(make().today().index, 1);
+  assert.equal(make('another-learner').today().index, 0);
+  lesson.setIndex(3, first.day); assert.match(vocabularyCard(lesson), /Review today’s words/);
+  date = new Date(2026, 10, 21, 0, 1);
+  assert.equal(lesson.today().index, 0);
+  assert.notDeepEqual(lesson.today().words, first.words);
+  lesson.setIndex(2, first.day); assert.equal(lesson.today().index, 0);
+  const blockedStorage = {getItem(){throw Error();},setItem(){throw Error();}};
+  const transient = new DailyVocabulary(blockedStorage, null, () => date);
+  transient.setIndex(1, transient.today().day); assert.equal(transient.today().index, 1);
+});
+
+test('speaking a blank shows interim Korean and grades the final answer in the same event without a recorder or submit', async () => {
+  const {vocabulary} = await import('../js/learning/vocabulary.js');
+  const {attachVoiceReply} = await import('../js/learning/voice-reply.js');
+  const f = fixture(), q = vocabulary[0];
+  delete f.env.MediaRecorder;
+  delete f.env.navigator.mediaDevices;
+  const attempts = [];
+  const control = attachVoiceReply(f.container, f.env, q.sentence, q.accepted,
+    (kind, heard) => attempts.push({kind, heard}), {exercise:true});
+  const status = f.query('[role=status]'), interim = f.query('[data-interim]');
+  assert.equal(f.readers.length, 0); // Merely opening a lesson never opens the mic.
+  control.start();
+  const first = f.readers[0];
+  assert.equal(first.interimResults, true); assert.equal(first.lang, 'ko-KR');
+  first.onstart(); assert.match(status.textContent, /Listening/);
+  const result = (text, isFinal) => ({isFinal, 0:{transcript:text,confidence:.95}});
+  first.onresult({results:[result('새 옷을', false)],resultIndex:0});
+  assert.equal(interim.textContent, '새 옷을'); assert.deepEqual(attempts, []);
+  first.onspeechend(); assert.ok(first.stopped); assert.deepEqual(attempts, []);
+  const late = first.onresult;
+  first.onresult({results:[result('새 옷을', true), result('사야 돼요', true)], resultIndex:1});
+  assert.deepEqual(attempts, [{kind:'correct',heard:'새 옷을 사야 돼요'}]);
+  assert.equal(status.textContent, 'Correct!'); assert.equal(interim.textContent, '');
+  late({results:[result('옷', true)]}); assert.equal(attempts.length, 1);
+  control.start(); f.readers[1].final('신발'); assert.equal(attempts[1].kind, 'retry');
+  control.start(); f.readers[2].final('옷'); assert.equal(attempts[2].kind, 'correct');
+  assert.equal(f.query('audio').hidden, true);
+  control.dispose();
+});
+
+test('silence, a blocked mic, recognition timeout and leaving a vocabulary question never give an incorrect grade', async () => {
+  const {attachVoiceReply} = await import('../js/learning/voice-reply.js');
+  const f = fixture(), status = f.query('[role=status]');
+  const control = attachVoiceReply(f.container, f.env, '옷', [], kind => f.verdicts.push(kind), {exercise:true});
+  control.start(); f.readers[0].onerror({error:'no-speech'});
+  assert.equal(f.verdicts.at(-1), 'unclear');
+  control.start(); f.readers[1].onerror({error:'not-allowed'});
+  assert.match(status.textContent, /Microphone access is off/); assert.equal(f.verdicts.at(-1), 'unavailable');
+  control.start(); f.readers[2].final('옷', .2); assert.equal(f.verdicts.at(-1), 'unclear');
+  control.start(); f.readers[3].onspeechend();
+  [...f.timers.values()].find(t => t.ms === 4500).fn();
+  assert.equal(f.verdicts.at(-1), 'unavailable');
+  control.start(); const stale = f.readers[4].onresult;
+  control.onModel(); assert.ok(f.readers[4].aborted);
+  stale({results:[{isFinal:true, 0:{transcript:'신발',confidence:1}}]});
+  assert.deepEqual(f.verdicts, ['unclear','unavailable','unclear','unavailable']);
+  control.dispose();
+  const unsupported = fixture({supported:false});
+  const fallback = attachVoiceReply(unsupported.container, unsupported.env, '옷', [], ()=>{}, {exercise:true});
+  assert.equal(unsupported.query('[data-record-reply]').disabled, true);
+  assert.match(unsupported.query('[role=status]').textContent, /type your answer/);
+  fallback.dispose();
+});

@@ -10,7 +10,7 @@
   playingButton = button;
   setLabel('Loading…');
   button.setAttribute('aria-busy','true');
-  const scope = button.closest('.today-practice,.place-language,.session-answer,.speaker-cue,.story-body,.story-korean');
+  const scope = button.closest('.today-practice,.place-language,.session-answer,.speaker-cue,.vocab-exercise,.story-body,.story-korean');
   let status = scope?.querySelector('.audio-status');
   if (!status) {
     status = document.createElement('div');
