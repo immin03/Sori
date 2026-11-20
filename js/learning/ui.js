@@ -2,7 +2,7 @@ import {PracticeProgress} from './progress.js?v=20261120s1';
 import {scenes} from './scenes.js?v=20261120s1';
 import {attachVoiceReply,recorderControls} from './voice-reply.js?v=20261120s1';
 import {mountPhraseSearch} from './phrase-search.js?v=20261120s1';
-import {sharePublic} from '../share-public.js?v=20261120ux1';
+import {sharePublic} from '../share-public.js?v=20261121trip';
 
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const el = id => document.getElementById(id);

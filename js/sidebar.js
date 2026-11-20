@@ -6,6 +6,11 @@
   function show(view){
     if(!Object.hasOwn(views,view))view='home';window.SORI?.TTS?.cancel();
     for(const [name,id] of Object.entries(views)){const element=document.getElementById(id);if(element)element.style.display=name===view?'block':'none';}
+    const shareButton=document.getElementById('shareSori');
+    if(shareButton){
+      const label=view==='guide'&&window.SoriGuide?.hasTrip()?'Share itinerary':'Share Sori';
+      shareButton.textContent=label;shareButton.title=label;
+    }
     const bridge=document.querySelector('.learning-trip-bridge');if(bridge)bridge.hidden=!window.SoriGuide?.hasTrip();
     document.querySelectorAll('[data-view],.sori-nav [data-go],.mobile-nav [data-go]').forEach(b=>{const target=b.dataset.view||b.dataset.go;
       const active=target===view||(b.dataset.go==='home'&&view==='listen');b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});
@@ -13,6 +18,7 @@
   }
   window.SoriNav={show};
   document.getElementById('shareSori')?.addEventListener('click',async()=>{
+    if(document.getElementById(views.guide).style.display==='block' && window.SoriGuide?.hasTrip()){await window.SoriGuide.share();return;}
     const url=location.origin+location.pathname;
     try { if(navigator.share)await navigator.share({title:'Sori · Everyday Korean, with places to use it',url});
       else {await navigator.clipboard.writeText(url);let note=document.getElementById('shareStatus');if(!note){note=document.createElement('p');note.id='shareStatus';note.setAttribute('role','status');document.querySelector('.header').after(note);}note.textContent='Sori link copied. Your private trip invitation was not included.';}

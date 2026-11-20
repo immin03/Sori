@@ -15,11 +15,11 @@ export function validatePlan(plan,catalog){
 export function generatePlan(input,catalog){
   const start=parseDate(input.start),end=parseDate(input.end);const count=Math.round((end-start)/86400000)+1;
   if(count<1||count>3)throw Error('Choose a trip of 1 to 3 days. Longer trips are coming later.');
-  if(!Object.hasOwn(AREAS,input.area))throw Error('Choose your starting area.');
+  if(input.area!=='auto'&&!Object.hasOwn(AREAS,input.area))throw Error('Choose your starting area.');
   if(!['relaxed','balanced'].includes(input.pace)||!['local','mild','vegetarian'].includes(input.food))throw Error('Choose your travel preferences.');
   const interests=(Array.isArray(input.interests)?input.interests:[]).filter(x=>['culture','cafes','beauty','design','crafts','parks','shopping','food'].includes(x));
   const city=input.city||cityForArea(input.area);
-  if(!Object.hasOwn(CITIES,city)||cityForArea(input.area)!==city)throw Error('Choose an area in your selected city.');
+  if(!Object.hasOwn(CITIES,city)||(input.area!=='auto'&&cityForArea(input.area)!==city))throw Error('Choose an area in your selected city.');
   const preferred=Array.isArray(input.areas)?input.areas:[];
   const rank=Object.keys(AREAS).filter(area=>cityForArea(area)===city).map((area,index)=>({area,score:(area===input.area?24:0)+(preferred.includes(area)?12:0)+catalog.filter(p=>p.area===area&&interests.includes(p.tag)).length*2,index})).sort((a,b)=>b.score-a.score||a.index-b.index);
   const days=[];
@@ -35,7 +35,28 @@ export function generatePlan(input,catalog){
   }
   return validatePlan({title:'Our '+CITIES[city]+', together',food:input.food,pace:input.pace,days},catalog);
 }
-export function mapLink(place){return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(place.ko+' '+CITIES[cityForArea(place.area)]+', South Korea');}
+// Flexible neighbourhood stops use a real district or beach as their map destination.
+const mapPlaces = {
+  insadong:'Insadong-gil', myeongdong:'Myeongdong Shopping Street', namsan:'N Seoul Tower',
+  coffee:'Center Coffee Seongsu', seongsu:'Seongsu-dong', shoes:'Seongsu Handmade Shoe Street',
+  hongdae:'Hongdae Street', 'hongdae-cafe':'cafés near Hongik University Station',
+  'hongdae-food':'restaurants near Hongik University Station', 'coex-shops':'Starfield COEX Mall',
+  'coex-food':'restaurants at Starfield COEX Mall', mipo:'Mipo Port, Haeundae',
+  'haeundae-cafe':'cafés near Haeundae Beach', 'haeundae-food':'restaurants near Haeundae Beach',
+  'gwangalli-cafe':'cafés near Gwangalli Beach', 'gwangalli-food':'restaurants near Gwangalli Beach',
+  nampo:'Nampo-dong'
+};
+function englishPlace(place){
+  return (mapPlaces[place.id] || place.name) + ', ' + CITIES[cityForArea(place.area)] + ', South Korea';
+}
+export function mapLink(place){
+  const query=new URLSearchParams({api:'1',query:englishPlace(place),hl:'en'});
+  return 'https://www.google.com/maps/search/?'+query;
+}
+export function placeEmbed(place){
+  const query=new URLSearchParams({q:englishPlace(place),ll:place.lat+','+place.lng,z:'15',hl:'en',output:'embed'});
+  return 'https://www.google.com/maps?'+query;
+}
 export function naverLink(place){return 'https://map.naver.com/p/search/'+encodeURIComponent(place.ko+' '+(cityForArea(place.area)==='busan'?'부산':'서울'));}
-export function directionsLink(place){return 'https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(place.ko+' '+CITIES[cityForArea(place.area)]+', South Korea');}
+export function directionsLink(place){return 'https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(englishPlace(place))+'&hl=en';}
 export function phraseForPlace(place){return PHRASES[place.tag==='food'?0:place.tag==='cafes'?2:['shopping','beauty','crafts'].includes(place.tag)?1:3];}
