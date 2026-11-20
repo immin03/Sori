@@ -171,13 +171,15 @@ test('on-device checking keeps silence ungraded and cancels unfinished model loa
   assert.equal(jobs[0].terminated,true);
 });
 
-test('daily vocabulary introduces clothes, rotates by local date and resumes only the learner’s own lesson', async () => {
+test('an existing daily lesson keeps its original words, rotates by local date and resumes only for its learner', async () => {
   const {DailyVocabulary, vocabulary} = await import('../js/learning/vocabulary.js');
   const {vocabularyCard} = await import('../js/learning/vocabulary-ui.js');
   const {checkWords} = await import('../js/learning/word-check.js');
   const raw = new Map();
   const storage = {getItem:key => raw.get(key), setItem:(key, value) => raw.set(key, value)};
   let date = new Date(2026, 10, 20, 23, 50);
+  const originalDay = Date.UTC(2026,10,20) / 86400000;
+  storage.setItem('sori:vocabulary:v1:device',JSON.stringify({anchor:originalDay,day:originalDay,index:0}));
   const make = (user = null) => new DailyVocabulary(storage, user, () => date);
   const lesson = make(), first = lesson.today();
   assert.deepEqual(first.words.map(q => q.word), ['옷','물','지하철역']);
@@ -284,14 +286,14 @@ test('opening vocabulary from home plays the question before listening, and the 
   let plays = 0;
   audio.play = () => { plays++; audio.ended = false; return Promise.resolve(); };
   const lesson = mountVocabulary(target, daily, f.env, {start:true});
-  assert.match(target.markup, /new-clothes\.mp3/);
+  assert.ok(target.markup.includes(daily.today().words[0].audioId + '.mp3'));
   assert.equal(plays, 1); assert.equal(f.readers.length, 0);
   audio.onplaying(); assert.match(f.query('[data-question-status]').textContent, /Playing question/);
   assert.equal(f.readers.length, 0);
   audio.ended = true; audio.onended(); assert.equal(f.readers.length, 1);
-  f.readers[0].final('옷');
+  f.readers[0].final(daily.today().words[0].word);
   f.query('[data-next-word]').onclick();
-  assert.match(target.markup, /some-water\.mp3/);
+  assert.ok(target.markup.includes(daily.today().words[1].audioId + '.mp3'));
   assert.equal(plays, 2); assert.equal(f.readers.length, 1);
   audio.onplaying(); audio.ended = true; audio.onended(); assert.equal(f.readers.length, 2);
   f.query('[data-hear-question]').onclick(); assert.ok(f.readers[1].aborted);

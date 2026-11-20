@@ -11,11 +11,11 @@ function playbackFixture() {
 }
 
 test('every vocabulary question has its own bundled MPEG audio', async () => {
-  const {vocabulary} = await import('../js/learning/vocabulary.js');
+  const {vocabulary,allQuestions} = await import('../js/learning/vocabulary.js');
   const {vocabularyCard} = await import('../js/learning/vocabulary-ui.js');
   const folder = path.resolve(__dirname, '../assets/audio/questions');
-  const names = vocabulary.map(q => q.audioId + '.mp3');
-  assert.equal(new Set(names).size, vocabulary.length);
+  const names = allQuestions.map(q => q.audioId + '.mp3');
+  assert.equal(new Set(names).size, allQuestions.length);
   assert.deepEqual(fs.readdirSync(folder).sort(), names.slice().sort());
   for (const name of names) {
     const clip = fs.readFileSync(path.join(folder, name));

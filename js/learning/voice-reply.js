@@ -1,3 +1,4 @@
+import {paintTranscript} from './speech-highlight.js?v=20261121library';
 import {checkOnDevice, supportsDeviceCheck} from './device-words.js?v=20261120s1';
 import {checkWords, listenForWords, playChime, prepareChime, speechService} from './word-check.js?v=20261121vocab';
 
@@ -5,7 +6,7 @@ export function recorderControls({exercise = false} = {}) {
   return `<div class="reply-recorder${exercise ? ' vocab-mic' : ''}">
     <button class="sori-primary record-action" data-record-reply type="button">Record my reply</button>
     <p role="status" aria-live="polite" aria-atomic="true"></p>
-    ${exercise ? '<p class="vocab-heard" lang="ko" data-interim></p>' : ''}
+    <p class="vocab-heard" lang="ko" aria-hidden="true" data-interim></p>
     <div class="check-result" data-check-result hidden></div>
     <audio controls hidden aria-label="Play your recorded reply"></audio>
     <button class="text-button" data-compare-reply hidden type="button">Hear the example, then my reply</button>
@@ -59,7 +60,7 @@ function watchForPause(env, stream, finish) {
   } catch { close(); }
 }
 
-export function attachVoiceReply(container, env = window, example = '', alternatives = [], onVerdict = () => {}, {exercise = false, onBegin} = {}) {
+export function attachVoiceReply(container, env = window, example = '', alternatives = [], onVerdict = () => {}, {exercise = false, onBegin, onTranscript} = {}) {
   const get = selector => container.querySelector(selector);
   const record = get('[data-record-reply]'), player = get('audio'), compare = get('[data-compare-reply]');
   const status = get('[role=status]'), result = get('[data-check-result]');
@@ -71,7 +72,8 @@ export function attachVoiceReply(container, env = window, example = '', alternat
   let deviceMode = canUseDevice && preference(env,'device',undefined,false);
   let model = example, clip = null, lastBlob = null, active = null, version = 0, disposed = false;
   let microphoneBlocked = false;
-  const interim = exercise ? get('[data-interim]') : null;
+  const interim = get('[data-interim]');
+  function updateTranscript(text) { paintTranscript(interim,text); onTranscript?.(text); }
   const canSpeak = () => exercise ? Boolean(canCheck || deviceMode) : canRecord;
 
   function updateSettings() {
@@ -106,7 +108,7 @@ export function attachVoiceReply(container, env = window, example = '', alternat
   function hideResult() {
     result.hidden = true;
     result.replaceChildren?.();
-    if (interim) interim.textContent = '';
+    updateTranscript('');
   }
   function showResult(kind, heard, focus) {
     if (!result.ownerDocument) return;
@@ -152,7 +154,8 @@ export function attachVoiceReply(container, env = window, example = '', alternat
           ? 'Microphone access is off. Allow it in your browser or type your answer.'
           : canUseDevice ? 'Voice checking is unavailable right now. Try on-device checking or type your answer.' : 'Voice checking is unavailable right now. You can type your answer.';
       }
-      if (interim) interim.textContent = '';
+      paintTranscript(interim,'');
+      onTranscript?.(take.heard || '');
       status.textContent = messages[verdict.kind];
       showResult(verdict.kind, take.heard, verdict.focus);
       if (sound.checked && ['correct','retry'].includes(verdict.kind)) playChime(verdict.kind);
@@ -190,7 +193,7 @@ export function attachVoiceReply(container, env = window, example = '', alternat
     if (take.recorder?.state === 'recording') take.recorder.stop();
     release(take.stream); take.stream = null;
     status.textContent = '';
-    if (interim) interim.textContent = '';
+    updateTranscript('');
     updateSettings();
   }
   function onModel() { player.pause(); cancelTake(); }
@@ -270,11 +273,11 @@ export function attachVoiceReply(container, env = window, example = '', alternat
       take.listener = listenForWords(env, track,
         (text, confidence) => verdict(checkWords(model, text, alternatives, confidence), text),
         reason => verdict({kind:reason === 'no-speech' ? 'unclear' : 'unavailable'}, '', reason),
-        exercise ? {
-          onStart() { if (take === active && !take.stopping) status.textContent = 'Listening…'; },
-          onInterim(text) { if (take === active) interim.textContent = text; },
-          onSpeechEnd() { stop(take); }
-        } : {});
+        {
+          onStart() { if (exercise && take === active && !take.stopping) status.textContent = 'Listening…'; },
+          onInterim(text) { if (take === active) updateTranscript(text); },
+          onSpeechEnd() { if (exercise) stop(take); }
+        });
     } catch (error) { verdict({kind:'unavailable'}, '', error.name === 'NotAllowedError' ? 'not-allowed' : error.name); }
   }
   record.onclick = async () => {
