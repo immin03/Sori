@@ -185,3 +185,50 @@ button, input { font-family: var(--type); }
 .device-choice { display: grid; gap: 5px; margin: 4px 0; }
 .device-choice small { color: var(--muted); font-size: 12px; }
 .device-choice .sori-secondary { justify-self: start; font-size: 14px; min-height: 44px; }
+
+#dailyVocabulary { margin: 15px 0 28px; }
+.vocab-card,.vocab-prompt {
+  background: #f6eee4; border: 1px solid #e5d5c4; border-radius: 15px;
+  padding: clamp(18px,4vw,34px);
+}
+.vocab-card header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.vocab-card header h2 { margin: 0; color: #8d3727; font-size: 17px; letter-spacing: -.025em; }
+.vocab-card header > span { font-size: 13px; color: #67594c; white-space: nowrap; }
+.vocab-meaning { color: #51483f; font-size: clamp(17px,2.5vw,21px); line-height: 1.45; margin: 0; }
+.vocab-card .vocab-meaning { margin-top: 14px; }
+.vocab-sentence {
+  color: var(--ink); font-size: clamp(24px,5.2vw,38px); font-weight: 650;
+  line-height: 1.6; letter-spacing: -.04em; word-break: keep-all; overflow-wrap: anywhere; margin: 7px 0;
+}
+.vocab-blank {
+  display: inline-block; position: relative; min-width: 2.3em; height: 1.24em; vertical-align: -.12em;
+  margin: 0 .06em; border-bottom: 3px solid #aa553d; background: #efddcc; border-radius: 4px 4px 0 0;
+}
+.vocab-blank[data-result] { height: auto; line-height: 1.25; vertical-align: baseline; text-align: center; color: #833b27; padding: 0 .15em; }
+.vocab-blank[data-result=correct] { background: #dce9dc; border-color: #386247; color: #254a34; }
+.vocab-instruction { color: var(--muted); font-size: 14px; line-height: 1.5; margin: 12px 0; }
+.vocab-card > button,.vocab-next .sori-primary { min-height: 48px; font-size: 16px; padding-inline: 25px; }
+.vocab-prompt { margin: 12px 0; }
+.vocab-prompt .vocab-sentence { margin-bottom: 0; }
+.vocab-exercise { margin-top: 14px; }
+.vocab-mic .voice-settings { display: none; }
+.vocab-mic .vocab-heard { color: var(--ink); font-size: 20px; margin: 0; }
+.vocab-mic p:empty { display: none; }
+.vocab-mic small[data-mic-note] { min-height: 0; font-size: 12px; }
+.vocab-options,.vocab-next { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.vocab-options { margin-top: 8px; }
+.vocab-next { padding-top: 10px; }
+.vocab-type { display: grid; gap: 7px; margin: 13px 0 4px; }
+.vocab-type label { font-size: 14px; font-weight: 600; }
+.vocab-type > div { display: flex; gap: 8px; }
+.vocab-type input { min-width: 0; width: 100%; min-height: 47px; border: 1px solid #bcb4a7; border-radius: 8px; padding: 8px 11px; font-size: 18px; background: var(--paper); }
+.vocab-type button { flex: none; padding-inline: 12px; }
+.vocab-type [role=status] { margin: 0; font-weight: 620; }
+.vocab-finish ul { list-style: none; margin: 12px 0 22px; padding: 0; }
+.vocab-finish li { display: grid; gap: 3px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.vocab-finish li strong { font-size: 22px; }
+.vocab-finish li span { font-size: 15px; color: var(--muted); }
+@media(max-width:480px) {
+  .vocab-card > button { width: 100%; }
+  .vocab-next .sori-primary { flex: 1; }
+}

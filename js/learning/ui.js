@@ -1,12 +1,14 @@
 import {PracticeProgress} from './progress.js?v=20261120s1';
 import {scenes} from './scenes.js?v=20261120s1';
-import {attachVoiceReply,recorderControls} from './voice-reply.js?v=20261120s1';
+import {attachVoiceReply,recorderControls} from './voice-reply.js?v=20261121vocab';
+import {DailyVocabulary} from './vocabulary.js?v=20261121vocab';
+import {vocabularyCard,mountVocabulary} from './vocabulary-ui.js?v=20261121vocab';
 import {mountPhraseSearch} from './phrase-search.js?v=20261120s1';
 import {sharePublic} from '../share-public.js?v=20261121trip';
 
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const el = id => document.getElementById(id);
-let rows, byId, byKorean, progress, currentScope, voice, lessonVoice, phrasebook, lastVerdict;
+let rows, byId, byKorean, progress, dailyWords, currentScope, voice, lessonVoice, phrasebook, lastVerdict;
 const viewRoot = () => el('mainContent');
 function saveNotice() {
   return progress.error ? '<p class="small-note" role="status">This browser could not save your progress.</p>' : '';
@@ -21,6 +23,7 @@ function sceneAction(kind) {
   return active ? 'Continue at turn ' + (active.index + 1) : 'Start conversation';
 }
 function paintHome() {
+  el('dailyVocabulary').innerHTML = vocabularyCard(dailyWords);
   const cafe = scenes.cafe, sample = byKorean.get(cafe.turns[0][3]);
   const {today,due,last} = progress.stats();
   const otherScenes = Object.entries(scenes).filter(([kind]) => kind !== 'cafe').map(([kind,s]) => {
@@ -78,6 +81,14 @@ function openPhrase(id, push = true) {
   window.scrollTo({top:0,behavior:'instant'});
   el('korean').tabIndex = -1; el('korean').focus({preventScroll:true});
 }
+function openVocabulary(start = false) {
+  library(); closeLessonVoice(); window.SoriNav?.show('listen');
+  viewRoot().classList.add('practice-session-active');
+  const target = el('practiceSession');
+  target.hidden = false;
+  voice = mountVocabulary(target, dailyWords, window, {start, onProgress:paintHome});
+  window.scrollTo({top:0,behavior:'instant'});
+}
 function view(kind, {fresh = false, pool, play = false} = {}) {
   closeLessonVoice();
   const choices = pool || (Object.hasOwn(scenes,kind) ? scenes[kind].turns.map(t => byKorean.get(t[3])?.id).filter(Boolean) :
@@ -128,7 +139,8 @@ function renderSession(play = false) {
 function route() {
   if (!progress) return;
   const params = new URLSearchParams(location.hash.slice(1));
-  if (Object.hasOwn(scenes,params.get('practice'))) view(params.get('practice'));
+  if (params.get('practice') === 'vocabulary') openVocabulary();
+  else if (Object.hasOwn(scenes,params.get('practice'))) view(params.get('practice'));
   else if (params.has('phrase')) openPhrase(params.get('phrase'),false);
   else if (['#phrases','#speak'].includes(location.hash)) browse(false);
   else if (location.hash === '#collection') collection();
@@ -138,6 +150,7 @@ function boot() {
   let storage;
   try { storage = localStorage; } catch { storage = {getItem(){return null;},setItem(){throw Error('Storage unavailable');}}; }
   progress = new PracticeProgress({storage,ids:byId.keys()}); currentScope = window.firebaseAuth?.currentUser?.uid || null; progress.setUser(currentScope);
+  dailyWords = new DailyVocabulary(storage, currentScope);
   window.SoriPractice = {library,openPhrase,browse};
   for (const root of document.querySelectorAll('[data-phrase-finder]')) {
     const home = root.dataset.phraseFinder === 'home';
@@ -148,6 +161,7 @@ function boot() {
 }
 document.addEventListener('click',event => {
   const b = event.target.closest('button'); if (!b || !progress) return;
+  if (b.hasAttribute('data-open-vocabulary')) { changeHash('#practice=vocabulary'); openVocabulary(true); }
   if (b.matches('[data-audio],[data-repeat-current],#playBtn')) { voice?.onModel(); lessonVoice?.onModel(); }
   if (Object.hasOwn(scenes,b.dataset.scene)) { changeHash('#practice=' + b.dataset.scene); view(b.dataset.scene,{play:true}); }
   if (b.matches('[data-practice-start],[data-practice-new]')) view('daily',{fresh:b.hasAttribute('data-practice-new')});
@@ -173,7 +187,10 @@ document.addEventListener('click',event => {
 });
 if (document.readyState !== 'complete') document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();
 window.addEventListener('hashchange',route);
-window.addEventListener('sori-view',event => { if (event.detail.view !== 'listen') { library(); closeLessonVoice(); } });
+window.addEventListener('sori-view',event => {
+  if (event.detail.view !== 'listen') { library(); closeLessonVoice(); }
+  if (event.detail.view === 'home' && dailyWords) paintHome();
+});
 window.addEventListener('pagehide',() => { discardVoice(); closeLessonVoice(); });
 document.addEventListener('visibilitychange',() => { if (document.hidden) { voice?.onModel(); lessonVoice?.onModel(); window.SORI?.TTS?.cancel(); } });
 window.addEventListener('sori-phrase-shown',event => {
@@ -191,5 +208,6 @@ window.addEventListener('sori-phrase-shown',event => {
 window.addEventListener('sori-auth-changed',() => {
   const next = window.firebaseAuth?.currentUser?.uid || null;
   if (!progress || next === currentScope) return;
-  currentScope = next; library(); closeLessonVoice(); progress.setUser(next); paintHome(); route();
+  currentScope = next; library(); closeLessonVoice(); progress.setUser(next);
+  dailyWords = new DailyVocabulary(progress.storage, next); paintHome(); route();
 });

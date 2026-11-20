@@ -1,10 +1,11 @@
 import {checkOnDevice, supportsDeviceCheck} from './device-words.js?v=20261120s1';
-import {checkWords, listenForWords, playChime, prepareChime, speechService} from './word-check.js?v=20261120s1';
+import {checkWords, listenForWords, playChime, prepareChime, speechService} from './word-check.js?v=20261121vocab';
 
-export function recorderControls() {
-  return `<div class="reply-recorder">
+export function recorderControls({exercise = false} = {}) {
+  return `<div class="reply-recorder${exercise ? ' vocab-mic' : ''}">
     <button class="sori-primary record-action" data-record-reply type="button">Record my reply</button>
     <p role="status" aria-live="polite" aria-atomic="true"></p>
+    ${exercise ? '<p class="vocab-heard" lang="ko" data-interim></p>' : ''}
     <div class="check-result" data-check-result hidden></div>
     <audio controls hidden aria-label="Play your recorded reply"></audio>
     <button class="text-button" data-compare-reply hidden type="button">Hear the example, then my reply</button>
@@ -58,21 +59,24 @@ function watchForPause(env, stream, finish) {
   } catch { close(); }
 }
 
-export function attachVoiceReply(container, env = window, example = '', alternatives = [], onVerdict = () => {}) {
+export function attachVoiceReply(container, env = window, example = '', alternatives = [], onVerdict = () => {}, {exercise = false, onBegin} = {}) {
   const get = selector => container.querySelector(selector);
   const record = get('[data-record-reply]'), player = get('audio'), compare = get('[data-compare-reply]');
   const status = get('[role=status]'), result = get('[data-check-result]');
   const check = get('[data-auto-check]'), sound = get('[data-check-sound]'), note = get('[data-mic-note]');
   const canRecord = Boolean(env.navigator.mediaDevices?.getUserMedia && env.MediaRecorder);
-  const canCheck = Boolean(canRecord && speechService(env));
+  const canCheck = Boolean((exercise || canRecord) && speechService(env));
   const deviceButton = get('[data-device-check]'), cancelButton = get('[data-cancel-check]');
   const canUseDevice = canRecord && supportsDeviceCheck(env);
   let deviceMode = canUseDevice && preference(env,'device',undefined,false);
   let model = example, clip = null, lastBlob = null, active = null, version = 0, disposed = false;
+  let microphoneBlocked = false;
+  const interim = exercise ? get('[data-interim]') : null;
+  const canSpeak = () => exercise ? Boolean(canCheck || deviceMode) : canRecord;
 
   function updateSettings() {
     const enabled = (canCheck || deviceMode) && Boolean(model);
-    const offerDevice = canUseDevice && model && (deviceMode || !canCheck || browserUnavailable);
+    const offerDevice = canUseDevice && model && !microphoneBlocked && (deviceMode || !canCheck || browserUnavailable);
     get('[data-device-choice]').hidden = !offerDevice || Boolean(active);
     cancelButton.hidden = !active?.controller;
     if (offerDevice) {
@@ -83,18 +87,26 @@ export function attachVoiceReply(container, env = window, example = '', alternat
     get('[data-check-setting]').hidden = !enabled;
     get('[data-sound-setting]').hidden = !enabled || !check.checked;
     check.disabled = sound.disabled = Boolean(active);
-    if (!active) record.textContent = enabled && check.checked ? (clip ? 'Try speaking again' : 'Speak & check') : (clip ? 'Record again' : 'Record my reply');
+    if (!active) {
+      record.disabled = !canSpeak();
+      record.textContent = exercise ? 'Speak my answer' : enabled && check.checked ? (clip ? 'Try speaking again' : 'Speak & check') : (clip ? 'Record again' : 'Record my reply');
+    }
     note.textContent = (deviceMode && check.checked || active?.controller) ? 'Words are checked on this device. Up to 15 seconds.' : enabled && check.checked ? 'Your browser’s Korean speech service may process audio online. Up to 15 seconds.' :
       (enabled ? 'Record and listen on this device. Up to 15 seconds.' : 'Automatic word checking is unavailable here. You can record and compare your reply.');
     compare.hidden = !clip || !model;
+    if (exercise) {
+      compare.hidden = true;
+      note.textContent = deviceMode ? 'Speech is checked on this device.' : canCheck ? 'Your browser’s speech service may process audio online.' : '';
+    }
   }
-  check.checked = preference(env, 'check');
+  check.checked = exercise || preference(env, 'check');
   sound.checked = preference(env, 'sound');
   check.onchange = () => { preference(env, 'check', check.checked); updateSettings(); };
   sound.onchange = () => preference(env, 'sound', sound.checked);
   function hideResult() {
     result.hidden = true;
     result.replaceChildren?.();
+    if (interim) interim.textContent = '';
   }
   function showResult(kind, heard, focus) {
     if (!result.ownerDocument) return;
@@ -108,7 +120,7 @@ export function attachVoiceReply(container, env = window, example = '', alternat
       result.appendChild(el);
     };
     if (heard) { add('small', 'Sori heard'); add('strong', heard, true); }
-    if (kind === 'retry' && focus) { add('small', 'Listen again for'); add('strong', focus, true); }
+    if (!exercise && kind === 'retry' && focus) { add('small', 'Listen again for'); add('strong', focus, true); }
     result.hidden = !result.childElementCount;
   }
   function release(stream) { stream?.getTracks().forEach(track => track.stop()); }
@@ -123,7 +135,6 @@ export function attachVoiceReply(container, env = window, example = '', alternat
     env.clearTimeout(take.waitTimer);
     take.listener?.cancel();
     active = null;
-    record.disabled = !canRecord;
     const verdict = take.verdict;
     if (verdict) {
       const messages = {
@@ -133,14 +144,23 @@ export function attachVoiceReply(container, env = window, example = '', alternat
         unavailable: take.method === 'device' ? 'The device check could not finish. You can listen to this take or try checking it again.' :
           (canUseDevice ? 'The browser couldn’t check your words. You can check this recording on your device.' : 'Word checking is unavailable right now. Listen to your recording and the example.')
       };
+      if (exercise) {
+        messages.correct = 'Correct!';
+        messages.retry = 'Not quite. Try the highlighted word.';
+        messages.unclear = 'Couldn’t hear that clearly. Try again.';
+        messages.unavailable = take.reason === 'not-allowed'
+          ? 'Microphone access is off. Allow it in your browser or type your answer.'
+          : canUseDevice ? 'Voice checking is unavailable right now. Try on-device checking or type your answer.' : 'Voice checking is unavailable right now. You can type your answer.';
+      }
+      if (interim) interim.textContent = '';
       status.textContent = messages[verdict.kind];
       showResult(verdict.kind, take.heard, verdict.focus);
-      onVerdict(verdict.kind);
       if (sound.checked && ['correct','retry'].includes(verdict.kind)) playChime(verdict.kind);
     } else {
       status.textContent = clip ? 'Your reply is ready to play.' : 'No audio was captured. Try again when you’re ready.';
     }
     updateSettings();
+    if (verdict) onVerdict(verdict.kind, take.heard);
   }
   function stop(take) {
     if (!take || take !== active || take.stopping) return;
@@ -169,8 +189,8 @@ export function attachVoiceReply(container, env = window, example = '', alternat
     take.listener?.cancel();
     if (take.recorder?.state === 'recording') take.recorder.stop();
     release(take.stream); take.stream = null;
-    record.disabled = !canRecord;
     status.textContent = '';
+    if (interim) interim.textContent = '';
     updateSettings();
   }
   function onModel() { player.pause(); cancelTake(); }
@@ -188,7 +208,9 @@ export function attachVoiceReply(container, env = window, example = '', alternat
     } finally { if (!disposed) compare.disabled = false; }
   };
   updateSettings();
-  if (!canRecord) {
+  if (exercise && !canSpeak()) {
+    status.textContent = canUseDevice ? 'Enable on-device checking to use your voice, or type your answer.' : 'Voice checking is unavailable in this browser. You can type your answer.';
+  } else if (!canRecord && !exercise) {
     record.disabled = true; note.textContent = '';
     status.textContent = 'Recording is unavailable in this browser. You can still hear the example and practise aloud.';
   }
@@ -209,12 +231,13 @@ export function attachVoiceReply(container, env = window, example = '', alternat
       } else {
         active = null; record.disabled = false;
         status.textContent = 'Device checking is ready. Say your reply when you’re ready.'; updateSettings();
+        if (exercise) record.onclick();
       }
     } catch {
       if (take !== active) return;
       deviceMode = false; preference(env,'device',false); browserUnavailable = true;
       if (blob) { take.verdict = {kind:'unavailable'}; settle(take); }
-      else { active = null; record.disabled = false; status.textContent = 'The speech model could not load. You can try again or record your reply.'; updateSettings(); }
+      else { active = null; status.textContent = exercise ? 'The speech model could not load. Try again or type your answer.' : 'The speech model could not load. You can try again or record your reply.'; updateSettings(); }
     }
   }
   deviceButton.onclick = () => {
@@ -230,16 +253,50 @@ export function attachVoiceReply(container, env = window, example = '', alternat
     if (!active?.controller) return;
     cancelTake(); status.textContent = clip ? 'Check cancelled. Your recording is ready to play.' : 'Device check cancelled.';
   };
+  function startBrowserCheck(take, track) {
+    const verdict = (value, heard = '', reason) => {
+      if (take !== active || take.verdict) return;
+      take.verdict = value; take.heard = heard; take.reason = reason;
+      if (value.kind === 'unavailable') {
+        microphoneBlocked = reason === 'not-allowed';
+        if (!microphoneBlocked) browserUnavailable = true;
+        if (!exercise && !take.stopping) take.stopWatching = watchForPause(env,take.stream,() => stop(take));
+      }
+      if (exercise || value.kind !== 'unavailable') stop(take);
+      else if (!take.stopping) status.textContent = 'Word checking is unavailable. Finish recording to compare your reply.';
+      settle(take);
+    };
+    try {
+      take.listener = listenForWords(env, track,
+        (text, confidence) => verdict(checkWords(model, text, alternatives, confidence), text),
+        reason => verdict({kind:reason === 'no-speech' ? 'unclear' : 'unavailable'}, '', reason),
+        exercise ? {
+          onStart() { if (take === active && !take.stopping) status.textContent = 'Listening…'; },
+          onInterim(text) { if (take === active) interim.textContent = text; },
+          onSpeechEnd() { stop(take); }
+        } : {});
+    } catch (error) { verdict({kind:'unavailable'}, '', error.name === 'NotAllowedError' ? 'not-allowed' : error.name); }
+  }
   record.onclick = async () => {
-    if (active) { if (active.recorder) stop(active); return; }
-    if (!canRecord || disposed) return;
+    if (active) { if (active.recorder || active.listener) stop(active); return; }
+    if (!canSpeak() || disposed) return;
+    microphoneBlocked = false;
     version++; clearClip(); hideResult(); interruptExamples();
+    onBegin?.();
     const method = check.checked && model ? (deviceMode ? 'device' : canCheck ? 'browser' : null) : null;
     const take = {method,checking:Boolean(method), chunks:[]};
     active = take;
     if (take.checking && sound.checked) prepareChime(env);
     updateSettings();
     record.disabled = true; status.textContent = 'Waiting for microphone access…';
+    if (exercise && method === 'browser') {
+      // The recognizer opens its own microphone. A vocabulary answer needs no clip or second permission.
+      take.recorded = true;
+      record.disabled = false; record.textContent = 'Stop listening';
+      take.limit = env.setTimeout(() => stop(take), 15000);
+      startBrowserCheck(take);
+      return;
+    }
     try {
       const stream = await env.navigator.mediaDevices.getUserMedia({audio:true});
       if (active !== take) { release(stream); return; }
@@ -252,7 +309,7 @@ export function attachVoiceReply(container, env = window, example = '', alternat
         if (take.chunks.length) {
           lastBlob = new Blob(take.chunks, {type:recorder.mimeType || take.chunks[0].type});
           clip = env.URL.createObjectURL(lastBlob);
-          player.src = clip; player.hidden = false;
+          player.src = clip; player.hidden = exercise;
         }
         take.recorded = true;
         if (take.method === 'device' && lastBlob) deviceCheck(take,lastBlob);
@@ -268,31 +325,15 @@ export function attachVoiceReply(container, env = window, example = '', alternat
         take.checking ? 'Listening. Say the Korean reply.' : 'Recording your reply. It stops after 15 seconds.';
       take.limit = env.setTimeout(() => stop(take), 15000);
       if (take.method === 'device') take.stopWatching = watchForPause(env,stream,() => stop(take));
-      if (take.method === 'browser') {
-        const verdict = (value, heard = '') => {
-          if (take !== active || take.verdict) return;
-          take.verdict = value; take.heard = heard;
-          if (value.kind === 'unavailable') {
-            browserUnavailable = true;
-            if (!take.stopping) take.stopWatching = watchForPause(env,stream,() => stop(take));
-          }
-          if (value.kind !== 'unavailable') stop(take);
-          else if (!take.stopping) status.textContent = 'Word checking is unavailable. Finish recording to compare your reply.';
-          settle(take);
-        };
-        try {
-          take.listener = listenForWords(env, stream.getAudioTracks?.()[0],
-            (text, confidence) => verdict(checkWords(model, text, alternatives, confidence), text),
-            reason => verdict({kind:reason === 'no-speech' ? 'unclear' : 'unavailable'}));
-        } catch { verdict({kind:'unavailable'}); }
-      }
+      if (take.method === 'browser') startBrowserCheck(take,stream.getAudioTracks?.()[0]);
     } catch (error) {
       if (active !== take) return;
       cancelTake();
-      status.textContent = error.name === 'NotAllowedError' ? 'Microphone access is off. Say your reply aloud and continue, or allow access in your browser.' : 'A microphone wasn’t available. You can still hear the example and continue.';
+      status.textContent = exercise ? (error.name === 'NotAllowedError' ? 'Microphone access is off. Allow it in your browser or type your answer.' : 'No microphone is available. You can type your answer.') :
+        error.name === 'NotAllowedError' ? 'Microphone access is off. Say your reply aloud and continue, or allow access in your browser.' : 'A microphone wasn’t available. You can still hear the example and continue.';
     }
   };
-  return {onModel, allowModel(text) { model = text; updateSettings(); }, dispose() {
+  return {onModel, start() { if (!active && !record.disabled) return record.onclick?.(); }, allowModel(text) { model = text; updateSettings(); }, dispose() {
     disposed = true; cancelTake(); clearClip();
     record.onclick = compare.onclick = deviceButton.onclick = cancelButton.onclick = check.onchange = sound.onchange = null;
   }};
