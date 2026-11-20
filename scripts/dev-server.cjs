@@ -2,7 +2,7 @@ const http = require('node:http');
 const fs = require('node:fs');
 const path = require('node:path');
 const root = path.resolve(__dirname, '..');
-const types = {'.html':'text/html', '.js':'text/javascript', '.css':'text/css', '.webmanifest':'application/manifest+json', '.svg':'image/svg+xml', '.json':'application/json', '.jpg':'image/jpeg', '.webp':'image/webp'};
+const types = {'.html':'text/html', '.js':'text/javascript', '.css':'text/css', '.webmanifest':'application/manifest+json', '.svg':'image/svg+xml', '.json':'application/json', '.jpg':'image/jpeg', '.webp':'image/webp', '.woff':'font/woff'};
 const port = Number(process.env.PORT || 4173);
 const {createTripsApi}=require('../server/trips.cjs');
 const {createDevBucket}=require('../server/dev-bucket.cjs');
@@ -24,7 +24,7 @@ const server = http.createServer(async (req, res) => {
   const file = path.resolve(root, '.' + (pathname === '/' ? '/index.html' : /^\/stories\/[a-z0-9-]+\/$/.test(pathname)?pathname+'index.html':pathname));
   if (!file.startsWith(root + path.sep)) { res.writeHead(403); res.end(); return; }
   // Serve only checked-in front-end assets; never dev tooling or repository metadata.
-  const allowed = /^\/stories\/[a-z0-9-]+\/(?:index.html)?$/.test(pathname) || /^\/assets\/vendor\/leaflet\/leaflet\.(js|css)$/.test(pathname) || /^\/assets\/photos\/[a-z0-9-]+\.(jpg|webp)$/.test(pathname) || pathname === '/' || pathname === '/index.html' || pathname === '/manifest.webmanifest' || ['/data/places.json','/data/stories.json'].includes(pathname) || /^\/(css|js|data)\/.+\.(css|js)$/.test(pathname) || ['/debug/auth.html','/debug/mobile.html'].includes(pathname);
+  const allowed = pathname === '/assets/fonts/sori-noto.woff' || /^\/stories\/[a-z0-9-]+\/(?:index.html)?$/.test(pathname) || /^\/assets\/vendor\/leaflet\/leaflet\.(js|css)$/.test(pathname) || /^\/assets\/photos\/[a-z0-9-]+\.(jpg|webp)$/.test(pathname) || pathname === '/' || pathname === '/index.html' || pathname === '/manifest.webmanifest' || ['/data/places.json','/data/stories.json'].includes(pathname) || /^\/(css|js|data)\/.+\.(css|js)$/.test(pathname) || ['/debug/auth.html','/debug/mobile.html'].includes(pathname);
   if (!allowed) { res.writeHead(404); res.end(); return; }
   fs.readFile(file, (error, bytes) => {
     if (error) { res.writeHead(404); res.end(); return; }

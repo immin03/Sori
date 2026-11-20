@@ -46,7 +46,7 @@ async function checkServer() {
   try {
     await new Promise((resolve,reject) => { server.once('listening',resolve); server.once('error',reject); });
     const base=`http://127.0.0.1:${server.address().port}`;
-    for (const [url,status,type] of [['/',200,'text/html'],['/js/auth.js',200,'text/javascript'],['/data/daily.js?v=1',200,'text/javascript'],['/missing',404],['/.git/config',403],['/.env',403],['/scripts/check.cjs',404]]) {
+    for (const [url,status,type] of [['/',200,'text/html'],['/js/auth.js',200,'text/javascript'],['/assets/fonts/sori-noto.woff',200,'font/woff'],['/data/daily.js?v=1',200,'text/javascript'],['/missing',404],['/.git/config',403],['/.env',403],['/scripts/check.cjs',404]]) {
       const response=await fetch(base+url); assert.equal(response.status,status,url);
       if (type) assert.ok(response.headers.get('content-type').startsWith(type),url);
     }

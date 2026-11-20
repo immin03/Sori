@@ -34,3 +34,5 @@ Photos downloaded from free Unsplash photo pages on 19 November 2026, resized an
 All additions: https://unsplash.com/license .
 
 Jagalchi Market: `assets/photos/jagalchi.jpg`, Luke Ow, https://unsplash.com/photos/zv5ToKNraHw , Unsplash License. Resized and compressed.
+
+The café practice cover, `assets/photos/cafe-conversation.webp`, is an AI-generated illustration of a coffee handoff made for Sori. It does not identify a particular café.
