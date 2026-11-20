@@ -6,8 +6,8 @@
   repeatRun++;
   if(playingButton===button){window.SORI?.TTS?.cancel();return;}
   const label=button.textContent;playingButton=button;button.textContent='Loading…';button.setAttribute('aria-busy','true');
-  let status=button.closest('.today-practice,.place-language,.session-answer')?.querySelector('.audio-status');
-  if(!status){status=document.createElement('p');status.className='audio-status';status.setAttribute('role','status');button.closest('.today-practice,.place-language,.session-answer')?.appendChild(status);}
+  let status=button.closest('.today-practice,.place-language,.session-answer,.speaker-cue')?.querySelector('.audio-status');
+  if(!status){status=document.createElement('p');status.className='audio-status';status.setAttribute('role','status');button.closest('.today-practice,.place-language,.session-answer,.speaker-cue')?.appendChild(status);}
   status.textContent='Getting the audio ready…';
   try{await window.SORI.TTS.speak(button.dataset.audio,{rate:Number(button.dataset.rate)||0.8,onPlaying(){button.textContent='Stop';status.textContent='Listen, then say it out loud.';}});status.textContent='Your turn. Say it out loud, then listen again.';}
   catch(error){status.textContent=error.name==='AbortError'?'':'Audio could not play. Please tap to try again.';}
@@ -24,6 +24,7 @@ let repeatRun=0,repeatButton=null;
   finally{if(repeatButton===button){repeatButton=null;button.textContent='Listen, pause & repeat · 3 times';}}
  });
  document.getElementById('playBtn')?.addEventListener('click',()=>{repeatRun++;});
+ window.addEventListener('sori-own-audio',()=>{repeatRun++;});
  window.addEventListener('sori-view',()=>{repeatRun++;window.SORI?.TTS?.cancel();});
  window.addEventListener('sori-phrase-shown',()=>{repeatRun++;});
 })();

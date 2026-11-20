@@ -4,6 +4,17 @@ export function createJourneyMap(element,{centre,points=[],route=[],airports=[],
  const L=window.L,map=L.map(element,{zoomControl:false,scrollWheelZoom:false,tap:true}).setView([centre.lat,centre.lng],11);
  L.tileLayer(window.SoriConfig?.mapTileUrl||'https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>',referrerPolicy:'strict-origin-when-cross-origin'}).addTo(map);
  L.control.zoom({position:'topright'}).addTo(map);
+ const touch=window.matchMedia('(pointer:coarse), (max-width:899px)');
+ const gesture=document.createElement('button');gesture.type='button';gesture.className='map-gesture';element.parentElement.after(gesture);
+ function setPan(enabled){
+   const interactive=!touch.matches||enabled;
+   for(const handler of [map.dragging,map.touchZoom,map.doubleClickZoom])handler?.[interactive?'enable':'disable']();
+   element.classList.toggle('page-scroll',!interactive);gesture.hidden=!touch.matches;
+   gesture.textContent=enabled?'Done moving map':'Move map';gesture.setAttribute('aria-pressed',String(enabled));
+ }
+ const resetPan=()=>setPan(false);
+ gesture.onclick=()=>setPan(gesture.getAttribute('aria-pressed')!=='true');
+ touch.addEventListener('change',resetPan);resetPan();
  const layer=L.layerGroup().addTo(map);let markers=[],current=[],airportList=airports,picking=false,selected=null;
  const labelNode=text=>{const n=document.createElement('span');n.textContent=text;return n;};
  const icon=(p,active)=>L.divIcon({className:'sori-map-marker '+(active?'selected ':'')+(p.kind||'stop'),html:'<span>'+(p.kind==='airport'?'Air':p.kind==='hotel'?'Stay':p.kind==='base'?'Start':p.number||'•')+'</span>',iconSize:p.kind==='airport'?[45,32]:[36,36],iconAnchor:[18,18]});
@@ -17,5 +28,5 @@ export function createJourneyMap(element,{centre,points=[],route=[],airports=[],
  function update(next={}){current=next.points||points;route=next.route||route;airportList=next.airports||airportList;if('hotel' in next)hotel=next.hotel;draw();if(next.fit!==false)fit(!!next.includeAirports);if(next.selected)select(next.selected);}
  map.on('click',e=>{if(picking){onPick({lat:Number(e.latlng.lat.toFixed(6)),lng:Number(e.latlng.lng.toFixed(6))});}});
  current=points;draw();fit();
- return {update,select,fit,pick(value){picking=value;element.classList.toggle('picking',value);},refresh(){requestAnimationFrame(()=>{map.invalidateSize({animate:false});fit();});},destroy(){map.remove();}};
+ return {update,select,fit,pick(value){picking=value;element.classList.toggle('picking',value);},refresh(){requestAnimationFrame(()=>{map.invalidateSize({animate:false});fit();});},destroy(){touch.removeEventListener('change',resetPan);gesture.remove();map.remove();}};
 }
