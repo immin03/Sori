@@ -1,5 +1,43 @@
 [
   {
+    "id": "small-bow-korean-hello",
+    "title": "The smallest part of a Korean hello.",
+    "category": "Everyday culture",
+    "excerpt": "A slight bow can say a lot before the conversation begins.",
+    "photo": "assets/photos/insadong.jpg",
+    "photoAlt": "A narrow Seoul lane with shop signs and tiled eaves; contextual image, not a greeting demonstration",
+    "minutes": 2,
+    "question": "What small gesture makes a greeting feel warm where you live?",
+    "phrase": "만나서 반가워요.",
+    "paragraphs": [
+      "Imagine meeting a friend’s parent for the first time in Korea. You have practised your greeting, but suddenly there is another question: what should your body do? Before you can decide, they offer a small bow. The whole movement takes less time than your carefully rehearsed sentence.",
+      "In many everyday greetings, a Korean bow can be a slight dip of the head and upper body. It accompanies the words rather than stopping the conversation for a ceremony. Think of it as a quiet way to acknowledge the person in front of you.",
+      "The setting matters. A greeting to an older person or someone in a senior role may be more formal than one between close friends. There is no single movement that fits every relationship. For an ordinary introduction, a small, unhurried bow gives you a place to start; you can take your cue from the people around you.",
+      "Try pairing that first introduction with 만나서 반가워요. It means “Nice to meet you.” Say it slowly enough to enjoy saying it. You are welcoming a person into a conversation, so leave a little space for their name and their reply.",
+      "Sometimes a handshake follows. If the other person offers one, you can use your right hand and lightly support it with your left. You do not need to rush through a bow and a handshake at the same moment. A brief pause makes room to notice what the other person is doing.",
+      "Bows can also appear when people say goodbye. Once you start noticing them, the interesting part is how small some are: a short movement that helps close an encounter. You do not need to greet every passerby or turn each interaction into a formal occasion.",
+      "On your next introduction, give your hello a little room. Put the phone down, notice the person and let the words arrive with the movement. What small gesture makes a greeting feel warm where you live?"
+    ],
+    "sources": [
+      {
+        "label": "Visit Seoul · Korean Etiquette: greetings",
+        "url": "https://english.visitseoul.net/tours/Korean-Etiquette/ENN010938"
+      },
+      {
+        "label": "National Institute of Korean Language · 만나서 반가워요",
+        "url": "https://www.korean.go.kr/front/onlineQna/onlineQnaView.do?mn_id=261&qna_seq=318182"
+      },
+      {
+        "label": "Context photo · Skyler W / Unsplash; Unsplash License (credit documented in Sori)",
+        "url": "https://unsplash.com/photos/tg6uE64lEJs"
+      }
+    ],
+    "published": "2026-11-20",
+    "author": "Korea 101 by Sori",
+    "photoContext": true,
+    "status": "published"
+  },
+  {
     "id": "one-coffee-in-korean",
     "title": "One coffee. Your first little win in Korean.",
     "category": "Useful Korean",
