@@ -229,3 +229,56 @@ body[data-service=speak]:not(.focus-exercise) #homeView { min-height:0; }
   #newsletterView .latest-issue .issue-cover img { height:170px; }
   #newsletterView .story-tile img { width:78px;height:70px; }
 }
+/* A readable editorial column, and a searchable, unhurried travel directory. */
+.native-story .story-body h2 { font-weight:700; font-size:clamp(1.3rem,4vw,1.65rem); line-height:1.35; letter-spacing:-.025em; margin:32px 0 12px; color:var(--ink); }
+.story-figure { margin:24px 0; }
+.story-figure img { display:block; width:100%; max-height:360px; object-fit:cover; border-radius:12px; }
+.story-figure figcaption,.story-cover-caption { font-size:.78rem; line-height:1.5; color:var(--muted); margin:7px 0 0; }
+.story-expression { border-top:1px solid var(--line); margin-top:14px; padding:14px 0; }
+.story-expression .story-example { font-size:.9rem; margin:8px 0; }
+.story-expression strong { display:block; font-size:1.25rem; }
+.story-originals { border-top:1px solid var(--line); padding:16px 0; margin-top:18px; }
+.story-originals summary { font-weight:700; cursor:pointer; min-height:44px; }
+.story-originals a { text-decoration:none; color:var(--ink); padding:12px 0; display:grid; gap:4px; border-bottom:1px solid var(--line); }
+.story-originals a small { color:var(--muted); }
+.discover-home #tripContent { max-width:880px; margin-inline:auto; }
+.discover-intro { margin-bottom:16px; }
+.discover-hero { position:relative; overflow:hidden; border-radius:14px; isolation:isolate; background:#43261c; color:#fff; margin-bottom:14px; }
+.discover-hero img { display:block; width:100%; height:clamp(210px,33vw,310px); object-fit:cover; opacity:.68; }
+.discover-hero > div { position:absolute; bottom:32px; left:18px; right:18px; }
+.discover-hero .eyebrow { color:#fff; }
+.discover-hero h2 { font-size:clamp(1.5rem,5vw,2.5rem); color:white; line-height:1.1; margin:6px 0 14px; }
+.discover-hero small { position:absolute; bottom:10px; right:12px; color:white; font-size:.68rem; }
+.discover-home a.sori-primary,.discover-home a.sori-secondary,.city-intro a.sori-secondary,.native-story a.sori-primary { display:inline-flex; align-items:center; justify-content:center; min-height:44px; text-decoration:none; }
+.discover-tabs { display:flex; gap:6px; flex-wrap:wrap; margin:0 0 16px; }
+.discover-tabs a { display:flex; align-items:center; justify-content:center; min-height:44px; flex:1 1 auto; padding:6px 12px; border-radius:10px; border:1px solid var(--line); text-decoration:none; color:var(--ink); font-size:.89rem; }
+.discover-tabs a[aria-current=page] { color:white; background:var(--sori); border-color:var(--sori); }
+.discover-filter { display:grid; grid-template-columns:2fr 1fr; align-items:end; gap:12px; margin-bottom:8px; }
+.discover-filter label { display:grid; gap:6px; min-width:0; font-size:.83rem; font-weight:700; }
+.discover-filter input,.discover-filter select { width:100%; min-width:0; min-height:46px; border:1px solid var(--line); padding:9px; border-radius:9px; background:white; color:var(--ink); font:inherit; font-size:16px; }
+.discover-count { color:var(--muted); font-size:.86rem; margin:10px 0; }
+.discover-group { margin:18px 0 28px; }
+.discover-group h2 { font-size:1.22rem; margin:0 0 10px; color:var(--ink); }
+.discover-place { display:grid; grid-template-columns:1fr auto; gap:10px; border:1px solid var(--line); border-radius:12px; padding:16px; margin-bottom:10px; background:#fff; }
+.discover-place h3 { font-size:1.12rem; line-height:1.3; margin:5px 0 2px; }
+.discover-place p { margin:7px 0; line-height:1.55; font-size:.92rem; }
+.discover-place .discover-ko { color:var(--muted); margin-top:0; font-size:.85rem; }
+.discover-place .discover-budget { color:var(--sori); font-weight:750; }
+.discover-place .discover-tip { padding:9px; border-radius:8px; background:var(--wash); }
+.discover-place .discover-address { color:var(--muted); font-size:.81rem; }
+.discover-links { align-self:center; display:flex; flex-direction:column; gap:8px; align-items:center; }
+.discover-links a { text-align:center; }
+.discover-routes { border:1px solid var(--line); border-radius:12px; margin:18px 0; padding:14px; }
+.discover-routes summary { cursor:pointer; font-weight:700; padding:8px 0; min-height:44px; }
+.discover-routes article { border-top:1px solid var(--line); padding:10px 0; }
+.discover-routes article h3 { margin:8px 0; }
+.discover-routes article p { font-size:.9rem; color:var(--muted); }
+.discover-routes li a { display:inline-flex; align-items:center; min-height:44px; color:var(--sori); }
+@media(max-width:600px) {
+ .discover-filter { grid-template-columns:1fr; gap:8px; }
+ .discover-place { grid-template-columns:1fr; padding:13px; }
+ .discover-links { flex-direction:row; }
+ .discover-links a.sori-secondary { flex:1; }
+ .discover-tabs a { flex-basis:calc(50% - 6px); }
+ .story-figure img { max-height:250px; }
+}

@@ -36,3 +36,5 @@ All additions: https://unsplash.com/license .
 Jagalchi Market: `assets/photos/jagalchi.jpg`, Luke Ow, https://unsplash.com/photos/zv5ToKNraHw , Unsplash License. Resized and compressed.
 
 The café practice cover, `assets/photos/cafe-conversation.webp`, is an AI-generated illustration of a coffee handoff made for Sori. It does not identify a particular café.
+
+The seasonal covers, `assets/photos/first-snow.webp` and `assets/photos/christmas-seoul.webp`, are AI-generated editorial illustrations commissioned for Sori. They are not documentary photographs of the 2026 snowfall or a named Christmas venue. The covers and travel directory label them accordingly.

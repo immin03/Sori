@@ -95,7 +95,7 @@
     else if(button.dataset.category){if(button.closest('#quizView'))return;show('listen');window.SoriLearn?.openCategory(button.dataset.category,button.dataset.situation);}
     else {
       const view=button.classList.contains('logo-home')?'home':button.dataset.go||button.dataset.view;
-      const hash=({home:'#home',listen:'#phrases',newsletter:'#read',quiz:'#quiz',guide:'#guide'})[view];
+      const hash=({home:'#home',listen:'#phrases',newsletter:'#read',quiz:'#quiz',guide:'#discover'})[view];
       if(hash)go(button.closest('.learning-trip-bridge') ? window.SoriGuide?.route() || '#itineraries' : hash);
     }
     if(button.dataset.korean)document.getElementById('lessonCard')?.scrollIntoView({block:'start'});

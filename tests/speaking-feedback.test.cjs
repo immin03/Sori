@@ -40,7 +40,7 @@ test('each partner prompt has a reading and each authored alternative fits its l
 
 test('phrasebook searches Korean, English, romanization, topics and the complete collection',async () => {
   const {findExpressions} = await import('../js/learning/phrase-search.js');
-  assert.equal(findExpressions(rows,'').length,358);
+  assert.equal(findExpressions(rows,'').length,361);
   assert.equal(findExpressions(rows,'')[0].k,'안녕하세요.');
   for (const query of ['AMERICANO','아메리카노한잔','amerikano han jan','café']) {
     assert.ok(findExpressions(rows,query).some(p => p.k === model),query);

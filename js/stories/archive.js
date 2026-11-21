@@ -2,7 +2,7 @@ export function matchingStories(stories,filter,query,saved){
   const terms=query.trim().normalize('NFKC').toLocaleLowerCase().split(/\s+/).filter(Boolean);
   return stories.filter(s=>{
     if(filter==='Saved'?!saved.includes(s.id):filter!=='All'&&s.category!==filter)return false;
-    const words=[s.title,s.excerpt,s.category,s.phrase,...s.paragraphs].join(' ').normalize('NFKC').toLocaleLowerCase();
+    const words=[s.title,s.excerpt,s.category,s.phrase,...s.paragraphs,...(s.headings||[]).map(h=>h.title),...(s.expressions||[]).flatMap(e=>Object.values(e))].join(' ').normalize('NFKC').toLocaleLowerCase();
     return terms.every(term=>words.includes(term));
   });
 }

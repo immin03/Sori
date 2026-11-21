@@ -1,9 +1,10 @@
 import {routes, readPublicItinerary, itineraryParams, itineraryShareUrl, datedDays, presetDays} from './public-day.js?v=20261121polish';
-import {esc, chooser, areaChoices, cover, stopList, moreDays, placeMap, mountPlaceMap, koreaDate} from './postcards.js?v=20261121polish';
+import {esc, chooser, areaChoices, cover, stopList, moreDays, placeMap, mountPlaceMap, koreaDate} from './postcards.js?v=20261121editorial';
 import {sharePublic} from '../share-public.js?v=20261121trip';
 import {generatePlan, AREAS, PHRASES, mapLink, placeEmbed, naverLink, phraseForPlace, CITIES, cityForArea} from './planner.js?v=20261121trip';
 import {AIRPORTS, CITY_CENTRES, isKoreaPoint, kmBetween, googleLeg, basePoint, routePoints, nearbyOrder, transferHint} from './geo.js?v=20261121trip';
 import {createJourneyMap} from './map.js?v=20261121polish';
+import {discoverMarkup,refreshDiscover} from './discover.js?v=20261121editorial';
 const root = document.getElementById('guideView');
 const storage={get(k){try{return JSON.parse(localStorage.getItem(k));}catch{return null;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true;}catch{return false;}}};
 let mapOpen = false, activeDay = 0, selectedStop = null, map = null;
@@ -30,6 +31,9 @@ async function api(path,method='GET',body,token=identity?.token){
 }
 async function safe(fn){if(busy)return;busy=true;root.setAttribute('aria-busy','true');try{message('');await fn();}catch(e){message(e.message);}finally{busy=false;root.removeAttribute('aria-busy');}}
 function destroyMap(){map?.destroy();map=null;picking=false;}
+function discover(){destroyMap();current=identity=joinInvite=null;root.className='map-guide discover-home';root.querySelector('#tripContent').innerHTML=discoverMarkup(location.hash);message('');refreshDiscover(root);window.SoriNav?.show('guide');window.scrollTo({top:0,behavior:'instant'});}
+root.addEventListener('input',e=>{if(e.target.id==='discoverSearch')refreshDiscover(root);});
+root.addEventListener('change',e=>{if(e.target.id==='discoverType')refreshDiscover(root);});
 function remember(data){identity={token:data.memberToken,id:data.memberId};current=data.trip;mapOpen=false;storage.set('sori:last-trip',current.id);const saved=storage.set('sori:trip:'+current.id,identity);history.replaceState(null,'','#trip='+current.id);activeDay=0;selectedStop=null;renderTrip();window.SoriNav?.refresh();window.scrollTo({top:0,behavior:'instant'});if(!saved)message('Keep this page open. This browser could not remember your trip access.');}
 function stayEditor(editing=false){return `<div class="stay-editor" data-stay-editor><label>Your hotel or accommodation<input id="hotelQuery" name="hotelQuery" type="search" maxlength="120" autocomplete="off" placeholder="e.g. Lotte Hotel Seoul" value="${esc(journeyDraft.hotel?.label||'')}"></label><div class="stay-search-actions"><button type="button" class="sori-secondary" data-hotel-search>Search hotels</button><button type="button" class="text-button" data-pick-hotel>Place on map</button></div><p class="stay-search-note">Search a public hotel name. OpenStreetMap / Nominatim supplies search results.</p><div id="hotelResults" role="status" aria-live="polite"></div><div class="stay-confirmed" id="chosenStay">${journeyDraft.hotel?`<strong>${esc(journeyDraft.hotel.label)}</strong><span>Stay pin ready · confirm its position on the map.</span>`:'No hotel yet? You can add it later.'}</div><label>Arrival airport<select name="arrival">${[['none','Already in Korea'],...Object.values(AIRPORTS).map(a=>[a.id,a.label])].map(([id,label])=>`<option value="${id}" ${journeyDraft.arrival===id?'selected':''}>${label}</option>`).join('')}</select></label><label class="check-row"><input name="returnHotel" type="checkbox" ${journeyDraft.returnToHotel?'checked':''}>Return to the hotel after each day</label><p class="small-note">${editing?'Saving shares your hotel pin and arrival choice with the people in this trip.':'Your hotel pin is shared only with people you invite to this trip.'}</p></div>`;}
 function shell() {
@@ -319,7 +323,7 @@ root.addEventListener('change', e => {
   if (e.target.name === 'city') root.querySelector('#areaChoices').innerHTML = areaChoices(e.target.value);
 });
 window.addEventListener('sori-view',e=>{if(e.detail.view==='guide')map?.refresh();});
-async function restore(){if(location.hash==='#itineraries'){itineraries();return;}const params=new URLSearchParams(location.hash.slice(1));if(params.has('day')){const day=readPublicItinerary(params,catalog);if(!day){shell();window.SoriNav?.show('guide');message('That itinerary link is incomplete. Choose a city to explore.');return;}const saved=history.state?.soriPreview || recentDays().find(x=>x.hash===location.hash)?.state;
+async function restore(){if(location.hash==='#itineraries'){itineraries();return;}const params=new URLSearchParams(location.hash.slice(1));if(params.has('discover')){discover();return;}if(params.has('day')){const day=readPublicItinerary(params,catalog);if(!day){shell();window.SoriNav?.show('guide');message('That itinerary link is incomplete. Choose a city to explore.');return;}const saved=history.state?.soriPreview || recentDays().find(x=>x.hash===location.hash)?.state;
  if(saved?.hash===location.hash){
    try {const days=datedDays(day.days,saved.firstDay);openPreview(day,{days,pace:saved.pace,food:saved.food});return;} catch {}
  }

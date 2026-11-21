@@ -1,6 +1,16 @@
 /* Static share previews for GitHub Pages. Readers open the native Sori view. */
 const fs=require('node:fs'),path=require('node:path'),root=path.join(__dirname,'..');
-const stories=JSON.parse(fs.readFileSync(path.join(root,'data/stories.json'),'utf8'));
+const old=JSON.parse(fs.readFileSync(path.join(root,'data/stories.json'),'utf8'));
+const {issues,originals}=require('../content/korea101.cjs');
+const stories=issues.map(({body,...issue})=>{
+ const paragraphs=[],headings=[];
+ for(const block of body.trim().split(/\n\n+/)){if(block.startsWith('## '))headings.push({before:paragraphs.length,title:block.slice(3)});else paragraphs.push(block);}
+ const prev=old.find(s=>s.id===issue.id)||{};
+ const words=paragraphs.join(' ').split(/\s+/).length+issue.expressions.map(e=>Object.values(e).join(' ')).join(' ').split(/\s+/).length;
+ return {...prev,...issue,photoContext:issue.photoContext||(prev.photoContext===true?'Context photograph; not necessarily the specific place or event described.':typeof prev.photoContext==='string'?prev.photoContext:''),author:prev.author||'Korea 101 by Sori',status:'published',updated:'2026-11-21',minutes:Math.max(5,Math.ceil(words/165)),paragraphs,headings,figures:issue.figures.map(f=>({...f,after:Math.min(f.after,paragraphs.length-1)})),wordCount:words};
+});
+fs.writeFileSync(path.join(root,'data/stories.json'),JSON.stringify(stories,null,2)+'\n');
+fs.writeFileSync(path.join(root,'data/original-issues.json'),JSON.stringify(originals,null,2)+'\n');
 const esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 for(const s of stories.filter(x=>x.status==='published')){
  if(!/^[a-z0-9-]{1,80}$/.test(s.id))throw Error('Invalid public story slug.');
