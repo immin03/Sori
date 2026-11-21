@@ -68,7 +68,7 @@
 
 .sidebar-header {
   padding: 20px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid #eee9e6;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -77,7 +77,7 @@
 .sidebar-title {
   font-size: 18px;
   font-weight: 800;
-  color: #294735;
+  color: #7b2d21;
 }
 
 .sidebar-close {
@@ -94,7 +94,7 @@
 }
 
 .sidebar-close:hover {
-  background: #f3f4f6;
+  background: #fbf5f2;
 }
 
 .sidebar-menu {
@@ -110,7 +110,7 @@
   text-align: left;
   font-size: 15px;
   font-weight: 600;
-  color: #111827;
+  color: #342623;
   cursor: pointer;
   border-radius: 12px;
   transition: all 0.2s ease;
@@ -118,13 +118,13 @@
 }
 
 .menu-item:hover {
-  background: #f3f4f6;
-  color: #294735;
+  background: #fbf5f2;
+  color: #7b2d21;
 }
 
 .menu-item.active {
-  background: #f3f5f1;
-  color: #294735;
+  background: #fbf5f2;
+  color: #7b2d21;
 }
 
 /* Main Content Container */
@@ -173,21 +173,21 @@
 .korea101-title {
   font-size: 42px;
   font-weight: 900;
-  color: #294735;
+  color: #7b2d21;
   margin: 0;
   letter-spacing: -0.5px;
 }
 
 .korea101-description {
   font-size: 16px;
-  color: #6b7280;
+  color: #726661;
   line-height: 1.6;
   margin: 0;
 }
 
 .korea101-subtitle {
   font-size: 14px;
-  color: #9ca3af;
+  color: #a89a96;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -202,7 +202,7 @@
 }
 
 .korea101-link:hover {
-  color: #294735;
+  color: #7b2d21;
   transform: translateY(-1px);
 }
 

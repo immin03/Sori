@@ -1,16 +1,17 @@
 import {PracticeProgress} from './progress.js?v=20261120s1';
 import {scenes} from './scenes.js?v=20261120s1';
-import {mountSpokenTurn,spokenTurnControls} from './spoken-turn.js?v=20261121focus';
+import {mountSpokenTurn,spokenTurnControls} from './spoken-turn.js?v=20261121polish';
 import {DailyVocabulary} from './vocabulary.js?v=20261121library';
-import {vocabularyCard,mountVocabulary} from './vocabulary-ui.js?v=20261121focus';
+import {vocabularyCard,mountVocabulary} from './vocabulary-ui.js?v=20261121polish';
 import {showVocabularyLibrary} from './vocabulary-library.js?v=20261121nav';
 import {mountPhraseSearch} from './phrase-search.js?v=20261120s1';
 import {sharePublic} from '../share-public.js?v=20261121trip';
+import {autoNext} from './auto-next.js?v=20261121polish';
 
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const el = id => document.getElementById(id);
 let rows, byId, byKorean, progress, dailyWords, currentScope, voice, lessonVoice, phrasebook, lastVerdict;
-let phraseModel='', repeatStep=0, repeatTimer;
+let phraseModel='', repeatStep=0, repeatTimer, sessionAdvance;
 let phraseAuto=false, openingPhrase=false, sessionMode='voice';
 const viewRoot = () => el('mainContent');
 function saveNotice() {
@@ -51,7 +52,7 @@ function paintHome() {
   el('learnPracticeEntry').innerHTML='<button class="sori-secondary" data-browse-collection>Browse categories</button>'+(last?'<button class="text-button" data-practice-resume>Last expression</button>':'');
   homePanel();
 }
-function discardVoice() { voice?.dispose(); voice = null; }
+function discardVoice() { sessionAdvance?.cancel(); voice?.dispose(); voice = null; }
 function stopRepeats(message = '') {
   clearTimeout(repeatTimer);
   if(!repeatStep)return;
@@ -182,14 +183,17 @@ function renderSession(play = false) {
     ${spokenTurnControls({compare:true})}
     <div class="recall-actions"><button class="text-button" data-practice-answer="again">Skip</button><button class="sori-primary" data-practice-answer="remembered" hidden>${session.index + 1 === session.ids.length ? 'Finish' : 'Continue'}</button></div>
     <details class="speaking-tip"><summary>Hint &amp; translation</summary>${turn?`<p>${esc(turn[1])}</p><p>${esc(turn[2])}</p>`:''}<p class="meaning-line">${esc(phrase.e)}</p><p class="roman-line">${esc(phrase.p)}</p><div class="audio-choices">${audioButton(phrase.k,'Example')}${audioButton(phrase.k,'Slow',0.65)}</div>${turn?`<p>${esc(turn[4])}</p>`:''}<button class="text-button" aria-expanded="true" aria-controls="replyExample" data-memory>Try from memory</button></details></section>${saveNotice()}`;
+  const next=target.querySelector('[data-practice-answer="remembered"]');
+  sessionAdvance=autoNext(window,()=>{if(next.isConnected)next.click();});
   voice=mountSpokenTurn(target.querySelector('.spoken-turn'),window,{cue:turn?turn[0]:phrase.k,answer:phrase.k,alternatives:turn?.[6]||[],
-    modelLine:target.querySelector('[data-spoken-model]'),start:play,typed:sessionMode==='type',onMode:mode=>{sessionMode=mode;},
+    modelLine:target.querySelector('[data-spoken-model]'),start:play,typed:sessionMode==='type',onMode:mode=>{sessionAdvance?.cancel();sessionMode=mode;},
     onVerdict(kind){
       lastVerdict=kind;
       if(kind==='retry')progress.markMissed();
       if(kind==='correct'){
-        target.querySelector('[data-practice-answer="remembered"]').hidden=false;
+        next.hidden=false;
         target.querySelector('[data-practice-answer="again"]').hidden=true;
+        sessionAdvance.schedule();
       }
     }});
 
@@ -255,6 +259,7 @@ document.addEventListener('click',event => {
     b.setAttribute('aria-expanded',String(!answer.hidden)); b.textContent = answer.hidden ? 'Show example' : 'Try from memory';
   }
   if (b.dataset.practiceAnswer) {
+    sessionAdvance?.cancel();
     if (b.dataset.practiceAnswer === 'again') progress.markMissed();
     progress.answer(lastVerdict === 'retry' ? 'again' : b.dataset.practiceAnswer);
     renderSession(true); paintHome(); window.scrollTo({top:0,behavior:'instant'});
@@ -268,10 +273,10 @@ window.addEventListener('sori-view',event => {
   if (event.detail.view !== 'listen') { phraseAuto=false;library(); closeLessonVoice(); }
   if (event.detail.view === 'home' && dailyWords) paintHome();
 });
-window.addEventListener('sori-model-start',()=>{stopRepeats();voice?.onModel();lessonVoice?.onModel();});
+window.addEventListener('sori-model-start',()=>{sessionAdvance?.cancel();stopRepeats();voice?.onModel();lessonVoice?.onModel();});
 window.addEventListener('savedListChanged',()=>{if(dailyWords)paintHome();});
 window.addEventListener('pagehide',() => { discardVoice(); closeLessonVoice(); });
-document.addEventListener('visibilitychange',() => { if (document.hidden) { stopRepeats();voice?.onModel(); lessonVoice?.onModel(); window.SORI?.TTS?.cancel(); } });
+document.addEventListener('visibilitychange',() => { if (document.hidden) { sessionAdvance?.cancel();stopRepeats();voice?.onModel(); lessonVoice?.onModel(); window.SORI?.TTS?.cancel(); } });
 window.addEventListener('sori-phrase-shown',event => {
   if (!progress || openingPhrase) return;
   const shown=viewRoot().style.display!=='none' && (viewRoot().classList.contains('single-phrase') || viewRoot().classList.contains('collection'));

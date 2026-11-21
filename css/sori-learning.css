@@ -4,13 +4,13 @@
 .learn-practice-entry>section{width:100%}.learn-practice-entry h2{font:600 21px/1.35 system-ui;letter-spacing:-.4px;margin:4px 0 12px}
 .scene-choices{display:grid;gap:7px;margin:14px 0}
 .scene-choice{display:flex;justify-content:space-between;align-items:center;gap:8px;color:var(--ink);background:var(--wash);border:1px solid var(--line);border-radius:7px;min-height:48px;padding:10px 12px;text-align:left}
-.scene-choice strong{font:600 15px/1.45 system-ui}.scene-choice>span{font-size:13px;color:#516150;white-space:nowrap}.scene-choice span span{margin-left:4px}
+.scene-choice strong{font:600 15px/1.45 system-ui}.scene-choice>span{font-size:13px;color:#574944;white-space:nowrap}.scene-choice span span{margin-left:4px}
 .speaker-cue{background:var(--wash);border-left:3px solid var(--sori);border-radius:5px;padding:16px;margin:12px 0 22px}
 .speaker-cue p[lang=ko]{font:550 21px/1.65 system-ui;margin:8px 0 12px;word-break:keep-all}
 .speaker-cue details,.session-answer details{margin:4px 0 9px;font-size:14px;color:var(--muted)}.speaker-cue summary,.session-answer summary{width:fit-content;min-height:44px;padding:10px 0;cursor:pointer}
 .session-prompt .recall-prompt{font:500 23px/1.35 var(--serif);margin:8px 0 12px}
 .reply-recorder{display:grid;gap:7px;margin:6px 0 16px;justify-items:start}
-.reply-recorder p,.reply-recorder small,.speaker-cue .audio-status{font-size:13px;color:#505c51;line-height:1.5;margin:0}
+.reply-recorder p,.reply-recorder small,.speaker-cue .audio-status{font-size:13px;color:#574944;line-height:1.5;margin:0}
 .reply-recorder p:empty{display:none}.reply-recorder audio{width:min(100%,340px);height:44px}.reply-recorder audio[hidden]{display:none}
 .session-prompt>.sori-primary{width:100%}.session-answer .audio-choices{margin:8px 0}.session-answer .recall-actions{margin:12px 0}
 @media(min-width:760px){.scene-choices{grid-template-columns:repeat(3,minmax(0,1fr))}.scene-choice{display:grid;align-content:start;gap:7px}.practice-finish button{max-width:390px}}

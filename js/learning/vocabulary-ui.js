@@ -4,6 +4,7 @@ import {paintSpokenQuestion} from './speech-highlight.js?v=20261121nav';
 import {attachVoiceReply, recorderControls} from './voice-reply.js?v=20261121focus';
 import {attachQuestionAudio} from './question-audio.js?v=20261121q1';
 import {checkWords} from './word-check.js?v=20261121nav';
+import {autoNext} from './auto-next.js?v=20261121polish';
 
 function prompt(question) {
   return `<p class="vocab-sentence" lang="ko"><span data-vocab-before>${question.before}</span><span class="vocab-blank" data-blank><span class="sr-only" lang="en">blank</span></span><span data-vocab-after>${question.after}</span></p>
@@ -23,11 +24,11 @@ export function vocabularyCard(daily) {
 }
 
 export function mountVocabulary(target, daily, env, {start = false, onProgress, custom = false} = {}) {
-  let voice, cue;
-  function interrupt() { cue?.stop(); voice?.onModel(); }
+  let voice, cue, advance;
+  function interrupt() { advance?.cancel(); cue?.stop(); voice?.onModel(); }
   const get = selector => target.querySelector(selector);
   function render(mode = 'ready', playOnOpen = true) {
-    cue?.stop(); cue = null; voice?.dispose(); voice = null;
+    advance?.cancel(); cue?.stop(); cue = null; voice?.dispose(); voice = null;
     env.SORI?.TTS?.cancel();
     const round = custom ? daily.custom() : daily.today();
     if (!round) return;
@@ -93,6 +94,7 @@ export function mountVocabulary(target, daily, env, {start = false, onProgress, 
     }
     cue = attachQuestionAudio(get('[data-question-player]'), showPlayback, env);
     function hearQuestion(thenSpeak) {
+      advance?.cancel();
       voice?.onModel(); env.SORI?.TTS?.cancel();
       cue.play(thenSpeak ? () => { if (!env.document?.hidden) voice?.start(); } : undefined);
     }
@@ -102,6 +104,7 @@ export function mountVocabulary(target, daily, env, {start = false, onProgress, 
     };
     showPlayback('idle');
     function reset() {
+      advance?.cancel();
       blank.innerHTML = '<span class="sr-only" lang="en">blank</span>';
       delete blank.dataset.heard;
       paintSpokenQuestion(parts,question,'');
@@ -109,7 +112,7 @@ export function mountVocabulary(target, daily, env, {start = false, onProgress, 
       delete form.dataset.result;
       switchButton.hidden = choice; typedResult.textContent = '';
     }
-    function result(kind) {
+    function result(kind, automatic = true) {
       if (!['correct','retry','reveal'].includes(kind)) return;
       daily.record(token,index,kind);
       form.dataset.result=kind;
@@ -118,6 +121,7 @@ export function mountVocabulary(target, daily, env, {start = false, onProgress, 
       reveal.hidden = true; after.hidden = false;
       if (kind === 'correct') { recordButton.hidden = true; form.querySelector('button').hidden = true; switchButton.hidden = true; }
       if (kind === 'retry') recordButton.textContent = 'Try speaking again';
+      if (kind === 'correct' && automatic) advance.schedule();
       if (choice) {
         mic.hidden = true;
         for (const [i,word] of options.entries()) {
@@ -130,7 +134,10 @@ export function mountVocabulary(target, daily, env, {start = false, onProgress, 
     }
     switchButton.onclick = () => render(typing ? 'voice' : 'type', typing);
     reveal.onclick = () => { interrupt(); result('reveal'); showPlayback('idle'); get('[data-next-word]').focus(); };
-    get('[data-next-word]').onclick = () => {
+    const next = get('[data-next-word]');
+    advance = autoNext(env, () => next.onclick?.());
+    next.onclick = () => {
+      advance.cancel();
       daily.advance(token,index); onProgress?.(); render(continueMode);
     };
     if (choice) {
@@ -167,9 +174,9 @@ export function mountVocabulary(target, daily, env, {start = false, onProgress, 
       });
       target.querySelector('h1').focus({preventScroll:true});
     }
-    if (current.result) { result(current.result === 'seen' ? 'reveal' : current.result); showPlayback('idle'); }
+    if (current.result) { result(current.result === 'seen' ? 'reveal' : current.result,false); showPlayback('idle'); }
     else if (playOnOpen) hearQuestion(mode === 'voice');
   }
   render(start ? 'voice' : 'ready');
-  return {onModel:interrupt, dispose() { cue?.stop(); voice?.dispose(); }};
+  return {onModel:interrupt, dispose() { advance?.cancel(); cue?.stop(); voice?.dispose(); }};
 }

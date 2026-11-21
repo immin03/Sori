@@ -1,9 +1,9 @@
-import {routes, readPublicItinerary, itineraryParams, itineraryShareUrl, datedDays} from './public-day.js?v=20261121trip';
-import {esc, chooser, areaChoices, cover, stopList, moreDays, placeMap, mountPlaceMap, koreaDate} from './postcards.js?v=20261121trip';
+import {routes, readPublicItinerary, itineraryParams, itineraryShareUrl, datedDays, presetDays} from './public-day.js?v=20261121polish';
+import {esc, chooser, areaChoices, cover, stopList, moreDays, placeMap, mountPlaceMap, koreaDate} from './postcards.js?v=20261121polish';
 import {sharePublic} from '../share-public.js?v=20261121trip';
 import {generatePlan, AREAS, PHRASES, mapLink, placeEmbed, naverLink, phraseForPlace, CITIES, cityForArea} from './planner.js?v=20261121trip';
 import {AIRPORTS, CITY_CENTRES, isKoreaPoint, kmBetween, googleLeg, basePoint, routePoints, nearbyOrder, transferHint} from './geo.js?v=20261121trip';
-import {createJourneyMap} from './map.js?v=20261120ux1';
+import {createJourneyMap} from './map.js?v=20261121polish';
 const root = document.getElementById('guideView');
 const storage={get(k){try{return JSON.parse(localStorage.getItem(k));}catch{return null;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true;}catch{return false;}}};
 let mapOpen = false, activeDay = 0, selectedStop = null, map = null;
@@ -49,6 +49,10 @@ function selectedPlace(){return catalog.find(p=>p.id===selectedStop);}
 function updateTripMap(fit=true){if(!current||!map)return;const day=current.plan.days[activeDay],points=routePoints(day,catalog,journeyDraft,devicePoint),base=basePoint(journeyDraft,devicePoint);const visible=day.stops.map((id,i)=>({...catalog.find(p=>p.id===id),number:i+1}));if(base&&!journeyDraft.hotel||base&&journeyDraft.origin!=='hotel')visible.unshift({...base,id:'start',kind:'base',label:base.label||'This device'});map.update({points:visible,route:points,hotel:journeyDraft.hotel,airports:current.id?Object.values(AIRPORTS).filter(a=>a.city===cityNow()):[],selected:selectedStop,fit});}
 function selectStop(id){
  const wasAirport=Boolean(AIRPORTS[selectedStop]);
+ if(current&&!current.id&&selectedStop!==id){
+   const panel=root.querySelector('#selectedPlace');if(panel)panel.hidden=true;
+   root.querySelectorAll('[data-select-stop]').forEach(b=>b.setAttribute('aria-expanded','false'));
+ }
  syncEnglishMap(id);
  selectedStop=id;map?.select(id);root.querySelectorAll('[data-select-stop]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.selectStop===id)));
  if(wasAirport&&!AIRPORTS[id])updateTripMap(true);
@@ -65,6 +69,11 @@ function stopConversation(place){
  return '<button type="button" class="text-button" data-scene="'+key+'">'+label+'</button>';
 }
 function renderSelected(){const el=root.querySelector('#selectedPlace'),place=selectedPlace();if(AIRPORTS[selectedStop]||['hotel','start'].includes(selectedStop)){renderAnchor();return;}if(!place){el.innerHTML='<div class="empty-day"><h2>A day with room for anything.</h2><p>Add a place to see it on the map.</p></div>';return;}const day=current.plan.days[activeDay],index=day.stops.indexOf(place.id),before=index>0?catalog.find(p=>p.id===day.stops[index-1]):basePoint(journeyDraft,devicePoint),phrase=phraseForPlace(place),distance=before?kmBetween(before,place):null;
+ if(!current.id){
+   el.innerHTML=`<article class="inline-stop"><p>${esc(place.description)}</p><a class="sori-primary" href="${googleLeg(before,place,travelMode)}" target="_blank" rel="noopener noreferrer">Directions</a>
+     <details class="stop-tools"><summary>More about this stop</summary><p>${esc(place.note)}</p><p>${esc(place.transitHint)}</p><div class="travel-modes" role="group" aria-label="Transport mode">${[['transit','Transit'],['walking','Walk'],['driving','Car / taxi']].map(([id,label])=>`<button type="button" data-travel-mode="${id}" aria-pressed="${travelMode===id}">${label}</button>`).join('')}</div><a class="google-map-link" href="${esc(place.source)}" target="_blank" rel="noopener noreferrer">Place information</a><div class="place-language"><strong lang="ko">${esc(phrase.ko)}</strong><p>${esc(phrase.en)}</p><button type="button" class="sori-secondary" data-audio="${esc(phrase.ko)}">Listen</button> <button type="button" class="text-button" data-phrase="${PHRASES.indexOf(phrase)}">Practice</button>${stopConversation(place)}</div></details></article>`;
+   return;
+ }
  el.innerHTML=`<article class="selected-place"><div class="selected-heading"><img src="${esc(place.photo)}" alt="${esc(place.photoAlt)}" width="120" height="120"><div><span class="eyebrow">Stop ${index+1} · ${esc(place.tag)}</span><h2>${esc(place.name)}</h2><p lang="ko">${esc(place.ko)}</p></div></div><a class="google-map-link" href="${esc(mapLink(place))}" target="_blank" rel="noopener noreferrer">Open in Google Maps</a><details class="stop-tools"><summary>Travel options</summary><div class="leg-summary"><span>${before?'From '+esc(before.label||before.name):'From your current location in Google Maps'}</span>${distance!==null?`<strong>${distance<1?(distance*1000).toFixed(0)+' m':distance.toFixed(1)+' km'} apart <small>straight-line</small></strong>`:''}</div><div class="travel-modes" role="group" aria-label="Transport mode">${[['transit','Transit'],['walking','Walk'],['driving','Car / taxi']].map(([id,label])=>`<button type="button" data-travel-mode="${id}" aria-pressed="${travelMode===id}">${label}</button>`).join('')}</div><a class="sori-primary full-width" href="${googleLeg(before,place,travelMode)}" target="_blank" rel="noopener noreferrer">See ${travelMode==='transit'?'transit':travelMode==='walking'?'walking':'driving'} options in Google Maps</a></details><p class="transit-hint">${esc(place.transitHint)}</p><details class="place-more"><summary>Place details & photo</summary><figure class="stop-photo"><img src="${esc(place.photo)}" alt="${esc(place.photoAlt)}" width="960" height="640" loading="lazy"><figcaption>${place.photoContext?'Area / atmosphere photo · ':''}<a href="${esc(place.photoSource)}" target="_blank" rel="noopener noreferrer">${esc(place.photoCredit)} / Unsplash</a></figcaption></figure><p>${esc(place.description)}</p><p class="small-note">${esc(place.note)}</p><p class="small-note">${place.pinAccuracy==='area'?'This is a neighbourhood / flexible stop pin.':'Pin positions are approximate; confirm the entrance in your map app.'}</p><div class="stop-links"><a href="${naverLink(place)}" target="_blank" rel="noopener noreferrer">Naver Map</a><a href="${mapLink(place)}" target="_blank" rel="noopener noreferrer">Google Maps place</a><a href="${esc(place.source)}" target="_blank" rel="noopener noreferrer">Source</a></div></details><details class="stop-tools"><summary>Korean for this stop</summary><div class="place-language"><strong lang="ko">${esc(phrase.ko)}</strong><p>${esc(phrase.en)}</p><div><button type="button" class="sori-secondary" data-audio="${esc(phrase.ko)}">Listen</button><button type="button" class="text-button" data-phrase="${PHRASES.indexOf(phrase)}">Practice</button></div>${stopConversation(place)}</div></details>${current.id?`<div class="stop-actions"><button data-move="${activeDay}:${index}:-1" ${index===0?'disabled':''}>Earlier</button><button data-move="${activeDay}:${index}:1" ${index===day.stops.length-1?'disabled':''}>Later</button><button data-remove="${activeDay}:${index}" aria-label="Remove ${esc(place.name)}">Remove stop</button></div>`:''}<button class="text-button" type="button" data-back-stops>Back to itinerary</button></article>`;
 }
 function focusArea(id){
@@ -177,11 +186,15 @@ function renderTrip(){
       ${owner ? '<button type="button" class="sori-secondary" data-invite>Invite to edit</button>' : `<span>${current.members.length} travelers</span>`}</div>
       <div id="inviteResult"></div>` : '';
   root.querySelector('#tripContent').innerHTML = `${cover(p, city, catalog)}${dayTabs}
-    <div class="travel-columns"><div class="travel-route">${stopList(day, catalog, selectedStop, city)}
-      ${placeMap(day, catalog, selectedStop)}</div><div class="travel-details"><div tabindex="-1" id="selectedPlace"></div></div></div>
+    <div class="travel-columns${privateTrip?'':' simple-route'}"><div class="travel-route">${privateTrip?'':placeMap(day,catalog,selectedStop)}${stopList(day, catalog, selectedStop, city,!privateTrip)}
+      ${privateTrip?placeMap(day,catalog,selectedStop):''}</div><div class="travel-details"><div tabindex="-1" id="selectedPlace"${privateTrip?'':' hidden'}></div></div></div>
     ${tools}${privateTrip ? tripEditors(day,p,city,hint,owner) + pinEditor() : previewControls() + moreDays(city,p.days)}`;
   const englishMap = root.querySelector('#placeMap');
-  englishMap?.addEventListener('toggle', () => mountPlaceMap(englishMap));
+  englishMap?.addEventListener('toggle', () => {
+    mountPlaceMap(englishMap);
+    const control=root.querySelector('[data-open-map]');
+    if(control){control.textContent=englishMap.open?'Hide map':'View map';control.setAttribute('aria-expanded',String(englishMap.open));}
+  });
   const panel = root.querySelector('.day-map-panel');
   if (panel) {
     function mountPins() {
@@ -232,6 +245,11 @@ root.addEventListener('submit',e=>{e.preventDefault();safe(async()=>{const data=
  });});
 root.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
  if (b.hasAttribute('data-retry-catalog')) { loadGuide(); return; }
+ if (b.dataset.cityPreset) {
+   const days=presetDays(b.dataset.cityPreset,Number(b.dataset.length));
+   if(days)showPreview(b.dataset.cityPreset,days);
+   return;
+ }
  if (b.dataset.route) {
    const route = routes.find(r => r.slug === b.dataset.route);
    if (route) showPreview(route.city, [{stops:route.stops}]);
@@ -243,7 +261,11 @@ root.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)retur
      activeDay=current.plan.days.findIndex(d=>d.stops.length);
      selectedStop=null;renderTrip();panel=root.querySelector('#placeMap');
    }
-   if (panel) {panel.open=true;mountPlaceMap(panel);panel.querySelector('summary').focus({preventScroll:true});panel.scrollIntoView({block:'start'});}
+   if (panel) {
+     panel.open=!panel.open;
+     if(panel.open)mountPlaceMap(panel);
+     if(current.id && panel.open){panel.querySelector('summary').focus({preventScroll:true});panel.scrollIntoView({block:'start'});}
+   }
    return;
  }
  if (b.hasAttribute('data-share-itinerary')) {shareItinerary();return;}
@@ -259,8 +281,19 @@ root.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)retur
    root.querySelector('.city-intro h1').focus({preventScroll:true});window.scrollTo({top:0,behavior:'instant'});
    return;
  }
- if(b.hasAttribute('data-back-stops')){focusArea('stopsHeading');return;}
- if(b.dataset.selectStop){selectStop(b.dataset.selectStop);focusArea('selectedPlace');return;}
+ if(b.hasAttribute('data-back-stops')){
+   if(!current.id){root.querySelector('#selectedPlace').hidden=true;root.querySelectorAll('[data-select-stop]').forEach(button=>button.setAttribute('aria-expanded','false'));return;}
+   focusArea('stopsHeading');return;
+ }
+ if(b.dataset.selectStop){
+   if(!current.id){
+     const panel=root.querySelector('#selectedPlace'),expanded=b.getAttribute('aria-expanded')==='true';
+     root.querySelectorAll('[data-select-stop]').forEach(button=>button.setAttribute('aria-expanded','false'));
+     if(expanded){panel.hidden=true;return;}
+     selectStop(b.dataset.selectStop);b.closest('[data-stop-row]').append(panel);panel.hidden=false;b.setAttribute('aria-expanded','true');
+   }else{selectStop(b.dataset.selectStop);focusArea('selectedPlace');}
+   return;
+ }
  if(b.dataset.travelMode){travelMode=b.dataset.travelMode;renderSelected();const mode=root.querySelector('[data-travel-mode][aria-pressed=true]');mode.closest('details').open=true;mode.focus({preventScroll:true});return;}
  if(b.dataset.phrase!==undefined){window.SoriLearn?.openKorean(PHRASES[Number(b.dataset.phrase)].ko);window.SoriNav?.show('listen');document.getElementById('lessonCard')?.scrollIntoView({block:'start'});return;}
  if(b.hasAttribute('data-map-fit')){if(current){selectStop(current.plan.days[activeDay].stops[0]||(journeyDraft.hotel?'hotel':null));updateTripMap(true);}else map?.fit();return;}if(b.hasAttribute('data-map-airports')){if(current&&AIRPORTS[journeyDraft.arrival])selectStop(journeyDraft.arrival);map?.fit(true);return;}

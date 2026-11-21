@@ -7,6 +7,20 @@ const places = require('../data/places.json');
 const root = path.join(__dirname, '..');
 const origin = 'https://sorikorea.com';
 
+test('every one-tap itinerary length is a real ordered and shareable plan',async()=>{
+  const {presetDays,itineraryParams,readPublicItinerary,itineraryShareUrl}=await import('../js/guide/public-day.js');
+  for(const city of ['seoul','busan'])for(const length of [1,2,3]){
+    const days=presetDays(city,length);
+    assert.equal(days.length,length);
+    assert.equal(new Set(days.flatMap(d=>d.stops)).size,length*3);
+    const parsed=readPublicItinerary(itineraryParams(city,days),places);
+    assert.deepEqual(parsed.days.map(d=>d.stops),days.map(d=>d.stops));
+    assert.ok(itineraryShareUrl(origin,city,days,places));
+  }
+  assert.equal(presetDays('unknown',3),null);
+  assert.equal(presetDays('seoul',4),null);
+});
+
 function followPreview(href) {
   const link = new URL(href);
   const html = fs.readFileSync(path.join(root, link.pathname, 'index.html'), 'utf8');

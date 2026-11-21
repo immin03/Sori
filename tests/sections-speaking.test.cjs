@@ -6,6 +6,17 @@ const vm = require('node:vm');
 
 const source = name => fs.readFileSync(path.join(__dirname,'..',name),'utf8');
 
+test('automatic progression advances once and cancels on manual navigation or a hidden page',async()=>{
+  const {autoNext}=await import('../js/learning/auto-next.js');
+  const timers=new Map();let count=0,serial=0;
+  const env={document:{hidden:false},setTimeout(fn){timers.set(++serial,fn);return serial;},clearTimeout(id){timers.delete(id);}};
+  const flow=autoNext(env,()=>count++);
+  flow.schedule();flow.schedule();assert.equal(timers.size,1);
+  let [id,fn]=timers.entries().next().value;timers.delete(id);fn();assert.equal(count,1);
+  flow.schedule();flow.cancel();assert.equal(timers.size,0);
+  flow.schedule();env.document.hidden=true;[id,fn]=timers.entries().next().value;timers.delete(id);fn();assert.equal(count,1);
+});
+
 test('all eight section links and deep links select the correct service and menu item', () => {
   const window = {};
   vm.runInNewContext(source('js/sections.js'), {window,URLSearchParams});
