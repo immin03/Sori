@@ -1,4 +1,4 @@
-import {attachVoiceReply,recorderControls} from './voice-reply.js?v=20261121nav';
+import {attachVoiceReply,recorderControls} from './voice-reply.js?v=20261121focus';
 import {checkWords} from './word-check.js?v=20261121nav';
 import {paintSpokenLine} from './speech-highlight.js?v=20261121nav';
 
@@ -32,7 +32,7 @@ export function cueHandoff({speak,cancel,listen,stopVoice,visible,show}) {
 
 export function spokenTurnControls({externalButton=false,choice=false,compare=false} = {}) {
   return `<div class="spoken-turn">
-    ${externalButton ? '' : '<button type="button" class="sori-primary" data-turn-cue>Listen &amp; answer</button>'}
+    ${externalButton ? '' : '<button type="button" class="sori-secondary focus-listen" data-turn-cue>Listen</button>'}
     <p class="turn-audio-state" role="status" data-turn-audio></p>
     ${recorderControls({exercise:true})}
     ${choice ? '' : '<button type="button" class="text-button" data-turn-type>Type instead</button><form class="vocab-type" data-turn-form hidden><label>Your answer in Korean<input lang="ko" autocomplete="off" required></label><button type="submit" class="sori-secondary">Check answer</button><p role="status"></p></form>'}
@@ -54,20 +54,21 @@ export function mountSpokenTurn(root,env,{cue,answer,alternatives=[],start=false
     show(state) {
       if (disposed) return;
       const busy=state==='loading'||state==='playing';
-      button.textContent=busy?'Stop audio':'Listen & answer';
+      button.textContent=busy?'Stop audio':'Listen';
       button.setAttribute('aria-label',button.textContent);
       button.setAttribute('aria-busy',String(state==='loading'));
-      status.textContent=({loading:'Loading audio…',playing:'Listening starts when the audio ends.',error:'Audio couldn’t play. Try again or answer below.'})[state] || '';
+      status.textContent=({loading:'Loading…',playing:'Playing…',error:'Audio couldn’t play. Tap to retry.'})[state] || '';
       mic.hidden=busy||typed;
     }
   });
   function answerResult(kind,heard) {
     if (disposed) return;
+    if(root.setAttribute)root.setAttribute('data-answer-state',kind);
     onVerdict?.(kind,heard);
   }
   voice=attachVoiceReply(mic,env,answer,alternatives,answerResult,{
     exercise:true,language,choice,fullSentence:true,
-    onBegin(){handoff.stop(); onMode?.('voice');},
+    onBegin(){handoff.stop(); if(root.removeAttribute)root.removeAttribute('data-answer-state'); onMode?.('voice');},
     onTranscript(text){ if(modelLine)paintSpokenLine(modelLine,answer,text);onHeard?.(text); }
   });
   function mirrorInput(focus=false) {

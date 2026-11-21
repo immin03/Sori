@@ -1,8 +1,8 @@
 import {PracticeProgress} from './progress.js?v=20261120s1';
 import {scenes} from './scenes.js?v=20261120s1';
-import {mountSpokenTurn,spokenTurnControls} from './spoken-turn.js?v=20261121nav';
+import {mountSpokenTurn,spokenTurnControls} from './spoken-turn.js?v=20261121focus';
 import {DailyVocabulary} from './vocabulary.js?v=20261121library';
-import {vocabularyCard,mountVocabulary} from './vocabulary-ui.js?v=20261121nav';
+import {vocabularyCard,mountVocabulary} from './vocabulary-ui.js?v=20261121focus';
 import {showVocabularyLibrary} from './vocabulary-library.js?v=20261121nav';
 import {mountPhraseSearch} from './phrase-search.js?v=20261120s1';
 import {sharePublic} from '../share-public.js?v=20261121trip';
@@ -21,10 +21,6 @@ function dailyPool() {
   return [...priority.map(k => byKorean.get(k)?.id).filter(Boolean),
     ...rows.filter(p => ['Cafe','Restaurant','Transport','Greeting','Hotel','Shopping'].includes(p.sub || p.t)).map(p => p.id)];
 }
-function sceneAction(kind) {
-  const active = progress.sessionFor(kind);
-  return active ? 'Continue at turn ' + (active.index + 1) : 'Start conversation';
-}
 function homePanel() {
   const hash=location.hash;
   const panel=hash==='#conversations'?'conversations':hash==='#saved-phrases'?'saved':hash==='#review'?'review':'vocabulary';
@@ -36,22 +32,19 @@ function reviewRow(href,title,summary) {
 }
 function paintHome() {
   el('dailyVocabulary').innerHTML = vocabularyCard(dailyWords);
-  const cafe=scenes.cafe;
-  const otherScenes=Object.entries(scenes).filter(([kind])=>kind!=='cafe').map(([kind,s])=>
-    `<button class="section-row" data-scene="${kind}"><strong>${esc(s.title)}</strong><span>${esc(s.role)} · ${sceneAction(kind)}</span></button>`).join('');
-  el('practiceDashboard').innerHTML=`<article class="speaking-feature">
-    <img src="assets/photos/cafe-conversation.webp" alt="A barista hands over a cup of black coffee." width="1400" height="933">
-    <div class="feature-copy"><span class="feature-meta">Café · 3 turns</span><h2>${esc(cafe.title)}</h2>
-    <p>Listen to the barista and order in Korean.</p><button class="sori-primary" data-scene="cafe">${sceneAction('cafe')}</button></div></article>
-    <div class="section-rows">${otherScenes}</div><h2 class="subsection-title">Phrase practice</h2>
-    <button class="section-row" data-practice-start><strong>Everyday expressions</strong><span>Practise five phrases aloud</span></button>${saveNotice()}`;
+  const icons={cafe:'☕',market:'🛍️',restaurant:'🍜'};
+  const sceneList=Object.entries(scenes).map(([kind,s])=>
+    `<button class="section-row focus-scene" data-scene="${kind}"><span class="scene-icon" aria-hidden="true">${icons[kind]}</span><strong>${esc(s.title)}</strong><span aria-hidden="true">›</span></button>`).join('');
+  el('practiceDashboard').innerHTML=`<div class="section-rows">${sceneList}
+    <button class="section-row focus-scene" data-practice-start><span class="scene-icon" aria-hidden="true">💬</span><strong>Everyday expressions</strong><span aria-hidden="true">›</span></button>
+    <a class="section-row focus-scene" href="#phrases"><span class="scene-icon" aria-hidden="true">📖</span><strong>Phrasebook</strong><span aria-hidden="true">›</span></a></div>${saveNotice()}`;
   const shelf=dailyWords.shelf(), saved=(window.SoriSaved?.list || []).filter(id=>byId.has(id)), {due,last}=progress.stats();
   const again=progress.sessionFor('review');
   el('speakReview').innerHTML=`<div class="section-rows">
-    ${reviewRow('#practice=vocabulary&amp;view=words','My words',shelf.length ? shelf.length + ' practised · mixed and tricky word review' : 'Practised vocabulary and tricky words')}
-    ${reviewRow('#saved-phrases','Saved phrases',saved.length ? saved.length+' saved' : 'Phrases you have bookmarked')}
-    ${due||again ? '<button class="section-row" data-practice-review><strong>Due expressions</strong><span>'+ (again?'Continue your review':due+' ready to practise aloud')+'</span></button>' : '<div class="section-row quiet-row"><strong>Due expressions</strong><span>No expressions due today</span></div>'}
-    <button class="section-row" data-start-quiz><strong>Listening quiz</strong><span>Listen in Korean, then say or choose the meaning</span></button></div>`;
+    ${reviewRow('#practice=vocabulary&amp;view=words','My words',String(shelf.length))}
+    ${reviewRow('#saved-phrases','Saved phrases',String(saved.length))}
+    ${due||again ? '<button class="section-row" data-practice-review><strong>Due expressions</strong><span>'+ (again?'Continue':due+' due')+'</span></button>' : '<div class="section-row quiet-row"><strong>Due expressions</strong><span>None due</span></div>'}
+    <button class="section-row" data-start-quiz><strong>Listening quiz</strong><span aria-hidden="true">›</span></button></div>`;
   el('savedPhrases').innerHTML='<a class="section-back" href="#review">Review</a>'+(saved.length ?
     '<div class="section-rows">'+saved.map(id=>{const q=byId.get(id);return `<button class="section-row" data-saved-phrase="${esc(id)}"><strong lang="ko">${esc(q.k)}</strong><span>${esc(q.e)}</span></button>`;}).join('')+'</div>':
     '<p class="empty-note">Tap Save on a phrase to keep it here for speaking practice.</p><a class="section-back" href="#phrases">Open the phrasebook</a>');
@@ -129,7 +122,7 @@ function openPhrase(id, push = true, from = '') {
   viewRoot().classList.add('single-phrase');
   const parent=new URLSearchParams(location.hash.slice(1)).get('from');
   const back=el('lessonCard').querySelector('.lesson-back');
-  back.textContent=parent==='review'?'Saved phrases':'Phrasebook';back.href=parent==='review'?'#saved-phrases':'#phrases';
+  back.textContent='×';back.setAttribute('aria-label',parent==='review'?'Back to saved phrases':'Back to phrasebook');back.href=parent==='review'?'#saved-phrases':'#phrases';
   phraseAuto=push;
   setupLessonVoice(push);
   progress.setLast(id);window.scrollTo({top:0,behavior:'instant'});
@@ -179,20 +172,26 @@ function renderSession(play = false) {
   const phrase = byId.get(session.ids[session.index]), scene = scenes[session.kind];
   const turn = scene?.turns.find(t => t[3] === phrase.k);
   const cue = turn ? `<section class="speaker-cue"><div class="turn-cap"><span>${esc(scene.role)}</span></div>
-    <p lang="ko">${esc(turn[0])}</p><p class="roman-line">${esc(turn[5])}</p><p class="meaning-line">${esc(turn[1])}</p></section>` : '';
-  target.innerHTML = `<header class="session-header"><a class="section-back" href="${session.kind === 'review' ? '#review' : '#conversations'}">${session.kind === 'review' ? 'Review' : 'Conversations'}</a>
-    <span>Turn ${session.index + 1} of ${session.ids.length}</span></header>
+    <p lang="ko">${esc(turn[0])}</p></section>` : '';
+  target.innerHTML = `<header class="session-header"><a class="section-back focus-exit" aria-label="Exit practice" href="${session.kind === 'review' ? '#review' : '#conversations'}">×</a>
+    <span>${session.index+1} / ${session.ids.length}</span></header>
     <progress max="${session.ids.length}" value="${session.index + 1}" aria-label="Current turn"></progress>
-    <h1>${esc(scene?.title || (session.kind === 'review' ? 'Review your replies' : 'Everyday expressions'))}</h1>${cue}
-    <section class="session-answer"><div class="turn-cap"><span>Your turn</span><button class="text-button memory-toggle" aria-expanded="true" aria-controls="replyExample" data-memory>Try from memory</button></div>
-    <p class="turn-intent">${esc(turn ? turn[2] : phrase.e)}</p>
-    <div id="replyExample"><h2 lang="ko" data-spoken-model>${esc(phrase.k)}</h2><p class="roman-line">${esc(phrase.p)}</p>${turn ? `<p class="meaning-line">${esc(phrase.e)}</p>` : ''}</div>
+    <h1>${turn?'Listen and reply':'Say it in Korean'}</h1>${cue}
+    <section class="session-answer"><div class="turn-cap"><span>Your turn</span></div>
+    <div id="replyExample"><h2 lang="ko" data-spoken-model>${esc(phrase.k)}</h2></div>
     ${spokenTurnControls({compare:true})}
-    <details class="speaking-tip"><summary>Listen to the example</summary><div class="audio-choices">${audioButton(phrase.k,'Natural')}${audioButton(phrase.k,'Slow',0.65)}</div></details>${turn ? `<details class="speaking-tip"><summary>Speaking tip</summary><p>${esc(turn[4])}</p></details>` : ''}
-    <div class="recall-actions"><button class="text-button" data-practice-answer="again">Review later</button><button class="sori-secondary" data-practice-answer="remembered">${session.index + 1 === session.ids.length ? 'Finish practice' : 'Next turn'} →</button></div></section>${saveNotice()}`;
+    <div class="recall-actions"><button class="text-button" data-practice-answer="again">Skip</button><button class="sori-primary" data-practice-answer="remembered" hidden>${session.index + 1 === session.ids.length ? 'Finish' : 'Continue'}</button></div>
+    <details class="speaking-tip"><summary>Hint &amp; translation</summary>${turn?`<p>${esc(turn[1])}</p><p>${esc(turn[2])}</p>`:''}<p class="meaning-line">${esc(phrase.e)}</p><p class="roman-line">${esc(phrase.p)}</p><div class="audio-choices">${audioButton(phrase.k,'Example')}${audioButton(phrase.k,'Slow',0.65)}</div>${turn?`<p>${esc(turn[4])}</p>`:''}<button class="text-button" aria-expanded="true" aria-controls="replyExample" data-memory>Try from memory</button></details></section>${saveNotice()}`;
   voice=mountSpokenTurn(target.querySelector('.spoken-turn'),window,{cue:turn?turn[0]:phrase.k,answer:phrase.k,alternatives:turn?.[6]||[],
     modelLine:target.querySelector('[data-spoken-model]'),start:play,typed:sessionMode==='type',onMode:mode=>{sessionMode=mode;},
-    onVerdict(kind){lastVerdict=kind;if(kind==='retry')progress.markMissed();}});
+    onVerdict(kind){
+      lastVerdict=kind;
+      if(kind==='retry')progress.markMissed();
+      if(kind==='correct'){
+        target.querySelector('[data-practice-answer="remembered"]').hidden=false;
+        target.querySelector('[data-practice-answer="again"]').hidden=true;
+      }
+    }});
 
 }
 function route() {

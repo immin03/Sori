@@ -17,6 +17,11 @@
   }
   function updateNavigation() {
     const [serviceId,child] = locate(location.hash,window.SoriPractice?.roundKind?.());
+    const p = new URLSearchParams(location.hash.slice(1));
+    const exercise = location.hash === '#quiz' || p.has('phrase') ||
+      (p.has('practice') && !['topics','topic','words'].includes(p.get('view')));
+    document.body.dataset.service = serviceId;
+    document.body.classList.toggle('focus-exercise',exercise);
     const service = services.find(s => s.id === serviceId);
     if (sectionNav.dataset.service !== serviceId) {
       sectionNav.dataset.service = serviceId;

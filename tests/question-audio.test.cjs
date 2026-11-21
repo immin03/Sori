@@ -23,7 +23,8 @@ test('every vocabulary question has its own bundled MPEG audio', async () => {
     assert.ok(clip.subarray(0,3).toString() === 'ID3' || clip[0] === 255);
   }
   const card = vocabularyCard({today:() => ({words:vocabulary.slice(0,3), index:0})});
-  assert.match(card, /Listen &amp; answer/);
+  assert.match(card, /Start lesson/);
+  assert.doesNotMatch(card, /vocab-sentence/);
   assert.doesNotMatch(card, /옷/);
 });
 

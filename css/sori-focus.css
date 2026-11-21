@@ -1,0 +1,123 @@
+/* A single learning action at a time, on a quiet canvas. */
+:root { --paper:#fff; --ink:#202522; --muted:#69716b; --line:#e3e8e4; --wash:#f3f6f3; --sori:#a43d2d; }
+body { background:var(--paper); }
+.header { min-height:66px; }
+.header-actions { gap:8px; }
+.section-nav { border:0; justify-content:center; padding:12px 0 3px; }
+.section-nav .section-parent { display:none; }
+.section-nav > div { background:#f1f4f1; border-radius:14px; padding:4px; width:min(100%,540px); }
+.section-nav a { flex:1; min-width:0; min-height:44px; padding:6px 8px; border-radius:10px; font-size:clamp(.85rem,2vw,.98rem); white-space:nowrap; }
+.section-nav a[aria-current=page] { background:white; color:var(--sori); box-shadow:0 1px 5px #24322a13; }
+.section-nav[data-service=read] a[aria-current=page],.section-nav[data-service=explore] a[aria-current=page] { background:white; }
+#homeView { max-width:540px; margin:0 auto; }
+#homeView .section-page-title { font-size:clamp(1.55rem,4vw,2.05rem); margin:26px 0 16px; letter-spacing:-.045em; }
+#dailyVocabulary { margin:0 0 20px; }
+.daily-start { display:grid; justify-items:center; gap:8px; padding:28px 24px 24px; border:1px solid #e0e9df; background:#f1f6f0; border-radius:22px; text-align:center; }
+.daily-start .daily-symbol { width:86px; height:86px; display:grid; place-items:center; border-radius:24px; color:#477553; background:#dfecde; margin-bottom:8px; }
+.daily-symbol svg { width:57px; height:57px; }
+.daily-start h2 { font-size:clamp(1.4rem,5vw,1.85rem); letter-spacing:-.055em; margin:0; color:var(--ink); }
+.daily-start p { color:#526759; margin:0; font-size:.98rem; }
+.daily-start progress { width: min(100%,240px); height:9px; border:0; border-radius:7px; overflow:hidden; background:#dce6dc; accent-color:#578160; margin:2px 0 14px; }
+.daily-start progress::-webkit-progress-bar { background:#dce6dc; }
+.daily-start progress::-webkit-progress-value { background:#578160; border-radius:7px; }
+#homeView .daily-start .sori-primary { width:100%; min-height:54px; font-size:1.07rem; border-radius:13px; background:#314d3b; border-color:#314d3b; }
+#homeView .daily-start .sori-primary:hover { background:#254230; }
+#homeView .section-rows { margin:0; }
+#homeView .section-row { min-height:66px; display:flex; flex-direction:row; align-items:center; padding:12px 5px; gap:12px; }
+#homeView .section-row strong { font-size:1.02rem; }
+#homeView .section-row span { font-size:.9rem; text-align:right; }
+#homeView .section-row:hover { background:#f5f7f4; }
+#homeView .focus-scene strong { flex:1; }
+#homeView .focus-scene .scene-icon { display:grid; place-items:center; width:46px; height:46px; font-size:1.35rem; background:#f1f4ed; border-radius:12px; flex:none; }
+.focus-settings { margin:8px 0; color:var(--muted); }
+.focus-settings summary,.voice-info summary { cursor:pointer; font-size:.86rem; padding:10px 1px; }
+.focus-settings .vocab-levels { padding:4px; margin:0; }
+body[data-service=speak] #appFooter { margin-top:25px; }
+body[data-service=speak] #appFooter { border:0; padding:0 0 15px; background:transparent; }
+.footer-disclosure summary { text-align:center; cursor:pointer; color:var(--muted); font-size:.8rem; padding:10px 0; }
+body[data-service=speak]:not(.focus-exercise) #homeView { min-height: min(65vh,550px); }
+
+/* Lessons take over the screen and have one obvious exit. */
+body.focus-exercise { padding:0 clamp(18px,6vw,34px) 24px; max-width:760px; }
+.focus-exercise :is(.header,.sori-nav,.mobile-nav,#sectionNav,#appFooter) { display:none!important; }
+.focus-exercise #mainContent,.focus-exercise #quizView { margin:0 auto; max-width:540px; padding-top: max(12px,env(safe-area-inset-top)); }
+.focus-exercise #practiceSession { padding:0; }
+.focus-exercise .session-header { display:flex; justify-content:space-between; align-items:center; min-height:50px; margin:0 0 8px; }
+.focus-exercise .focus-exit { display:inline-flex; width:44px; height:44px; justify-content:center; font-size:33px; line-height:1; color:#5f6861; text-decoration:none; font-weight:400; }
+.focus-exercise #practiceSession progress { height:9px; border-radius:9px; accent-color:#5d8b68; }
+.focus-exercise #practiceSession progress::-webkit-progress-bar { border-radius:9px; background:#e8eee7; }
+.focus-exercise #practiceSession progress::-webkit-progress-value { border-radius:9px; background:#5d8b68; transition:width .2s ease; }
+.focus-exercise #practiceSession h1 { font-size:clamp(1.55rem,5vw,2rem); line-height:1.25; margin:26px 0 20px; letter-spacing:-.045em; }
+.focus-exercise .vocab-exercise { margin:0; }
+.focus-exercise .vocab-prompt { background:#f5f7f4; border:0; border-radius:18px; padding:24px 20px 18px; }
+.focus-exercise .vocab-meaning { font-size:.98rem; color:#636d64; margin:14px 0 0; line-height:1.5; }
+.focus-exercise .vocab-sentence { font-size:clamp(1.45rem,5.7vw,2.15rem); font-weight:700; line-height:1.75; letter-spacing:-.025em; }
+.focus-exercise .vocab-audio-row { margin-top:18px; }
+.focus-exercise :is(.vocab-audio-toggle,.focus-listen,#playBtn,#quizPlayBtn) { border:1px solid #e1e6df; background:#fff; color:#354c3b; border-radius:12px; font-size:.95rem; min-height:44px; }
+.focus-exercise .vocab-audio-toggle[aria-busy=true] { background:#edf1ed; }
+.focus-exercise .speaker-cue { border-radius:18px; background:#f0f4ef; padding:18px; margin:0 0 22px; }
+.focus-exercise .speaker-cue .turn-cap { margin-bottom:6px; }
+.focus-exercise #practiceSession .speaker-cue p[lang=ko] { font-size:clamp(1.45rem,5.4vw,1.9rem); }
+.focus-exercise .session-answer h2 { margin:10px 0 20px; font-size:clamp(1.5rem,5.8vw,2.05rem); }
+.focus-exercise .turn-cap > span { font-size:.82rem; color:#6d776d; }
+.focus-exercise .spoken-turn { display:flex; flex-direction:column; align-items:stretch; gap:4px; margin:0; }
+.focus-exercise .focus-listen { align-self:flex-start; padding-inline:22px; }
+.focus-exercise .spoken-turn [data-turn-type] { align-self:center; }
+.focus-exercise .vocab-mic { margin:12px 0 2px; gap:4px; }
+.focus-exercise .vocab-mic .record-action { background:#314d3b!important; color:white!important; border:1px solid #314d3b!important; border-radius:13px!important; min-height:56px; font-size:1.04rem; box-shadow:0 3px 0 #1b3324; }
+.focus-exercise .vocab-mic .record-action:disabled { opacity:.55; box-shadow:none; }
+.focus-exercise .vocab-mic .record-action:not(:disabled):active { transform:translateY(2px); box-shadow:0 1px 0 #1b3324; }
+.focus-exercise .vocab-mic [role=status]:not(:empty) { text-align:center; padding:7px 4px; font-size:.92rem; margin:2px 0; }
+.voice-info { color:var(--muted); margin:0 auto; }
+.voice-info small { font-size:.8rem; display:block; line-height:1.45; }
+.voice-info summary { padding:5px 0; font-size:.76rem; }
+.focus-exercise .vocab-options { justify-content:center; gap:18px; margin:2px 0; }
+.focus-exercise .vocab-type[data-result=correct] :is(label,div:has(input)),
+.focus-exercise .spoken-turn[data-answer-state=correct] .vocab-type :is(label,button) { display:none; }
+.focus-exercise .vocab-type [role=status]:not(:empty) { color:#265c36; font-size:1rem; font-weight:700; text-align:center; }
+.focus-exercise .vocab-type[data-result=retry] [role=status] { color:#8c3c28; }
+.focus-exercise .vocab-next { margin:12px 0 0; padding:12px 0 0; border-top:1px solid var(--line); }
+.focus-exercise .vocab-next .sori-primary,.focus-exercise .recall-actions .sori-primary { flex:1; font-size:1.05rem; min-height:54px; background:#314d3b!important; color:white!important; border:1px solid #314d3b!important; border-radius:13px!important; }
+.focus-exercise .recall-actions { margin-top:8px; padding:8px 0 0; border:0; justify-content:center; }
+.focus-exercise .speaking-tip { margin:12px 0 0; padding:0 4px; }
+.focus-exercise .speaking-tip summary { min-height:36px; text-align:center; font-size:.86rem; }
+.focus-exercise .session-answer:has([data-answer-state=correct]) :is(.vocab-mic .record-action,[data-turn-type],.focus-listen,.voice-info) { display:none; }
+.focus-exercise :is(.check-result.correct,.check-result.retry) { border:0; border-radius:12px; padding:10px 12px; }
+.focus-exercise .check-result.correct { background:#e5f2e2; color:#245331; }
+.focus-exercise .check-result.retry { background:#f9e6dd; color:#8c3c28; }
+.focus-exercise .vocab-spoken,.focus-exercise .vocab-heard span { background:#d6ebd2; color:#224d2c; box-shadow:none; }
+.focus-exercise .vocab-blank[data-result=correct] { background:#d6ebd2; color:#224d2c; }
+.focus-exercise .vocab-choices { display:grid; grid-template-columns:1fr 1fr; }
+.focus-exercise .vocab-choices button { border:1px solid var(--line); border-radius:12px; min-height:53px; }
+.focus-exercise #lessonCard { padding:6px 0; border:0; box-shadow:none; background:transparent; }
+.focus-exercise #lessonCard .kbox { background:#f5f7f4; padding:24px 18px; border-radius:18px; margin:10px 0 14px; }
+.focus-exercise #lessonCard .ko { font-size:clamp(1.7rem,6vw,2.3rem); }
+.focus-exercise #lessonCard :is(.practice,.tip-card) { display:none!important; }
+.focus-exercise #lessonCard #nounDefinitions { font-size:.85rem; }
+.focus-exercise #lessonCard .row-between { margin:0; }
+.focus-exercise #lessonCard .badge { font-size:.84rem; }
+.focus-exercise #lessonCard #playBtn { width:auto; padding-inline:24px; }
+.focus-exercise #lessonVoice { margin-bottom:8px; }
+.focus-exercise #mainContent.single-phrase > .card:has(.navbar) { box-shadow:none; border:0; padding:8px 0; }
+#mainContent.romanization-off #lessonCard #pronunciation { display:none; }
+#mainContent.translation-off #lessonCard #english { display:none; }
+.focus-exercise #quizView .card { padding:0; border:0; box-shadow:none; background:white; }
+.focus-exercise #quizView .quiz-content { max-width:none; gap:7px; }
+.focus-exercise #quizView .focus-exit { align-self:flex-start; }
+.focus-exercise #quizView .quiz-title { color:var(--ink); font-size:clamp(1.45rem,4.5vw,1.9rem); font-weight:720; }
+.focus-exercise #quizView .quiz-header { align-items:center; gap:10px; }
+.focus-exercise #quizView .quiz-question-container { padding:14px; background:#f5f7f4; border:0; }
+.focus-exercise #quizView .quiz-korean { font-size:1.4rem; }
+.focus-exercise #quizView .quiz-info-badge,.focus-exercise #quizView .quiz-tooltip,.focus-exercise #quizView .quiz-streak { display:none; }
+.focus-exercise #quizView .quiz-options { gap:8px; }
+.focus-exercise #quizView .quiz-option { border-radius:12px; font-size:1rem; min-height:50px; }
+@media(max-width:640px) {
+  .section-nav { padding:9px 0 3px; }
+  .section-nav>div { width:100%; }
+  .header-actions #shareSori { display:none; }
+  body[data-service=explore] .header-actions #shareSori { display:inline-block; }
+  #homeView .section-page-title { margin-top:21px; }
+  .daily-start { padding:24px 18px; }
+  .focus-exercise #practiceSession h1 { margin:21px 0 16px; }
+  .focus-exercise .vocab-prompt { padding:20px 16px 17px; }
+}

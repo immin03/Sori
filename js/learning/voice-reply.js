@@ -16,7 +16,7 @@ export function recorderControls({exercise = false} = {}) {
       <label data-sound-setting hidden><input type="checkbox" data-check-sound checked>Feedback sound</label>
     </div>
     <div class="device-choice" data-device-choice hidden><button class="sori-secondary" data-device-check type="button">Enable on-device checking</button><small data-device-note></small></div>
-    <small data-mic-note>Up to 15 seconds. Your recording is discarded when you leave the exercise.</small>
+    ${exercise?'<details class="voice-info"><summary>Voice info</summary><small data-mic-note></small></details>':'<small data-mic-note>Up to 15 seconds. Your recording is discarded when you leave the exercise.</small>'}
   </div>`;
 }
 
@@ -92,7 +92,7 @@ export function attachVoiceReply(container, env = window, example = '', alternat
     check.disabled = sound.disabled = Boolean(active);
     if (!active) {
       record.disabled = !canSpeak();
-      record.textContent = exercise ? 'Speak my answer' : enabled && check.checked ? (clip ? 'Try speaking again' : 'Speak & check') : (clip ? 'Record again' : 'Record my reply');
+      record.textContent = exercise ? 'Speak' : enabled && check.checked ? (clip ? 'Try speaking again' : 'Speak & check') : (clip ? 'Record again' : 'Record my reply');
     }
     note.textContent = (deviceMode && check.checked || active?.controller) ? 'Words are checked on this device. Up to 15 seconds.' : enabled && check.checked ? 'Your browser’s Korean speech service may process audio online. Up to 15 seconds.' :
       (enabled ? 'Record and listen on this device. Up to 15 seconds.' : 'Automatic word checking is unavailable here. You can record and compare your reply.');
@@ -149,10 +149,10 @@ export function attachVoiceReply(container, env = window, example = '', alternat
       };
       if (exercise) {
         messages.correct = 'Correct!';
-        messages.retry = choice ? 'Try a different option.' : fullSentence ? 'Not quite. Try the expression again.' : 'Not quite. Try the highlighted word.';
+        messages.retry = choice ? 'Try another option.' : 'Try again.';
         messages.unclear = 'Couldn’t hear that clearly. Try again.';
         messages.unavailable = take.reason === 'not-allowed'
-          ? 'Microphone access is off. Allow it in your browser or type your answer.'
+          ? 'Microphone access is off. Allow access or type your answer.'
           : canUseDevice ? 'Voice checking is unavailable right now. Try on-device checking or type your answer.' : 'Voice checking is unavailable right now. You can type your answer.';
       }
       if (choice && verdict.kind === 'unavailable') messages.unavailable = 'Voice checking is unavailable here. Tap an option to answer.';
