@@ -1,9 +1,9 @@
 import {sameTopicChoices, levels} from './vocabulary.js?v=20261121library';
-import {vocabularyLinks, difficultyControl, topicTitle} from './vocabulary-library.js?v=20261121library';
-import {paintSpokenQuestion} from './speech-highlight.js?v=20261121library';
-import {attachVoiceReply, recorderControls} from './voice-reply.js?v=20261121library';
+import {difficultyControl, topicTitle} from './vocabulary-library.js?v=20261121nav';
+import {paintSpokenQuestion} from './speech-highlight.js?v=20261121nav';
+import {attachVoiceReply, recorderControls} from './voice-reply.js?v=20261121nav';
 import {attachQuestionAudio} from './question-audio.js?v=20261121q1';
-import {checkWords} from './word-check.js?v=20261121vocab';
+import {checkWords} from './word-check.js?v=20261121nav';
 
 function prompt(question) {
   return `<p class="vocab-meaning">${question.meaning}</p>
@@ -16,14 +16,14 @@ export function vocabularyCard(daily) {
   return `<article class="vocab-card"><header><h2>Today’s vocabulary</h2><span>${complete ? 'Complete' : `Word ${index + 1} of ${words.length}`}</span></header>
     ${complete ? '<p class="vocab-meaning">You’ve practised today’s three words.</p>' : prompt(words[index]) + '<p class="vocab-instruction">Listen, then say the missing Korean word or the whole sentence.</p>'}
     <button type="button" class="sori-primary" data-open-vocabulary>${complete ? 'Review today’s words' : 'Listen &amp; answer'}</button>
-    ${vocabularyLinks()}${difficultyControl(daily.difficulty?.())}</article>`;
+    ${difficultyControl(daily.difficulty?.())}</article>
+    <a class="section-row topic-entry" href="#practice=vocabulary&amp;view=topics"><strong>Vocabulary topics</strong><span>Choose from eight topics, from travel to feelings</span></a>`;
 }
 
 export function mountVocabulary(target, daily, env, {start = false, onProgress, custom = false} = {}) {
   let voice, cue;
   function interrupt() { cue?.stop(); voice?.onModel(); }
   const get = selector => target.querySelector(selector);
-  const back = '<button type="button" class="text-button" data-pause-session>‹ Speak</button>';
   function render(mode = 'ready', playOnOpen = true) {
     cue?.stop(); cue = null; voice?.dispose(); voice = null;
     env.SORI?.TTS?.cancel();
@@ -31,7 +31,8 @@ export function mountVocabulary(target, daily, env, {start = false, onProgress, 
     if (!round) return;
     const {words,index,day,token} = round;
     const title = round.kind === 'daily' ? 'Today’s vocabulary' : round.kind === 'topic' ? topicTitle(round.topic) : round.scope === 'tricky' ? 'Tricky word review' : 'Mixed review';
-    const header = `<header class="session-header">${back}${vocabularyLinks()}</header>`;
+    const parent = round.kind === 'review' ? ['My words','#practice=vocabulary&amp;view=words'] : round.kind === 'topic' ? [topicTitle(round.topic),'#practice=vocabulary&amp;view=topic&amp;topic='+round.topic] : ['Vocabulary','#home'];
+    const header = `<header class="session-header"><a class="section-back" href="${parent[1]}">${parent[0]}</a></header>`;
     if (index === words.length) {
       target.innerHTML = `${header}<section class="vocab-finish">
         <h1 tabindex="-1">${round.kind === 'daily' ? 'Today’s vocabulary complete.' : title + ' complete.'}</h1>
@@ -59,7 +60,7 @@ export function mountVocabulary(target, daily, env, {start = false, onProgress, 
           </div>
           <audio hidden playsinline preload="metadata" data-question-player src="${new URL('../../assets/audio/questions/' + question.audioId + '.mp3', import.meta.url).href}"></audio>
         </div>
-        <p class="vocab-instruction">${choice ? 'Pick the missing Korean word.' : 'The chime marks the blank. Say the word or the whole sentence.'}</p>
+        <p class="vocab-instruction">${choice ? 'Say the missing Korean word or tap your choice.' : 'The chime marks the blank. Say the word or the whole sentence.'}</p>
         ${choice ? `<div class="vocab-choices" role="group" aria-label="Choose the missing word">${options.map((word,i) => `<button type="button" lang="ko" data-choice="${i}">${word}</button>`).join('')}</div><p class="vocab-choice-status" role="status" data-choice-result></p>` : ''}
         ${recorderControls({exercise:true})}
         <form class="vocab-type" data-type-form hidden><label for="vocabAnswer">Your answer in Korean</label>
@@ -81,13 +82,13 @@ export function mountVocabulary(target, daily, env, {start = false, onProgress, 
     function showPlayback(state) {
       const playing = state === 'playing' || state === 'loading';
       if (state === 'playing' || state === 'ended') heardQuestion = true;
-      const firstListen = !choice && !heardQuestion && !typing && after.hidden;
+      const firstListen = !heardQuestion && !typing && after.hidden;
       cueLabel.textContent = playing ? 'Stop question' : firstListen ? 'Listen & answer' : heardQuestion ? 'Replay question' : 'Hear question';
       cueButton.className = 'vocab-audio-toggle ' + (firstListen && !playing ? 'sori-primary' : 'sori-secondary');
       cueButton.setAttribute('aria-busy', String(state === 'loading'));
       const messages = {loading:'Loading question…', playing:'Playing question…', error:'Audio couldn’t play. Tap to retry.', blocked:'Tap to hear the question.'};
       cueStatus.textContent = messages[state] || '';
-      mic.hidden = choice || typing || playing || (firstListen && state !== 'error');
+      mic.hidden = typing || (choice && !after.hidden) || playing || (firstListen && state !== 'error');
     }
     cue = attachQuestionAudio(get('[data-question-player]'), showPlayback, env);
     function hearQuestion(thenSpeak) {
@@ -96,7 +97,7 @@ export function mountVocabulary(target, daily, env, {start = false, onProgress, 
     }
     cueButton.onclick = () => {
       if (cue.playing) cue.stop();
-      else hearQuestion(!choice && !typing && after.hidden && (!heardQuestion || continueMode === 'voice'));
+      else hearQuestion(!typing && after.hidden);
     };
     showPlayback('idle');
     function reset() {
@@ -115,6 +116,7 @@ export function mountVocabulary(target, daily, env, {start = false, onProgress, 
       if (kind === 'correct') { recordButton.hidden = true; form.querySelector('button').hidden = true; switchButton.hidden = true; }
       if (kind === 'retry') recordButton.textContent = 'Try speaking again';
       if (choice) {
+        mic.hidden = true;
         for (const [i,word] of options.entries()) {
           const option = get('[data-choice="' + i + '"]');
           option.disabled = true;
@@ -129,18 +131,19 @@ export function mountVocabulary(target, daily, env, {start = false, onProgress, 
       daily.advance(token,index); onProgress?.(); render(continueMode);
     };
     if (choice) {
-      mic.hidden = true; switchButton.hidden = true;
+      switchButton.hidden = true;
       options.forEach((word,i) => {
         const button = get('[data-choice="' + i + '"]');
         button.onclick = () => {
-          cue.stop();
+          interrupt();
           if (word !== question.word) button.dataset.wrong = 'true';
           result(word === question.word ? 'correct' : 'retry');
           get('[data-next-word]').focus({preventScroll:true});
         };
       });
       target.querySelector('h1').focus({preventScroll:true});
-    } else if (typing) {
+    }
+    if (typing) {
       mic.hidden = true; form.hidden = false; switchButton.textContent = 'Speak instead';
       get('.vocab-instruction').hidden = true;
       input.focus({preventScroll:true});
@@ -156,13 +159,13 @@ export function mountVocabulary(target, daily, env, {start = false, onProgress, 
       };
     } else {
       voice = attachVoiceReply(mic, env, question.sentence, question.accepted, result, {
-        exercise:true, onBegin() { cue.stop(); heardQuestion = true; continueMode = 'voice'; reset(); },
+        exercise:true, choice, onBegin() { cue.stop(); heardQuestion = true; continueMode = 'voice'; reset(); },
         onTranscript(text) { if (after.hidden) paintSpokenQuestion(parts,question,text); }
       });
       target.querySelector('h1').focus({preventScroll:true});
     }
     if (current.result) { result(current.result === 'seen' ? 'reveal' : current.result); showPlayback('idle'); }
-    else if (playOnOpen) hearQuestion(!choice && mode === 'voice');
+    else if (playOnOpen) hearQuestion(mode === 'voice');
   }
   render(start ? 'voice' : 'ready');
   return {onModel:interrupt, dispose() { cue?.stop(); voice?.dispose(); }};

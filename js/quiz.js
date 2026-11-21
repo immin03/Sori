@@ -1,3 +1,5 @@
+import {mountSpokenTurn,spokenTurnControls} from './learning/spoken-turn.js?v=20261121nav';
+import {optionNames,spokenOption} from './learning/quiz-choice.js?v=20261121nav';
 /* Daily Quiz Functionality */
 (function() {
   let initialized = false;
@@ -7,7 +9,7 @@
     const quizPlayBtn = document.getElementById('quizPlayBtn');
     const quizKorean = document.querySelector('.quiz-korean');
     const quizOptions = document.querySelectorAll('.quiz-option');
-    const quizSubmit = document.querySelector('.quiz-submit');
+    const voiceSlot=document.getElementById('quizVoice'), feedback=document.getElementById('quizFeedback');
     const quizCategories = document.querySelectorAll('.quiz-category');
     const quizSpeed = document.getElementById('quizSpeed');
     const quizSpeedVal = document.getElementById('quizSpeedVal');
@@ -26,13 +28,39 @@
     initialized = true;
     
     let currentQuestionData = null;
-    let favoriteButtonListenerAdded = false;
     
     // Quiz state
     let currentQuestions = [];
     let currentQuestionIndex = -1;
-    let triesCount = 0;
     let currentStreak = 0;
+    let turn=null, armed=false, retryTimer, advanceTimer;
+    const solved=new Set();
+    const visible=()=>document.getElementById('quizView').style.display==='block';
+    function clearTimers(){clearTimeout(retryTimer);clearTimeout(advanceTimer);}
+    function setupVoice(start=false) {
+      turn?.dispose();turn=null;
+      if(!visible() || !currentQuestionData)return;
+      const answers=Array.from(quizOptions,o=>o.dataset.answer);
+      const correct=Array.from(quizOptions).findIndex(o=>o.dataset.isCorrect==='true');
+      if(correct<0 || solved.has(currentQuestionIndex)){voiceSlot.replaceChildren();return;}
+      voiceSlot.innerHTML=spokenTurnControls({choice:true,externalButton:true});
+      turn=mountSpokenTurn(voiceSlot,window,{cue:currentQuestionData.k,answer:answers[correct],alternatives:optionNames(correct),
+        language:'en-US',choice:true,externalButton:quizPlayBtn,start,rate:()=>currentSpeed,onMode:()=>{armed=true;},
+        onVerdict(kind,text){
+          if(kind==='unavailable')armed=false;
+          if(kind!=='correct' && kind!=='retry')return;
+          const i=spokenOption(text,answers);
+          if(i<0){feedback.textContent='Say an option number from one to four, or tap your answer.';return;}
+          grade(quizOptions[i]);
+        }});
+    }
+    window.SoriQuiz={start(){if(!turn)setupVoice();turn?.play();}};
+    window.addEventListener('sori-view',e=>{
+      if(e.detail.view==='quiz'){if(!turn)setupVoice();return;}
+      clearTimers();armed=false;turn?.dispose();turn=null;
+    });
+    document.addEventListener('visibilitychange',()=>{if(document.hidden){clearTimers();armed=false;turn?.onModel();}});
+    window.addEventListener('pagehide',()=>{clearTimers();armed=false;turn?.dispose();turn=null;});
     
     const quizAudio = window.SORI.TTS;
     let currentSpeed = parseFloat(quizSpeed?.value || '0.8');
@@ -41,35 +69,8 @@
       if (quizSpeedVal) quizSpeedVal.textContent=currentSpeed.toFixed(2)+'x';
       quizAudio.setRate(currentSpeed);
     });
-    async function playKorean(text) {
-      try { await quizAudio.speak(text,{rate:currentSpeed}); }
-      catch(error) {
-        if (error.name === 'AbortError') return;
-        let message=document.getElementById('quizAudioError');
-        if (!message) { message=document.createElement('p'); message.id='quizAudioError'; message.setAttribute('role','alert'); quizPlayBtn.after(message); }
-        message.textContent='Audio playback failed. Please try again.';
-      }
-    }
-    // Quiz play button
-    quizPlayBtn.addEventListener('click', () => {
-      if (quizKorean) {
-        playKorean(quizKorean.textContent);
-      }
-    });
-    
-    // Quiz option selection
-    let selectedOption = null;
-    quizOptions.forEach(option => {
-      option.addEventListener('click', function() {
-        quizOptions.forEach(o => o.classList.remove('selected'));
-        this.classList.add('selected');
-        selectedOption = this;
-        if (quizSubmit) {
-          quizSubmit.disabled = false;
-        }
-      });
-    });
-    
+    quizOptions.forEach(option => option.addEventListener('click',()=>grade(option)));
+
     // Get quiz data
     function getQuizData(category) {
       const catMap = {
@@ -100,10 +101,10 @@
       
       // Get 10 random questions
       const shuffled = [...data].sort(() => Math.random() - 0.5);
-      currentQuestions = shuffled.slice(0, 10);
+      currentQuestions = shuffled.slice(0, 10);solved.clear();
+      document.getElementById('quizScore').textContent='0';
       currentQuestionIndex = 0;
       document.getElementById("quizTotal").textContent = currentQuestions.length;
-      triesCount = 0;
       currentStreak = 0; // Reset streak
       updateStreakDisplay();
       
@@ -160,7 +161,7 @@
     
     // Load current question
     function loadCurrentQuestion() {
-      quizAudio.cancel();
+      clearTimers();turn?.dispose();turn=null;feedback.textContent='';quizPlayBtn.hidden=false;
       if (currentQuestions.length === 0 || currentQuestionIndex < 0 || currentQuestionIndex >= currentQuestions.length) {
         return;
       }
@@ -204,23 +205,22 @@
         // Update option buttons and reset styles
         quizOptions.forEach((option, index) => {
           if (answers[index]) {
-            option.textContent = answers[index];
+            option.textContent = (index+1) + '. ' + answers[index];
             option.dataset.answer = answers[index];
             option.dataset.isCorrect = answers[index] === questionData.e;
-            option.classList.remove('selected');
+            option.classList.remove('selected');option.removeAttribute('data-verdict');
             
             // Reset all button styles to default - important!
             option.removeAttribute('style');
           }
         });
         
-        // Disable submit button until new answer is selected
-        if (quizSubmit) {
-          quizSubmit.disabled = true;
+        if(solved.has(currentQuestionIndex)){
+          feedback.textContent='You answered this question correctly.';
+          for(const option of quizOptions)if(option.dataset.isCorrect==='true')option.classList.add('selected');
+          quizPlayBtn.hidden=true;
         }
-        
-        selectedOption = null;
-        
+        setupVoice(armed);
         // Update navigation buttons
         updateNavButtons();
       }
@@ -241,7 +241,6 @@
       quizPrevBtn.addEventListener('click', () => {
         if (currentQuestionIndex > 0) {
           currentQuestionIndex--;
-          triesCount = 0;
           loadCurrentQuestion();
         }
       });
@@ -252,138 +251,32 @@
       quizNextBtn.addEventListener('click', () => {
         if (currentQuestionIndex < currentQuestions.length - 1) {
           currentQuestionIndex++;
-          triesCount = 0;
           loadCurrentQuestion();
         }
       });
     }
     
-    // Play sound effect
-    function playSoundEffect(type) {
-      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      
-      if (type === 'correct') {
-        // Correct answer: brighter, more joyful ascending melody
-        const freqs = [523.25, 659.25, 783.99]; // C, E, G major triad
-        let time = audioContext.currentTime;
-        
-        freqs.forEach((freq, i) => {
-          const oscillator = audioContext.createOscillator();
-          const gainNode = audioContext.createGain();
-          
-          oscillator.connect(gainNode);
-          gainNode.connect(audioContext.destination);
-          
-          oscillator.frequency.value = freq;
-          oscillator.type = 'sine';
-          
-          gainNode.gain.setValueAtTime(0, time);
-          gainNode.gain.linearRampToValueAtTime(0.2, time + 0.05);
-          gainNode.gain.exponentialRampToValueAtTime(0.01, time + 0.2);
-          
-          oscillator.start(time);
-          oscillator.stop(time + 0.2);
-          time += 0.1;
-        });
-      } else {
-        // Wrong answer: lower, descending tone
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-        
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-        
-        oscillator.frequency.value = 400;
-        oscillator.type = 'sawtooth';
-        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-        oscillator.frequency.exponentialRampToValueAtTime(200, audioContext.currentTime + 0.3);
-        oscillator.start();
-        oscillator.stop(audioContext.currentTime + 0.3);
+    function grade(option) {
+      if(!visible() || solved.has(currentQuestionIndex))return;
+      turn?.onModel();clearTimers();
+      const correct=option.dataset.isCorrect==='true';
+      for(const b of quizOptions){b.classList.toggle('selected',b===option);b.removeAttribute('data-verdict');}
+      option.dataset.verdict=correct?'correct':'retry';
+      if(correct){
+        solved.add(currentQuestionIndex);currentStreak++;updateStreakDisplay();
+        document.getElementById('quizScore').textContent=String(solved.size);quizPlayBtn.hidden=true;
+        feedback.textContent=currentQuestionIndex===currentQuestions.length-1?'Quiz complete. '+solved.size+' of '+currentQuestions.length+' answered correctly.':'Correct!';
+        turn?.dispose();turn=null;voiceSlot.replaceChildren();
+        if(currentQuestionIndex<currentQuestions.length-1)advanceTimer=setTimeout(()=>{
+          if(visible()&&!document.hidden){currentQuestionIndex++;loadCurrentQuestion();}
+        },1500);
+      }else{
+        currentStreak=0;updateStreakDisplay();
+        feedback.textContent='Not quite. Try another meaning.';
+        retryTimer=setTimeout(()=>{if(!visible())return;option.removeAttribute('data-verdict');option.classList.remove('selected');},1200);
       }
     }
-    
-    // Quiz submit
-    quizSubmit?.addEventListener('click', () => {
-      if (selectedOption) {
-        const isCorrect = selectedOption.dataset.isCorrect === 'true';
-        
-        if (isCorrect) {
-          // Play success sound
-          playSoundEffect('correct');
-          
-          // Increment streak
-          currentStreak++;
-          updateStreakDisplay();
-          
-          // Correct answer - show feedback (purple)
-          selectedOption.style.background = '#243b30';
-          selectedOption.style.color = '#fff';
-          selectedOption.style.borderColor = '#243b30';
-          
-          // Update score
-          const scoreEl = document.getElementById('quizScore');
-          if (scoreEl) {
-            const currentScore = parseInt(scoreEl.textContent) || 0;
-            scoreEl.textContent = currentScore + 1;
-            // Animate score
-            scoreEl.style.transform = 'scale(1.3)';
-            setTimeout(() => scoreEl.style.transform = 'scale(1)', 200);
-          }
-          
-          triesCount = 0; // Reset tries for next question
-          
-          // Wait a bit then load next question automatically
-          setTimeout(() => {
-            if (currentQuestionIndex < currentQuestions.length - 1) {
-              currentQuestionIndex++;
-              loadCurrentQuestion();
-            }
-          }, 1500);
-        } else {
-          // Play failure sound
-          playSoundEffect('wrong');
-          triesCount++;
-          
-          // Reset streak on wrong answer
-          currentStreak = 0;
-          updateStreakDisplay();
-          
-          // Wrong answer - show feedback (red)
-          selectedOption.style.background = '#ef4444';
-          selectedOption.style.color = '#fff';
-          selectedOption.style.borderColor = '#ef4444';
-          
-          // Highlight correct answer in purple
-          quizOptions.forEach(option => {
-            if (option.dataset.isCorrect === 'true') {
-              option.style.background = '#243b30';
-              option.style.color = '#fff';
-              option.style.borderColor = '#243b30';
-            }
-          });
-          
-          // Reset for another try (no timeout, just let user retry)
-          setTimeout(() => {
-            selectedOption = null;
-            quizOptions.forEach((option, index) => {
-              // Keep correct answer purple, reset others
-              if (option.dataset.isCorrect !== 'true') {
-                option.style.background = '';
-                option.style.color = '';
-                option.style.borderColor = '';
-              }
-              option.classList.remove('selected');
-            });
-            
-            // Enable submit button for retry
-            if (quizSubmit) {
-              quizSubmit.disabled = true;
-            }
-          }, 1200);
-        }
-      }
-    });
-    
+
     // Update streak display with animation
     function updateStreakDisplay() {
       const streakEl = document.getElementById('quizStreak');
@@ -416,8 +309,7 @@
     });
     
     // Quiz favorite button
-    if (quizFavoriteBtn && !favoriteButtonListenerAdded) {
-      favoriteButtonListenerAdded = true;
+    if (quizFavoriteBtn) {
       
       quizFavoriteBtn.addEventListener('click', async function() {
         const user = window.firebaseAuth?.currentUser;

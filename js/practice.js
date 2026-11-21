@@ -3,6 +3,7 @@
  let playingButton=null;
  document.addEventListener('click',async e=>{
   const button=e.target.closest('[data-audio]');if(!button)return;
+  window.dispatchEvent(new Event('sori-model-start'));
   repeatRun++;
   if(playingButton===button){window.SORI?.TTS?.cancel();return;}
   const label = button.textContent, inline = button.hasAttribute('data-inline-audio');
@@ -34,6 +35,8 @@
  document.getElementById('speed')?.addEventListener('input',e=>{document.querySelectorAll('[data-listen-rate]').forEach(b=>b.setAttribute('aria-pressed',String(Number(b.dataset.listenRate)===Number(e.target.value))));});
 let repeatRun=0,repeatButton=null;
  document.addEventListener('click',async e=>{const button=e.target.closest('[data-repeat-current]');if(!button)return;
+  if(window.SoriPractice?.repeatPhrase())return;
+  window.dispatchEvent(new Event('sori-model-start'));
   if(repeatButton===button){repeatRun++;window.SORI?.TTS?.cancel();return;}
   const run=++repeatRun;repeatButton=button;const text=button.dataset.audioText;if(!text)return;
   try{for(let i=0;i<3;i++){if(run!==repeatRun)break;button.textContent='Stop practice · '+(i+1)+' / 3';await window.SORI.TTS.speak(text,{rate:Number(document.getElementById('speed').value)||0.8});window.dispatchEvent(new CustomEvent('sori-repeat-ended',{detail:{text}}));if(run!==repeatRun)break;button.textContent='Your turn… Stop practice';await new Promise(resolve=>setTimeout(resolve,1500));}}
@@ -42,6 +45,10 @@ let repeatRun=0,repeatButton=null;
  });
  document.getElementById('playBtn')?.addEventListener('click',()=>{repeatRun++;});
  window.addEventListener('sori-own-audio',()=>{repeatRun++;});
- window.addEventListener('sori-view',()=>{repeatRun++;window.SORI?.TTS?.cancel();});
+ let lastView;
+ window.addEventListener('sori-view',event=>{
+  if(event.detail.view===lastView)return;
+  lastView=event.detail.view;repeatRun++;window.SORI?.TTS?.cancel();
+ });
  window.addEventListener('sori-phrase-shown',()=>{repeatRun++;});
 })();

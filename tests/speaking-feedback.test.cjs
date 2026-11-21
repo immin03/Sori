@@ -300,3 +300,49 @@ test('opening vocabulary from home plays the question before listening, and the 
   const late = audio.onended; lesson.dispose(); audio.ended = true; late();
   assert.equal(f.readers.length, 2);
 });
+
+test('conversation replies and English quiz answers stream and grade from the cue with no second press', async () => {
+  const {mountSpokenTurn} = await import('../js/learning/spoken-turn.js');
+  for (const [cue,answer,language,choice] of [['몇 분이세요?','두 명이에요.','ko-KR',false],['얼마예요?','How much is it?','en-US',true]]) {
+    const f=fixture(), heard=[], verdicts=[];
+    let playing,end;
+    f.env.document={hidden:false};
+    f.env.SORI={TTS:{speak(text,options){assert.equal(text,cue);playing=options.onPlaying;return new Promise(resolve=>{end=resolve;});},cancel(){}}};
+    const root={isConnected:true,querySelector(key){
+      if(key==='.turn-recording' || key==='[data-turn-form]' || key==='[data-turn-type]')return null;
+      const node=f.query(key);node.querySelector=f.query;node.setAttribute=()=>{};node.removeEventListener=()=>{};return node;
+    }};
+    const control=mountSpokenTurn(root,f.env,{cue,answer,language,choice,start:true,alternatives:choice?['two']:[],
+      onHeard:text=>heard.push(text),onVerdict:(kind,text)=>verdicts.push([kind,text])});
+    assert.equal(f.readers.length,0);playing();assert.equal(f.readers.length,0);
+    end();await Promise.resolve();await Promise.resolve();
+    const reader=f.readers[0];assert.ok(reader);assert.equal(reader.lang,language);assert.equal(reader.interimResults,true);
+    const spoken=choice?'two':answer;
+    reader.onresult({results:[{0:{transcript:spoken.slice(0,2)},isFinal:false}]});
+    assert.equal(heard.at(-1),spoken.slice(0,2).trim());assert.equal(verdicts.length,0);
+    reader.final(spoken);assert.deepEqual(verdicts,[['correct',spoken]]);
+    control.play();playing();end();await Promise.resolve();await Promise.resolve();
+    assert.equal(f.readers.length,2);control.dispose();assert.ok(f.readers[1].aborted);
+  }
+});
+
+test('mixed word review accepts a spoken choice, then listens on the next fill-in question',async()=>{
+  const {DailyVocabulary}=await import('../js/learning/vocabulary.js');
+  const {mountVocabulary}=await import('../js/learning/vocabulary-ui.js');
+  const f=fixture(), daily=new DailyVocabulary(f.env.localStorage,null);
+  for(let i=0;i<2;i++){const day=daily.today();daily.record(day.token,day.index,'correct');daily.advance(day.token,day.index);}
+  const round=daily.startReview();assert.deepEqual(round.slots.map(s=>s.format),['choice','cloze']);
+  const target={querySelector(key){
+    const node=f.query(key);node.focus ||= ()=>{};node.setAttribute ||= ()=>{};node.querySelector ||= k=>target.querySelector(k);node.dataset ||= {};return node;
+  },set innerHTML(markup){this.html=markup;this.querySelector('[data-after-answer]').hidden=true;}};
+  const audio=target.querySelector('[data-question-player]');let plays=0;
+  audio.play=()=>{plays++;audio.ended=false;return Promise.resolve();};
+  const finishCue=()=>{audio.onplaying();audio.ended=true;audio.onended();};
+  const ui=mountVocabulary(target,daily,f.env,{start:true,custom:true});
+  assert.match(target.html,/Say the missing Korean word or tap/);assert.equal(f.readers.length,0);
+  finishCue();assert.equal(f.readers.length,1);
+  f.readers[0].final(round.words[0].word);assert.equal(f.query('[data-choice-result]').textContent,'Correct!');
+  assert.equal(daily.entry(round.words[0].id).reviews,1);
+  f.query('[data-next-word]').onclick();assert.equal(plays,2);assert.doesNotMatch(target.html,/Say the missing Korean word or tap/);
+  finishCue();assert.equal(f.readers.length,2);ui.dispose();assert.ok(f.readers[1].aborted);
+});

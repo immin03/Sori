@@ -1,11 +1,6 @@
 import {topics, levels, vocabulary} from './vocabulary-catalog.js?v=20261121library';
 
 const base = '#practice=vocabulary';
-export function vocabularyLinks(current = '') {
-  const views = [['topics','Explore topics'],['words','My words']];
-  return '<nav class="vocab-links" aria-label="Vocabulary">' + views.map(([id,label]) =>
-    `<a href="${base}&amp;view=${id}"${current === id ? ' aria-current="page"' : ''}>${label}</a>`).join('') + '</nav>';
-}
 export function topicTitle(id) { return topics.find(t => t.id === id)?.title || 'Vocabulary'; }
 function topicHref(id) {
   return base + '&amp;view=topic&amp;topic=' + id;
@@ -27,7 +22,7 @@ function resume(round) {
 }
 function topicsPage(daily, round) {
   return `<h1 tabindex="-1">Vocabulary topics</h1><p class="vocab-subtitle">${vocabulary.length} Korean words, from everyday essentials to expressions with nuance.</p>
-    ${difficultyControl(daily.difficulty())}${round?.level === daily.difficulty() ? resume(round) : ''}
+    ${difficultyControl(daily.difficulty())}${round?.kind === 'topic' && round.level === daily.difficulty() ? resume(round) : ''}
     <div class="vocab-topic-grid">${topics.map(t => {
       const words = vocabulary.filter(q => q.topic === t.id && (daily.difficulty() === 'all' || daily.difficulty() === q.level)), seen = words.filter(q => daily.entry(q.id)).length;
       const sample = words.find(q => q.level === 'nuance') || words[0];
@@ -53,7 +48,7 @@ function wordsPage(daily, round) {
   const tricky = shelf.filter(q => daily.isTricky(q.id)).length;
   const due = shelf.filter(q => daily.entry(q.id).due <= daily.day()).length;
   return `<h1 tabindex="-1">My words</h1><p class="vocab-subtitle">${shelf.length} ${shelf.length === 1 ? 'word' : 'words'} practised · ${due} due for review</p>${difficultyControl(daily.difficulty())}
-    <section class="vocab-shelf-intro"><h2>Try them in a new sentence</h2><p>Pick a word or say it from memory. Each set has up to five words, starting with the ones due for review.</p>
+    <section class="vocab-shelf-intro"><h2>Try them in a new sentence</h2><p>Say the word from memory or choose from the options. Each set has up to five words, starting with the ones due for review.</p>
       <div class="vocab-hub-actions"><button type="button" class="sori-primary" data-vocab-review="all">Mixed review</button>
       ${tricky ? `<button type="button" class="sori-secondary" data-vocab-review="tricky">Review tricky words (${tricky})</button>` : ''}</div>
       ${round?.kind === 'review' && round.level === daily.difficulty() ? resume(round) : ''}</section>
@@ -68,7 +63,7 @@ export function showVocabularyLibrary(target, daily, params) {
   if (view === 'words') html = wordsPage(daily,round);
   else if (view === 'topic' && topic) html = topicPage(daily,topic,level,round);
   else html = topicsPage(daily,round);
-  target.innerHTML = `<header class="session-header"><button type="button" class="text-button" data-pause-session>‹ Speak</button>
-    ${vocabularyLinks(view === 'words' ? 'words' : view === 'topic' ? '' : 'topics')}</header><section class="vocab-hub">${html}</section>`;
+  const parent = view === 'words' ? ['Review','#review'] : view === 'topic' && topic ? ['Vocabulary topics',base+'&amp;view=topics'] : ['Vocabulary','#home'];
+  target.innerHTML = `<header class="session-header"><a class="section-back" href="${parent[1]}">${parent[0]}</a></header><section class="vocab-hub">${html}</section>`;
   target.querySelector('h1').focus({preventScroll:true});
 }

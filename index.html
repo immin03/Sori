@@ -328,7 +328,7 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 <link rel="stylesheet" href="css/quiz.css?v=20261119r6">
 <link rel="stylesheet" href="css/announcement.css?v=20261119r6">
 <link rel="stylesheet" href="css/sori-v1.css?v=20261119r6"><link rel="stylesheet" href="assets/vendor/leaflet/leaflet.css?v=1.9.4"><link rel="stylesheet" href="css/sori-map.css?v=20261120ux1"><link rel="stylesheet" href="css/sori-learning.css?v=20261120ux1"><link rel="stylesheet" href="css/sori-stories.css?v=20261120ux1">
-<link rel="stylesheet" href="css/sori-speaking.css?v=20261121library">
+<link rel="stylesheet" href="css/sori-speaking.css?v=20261121nav">
 <link rel="stylesheet" href="css/sori-travel.css?v=20261121trip">
 </head>
 <body>
@@ -337,27 +337,31 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
   <div class="header-actions">
     <button id="shareSori" class="top-btn">Share Sori</button>
     <button id="openLogin" class="top-btn primary">Login</button>
-    <button id="menuToggle" class="menu-btn" aria-label="Menu">Menu</button>
+    <button id="menuToggle" class="menu-btn" aria-label="Menu" aria-haspopup="dialog" aria-expanded="false" aria-controls="sidebar">Menu</button>
   </div>
 </header>
 
 <nav class="sori-nav" aria-label="Sori services"><button data-go="home" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10v4m4-8v12m5-16v20m5-16v12m4-8v4"/></svg>Speak</button><button data-go="newsletter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4.7c3.7-.8 6.5-.3 9 1.5 2.5-1.8 5.3-2.3 9-1.5v14c-3.7-.8-6.5-.3-9 1.5-2.5-1.8-5.3-2.3-9-1.5zM12 6.2v13.4"/></svg>Korea 101</button><button data-go="guide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m16.1 7.9-2.6 5.6-5.6 2.6 2.6-5.6z"/></svg>Explore</button></nav>
 <nav class="mobile-nav" aria-label="Main navigation"><button data-go="home" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10v4m4-8v12m5-16v20m5-16v12m4-8v4"/></svg>Speak</button><button data-go="newsletter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4.7c3.7-.8 6.5-.3 9 1.5 2.5-1.8 5.3-2.3 9-1.5v14c-3.7-.8-6.5-.3-9 1.5-2.5-1.8-5.3-2.3-9-1.5zM12 6.2v13.4"/></svg>Korea 101</button><button data-go="guide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m16.1 7.9-2.6 5.6-5.6 2.6 2.6-5.6z"/></svg>Explore</button></nav>
+<nav id="sectionNav" class="section-nav" aria-label="Speak sections"></nav>
 <main id="homeView" class="sori-home speak-first">
-  <header class="speak-heading"><h1 id="homeTitle">Speak Korean.</h1></header>
-  <section id="dailyVocabulary" aria-label="Daily speaking practice"></section>
+  <h1 class="section-page-title" id="homeTitle">Vocabulary</h1>
+  <section data-speak-panel="vocabulary" id="dailyVocabulary" aria-label="Daily vocabulary"></section>
+  <div data-speak-panel="conversations" hidden><section id="practiceDashboard" aria-label="Conversation practice"></section>
   <section class="phrase-finder" data-phrase-finder="home"><div class="finder-title"><label for="homePhraseSearch">Find a phrase</label><button type="button" class="text-button" data-browse-phrases>Browse all <span aria-hidden="true">↗</span></button></div><div class="search-field"><span aria-hidden="true"></span><input id="homePhraseSearch" type="search" placeholder="Try hello, 안녕 or annyeong" autocomplete="off"></div><div class="phrase-topics" data-topics aria-label="Filter by situation"></div><p role="status" aria-live="polite"></p><div data-phrase-list></div><button type="button" class="text-button" data-more-phrases hidden>Show more expressions</button></section>
-  <section id="practiceDashboard" aria-label="Conversation practice"></section>
+  </div>
+  <section data-speak-panel="review" id="speakReview" hidden></section>
+  <section data-speak-panel="saved" id="savedPhrases" hidden></section>
 </main>
 <div id="guideView" style="display:none"></div>
-<div class="main-content" id="mainContent" style="display:none"><div class="learning-trip-bridge" hidden><span>Learning for your day out</span><button class="text-button" data-go="guide">Back to our trip</button></div><section id="practiceSession" hidden></section><div class="learn-heading"><button class="text-button" data-go="home">‹ Speak</button><h1>Phrasebook</h1><section class="phrase-finder" data-phrase-finder="library"><label class="sr-only" for="phraseSearch">Search all expressions</label><div class="search-field"><span aria-hidden="true"></span><input id="phraseSearch" type="search" placeholder="Try hello, 안녕 or annyeong" autocomplete="off"></div><div class="phrase-topics" data-topics aria-label="Filter by situation"></div><p role="status" aria-live="polite"></p><div data-phrase-list></div><button type="button" class="text-button" data-more-phrases hidden>Show more expressions</button></section><div id="learnPracticeEntry" class="learn-practice-entry"></div></div>
+<div class="main-content" id="mainContent" style="display:none"><div class="learning-trip-bridge" hidden><span>Learning for your day out</span><button class="text-button" data-go="guide">Back to our trip</button></div><section id="practiceSession" hidden></section><div class="learn-heading"><a class="section-back" href="#conversations">Conversations</a><h1>Phrasebook</h1><section class="phrase-finder" data-phrase-finder="library"><label class="sr-only" for="phraseSearch">Search all expressions</label><div class="search-field"><span aria-hidden="true"></span><input id="phraseSearch" type="search" placeholder="Try hello, 안녕 or annyeong" autocomplete="off"></div><div class="phrase-topics" data-topics aria-label="Filter by situation"></div><p role="status" aria-live="polite"></p><div data-phrase-list></div><button type="button" class="text-button" data-more-phrases hidden>Show more expressions</button></section><div id="learnPracticeEntry" class="learn-practice-entry"></div></div>
 <section class="card">
   <div class="category-bar">
     <div class="picker-wrap">
       <button id="pickerTrigger" class="picker-trigger" aria-haspopup="listbox" aria-expanded="false">Daily</button>
       <div id="pickerMenu" class="picker-menu"><div class="picker-list" role="listbox"></div></div>
     </div>
-    <button id="savedBtn" class="saved-btn">Saved words</button>
+    <button id="savedBtn" class="saved-btn">Saved phrases</button>
   </div>
 
   <div class="hidden-tabs" aria-hidden="true">
@@ -376,7 +380,7 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 </section>
 
 <section class="card" id="lessonCard">
-  <button type="button" class="text-button lesson-back" data-to-phrasebook>‹ Phrasebook</button>
+  <a class="section-back lesson-back" href="#phrases">Phrasebook</a>
   <div class="row-between">
     <div class="badge-container">
       <div id="badge" class="badge">Love</div>
@@ -399,6 +403,7 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
     <p id="english" class="en">I like you.</p>
   </div>
 
+  <button type="button" id="playBtn" class="big">Listen &amp; answer</button>
   <section id="lessonVoice" aria-label="Speaking practice"><div class="voice-slot"></div></section>
   <!-- 명사 뜻 표시 영역 -->
   <div id="nounDefinitions" class="noun-definitions" style="display:none;">
@@ -412,14 +417,14 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
     </div>
   </div>
 
-  <button id="playBtn" class="big">Listen & Repeat</button>
-  <div class="lesson-speeds" role="group" aria-label="Listening speed"><button type="button" data-listen-rate="0.65">Slow</button><button type="button" data-listen-rate="0.8" aria-pressed="true">Comfortable</button><button type="button" data-listen-rate="1">Natural</button></div><p id="lessonAudioStatus" class="audio-status" role="status" aria-live="polite"></p><div class="row">
+
+  <details class="phrase-audio-tools"><summary>Playback speed and repeat</summary><div class="lesson-speeds" role="group" aria-label="Listening speed"><button type="button" data-listen-rate="0.65">Slow</button><button type="button" data-listen-rate="0.8" aria-pressed="true">Comfortable</button><button type="button" data-listen-rate="1">Natural</button></div><p id="lessonAudioStatus" class="audio-status" role="status" aria-live="polite"></p><div class="row">
     <label>Speed:</label>
     <input id="speed" type="range" min="0.6" max="1.0" step="0.05" value="0.80"/>
     <span id="speedTxt" class="speed-val">0.80x</span>
   </div>
 
-  <div class="repeat-practice"><button type="button" class="sori-secondary" id="repeatPhrase" data-repeat-current>Listen, pause & repeat · 3 times</button></div><div class="tip-card"><div id="tipText" class="tip-text">Listen once, then try saying it yourself.</div></div>
+  <div class="repeat-practice"><button type="button" class="sori-secondary" id="repeatPhrase" data-repeat-current>Listen, pause & repeat · 3 times</button></div></details><div class="tip-card"><div id="tipText" class="tip-text">Listen once, then try saying it yourself.</div></div>
 </section>
 
 <section class="card">
@@ -429,15 +434,15 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
     <button id="nextBtn" class="nav-btn">Next</button>
   </div>
 </section>
-<section class="learn-next"><span class="edition-line">Keep the words in context</span><h2>A little more Korea.</h2><p>Learn the customs behind the conversation in Korea 101, or try these expressions on a day out.</p><div><button class="text-button" data-go="newsletter">Korea 101 newsletter</button><button class="text-button" data-go="guide">Plan a day out</button></div></section></div>
+</div>
 
 <div id="quizView" class="newsletter-view" style="display: none; padding-top: 0;">
   <section class="card">
     <div class="quiz-content">
       <div class="quiz-header">
         <div>
-          <h2 class="quiz-title">Daily Quiz</h2>
-          <p class="quiz-description">Test your Korean knowledge</p>
+          <h1 class="quiz-title">Listening quiz</h1>
+          <p class="quiz-description">Listen in Korean, then say the English meaning or an option number.</p>
         </div>
         <div class="quiz-stats">
           <div class="quiz-streak">
@@ -460,7 +465,7 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
       
       <div class="quiz-question-container">
         <div class="quiz-question">
-          <button id="quizPlayBtn" class="quiz-play-btn" aria-label="Listen to the Korean question">Listen</button>
+          <button id="quizPlayBtn" type="button" class="sori-primary quiz-listen">Listen &amp; answer</button>
           <p class="quiz-korean">안녕하세요</p>
         </div>
         
@@ -468,7 +473,7 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
           <button id="quizFavoriteBtn" class="quiz-favorite-btn">
             <span class="quiz-favorite-text">Save</span>
             <span class="quiz-info-badge">?</span>
-            <span class="quiz-tooltip">Click to save for review in Saved</span>
+            <span class="quiz-tooltip">Save to Review · Saved phrases</span>
           </button>
         </div>
         
@@ -479,14 +484,14 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
         </div>
       </div>
       
-      <div class="quiz-options">
+      <div id="quizVoice"></div><p id="quizFeedback" role="status" aria-live="polite"></p><div class="quiz-options">
         <button class="quiz-option">Hello</button>
         <button class="quiz-option">Goodbye</button>
         <button class="quiz-option">Thank you</button>
         <button class="quiz-option">See you</button>
       </div>
       
-      <button class="quiz-submit" disabled>Check Answer</button>
+
       
       <div class="quiz-actions">
         <button id="quizPrevBtn" class="quiz-nav-btn" disabled>Previous</button>
@@ -534,9 +539,9 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 
 <!-- Sidebar -->
 <div id="sidebarOverlay" class="sidebar-overlay"></div>
-<div id="sidebar" class="sidebar">
+<aside id="sidebar" class="sidebar" role="dialog" aria-modal="true" aria-labelledby="menuTitle" inert>
   <div class="sidebar-header">
-    <h2 class="sidebar-title">Menu</h2>
+    <h2 class="sidebar-title" id="menuTitle">Menu</h2>
     <button id="sidebarClose" class="sidebar-close" aria-label="Close">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <line x1="18" y1="6" x2="6" y2="18"/>
@@ -544,14 +549,8 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
       </svg>
     </button>
   </div>
-  <div class="sidebar-menu">
-    <button class="menu-item" data-view="home">Speak</button>
-    <button class="menu-item" data-view="guide">Explore</button>
-    <button class="menu-item" data-view="listen">Phrasebook</button>
-    <button class="menu-item" data-view="quiz">Daily Quiz</button>
-    <button class="menu-item" data-view="newsletter">Korea 101</button>
-  </div>
-</div>
+  <nav class="sidebar-menu" aria-label="All Sori sections"></nav>
+</aside>
 
 <!-- data sources -->
 <script defer src="data/daily.js?v=20251017"></script>
@@ -567,11 +566,11 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 <!-- app scripts -->
 <script type="module" src="/js/firebase-init.js?v=20261119r6" defer></script>
 <script type="module" src="/js/auth.js?v=20261119r6" defer></script>
-<script defer src="js/tts.js?v=20261119r6"></script>
-<script defer src="js/app.js?v=20261120s1"></script><script defer src="js/practice.js?v=20261121vocab"></script>
-<script defer src="js/sidebar.js?v=20261121trip"></script>
-<script defer src="assets/vendor/leaflet/leaflet.js?v=1.9.4"></script><script type="module" src="js/guide/ui.js?v=20261121trip"></script><script type="module" src="js/learning/ui.js?v=20261121library"></script><script type="module" src="js/stories/ui.js?v=20261121trip"></script>
-<script defer src="js/quiz.js?v=20261119r6"></script>
+<script defer src="js/tts.js?v=20261121nav"></script>
+<script defer src="js/app.js?v=20261121nav"></script><script defer src="js/practice.js?v=20261121nav"></script>
+<script defer src="js/sections.js?v=20261121nav"></script><script defer src="js/sidebar.js?v=20261121nav"></script>
+<script defer src="assets/vendor/leaflet/leaflet.js?v=1.9.4"></script><script type="module" src="js/guide/ui.js?v=20261121nav"></script><script type="module" src="js/learning/ui.js?v=20261121nav"></script><script type="module" src="js/stories/ui.js?v=20261121nav"></script>
+<script type="module" src="js/quiz.js?v=20261121nav"></script>
 
 
 <script>
