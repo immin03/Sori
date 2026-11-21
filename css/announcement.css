@@ -58,7 +58,7 @@
 .announcement-icon {
   width: 64px;
   height: 64px;
-  background: #f7f2ff;
+  background: #fbf5f2;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -70,13 +70,13 @@
 .announcement-title {
   font-size: 22px;
   font-weight: 900;
-  color: #7c3aed;
+  color: #bf715d;
   margin: 0 0 8px 0;
 }
 
 .announcement-message {
   font-size: 15px;
-  color: #6b7280;
+  color: #726661;
   line-height: 1.6;
   margin: 0 0 24px 0;
 }
@@ -98,33 +98,33 @@
 }
 
 .announcement-btn.primary {
-  background: #7c3aed;
+  background: #bf715d;
   color: #fff;
 }
 
 .announcement-btn.primary:hover {
-  background: #6d28d9;
+  background: #bf715d;
 }
 
 .announcement-btn.secondary {
-  background: #f3f4f6;
-  color: #6b7280;
+  background: #fbf5f2;
+  color: #726661;
 }
 
 .announcement-btn.secondary:hover {
-  background: #e5e7eb;
+  background: #eee9e6;
 }
 
 .announcement-dismiss {
   margin-top: 8px;
   font-size: 13px;
-  color: #9ca3af;
+  color: #a89a96;
   cursor: pointer;
   text-decoration: underline;
 }
 
 .announcement-dismiss:hover {
-  color: #6b7280;
+  color: #726661;
 }
 
 @media (max-width: 480px) {

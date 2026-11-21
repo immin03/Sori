@@ -19,7 +19,7 @@ export function createJourneyMap(element,{centre,points=[],route=[],airports=[],
  const labelNode=text=>{const n=document.createElement('span');n.textContent=text;return n;};
  const icon=(p,active)=>L.divIcon({className:'sori-map-marker '+(active?'selected ':'')+(p.kind||'stop'),html:'<span>'+(p.kind==='airport'?'Air':p.kind==='hotel'?'Stay':p.kind==='base'?'Start':p.number||'•')+'</span>',iconSize:p.kind==='airport'?[45,32]:[36,36],iconAnchor:[18,18]});
  function draw(){layer.clearLayers();markers=[];
-  if(route.length>1)L.polyline(route.map(p=>[p.lat,p.lng]),{color:'#294735',weight:3,dashArray:'6 7',opacity:.8,interactive:false}).addTo(layer);
+  if(route.length>1)L.polyline(route.map(p=>[p.lat,p.lng]),{color:'#7b2d21',weight:3,dashArray:'6 7',opacity:.8,interactive:false}).addTo(layer);
   const all=[...airportList,...(hotel?[{...hotel,id:'hotel',kind:'hotel'}]:[]),...current];
   const seen=new Set();for(const p of all){if(!Number.isFinite(p.lat)||!Number.isFinite(p.lng)||seen.has(p.id))continue;seen.add(p.id);const marker=L.marker([p.lat,p.lng],{icon:icon(p,p.id===selected),title:p.label||p.name||'',alt:p.label||p.name||'',keyboard:true}).addTo(layer);marker.getElement()?.setAttribute('aria-label',(p.number?'Stop '+p.number+': ':'')+(p.label||p.name||''));marker.bindTooltip(labelNode((p.number?p.number+'. ':'')+(p.label||p.name||'')));marker.on('click',()=>{if(!picking){select(p.id);onSelect(p.id);}});markers.push({point:p,marker});}
  }

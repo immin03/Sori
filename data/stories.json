@@ -1,5 +1,86 @@
 [
   {
+    "id": "matjip-secret",
+    "title": "What makes a Korean restaurant a 맛집?",
+    "category": "Food & culture",
+    "excerpt": "A word that tells you where to eat, and why Koreans love sharing good places.",
+    "photo": "assets/photos/market.jpg",
+    "photoAlt": "Food stalls in a Korean market",
+    "minutes": 3,
+    "question": "What is your favourite local restaurant, and why would you recommend it?",
+    "phrase": "맛집 골목이 어디예요?",
+    "paragraphs": [
+      "If a Korean friend suggests visiting a 맛집 (matjip), you are probably about to eat something good. 맛 means flavour, and 집 literally means house. Together, the word describes a place known for serving good food.",
+      "A 맛집 can be a tiny family-run restaurant or a celebrated modern dining room. Recommendations often travel through friends, colleagues and online communities. A queue might catch your attention, but the real test is whether the food suits your own taste.",
+      "Gwangjang Market in Jongno is a fun place to try the idea for yourself. It is known for dishes such as 빈대떡 (mung bean pancakes), 꼬마김밥 (small seaweed rice rolls) and 떡볶이 (spicy rice cakes). Choose something you can share, then wander to another stall if you are still hungry.",
+      "When asking for a neighbourhood full of good food, try 맛집 골목이 어디예요? It means “Where is the alley with good restaurants?” If you have already found a restaurant, 추천 메뉴가 있나요? asks whether there is a recommended dish.",
+      "Next time you discover a place you love, tell a friend about it. That is part of the pleasure of finding a 맛집. The best recommendation is often a small story about what you ate and why you want to go back."
+    ],
+    "sources": [
+      {"label":"Korea Tourism Organization · Gwangjang Market","url":"https://english.visitkorea.or.kr/svc/contents/contentsView.do?vcontsId=106345"},
+      {"label":"Korea Tourism Organization · Seoul food and market guide","url":"https://english.visitkorea.or.kr/svc/contents/infoHtmlView.do?vcontsId=138010"},
+      {"label":"Photo · Luo Jin Hong / Unsplash","url":"https://unsplash.com/photos/fq5MfSKCTkk"}
+    ],
+    "published": "2026-11-21",
+    "author": "Korea 101 by Sori",
+    "photoContext": true,
+    "status": "published"
+  },
+  {
+    "id": "seongsu-old-and-new",
+    "title": "Why Seoul turns old factories into cafés",
+    "category": "Places & lifestyle",
+    "excerpt": "A slow afternoon in Seongsu reveals a different side of the city.",
+    "photo": "assets/photos/forest.jpg",
+    "photoAlt": "Trees and pathways in Seoul Forest, near Seongsu",
+    "minutes": 3,
+    "question": "Do you have a neighbourhood where old and new buildings meet?",
+    "phrase": "포장할게요.",
+    "paragraphs": [
+      "Walk east from Seoul Forest and the scenery begins to change. Trees give way to brick buildings, workshops and cafés with surprisingly high ceilings. Welcome to Seongsu-dong, a Seoul neighbourhood where industrial history is part of its charm.",
+      "Seongsu has long been associated with manufacturing and handmade shoes. As designers, restaurants and cafés moved into the area, many old spaces found new uses. You can still pass a working repair shop on your way to a carefully designed coffee bar.",
+      "There is no need to make a long checklist. Start at Seoul Forest, walk toward the café streets, and choose one place that makes you curious. A good afternoon can be as simple as a park, a cup of coffee and a few unexpected shops.",
+      "If you would rather keep walking with your drink, say 포장할게요. It means “I'll take it to go.” If you want to stay, you can say 먹고 갈게요, a common way to say you will eat or drink in.",
+      "One of Seoul's pleasures is discovering how much a neighbourhood can change within a few streets. Take your time and look up at the buildings as you walk."
+    ],
+    "sources": [
+      {"label":"Korea Tourism Organization · Seongsu-dong Café Street","url":"https://english.visitkorea.or.kr/svc/contents/contentsView.do?vcontsId=112801"},
+      {"label":"Korea Tourism Organization · Seoul Forest and Seongsu route","url":"https://english.visitkorea.or.kr/svc/whereToGo/hdrdslt/hdrdsltView.do?crsSn=283218"},
+      {"label":"Photo · Yonghyun Lee / Unsplash","url":"https://unsplash.com/photos/JQC6_cyrGhI"}
+    ],
+    "published": "2026-11-21",
+    "author": "Korea 101 by Sori",
+    "photoContext": true,
+    "status": "published"
+  },
+  {
+    "id": "hongdae-street-stage",
+    "title": "The streets of Hongdae are a stage",
+    "category": "Places & lifestyle",
+    "excerpt": "Follow the music through one of Seoul's most expressive neighbourhoods.",
+    "photo": "assets/photos/hongdae.jpg",
+    "photoAlt": "Street scene in the Hongdae neighbourhood of Seoul",
+    "minutes": 3,
+    "question": "What street performance has stayed in your memory?",
+    "phrase": "사진 좀 찍어 주실래요?",
+    "paragraphs": [
+      "On an evening in Hongdae, you might hear music before you can see the performance. A crowd gathers around a singer or a dance group, then disperses to another street. It is a lively way to encounter Seoul's creative culture.",
+      "The neighbourhood grew around Hongik University and has become associated with independent music, art, fashion and nightlife. Visit Seoul describes the R2 pedestrian area as a place for busking, where performers and passersby share the street.",
+      "You can enjoy Hongdae without buying a ticket or following a fixed itinerary. Browse a small shop, stop for a snack and spend a little time listening. Keep pathways clear and be considerate of other people enjoying the performance.",
+      "If you are exploring with a new friend, 사진 좀 찍어 주실래요? is a polite way to ask someone to take your photo. You can practise it before your next trip.",
+      "Hongdae changes with the time of day. A quiet afternoon can turn into an evening full of lights and music. Visit the neighbourhood at your own pace and see what catches your attention."
+    ],
+    "sources": [
+      {"label":"Visit Seoul · Hongdae R2 Busking Street","url":"https://english.visitseoul.net/attractions/HONGDAE-R2/ENPjggl5r"},
+      {"label":"Visit Seoul · Nighttime adventures in Hongdae","url":"https://english.visitseoul.net/MapoArea/Nighttime-Adventures-in-Seoul/ENP000032"},
+      {"label":"Photo · Paul Ast / Unsplash","url":"https://unsplash.com/photos/74ii3BHkPtw"}
+    ],
+    "published": "2026-11-21",
+    "author": "Korea 101 by Sori",
+    "photoContext": true,
+    "status": "published"
+  },
+  {
     "id": "small-bow-korean-hello",
     "title": "The smallest part of a Korean hello.",
     "category": "Everyday culture",

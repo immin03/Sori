@@ -99,7 +99,7 @@ export function mountSpokenTurn(root,env,{cue,answer,alternatives=[],start=false
     if(!manual){const slot=get('[data-recording-slot]');slot.innerHTML=recorderControls();manual=attachVoiceReply(slot,env,answer,alternatives,answerResult);}
   };
   handoff.stop(); mirrorInput();
-  if(start && !typed)handoff.play();
+  if(start)handoff.play();
   return {play,onModel:handoff.stop,dispose(){
     disposed=true;handoff.stop();voice.dispose();manual?.dispose();button.removeEventListener('click',play);
     if(type)type.onclick=null;if(form)form.onsubmit=null;if(details)details.ontoggle=null;

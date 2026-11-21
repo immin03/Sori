@@ -12,7 +12,7 @@
 #guideView .city-postcards { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(12px, 2.4vw, 26px); }
 #guideView .city-postcard, #guideView .trip-cover {
   position: relative; overflow: hidden; isolation: isolate; border-radius: 14px;
-  background: #44463d; color: #fff; min-width: 0;
+  background: #302824; color: #fff; min-width: 0;
 }
 #guideView .city-postcard {
   display: block; text-align: left; width: 100%; aspect-ratio: 1.35;

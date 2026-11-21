@@ -36,6 +36,12 @@ export const routes = [
 export const cityPicks = {seoul: routes[0], busan: routes[4]};
 const legacyDays = {seoul: routes[0], busan: routes[3]};
 
+export function presetDays(city, length) {
+  if (!Object.hasOwn(cityPicks,city) || !Number.isInteger(length) || length<1 || length>3) return null;
+  const first=cityPicks[city];
+  return [first,...routes.filter(r=>r.city===city && r!==first)].slice(0,length).map(r=>({stops:[...r.stops]}));
+}
+
 export function matchRoute(city, stops) {
   return routes.find(route => route.city === city && route.stops.join(',') === stops.join(','));
 }
