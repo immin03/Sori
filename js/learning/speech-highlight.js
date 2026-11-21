@@ -43,6 +43,9 @@ function paintRange(node, text, count, conceal) {
     node.appendChild(label);
   }
 }
+export function paintSpokenLine(node, model, transcript) {
+  paintRange(node,model,commonLength(chars(model),chars(transcript)),false);
+}
 export function paintSpokenQuestion(nodes, question, transcript) {
   const range = spokenRange(question,transcript);
   paintRange(nodes.before,question.before,range.before,false);

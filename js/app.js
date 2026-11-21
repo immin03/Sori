@@ -201,9 +201,16 @@
     els.scrapBtn.setAttribute("aria-pressed",String(active));
   }
 
+  let renderedId;
   function renderPhrase() {
+    const next = phrases[currentIndex]?.id;
+    if(next && renderedId===next && window.SoriPractice?.hasPhraseVoice()){
+      els.prog.textContent=(currentIndex + 1) + " / " + phrases.length;
+      renderScrapStar(next);return;
+    }
+    renderedId=next;
     window.SORI?.TTS?.cancel();
-    const status=document.getElementById("lessonAudioStatus");if(status)status.textContent="";if(els.playBtn)els.playBtn.textContent="Listen & Repeat";
+    const status=document.getElementById("lessonAudioStatus");if(status)status.textContent="";if(els.playBtn)els.playBtn.textContent="Listen & answer";
     if (!phrases || phrases.length === 0) {
       els.korean.textContent = "";
       els.english.textContent = "";
@@ -277,6 +284,7 @@
   }
 
   async function playAudio() {
+    if(window.SoriPractice?.hasPhraseVoice())return;
     const p = phrases[currentIndex];
     if (!p) return;
     const status=document.getElementById('lessonAudioStatus');if(status)status.textContent='Getting the audio ready…';

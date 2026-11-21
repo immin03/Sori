@@ -26,10 +26,10 @@ export function speechService(env) {
 }
 
 // A user can stop the recorder before the browser returns its final transcript.
-export function listenForWords(env, track, onResult, onUnavailable, {onInterim, onStart, onSpeechEnd} = {}) {
+export function listenForWords(env, track, onResult, onUnavailable, {onInterim, onStart, onSpeechEnd, language = 'ko-KR'} = {}) {
   const Recognition = speechService(env);
   const reader = new Recognition();
-  reader.lang = 'ko-KR';
+  reader.lang = language;
   reader.continuous = false;
   reader.interimResults = Boolean(onInterim);
   reader.maxAlternatives = 1;
