@@ -1,23 +1,25 @@
 import {sameTopicChoices, levels} from './vocabulary.js?v=20261121library';
 import {difficultyControl, topicTitle} from './vocabulary-library.js?v=20261121nav';
 import {paintSpokenQuestion} from './speech-highlight.js?v=20261121nav';
-import {attachVoiceReply, recorderControls} from './voice-reply.js?v=20261121nav';
+import {attachVoiceReply, recorderControls} from './voice-reply.js?v=20261121focus';
 import {attachQuestionAudio} from './question-audio.js?v=20261121q1';
 import {checkWords} from './word-check.js?v=20261121nav';
 
 function prompt(question) {
-  return `<p class="vocab-meaning">${question.meaning}</p>
-    <p class="vocab-sentence" lang="ko"><span data-vocab-before>${question.before}</span><span class="vocab-blank" data-blank><span class="sr-only" lang="en">blank</span></span><span data-vocab-after>${question.after}</span></p>`;
+  return `<p class="vocab-sentence" lang="ko"><span data-vocab-before>${question.before}</span><span class="vocab-blank" data-blank><span class="sr-only" lang="en">blank</span></span><span data-vocab-after>${question.after}</span></p>
+    <p class="vocab-meaning">${question.meaning}</p>`;
 }
 
 export function vocabularyCard(daily) {
   const {words, index} = daily.today();
   const complete = index === words.length;
-  return `<article class="vocab-card"><header><h2>Today’s vocabulary</h2><span>${complete ? 'Complete' : `Word ${index + 1} of ${words.length}`}</span></header>
-    ${complete ? '<p class="vocab-meaning">You’ve practised today’s three words.</p>' : prompt(words[index]) + '<p class="vocab-instruction">Listen, then say the missing Korean word or the whole sentence.</p>'}
-    <button type="button" class="sori-primary" data-open-vocabulary>${complete ? 'Review today’s words' : 'Listen &amp; answer'}</button>
-    ${difficultyControl(daily.difficulty?.())}</article>
-    <a class="section-row topic-entry" href="#practice=vocabulary&amp;view=topics"><strong>Vocabulary topics</strong><span>Choose from eight topics, from travel to feelings</span></a>`;
+  const level = daily.difficulty?.() || 'all';
+  return `<article class="vocab-card daily-start"><div class="daily-symbol" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="8" y="9" width="32" height="30" rx="8"/><path d="M16 25h16M24 17v16M16 5v8M32 5v8"/></svg></div>
+    <h2>Today’s vocabulary</h2><p>${index} / ${words.length} words</p>
+    <progress max="${words.length}" value="${index}" aria-label="Today's progress"></progress>
+    <button type="button" class="sori-primary" data-open-vocabulary>${complete ? 'Review today’s words' : index ? 'Continue' : 'Start lesson'}</button>
+    </article><a class="section-row topic-entry" href="#practice=vocabulary&amp;view=topics"><strong>Vocabulary topics</strong><span aria-hidden="true">›</span></a>
+    <details class="focus-settings"><summary>Level: ${level==='all'?'All levels':levels[level]}</summary>${difficultyControl(level)}</details>`;
 }
 
 export function mountVocabulary(target, daily, env, {start = false, onProgress, custom = false} = {}) {
@@ -32,7 +34,7 @@ export function mountVocabulary(target, daily, env, {start = false, onProgress, 
     const {words,index,day,token} = round;
     const title = round.kind === 'daily' ? 'Today’s vocabulary' : round.kind === 'topic' ? topicTitle(round.topic) : round.scope === 'tricky' ? 'Tricky word review' : 'Mixed review';
     const parent = round.kind === 'review' ? ['My words','#practice=vocabulary&amp;view=words'] : round.kind === 'topic' ? [topicTitle(round.topic),'#practice=vocabulary&amp;view=topic&amp;topic='+round.topic] : ['Vocabulary','#home'];
-    const header = `<header class="session-header"><a class="section-back" href="${parent[1]}">${parent[0]}</a></header>`;
+    const header = `<header class="session-header"><a class="section-back focus-exit" href="${parent[1]}" aria-label="Exit to ${parent[0]}">×</a><span>${Math.min(index+1,words.length)} / ${words.length}</span></header>`;
     if (index === words.length) {
       target.innerHTML = `${header}<section class="vocab-finish">
         <h1 tabindex="-1">${round.kind === 'daily' ? 'Today’s vocabulary complete.' : title + ' complete.'}</h1>
@@ -48,19 +50,19 @@ export function mountVocabulary(target, daily, env, {start = false, onProgress, 
     const question = words[index];
     const current = round.slots[index], choice = current.format === 'choice';
     const options = choice ? sameTopicChoices(question,day + index + token.length) : [];
-    target.innerHTML = `${header}<p class="vocab-step">Word ${index + 1} of ${words.length} · ${levels[question.level]}</p>
+    target.innerHTML = `${header}
       <progress max="${words.length}" value="${index + 1}" aria-label="Current word"></progress>
-      <section class="vocab-exercise"><h1 tabindex="-1">${title}</h1>
+      <section class="vocab-exercise"><h1 tabindex="-1">Fill in the blank</h1>
         <div class="vocab-prompt">${prompt(question)}
           <div class="vocab-audio-row">
             <button type="button" class="sori-primary vocab-audio-toggle" data-hear-question>
               <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4 5.5 8.5H2.8v7h2.7L11 20zM15 8.4a5 5 0 0 1 0 7.2M18 5a9.6 9.6 0 0 1 0 14"/></svg>
-              <span data-question-label>Listen &amp; answer</span></button>
+            <span data-question-label>Listen</span></button>
             <span class="cue-status" role="status" data-question-status></span>
           </div>
           <audio hidden playsinline preload="metadata" data-question-player src="${new URL('../../assets/audio/questions/' + question.audioId + '.mp3', import.meta.url).href}"></audio>
         </div>
-        <p class="vocab-instruction">${choice ? 'Say the missing Korean word or tap your choice.' : 'The chime marks the blank. Say the word or the whole sentence.'}</p>
+        <p class="vocab-instruction sr-only">${choice ? 'Say the missing Korean word or tap your choice.' : 'The chime marks the blank. Say the word or the whole sentence.'}</p>
         ${choice ? `<div class="vocab-choices" role="group" aria-label="Choose the missing word">${options.map((word,i) => `<button type="button" lang="ko" data-choice="${i}">${word}</button>`).join('')}</div><p class="vocab-choice-status" role="status" data-choice-result></p>` : ''}
         ${recorderControls({exercise:true})}
         <form class="vocab-type" data-type-form hidden><label for="vocabAnswer">Your answer in Korean</label>
@@ -70,7 +72,6 @@ export function mountVocabulary(target, daily, env, {start = false, onProgress, 
           <button type="button" class="text-button" data-reveal-word>Show answer</button></div>
         <div class="vocab-next" data-after-answer hidden><button type="button" class="sori-primary" data-next-word>${index + 1 === words.length ? 'Finish practice' : 'Next word'}</button>
           <button type="button" class="text-button" data-hear-word>Hear the answer</button></div>
-        ${round.kind === 'daily' ? difficultyControl(daily.difficulty()) : ''}
       </section>`;
     const blank = get('[data-blank]'), mic = get('.vocab-mic'), recordButton = get('[data-record-reply]');
     const form = get('[data-type-form]'), input = get('#vocabAnswer'), typedResult = get('[data-typed-result]');
@@ -83,10 +84,10 @@ export function mountVocabulary(target, daily, env, {start = false, onProgress, 
       const playing = state === 'playing' || state === 'loading';
       if (state === 'playing' || state === 'ended') heardQuestion = true;
       const firstListen = !heardQuestion && !typing && after.hidden;
-      cueLabel.textContent = playing ? 'Stop question' : firstListen ? 'Listen & answer' : heardQuestion ? 'Replay question' : 'Hear question';
+      cueLabel.textContent = playing ? 'Stop' : firstListen ? 'Listen' : heardQuestion ? 'Replay' : 'Listen';
       cueButton.className = 'vocab-audio-toggle ' + (firstListen && !playing ? 'sori-primary' : 'sori-secondary');
       cueButton.setAttribute('aria-busy', String(state === 'loading'));
-      const messages = {loading:'Loading question…', playing:'Playing question…', error:'Audio couldn’t play. Tap to retry.', blocked:'Tap to hear the question.'};
+      const messages = {loading:'Loading…', playing:'Playing question…', error:'Audio couldn’t play. Tap to retry.', blocked:'Tap to hear the question.'};
       cueStatus.textContent = messages[state] || '';
       mic.hidden = typing || (choice && !after.hidden) || playing || (firstListen && state !== 'error');
     }
@@ -105,11 +106,13 @@ export function mountVocabulary(target, daily, env, {start = false, onProgress, 
       delete blank.dataset.heard;
       paintSpokenQuestion(parts,question,'');
       delete blank.dataset.result; delete get('[data-hear-word]').dataset.audio; reveal.hidden = false; after.hidden = true;
+      delete form.dataset.result;
       switchButton.hidden = choice; typedResult.textContent = '';
     }
     function result(kind) {
       if (!['correct','retry','reveal'].includes(kind)) return;
       daily.record(token,index,kind);
+      form.dataset.result=kind;
       blank.textContent = question.word; blank.dataset.result = kind;
       get('[data-hear-word]').dataset.audio = question.sentence;
       reveal.hidden = true; after.hidden = false;

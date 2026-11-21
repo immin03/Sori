@@ -183,7 +183,8 @@ test('an existing daily lesson keeps its original words, rotates by local date a
   const make = (user = null) => new DailyVocabulary(storage, user, () => date);
   const lesson = make(), first = lesson.today();
   assert.deepEqual(first.words.map(q => q.word), ['옷','물','지하철역']);
-  assert.match(vocabularyCard(lesson), /I need to buy new clothes/);
+  assert.match(vocabularyCard(lesson), /Start lesson/);
+  assert.doesNotMatch(vocabularyCard(lesson), /I need to buy new clothes/);
   assert.doesNotMatch(vocabularyCard(lesson), /옷/);
   for (const q of vocabulary) {
     assert.equal(q.sentence, q.before + q.word + q.after);
