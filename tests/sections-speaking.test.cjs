@@ -17,13 +17,13 @@ test('automatic progression advances once and cancels on manual navigation or a 
   flow.schedule();env.document.hidden=true;[id,fn]=timers.entries().next().value;timers.delete(id);fn();assert.equal(count,1);
 });
 
-test('all eight section links and deep links select the correct service and menu item', () => {
+test('all nine section links and deep links select the correct service and menu item', () => {
   const window = {};
   vm.runInNewContext(source('js/sections.js'), {window,URLSearchParams});
   const {services,locate} = window.SoriSections;
   const tree = Array.from(services,group => [group.title,Array.from(group.children,c=>c[1])]);
   assert.deepEqual(tree,[['Speak',['Vocabulary','Conversations','Review']],
-    ['Korea 101',['Stories','Saved stories','Newsletter']],['Explore',['Trip planner','My itineraries']]]);
+    ['Korea 101',['Stories','Saved stories','Newsletter']],['Explore',['Discover','Trip planner','My itineraries']]]);
   for(const group of services) for(const [id,,hash] of group.children) {
     assert.deepEqual(Array.from(locate(hash)).slice(0,2),[group.id,id]);
   }

@@ -25,7 +25,7 @@ const server = http.createServer(async (req, res) => {
   if (!file.startsWith(root + path.sep)) { res.writeHead(403); res.end(); return; }
   // Serve only checked-in front-end assets; never dev tooling or repository metadata.
   const lessonAudio = /^\/assets\/audio\/(?:questions|speaking)\/[a-z0-9-]+\.mp3$/.test(pathname);
-  const allowed = lessonAudio || pathname === '/assets/fonts/sori-noto.woff' || /^\/(?:stories|explore)\/[a-z0-9-]+\/(?:index.html)?$/.test(pathname) || /^\/assets\/vendor\/leaflet\/leaflet\.(js|css)$/.test(pathname) || /^\/assets\/photos\/[a-z0-9-]+\.(jpg|webp)$/.test(pathname) || pathname === '/' || pathname === '/index.html' || pathname === '/manifest.webmanifest' || ['/data/places.json','/data/stories.json'].includes(pathname) || /^\/(css|js|data)\/.+\.(css|js)$/.test(pathname) || ['/debug/auth.html','/debug/mobile.html'].includes(pathname);
+  const allowed = lessonAudio || pathname === '/assets/fonts/sori-noto.woff' || /^\/(?:stories|explore)\/[a-z0-9-]+\/(?:index.html)?$/.test(pathname) || /^\/assets\/vendor\/leaflet\/leaflet\.(js|css)$/.test(pathname) || /^\/assets\/photos\/[a-z0-9-]+\.(jpg|webp)$/.test(pathname) || pathname === '/' || pathname === '/index.html' || pathname === '/manifest.webmanifest' || ['/data/places.json','/data/stories.json','/data/original-issues.json'].includes(pathname) || /^\/(css|js|data)\/.+\.(css|js)$/.test(pathname) || ['/debug/auth.html','/debug/mobile.html'].includes(pathname);
   if (!allowed) { res.writeHead(404); res.end(); return; }
   fs.readFile(file, (error, bytes) => {
     if (error) { res.writeHead(404); res.end(); return; }

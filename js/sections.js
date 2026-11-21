@@ -8,7 +8,7 @@
       ['stories','Stories','#read'], ['bookmarks','Saved stories','#read=saved'], ['newsletter','Newsletter','#read=newsletter']
     ]},
     {id:'explore', title:'Explore', view:'guide', children:[
-      ['planner','Trip planner','#guide'], ['itineraries','My itineraries','#itineraries']
+      ['discover','Discover','#discover'], ['planner','Trip planner','#guide'], ['itineraries','My itineraries','#itineraries']
     ]}
   ];
   function locate(hash, roundKind) {
@@ -26,6 +26,7 @@
     if (hash === '#read=newsletter' || p.has('subscribe') || p.has('unsubscribe')) return ['read','newsletter','newsletter'];
     if (hash === '#read' || p.has('story')) return ['read','stories','newsletter'];
     if (hash === '#itineraries' || p.has('day') || p.has('trip') || p.has('invite')) return ['explore','itineraries','guide'];
+    if (p.has('discover')) return ['explore','discover','guide'];
     if (hash === '#guide') return ['explore','planner','guide'];
     if (hash === '#conversations') return ['speak','conversations','home'];
     if (hash === '#review' || hash === '#saved-phrases') return ['speak','review','home'];

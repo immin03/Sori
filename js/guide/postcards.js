@@ -23,7 +23,7 @@ export function chooser(lastTrip) {
       <span class="city-card-text"><strong>${CITIES[city]}</strong><span>${cityLines[city]}</span></span>
     </button><div class="city-durations" aria-label="${CITIES[city]} itinerary length">${[1,2,3].map(n=>`<button type="button" data-city-preset="${city}" data-length="${n}" aria-label="${CITIES[city]}, ${n} ${n===1?'day':'days'}">${n} ${n===1?'day':'days'}</button>`).join('')}</div></article>`).join('');
   return `<header class="city-intro"><h1>Where to in Korea?</h1>
-    <p>Choose a city and how many days.</p></header>
+    <p>Choose a city and how many days.</p><a class="sori-secondary" href="#discover">Browse Seoul's places, food &amp; seasonal guides ›</a></header>
     <div class="city-postcards">${cards}</div>
     <details class="custom-plan"><summary>Customize my trip</summary>
       <form id="tripForm" class="quick-form">
