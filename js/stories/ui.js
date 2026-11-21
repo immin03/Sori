@@ -26,7 +26,8 @@ function archive(){
   root.querySelector('#archiveTitle').textContent=latest?'More stories':filter==='Saved'?'Saved stories':'Stories';
   const list=latest?matches.slice(1):matches;
   root.querySelector('#archiveCount').textContent=list.length+' '+(list.length===1?'story':'stories');
-  root.querySelector('#archiveList').innerHTML=list.length?list.map(card).join(''):`<p class="small-note">${filter==='Saved'&&!query.trim()?'Save a story to find it here.':'No stories match this search.'} <button type="button" class="text-button" data-reset-stories>Browse all stories</button></p>`;
+  root.querySelector('#archiveList').innerHTML=list.length?list.map(card).join(''):`<p class="small-note">${filter==='Saved'&&!query.trim()?'Save a story to find it here.':'No new issues match.'} <button type="button" class="text-button" data-reset-stories>Browse all stories</button></p>`;
+  const originalList=root.querySelector('#originalArchive');if(originalList)originalList.innerHTML=originalArchive();
   root.querySelectorAll('[data-story-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.storyFilter===filter)));
 }
 
@@ -47,7 +48,7 @@ function noteReadingPlace(){
 
 function feed(){
   openStory=null;const saved=location.hash==='#read=saved',resume=saved?null:readingPlace(),topics=['All',...new Set(stories.map(s=>s.category))];
-  root.innerHTML=`<header class="story-feed-heading"><h1>${saved?'Saved stories':'Korea 101'}</h1></header>${resume?`<button class="reading-resume" data-story="${resume.s.id}" data-resume-reading="${resume.index}"><strong>Continue reading</strong><small>${esc(resume.s.title)}</small></button>`:''}<section class="latest-issue" id="latestIssue" aria-label="Latest issue"></section><section class="story-archive"><details class="story-search-options"><summary>Search &amp; topics</summary><label class="sr-only" for="storyQuery">Search the archive</label><input id="storyQuery" class="learn-search" type="search" placeholder="Search stories" value="${esc(query)}"><div class="story-filters" ${saved?'hidden':''} role="group" aria-label="Story topics">${topics.map(t=>`<button type="button" data-story-filter="${esc(t)}">${esc(t)}</button>`).join('')}</div></details><div class="archive-heading"><h2 id="archiveTitle">Stories</h2><span id="archiveCount" role="status"></span></div><div class="story-feed" id="archiveList"></div></section>${saved?'':originalArchive()}`;
+  root.innerHTML=`<header class="story-feed-heading"><h1>${saved?'Saved stories':'Korea 101'}</h1></header>${resume?`<button class="reading-resume" data-story="${resume.s.id}" data-resume-reading="${resume.index}"><strong>Continue reading</strong><small>${esc(resume.s.title)}</small></button>`:''}<section class="latest-issue" id="latestIssue" aria-label="Latest issue"></section><section class="story-archive"><details class="story-search-options"><summary>Search &amp; topics</summary><label class="sr-only" for="storyQuery">Search the archive</label><input id="storyQuery" class="learn-search" type="search" placeholder="Search stories" value="${esc(query)}"><div class="story-filters" ${saved?'hidden':''} role="group" aria-label="Story topics">${topics.map(t=>`<button type="button" data-story-filter="${esc(t)}">${esc(t)}</button>`).join('')}</div></details><div class="archive-heading"><h2 id="archiveTitle">Stories</h2><span id="archiveCount" role="status"></span></div><div class="story-feed" id="archiveList"></div></section>${saved?'':'<section id="originalArchive" class="story-archive" aria-label="Original newsletters"></section>'}`;
   archive();
 }
 function paragraphWithAudio(paragraph, phrase) {
@@ -66,7 +67,9 @@ function expressions(story,lesson){
  return `<section class="story-korean"><span class="eyebrow">Learning Korea through language</span><h2>Try these expressions</h2>${(story.expressions||[]).map(e=>`<div class="story-expression"><strong lang="ko">${esc(e.ko)}</strong><p class="roman-line">${esc(e.roman)}</p><p class="meaning-line">${esc(e.meaning)}</p><p class="story-example"><span lang="ko">${esc(e.example)}</span><br>${esc(e.translation)}</p><button type="button" class="sori-secondary" data-audio="${esc(e.ko)}">Listen</button></div>`).join('')}${lesson?`<button class="sori-primary" data-korean="${esc(story.phrase)}">Practise a related phrase ›</button>`:''}</section>`;
 }
 function originalArchive(){
- return originals.length?`<details class="story-originals"><summary>Original Korea 101 newsletters · ${originals.length}</summary>${originals.map(o=>`<a href="${esc(o.url)}" target="_blank" rel="noopener noreferrer"><strong>${esc(o.title)}</strong><small>${esc(o.date)} · ${o.minutes} min ↗</small></a>`).join('')}</details>`:'';
+ const terms=query.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
+ const available=filter==='All'?[...originals].filter(o=>terms.every(t=>o.title.toLocaleLowerCase().includes(t))).sort((a,b)=>b.date.localeCompare(a.date)):[];
+ return available.length?`<div class="archive-heading"><h2>Original newsletters</h2><span>${available.length} issues</span></div><p class="small-note">Minwoo's original Korea 101 newsletter archive.</p><div class="story-originals">${available.map(o=>`<a href="${esc(o.url)}" target="_blank" rel="noopener noreferrer"><strong>${esc(o.title)}</strong><small>${esc(o.date)} · ${o.minutes} min · Read on Beehiiv</small></a>`).join('')}</div>`:'';
 }
 async function article(id,{push=false,paragraph=0}={}){const story=stories.find(s=>s.id===id);if(!story)return;const fromSaved=push?location.hash==='#read=saved':new URLSearchParams(location.hash.slice(1)).get('from')==='saved';
  const hash='#story='+id+(fromSaved?'&from=saved':'');
@@ -89,7 +92,7 @@ root.addEventListener('submit',async e=>{if(e.target.id!=='nativeSubscribe')retu
 async function subscriptionLink(){const p=new URLSearchParams(location.hash.slice(1)),value=p.get('subscribe')||p.get('unsubscribe');if(!value)return;window.SoriNav?.show('newsletter');try{const result=await call(p.has('subscribe')?'newsletter/confirm':'newsletter/unsubscribe','POST',{token:value});root.querySelector('#subscribeStatus').textContent=result.status==='confirmed'?'Your Korea 101 subscription is confirmed.':'You are unsubscribed.';}catch(error){root.querySelector('#subscribeStatus').textContent=error.message;}}
 function readRoute() {
  const hash=location.hash,p=new URLSearchParams(hash.slice(1));
- if(p.has('story')){if(openStory?.id!==p.get('story') || root.querySelector('[data-stories-back]')?.dataset.storiesBack!==(p.get('from')==='saved'?'saved':'all'))article(p.get('story'));return;}
+ if(p.has('story')){if(!stories.some(s=>s.id===p.get('story'))){history.replaceState(null,'','#read');query='';filter='All';feed();window.SoriNav?.show('newsletter');return;}if(openStory?.id!==p.get('story') || root.querySelector('[data-stories-back]')?.dataset.storiesBack!==(p.get('from')==='saved'?'saved':'all'))article(p.get('story'));return;}
  if(hash==='#read=newsletter'||p.has('subscribe')||p.has('unsubscribe')){
    openStory=null;root.innerHTML='<header class="story-feed-heading"><h1>Newsletter</h1></header>'+subscribeBox();
    window.SoriNav?.show('newsletter');return;
@@ -99,7 +102,7 @@ function readRoute() {
  }
 }
 try {
- const response=await fetch('data/stories.json?v=20261121editorial');stories=(await response.json()).filter(s=>s.status==='published');
+ const response=await fetch('data/stories.json?v=20261121curated');stories=(await response.json()).filter(s=>s.status==='published');
  originals=await fetch('data/original-issues.json?v=20261121editorial').then(r=>r.json()).catch(()=>[]);
  actor=local.get('sori:story-actor');if(!/^[A-Za-z0-9_-]{43}$/.test(actor||'')){actor=random();local.set('sori:story-actor',actor);}
  preview();feed();readRoute();

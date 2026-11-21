@@ -25,3 +25,5 @@ Korea 101 by Sori is a cultural newsletter written for curious readers abroad, n
 | Autumn | Chuseok, fall foliage, university festivals, seasonal markets |
 
 Before each issue, check the actual date and current cultural or seasonal developments. Scheduled editorial suggestions are not an automatic publication commitment. Maintain the issue source in content/korea101.cjs and run node scripts/build-stories.cjs.
+
+Publication policy (21 Nov 2026): keep the six founder-published originals and the newly approved first-snow and Christmas issues visible. The nine earlier draft rewrites were retired from public listings and share previews; their earlier versions are retained in repository history. Publish future issues only when they meet the editorial checklist and the founder's content direction. Keep a draft outside the public site's sources until ready to publish.

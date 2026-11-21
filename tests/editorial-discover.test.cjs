@@ -1,13 +1,17 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
 test('Korea 101 has substantial edited articles, seasonal issues, three learning expressions and a complete original archive',()=>{
  const stories=require('../data/stories.json'),originals=require('../data/original-issues.json');
- assert.equal(stories.length,11);assert.equal(originals.length,6);
+ assert.equal(stories.length,2);assert.equal(originals.length,6);
  assert.deepEqual(stories.slice(0,2).map(s=>s.id),['first-snow-seoul','christmas-in-korea']);
  for(const s of stories){
   assert.ok(s.wordCount>=800,s.id);assert.ok(s.headings.length>=4,s.id);assert.equal(s.expressions.length,3);assert.equal(s.figures.length,2);
   for(const f of s.figures)assert.ok(fs.existsSync(path.join(__dirname,'..',f.photo)));
   assert.ok(s.sources.length>=2,s.id);
   assert.ok(fs.existsSync(path.join(__dirname,'../stories',s.id,'index.html')));
+ }
+ for(const id of ['matjip-secret','seongsu-old-and-new','hongdae-street-stage','small-bow-korean-hello','one-coffee-in-korean','seoul-cafe-table','tteokguk-seollal','busan-two-kinds-of-day','airport-first-journey']){
+  const page=fs.readFileSync(path.join(__dirname,'../stories',id,'index.html'),'utf8');
+  assert.match(page,/noindex/);assert.match(page,/location.replace\("\/#read"\)/);assert.doesNotMatch(page,/<article>/);
  }
 });
 test('Seoul directory covers the original guide, groups actual restaurants and opens English maps',async()=>{
