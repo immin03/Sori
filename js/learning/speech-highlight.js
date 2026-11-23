@@ -43,8 +43,41 @@ function paintRange(node, text, count, conceal) {
     node.appendChild(label);
   }
 }
-export function paintSpokenLine(node, model, transcript) {
-  paintRange(node,model,commonLength(chars(model),chars(transcript)),false);
+// Align complete syllables so one substitution does not hide the rest of the reply.
+export function syllableFeedback(model, transcript, final = false) {
+  const expected = chars(model), heard = chars(transcript).slice(0, 256);
+  const distances = Array.from({length:expected.length + 1}, (_,i) =>
+    Array.from({length:heard.length + 1}, (_,j) => i ? (j ? 0 : i) : j));
+  for (let i=1; i<=expected.length; i++) for (let j=1; j<=heard.length; j++) {
+    distances[i][j] = Math.min(distances[i-1][j]+1, distances[i][j-1]+1,
+      distances[i-1][j-1] + Number(expected[i-1] !== heard[j-1]));
+  }
+  let i=expected.length, j=heard.length;
+  if (!final) {
+    i=0;
+    for (let end=1; end<=expected.length; end++)
+      if (distances[end][j] < distances[i][j] || (distances[end][j] === distances[i][j] && end<=j)) i=end;
+  }
+  const result=expected.map(()=>'pending');
+  while(i || j) {
+    if(i && j && distances[i][j]===distances[i-1][j-1]+Number(expected[i-1]!==heard[j-1])) {
+      result[i-1]=expected[i-1]===heard[j-1]?'match':'miss';i--;j--;
+    } else if(i && distances[i][j]===distances[i-1][j]+1) { result[i-1]='miss';i--; }
+    else j--;
+  }
+  return result;
+}
+export function paintSpokenLine(node, model, transcript, verdict = '') {
+  if (!node?.ownerDocument?.createTextNode) return;
+  const states=syllableFeedback(model,transcript,verdict==='retry'||verdict==='correct');
+  const doc=node.ownerDocument, fragment=doc.createDocumentFragment();
+  let index=0;
+  for (const ch of model.normalize('NFC')) {
+    if(!chars(ch).length) { fragment.append(doc.createTextNode(ch));continue; }
+    const span=doc.createElement('span');span.textContent=ch;
+    span.className='syllable-'+(verdict==='correct'?'match':states[index]);index++;fragment.append(span);
+  }
+  node.setAttribute('aria-label',model);node.replaceChildren(fragment);
 }
 export function paintSpokenQuestion(nodes, question, transcript) {
   const range = spokenRange(question,transcript);

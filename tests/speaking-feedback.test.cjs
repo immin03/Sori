@@ -40,7 +40,7 @@ test('each partner prompt has a reading and each authored alternative fits its l
 
 test('phrasebook searches Korean, English, romanization, topics and the complete collection',async () => {
   const {findExpressions} = await import('../js/learning/phrase-search.js');
-  assert.equal(findExpressions(rows,'').length,426);
+  assert.equal(findExpressions(rows,'').length,504);
   assert.equal(findExpressions(rows,'')[0].k,'안녕하세요.');
   for (const query of ['AMERICANO','아메리카노한잔','amerikano han jan','café']) {
     assert.ok(findExpressions(rows,query).some(p => p.k === model),query);
@@ -264,10 +264,18 @@ test('silence, a blocked mic, recognition timeout and leaving a vocabulary quest
   fallback.dispose();
 });
 
+function recordedVocabularyDay(DailyVocabulary, storage) {
+  // Exercise the bundled-media handoff with fixed questions, regardless of today's mix.
+  const date = new Date(2026, 0, 1, 12);
+  const day = Date.UTC(2026, 0, 1) / 86400000;
+  storage.setItem('sori:vocabulary:v1:device', JSON.stringify({day, anchor:day, index:0}));
+  return new DailyVocabulary(storage, null, () => date);
+}
+
 test('opening vocabulary from home plays the question before listening, and the next question does the same', async () => {
   const {DailyVocabulary} = await import('../js/learning/vocabulary.js');
   const {mountVocabulary} = await import('../js/learning/vocabulary-ui.js');
-  const f = fixture(), daily = new DailyVocabulary(f.env.localStorage, null);
+  const f = fixture(), daily = recordedVocabularyDay(DailyVocabulary, f.env.localStorage);
   const target = {
     querySelector(selector) {
       const node = f.query(selector);
@@ -330,7 +338,7 @@ test('conversation replies and English quiz answers stream and grade from the cu
 test('mixed word review accepts a spoken choice, then listens on the next fill-in question',async()=>{
   const {DailyVocabulary}=await import('../js/learning/vocabulary.js');
   const {mountVocabulary}=await import('../js/learning/vocabulary-ui.js');
-  const f=fixture(), daily=new DailyVocabulary(f.env.localStorage,null);
+  const f = fixture(), daily = recordedVocabularyDay(DailyVocabulary, f.env.localStorage);
   for(let i=0;i<2;i++){const day=daily.today();daily.record(day.token,day.index,'correct');daily.advance(day.token,day.index);}
   const round=daily.startReview();assert.deepEqual(round.slots.map(s=>s.format),['choice','cloze']);
   const target={querySelector(key){

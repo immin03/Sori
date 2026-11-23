@@ -1,4 +1,4 @@
-import {topicBank} from './vocabulary-bank.js?v=20261121library';
+import {topicBank} from './vocabulary-bank.js?v=20261123beta';
 
 export const levels = {essentials:'Beginner', intermediate:'Intermediate', nuance:'Advanced'};
 export const topics = topicBank.map(({id,title,description}) => ({id,title,description}));
@@ -17,7 +17,7 @@ function question(meta, row, alternate) {
 export const wordIndex = new Map();
 for (const topic of topicBank) {
   for (const [id,level,term,gloss,first,second] of topic.entries) {
-    const meta = {id,topic:topic.id,level,term,gloss};
+    const meta = {id,topic:topic.id,level,term,gloss,questionAudio:topic.questionAudio || 'bundled'};
     wordIndex.set(id, [question(meta,first,false), question(meta,second,true)]);
   }
 }

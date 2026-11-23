@@ -12,11 +12,11 @@ async function fixture() {
 test('every topic covers all three levels and every word has two distinct, answerable contexts',async () => {
   const {topics, levels, wordIndex, vocabulary, allQuestions, sameTopicChoices} = await import('../js/learning/vocabulary.js');
   const {checkWords} = await import('../js/learning/word-check.js');
-  assert.equal(topics.length,8); assert.equal(vocabulary.length,64); assert.equal(allQuestions.length,128);
-  assert.equal(new Set(vocabulary.map(q => q.term)).size,64);
+  assert.equal(topics.length,24); assert.equal(vocabulary.length,224); assert.equal(allQuestions.length,448);
+  assert.equal(new Set(vocabulary.map(q => q.term)).size,vocabulary.length);
   for (const t of topics) {
     const subset = vocabulary.filter(q => q.topic === t.id);
-    assert.equal(subset.length,8);
+    assert.ok(subset.length >= 8);
     assert.deepEqual(new Set(subset.map(q => q.level)),new Set(Object.keys(levels)));
   }
   for (const [first,second] of wordIndex.values()) {

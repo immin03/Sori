@@ -1,8 +1,8 @@
-import {sameTopicChoices, levels, topics, vocabulary} from './vocabulary.js?v=20261121library';
-import {difficultyControl, topicTitle} from './vocabulary-library.js?v=20261123restore';
-import {paintSpokenQuestion} from './speech-highlight.js?v=20261121nav';
-import {attachVoiceReply, recorderControls} from './voice-reply.js?v=20261121focus';
-import {attachQuestionAudio} from './question-audio.js?v=20261121q1';
+import {sameTopicChoices, levels, topics, vocabulary} from './vocabulary.js?v=20261123beta';
+import {difficultyControl, topicTitle} from './vocabulary-library.js?v=20261123beta';
+import {paintSpokenQuestion} from './speech-highlight.js?v=20261123beta';
+import {attachVoiceReply, recorderControls} from './voice-reply.js?v=20261123beta';
+import {attachQuestionAudio, attachSynthesizedQuestion} from './question-audio.js?v=20261123beta';
 import {checkWords} from './word-check.js?v=20261123relaunch';
 import {romanize} from './romanize.js?v=20261123restore';
 
@@ -20,7 +20,7 @@ export function vocabularyCard(daily) {
     <progress max="${words.length}" value="${index}" aria-label="Today's progress"></progress>
     <button type="button" class="sori-primary" data-open-vocabulary>${complete ? 'Review today’s words' : index ? 'Continue' : 'Start lesson'}</button>
     </article><a class="section-row topic-entry" href="#practice=vocabulary&amp;view=topics"><strong>Vocabulary topics</strong><span aria-hidden="true">›</span></a>
-    ${difficultyControl(level)}<div class="home-vocab-topics"><h2>Choose a vocabulary topic</h2><div class="conversation-grid">${topics.map(topic=>{const count=vocabulary.filter(w=>w.topic===topic.id&&(level==='all'||w.level===level)).length;return `<a class="conversation-card" href="#practice=vocabulary&amp;view=topic&amp;topic=${topic.id}"><strong>${topic.title}</strong><small>${count} words</small><span class="topic-open">Practise ›</span></a>`;}).join('')}</div></div>`;
+    <div class="home-vocab-topics"><h2>Choose a vocabulary topic</h2><div class="conversation-grid">${topics.map(topic=>{const count=vocabulary.filter(w=>w.topic===topic.id).length;return `<a class="conversation-card" href="#practice=vocabulary&amp;view=topic&amp;topic=${topic.id}"><strong>${topic.title}</strong><small>${count} words</small><span class="topic-open">Practise ›</span></a>`;}).join('')}</div></div>`;
 }
 
 export function mountVocabulary(target, daily, env, {start = false, onProgress, custom = false} = {}) {
@@ -49,6 +49,8 @@ export function mountVocabulary(target, daily, env, {start = false, onProgress, 
       return;
     }
     const question = words[index];
+    const liveAudio = question.questionAudio === 'synthesized';
+    const questionSrc = new URL(liveAudio ? '../../assets/audio/vocab-gap.wav' : '../../assets/audio/questions/' + question.audioId + '.mp3', import.meta.url).href;
     const current = round.slots[index], choice = current.format === 'choice';
     const options = choice ? sameTopicChoices(question,day + index + token.length) : [];
     target.innerHTML = `${header}
@@ -61,7 +63,7 @@ export function mountVocabulary(target, daily, env, {start = false, onProgress, 
             <span data-question-label>Listen</span></button>
             <span class="cue-status" role="status" data-question-status></span>
           </div>
-          <audio hidden playsinline preload="metadata" data-question-player src="${new URL('../../assets/audio/questions/' + question.audioId + '.mp3', import.meta.url).href}"></audio>
+          <audio hidden playsinline preload="metadata" data-question-player src="${questionSrc}"></audio>
         </div>
         <p class="vocab-instruction sr-only">${choice ? 'Say the missing Korean word or tap your choice.' : 'The chime marks the blank. Say the word or the whole sentence.'}</p>
         ${choice ? `<div class="vocab-choices" role="group" aria-label="Choose the missing word">${options.map((word,i) => `<button type="button" lang="ko" data-choice="${i}">${word}</button>`).join('')}</div><p class="vocab-choice-status" role="status" data-choice-result></p>` : ''}
@@ -92,7 +94,9 @@ export function mountVocabulary(target, daily, env, {start = false, onProgress, 
       cueStatus.textContent = messages[state] || '';
       mic.hidden = typing || (choice && !after.hidden) || playing || (firstListen && state !== 'error');
     }
-    cue = attachQuestionAudio(get('[data-question-player]'), showPlayback, env);
+    const player = get('[data-question-player]');
+    cue = liveAudio ? attachSynthesizedQuestion(question, player, env.SORI?.TTS, showPlayback, env) :
+      attachQuestionAudio(player, showPlayback, env);
     function hearQuestion(thenSpeak) {
 
       voice?.onModel(); env.SORI?.TTS?.cancel();
@@ -116,12 +120,13 @@ export function mountVocabulary(target, daily, env, {start = false, onProgress, 
     function result(kind, automatic = true) {
       if (!['correct','retry','reveal'].includes(kind)) return;
       daily.record(token,index,kind);
+      if(automatic && kind==='correct')env.dispatchEvent?.(new CustomEvent('sori-word-learned',{detail:question.id}));
       form.dataset.result=kind;
       blank.textContent = question.word; blank.dataset.result = kind;
       get('.vocab-reading').textContent=romanize(question.sentence);
       get('[data-hear-word]').dataset.audio = question.sentence;
       reveal.hidden = true; after.hidden = false;
-      if (kind === 'correct') { recordButton.hidden = true; form.querySelector('button').hidden = true; switchButton.hidden = true; }
+      if (kind === 'correct') { recordButton.hidden = false; recordButton.textContent='Try again'; form.querySelector('button').hidden = true; switchButton.hidden = true; }
       if (kind === 'retry') recordButton.textContent = 'Try speaking again';
 
       if (choice) {

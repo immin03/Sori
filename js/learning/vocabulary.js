@@ -1,5 +1,5 @@
-import {levels, topics, legacyOrder, vocabulary, wordIndex} from './vocabulary-catalog.js?v=20261121library';
-export {levels, topics, vocabulary, wordIndex, allQuestions} from './vocabulary-catalog.js?v=20261121library';
+import {levels, topics, legacyOrder, vocabulary, wordIndex} from './vocabulary-catalog.js?v=20261123beta';
+export {levels, topics, vocabulary, wordIndex, allQuestions} from './vocabulary-catalog.js?v=20261123beta';
 
 const intervals = [1, 3, 7, 14, 30];
 function localDay(time) {
