@@ -82,3 +82,16 @@ test('comparison plays the model before the local reply and discards interrupted
  const first=f.compare.onclick();assert.deepEqual(calls,['안녕하세요.']);finish();await first;assert.equal(calls.at(-1),'own reply');
  const second=f.compare.onclick();take.dispose();finish();await second;assert.deepEqual(calls,['안녕하세요.','own reply','안녕하세요.']);
 });
+
+test('all original phrase situations remain discoverable at all levels', async()=>{
+ const {situationGroups,matchingLevel}=await import('../js/learning/categories.js');
+ const c=vm.createContext({window:{},console:{log(){}}});
+ for(const n of ['daily','travel','drama','trendy','numbers','dataindex'])vm.runInContext(fs.readFileSync(path.resolve(__dirname,'../data',n+'.js'),'utf8'),c);
+ const groups=situationGroups(c.window.SoriDataIndex);
+ const rows=groups.flatMap(g=>g.topics.flatMap(t=>t.rows));
+ assert.equal(groups.length,5);assert.equal(rows.length,361);
+ assert.equal(groups.reduce((n,g)=>n+g.topics.length,0),69);
+ assert.equal(groups[0].topics[0].name,'Greeting');
+ assert.equal(['essentials','intermediate','nuance'].reduce((n,l)=>n+matchingLevel(rows,l).length,0),rows.length);
+ assert.ok(rows.every(r=>r.p&&r.e));
+});

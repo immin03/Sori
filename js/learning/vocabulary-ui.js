@@ -1,14 +1,14 @@
-import {sameTopicChoices, levels} from './vocabulary.js?v=20261121library';
-import {difficultyControl, topicTitle} from './vocabulary-library.js?v=20261121nav';
+import {sameTopicChoices, levels, topics, vocabulary} from './vocabulary.js?v=20261121library';
+import {difficultyControl, topicTitle} from './vocabulary-library.js?v=20261123restore';
 import {paintSpokenQuestion} from './speech-highlight.js?v=20261121nav';
 import {attachVoiceReply, recorderControls} from './voice-reply.js?v=20261121focus';
 import {attachQuestionAudio} from './question-audio.js?v=20261121q1';
 import {checkWords} from './word-check.js?v=20261123relaunch';
-import {autoNext} from './auto-next.js?v=20261121polish';
+import {romanize} from './romanize.js?v=20261123restore';
 
 function prompt(question) {
   return `<p class="vocab-sentence" lang="ko"><span data-vocab-before>${question.before}</span><span class="vocab-blank" data-blank><span class="sr-only" lang="en">blank</span></span><span data-vocab-after>${question.after}</span></p>
-    <p class="vocab-meaning">${question.meaning}</p>`;
+    <p class="roman-line vocab-reading">${romanize(question.before)} ____ ${romanize(question.after)}</p><p class="vocab-meaning">${question.meaning}</p>`;
 }
 
 export function vocabularyCard(daily) {
@@ -20,15 +20,15 @@ export function vocabularyCard(daily) {
     <progress max="${words.length}" value="${index}" aria-label="Today's progress"></progress>
     <button type="button" class="sori-primary" data-open-vocabulary>${complete ? 'Review today’s words' : index ? 'Continue' : 'Start lesson'}</button>
     </article><a class="section-row topic-entry" href="#practice=vocabulary&amp;view=topics"><strong>Vocabulary topics</strong><span aria-hidden="true">›</span></a>
-    <details class="focus-settings"><summary>Level: ${level==='all'?'All levels':levels[level]}</summary>${difficultyControl(level)}</details>`;
+    ${difficultyControl(level)}<div class="home-vocab-topics"><h2>Choose a vocabulary topic</h2><div class="conversation-grid">${topics.map(topic=>{const count=vocabulary.filter(w=>w.topic===topic.id&&(level==='all'||w.level===level)).length;return `<a class="conversation-card" href="#practice=vocabulary&amp;view=topic&amp;topic=${topic.id}"><strong>${topic.title}</strong><small>${count} words</small><span class="topic-open">Practise ›</span></a>`;}).join('')}</div></div>`;
 }
 
 export function mountVocabulary(target, daily, env, {start = false, onProgress, custom = false} = {}) {
-  let voice, cue, advance;
-  function interrupt() { advance?.cancel(); cue?.stop(); voice?.onModel(); }
+  let voice, cue;
+  function interrupt() { cue?.stop(); voice?.onModel(); }
   const get = selector => target.querySelector(selector);
   function render(mode = 'ready', playOnOpen = true) {
-    advance?.cancel(); cue?.stop(); cue = null; voice?.dispose(); voice = null;
+    cue?.stop(); cue = null; voice?.dispose(); voice = null;
     env.SORI?.TTS?.cancel();
     const round = custom ? daily.custom() : daily.today();
     if (!round) return;
@@ -39,7 +39,7 @@ export function mountVocabulary(target, daily, env, {start = false, onProgress, 
     if (index === words.length) {
       target.innerHTML = `${header}<section class="vocab-finish">
         <h1 tabindex="-1">${round.kind === 'daily' ? 'Today’s vocabulary complete.' : title + ' complete.'}</h1>
-        <ul>${words.map((q,i) => `<li><strong lang="ko">${q.term}</strong><span>${q.gloss}${['retry','reveal'].includes(round.slots[i].result) ? ' · Saved for another try' : ''}</span></li>`).join('')}</ul>
+        <ul>${words.map((q,i) => `<li><strong lang="ko">${q.term}</strong><span>${romanize(q.term)} · ${q.gloss}${['retry','reveal'].includes(round.slots[i].result) ? ' · Saved for another try' : ''}</span></li>`).join('')}</ul>
         <div class="vocab-hub-actions"><a class="sori-primary" href="#practice=vocabulary&amp;view=words">Open my words</a>
         ${round.kind === 'topic' ? `<button type="button" class="sori-secondary" data-vocab-start="${round.topic}" data-vocab-level="${round.level}">Another set</button>` :
           round.kind === 'review' ? '<button type="button" class="sori-secondary" data-vocab-review="all">Review another set</button>' :
@@ -94,7 +94,7 @@ export function mountVocabulary(target, daily, env, {start = false, onProgress, 
     }
     cue = attachQuestionAudio(get('[data-question-player]'), showPlayback, env);
     function hearQuestion(thenSpeak) {
-      advance?.cancel();
+
       voice?.onModel(); env.SORI?.TTS?.cancel();
       cue.play(thenSpeak ? () => { if (!env.document?.hidden) voice?.start(); } : undefined);
     }
@@ -104,10 +104,11 @@ export function mountVocabulary(target, daily, env, {start = false, onProgress, 
     };
     showPlayback('idle');
     function reset() {
-      advance?.cancel();
+
       blank.innerHTML = '<span class="sr-only" lang="en">blank</span>';
       delete blank.dataset.heard;
       paintSpokenQuestion(parts,question,'');
+      get('.vocab-reading').textContent=romanize(question.before)+' ____ '+romanize(question.after);
       delete blank.dataset.result; delete get('[data-hear-word]').dataset.audio; reveal.hidden = false; after.hidden = true;
       delete form.dataset.result;
       switchButton.hidden = choice; typedResult.textContent = '';
@@ -117,11 +118,12 @@ export function mountVocabulary(target, daily, env, {start = false, onProgress, 
       daily.record(token,index,kind);
       form.dataset.result=kind;
       blank.textContent = question.word; blank.dataset.result = kind;
+      get('.vocab-reading').textContent=romanize(question.sentence);
       get('[data-hear-word]').dataset.audio = question.sentence;
       reveal.hidden = true; after.hidden = false;
       if (kind === 'correct') { recordButton.hidden = true; form.querySelector('button').hidden = true; switchButton.hidden = true; }
       if (kind === 'retry') recordButton.textContent = 'Try speaking again';
-      if (kind === 'correct' && automatic) advance.schedule();
+
       if (choice) {
         mic.hidden = true;
         for (const [i,word] of options.entries()) {
@@ -135,9 +137,7 @@ export function mountVocabulary(target, daily, env, {start = false, onProgress, 
     switchButton.onclick = () => render(typing ? 'voice' : 'type', typing);
     reveal.onclick = () => { interrupt(); result('reveal'); showPlayback('idle'); get('[data-next-word]').focus(); };
     const next = get('[data-next-word]');
-    advance = autoNext(env, () => next.onclick?.());
     next.onclick = () => {
-      advance.cancel();
       daily.advance(token,index); onProgress?.(); render(continueMode);
     };
     if (choice) {
@@ -178,5 +178,5 @@ export function mountVocabulary(target, daily, env, {start = false, onProgress, 
     else if (playOnOpen) hearQuestion(mode === 'voice');
   }
   render(start ? 'voice' : 'ready');
-  return {onModel:interrupt, dispose() { advance?.cancel(); cue?.stop(); voice?.dispose(); }};
+  return {onModel:interrupt, dispose() { cue?.stop(); voice?.dispose(); }};
 }

@@ -172,6 +172,7 @@ import {optionNames,spokenOption} from './learning/quiz-choice.js?v=20261121nav'
       // Update Korean text
       if (quizKorean) {
         quizKorean.textContent = questionData.k;
+        document.getElementById("quizReading").textContent=questionData.p||"";
       }
       
       // Update favorite button state after DOM updates
@@ -267,9 +268,7 @@ import {optionNames,spokenOption} from './learning/quiz-choice.js?v=20261121nav'
         document.getElementById('quizScore').textContent=String(solved.size);quizPlayBtn.hidden=true;
         feedback.textContent=currentQuestionIndex===currentQuestions.length-1?'Quiz complete. '+solved.size+' of '+currentQuestions.length+' answered correctly.':'Correct!';
         turn?.dispose();turn=null;voiceSlot.replaceChildren();
-        if(currentQuestionIndex<currentQuestions.length-1)advanceTimer=setTimeout(()=>{
-          if(visible()&&!document.hidden){currentQuestionIndex++;loadCurrentQuestion();}
-        },1500);
+
       }else{
         currentStreak=0;updateStreakDisplay();
         feedback.textContent='Not quite. Try another meaning.';
