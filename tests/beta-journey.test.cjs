@@ -40,7 +40,7 @@ test('member visits deduplicate, survey stays private, and only the verified adm
 test('the menu follows the server-verified account, including logout and late responses', async()=>{
  const fs=require('node:fs'),vm=require('node:vm');
  const events={},calls=[],control={},body={classList:{contains:()=>false}};
- const content={innerHTML:'',querySelector:()=>null,replaceChildren(){}};
+ const content={innerHTML:'',querySelector:()=>({innerHTML:'',textContent:''}),querySelectorAll:()=>[],replaceChildren(){}};
  const dialog={open:false,dataset:{},querySelector:s=>s==='[data-beta-body]'?content:control,
   addEventListener:(name,fn)=>{events['dialog:'+name]=fn;},showModal(){this.open=true;},
   close(){this.open=false;events['dialog:close']();}};
