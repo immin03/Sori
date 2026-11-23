@@ -90,6 +90,33 @@
   // 추가 세트 (필요 시 확장)
   const travelPlus = [
     // 예: {t:'Transport', c:'Bike', k:'자전거 대여소 어디예요?', e:'Where is the bike rental?', p:'jajeongeo daeyeoso eodiyeyo', sub:'Transport'},
+    {"t": "Airport", "c": "Connecting flight", "k": "환승하려면 수하물을 다시 찾아서 부쳐야 하나요?", "e": "Do I need to collect and check my baggage again for my connection?", "p": "hwanseungharyeomyeon suhamureul dasi chajaseo buchyeoya hanayo?", "sub": "Airport", "level": "nuance"},
+    {"t": "Hotel", "c": "Early check-in", "k": "체크인 시간 전에 도착할 예정인데 짐을 맡길 수 있을까요?", "e": "I expect to arrive before check-in. Could you store my luggage?", "p": "chekeuin sigan jeone dochakhal yejeonginde jimeul matgil su isseulkkayo?", "sub": "Hotel", "level": "nuance"},
+    {"t": "Transport", "c": "Find a route", "k": "환승을 한 번만 하고 갈 수 있는 방법이 있을까요?", "e": "Is there a way to get there with just one transfer?", "p": "hwanseungeul han beonman hago gal su inneun bangbeobi isseulkkayo?", "sub": "Transport", "level": "nuance"},
+    {"t": "Emergency", "c": "Lost document", "k": "여권을 잃어버렸는데 가까운 대사관에 가려면 어떻게 해야 하나요?", "e": "I lost my passport. How do I get to the nearest embassy?", "p": "yeogwoneul ireobeoryeonneunde gakkaun daesagwane garyeomyeon eotteoke haeya hanayo?", "sub": "Emergency", "level": "nuance"},
+    {"t": "Convenience", "c": "Payment question", "k": "교통카드로 결제하면 나머지는 현금으로 내도 되나요?", "e": "If I pay with my transit card, can I pay the rest in cash?", "p": "gyotongkadeuro gyeoljehamyeon nameojineun hyeongeumeuro naedo doenayo?", "sub": "Convenience", "level": "nuance"},
+    {"t": "Street Food", "c": "Explain preference", "k": "매운 양념을 따로 담아 주시면 제가 조금씩 넣을게요.", "e": "If you put the spicy sauce separately, I will add a little at a time.", "p": "maeun yangnyeomeul ttaro dama jusimyeon jega jogeumssik neoeulgeyo.", "sub": "Street Food", "level": "nuance"},
+    {"t": "Market", "c": "Ask about freshness", "k": "오늘 들어온 물건 중에서 가장 신선한 걸 추천해 주세요.", "e": "Please recommend the freshest item that arrived today.", "p": "oneul deureoon mulgeon jungeseo gajang sinseonhan geol chucheonhae juseyo.", "sub": "Market", "level": "nuance"},
+    {"t": "Duty Free", "c": "Eligibility", "k": "출국 당일에 면세품을 수령하려면 어디로 가야 하나요?", "e": "Where do I go to collect duty-free items on departure day?", "p": "chulguk dangire myeonsepumeul suryeongharyeomyeon eodiro gaya hanayo?", "sub": "Duty Free", "level": "nuance"},
+    {"t": "Department", "c": "Find a product", "k": "이 제품이 다른 지점에 재고가 있는지 확인해 주실 수 있나요?", "e": "Could you check whether this product is in stock at another branch?", "p": "i jepumi dareun jijeome jaegoga inneunji hwaginhae jusil su innayo?", "sub": "Department", "level": "nuance"},
+    {"t": "Food Court", "c": "Ordering procedure", "k": "주문한 음식이 준비되면 어디에서 받아 가면 되나요?", "e": "Where should I pick up my food when it is ready?", "p": "jumunhan eumsigi junbidoemyeon eodieseo bada gamyeon doenayo?", "sub": "Food Court", "level": "nuance"},
+    {"t": "Restaurant", "c": "Allergy communication", "k": "알레르기가 있어서 조리할 때도 땅콩을 사용하지 않았으면 해요.", "e": "I have an allergy, so I would prefer peanuts not to be used in preparation either.", "p": "allereugiga isseoseo jorihal ttaedo ttangkong-eul sayonghaji anasseumyeon haeyo.", "sub": "Restaurant", "level": "nuance"},
+    {"t": "Cafe", "c": "Adjust a drink", "k": "디카페인으로 변경하면 추가 요금이 발생하나요?", "e": "Is there an extra charge if I change it to decaf?", "p": "dikapeineuro byeongyeonghamyeon chuga yogeumi balsaenghanayo?", "sub": "Cafe", "level": "nuance"},
+    {"t": "Payment", "c": "Payment method", "k": "일부는 카드로 결제하고 나머지는 현금으로 내도 될까요?", "e": "Could I pay part by card and the rest in cash?", "p": "ilbuneun kadeuro gyeoljehago nameojineun hyeongeumeuro naedo doelkkayo?", "sub": "Payment", "level": "nuance"},
+    {"t": "Delivery", "c": "Delivery instructions", "k": "호텔 로비에 도착하시면 프런트에 맡겨 주시면 감사하겠습니다.", "e": "When you arrive at the hotel lobby, I would appreciate it if you left it at reception.", "p": "hotel robie dochakhasimyeon peureonteue matgyeo jusimyeon gamsahagetseumnida.", "sub": "Delivery", "level": "nuance"},
+    {"t": "Sightseeing", "c": "Check admission", "k": "오늘 관람하려면 사전에 예약해야 하는지 궁금해요.", "e": "I wonder whether I need to book in advance to visit today.", "p": "oneul gwallamharyeomyeon sajeone yeyakhaeya haneunji gunggeumhaeyo.", "sub": "Sightseeing", "level": "nuance"},
+    {"t": "Airport", "c": "Passport", "k": "여권이에요.", "e": "Here is my passport.", "p": "yeogwonieyo.", "sub": "Airport", "level": "essentials"},
+    {"t": "Hotel", "c": "Room key", "k": "방 열쇠 주세요.", "e": "Room key, please.", "p": "bang yeolsoe juseyo.", "sub": "Hotel", "level": "essentials"},
+    {"t": "Transport", "c": "This way", "k": "이쪽이에요?", "e": "Is it this way?", "p": "ijjogieyo?", "sub": "Transport", "level": "essentials"},
+    {"t": "Convenience", "c": "Bag", "k": "봉투 주세요.", "e": "A bag, please.", "p": "bongtu juseyo.", "sub": "Convenience", "level": "essentials"},
+    {"t": "Street Food", "c": "One portion", "k": "일 인분 주세요.", "e": "One serving, please.", "p": "il inbun juseyo.", "sub": "Street Food", "level": "essentials"},
+    {"t": "Duty Free", "c": "Show passport", "k": "여기요.", "e": "Here you are.", "p": "yeogiyo.", "sub": "Duty Free", "level": "essentials"},
+    {"t": "Department", "c": "Try it", "k": "써 봐도 돼요?", "e": "May I try it?", "p": "sseo bwado dwaeyo?", "sub": "Department", "level": "essentials"},
+    {"t": "Food Court", "c": "Order", "k": "이거 주세요.", "e": "This one, please.", "p": "igeo juseyo.", "sub": "Food Court", "level": "essentials"},
+    {"t": "Restaurant", "c": "More rice", "k": "밥 더 주세요.", "e": "More rice, please.", "p": "bap deo juseyo.", "sub": "Restaurant", "level": "essentials"},
+    {"t": "Cafe", "c": "Hot drink", "k": "따뜻하게 주세요.", "e": "Hot, please.", "p": "ttatteuthage juseyo.", "sub": "Cafe", "level": "essentials"},
+    {"t": "Delivery", "c": "Name", "k": "제 이름이에요.", "e": "That is my name.", "p": "je ireumieyo.", "sub": "Delivery", "level": "essentials"},
+    {"t": "Sightseeing", "c": "Ticket", "k": "표 한 장 주세요.", "e": "One ticket, please.", "p": "pyo han jang juseyo.", "sub": "Sightseeing", "level": "essentials"},
   ];
 
   // 합치기

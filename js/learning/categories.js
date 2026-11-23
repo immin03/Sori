@@ -8,9 +8,10 @@ export const groups = [
 const order = ['Greeting','Social','Love','Cafe','Restaurant','Shopping','Health','Work','Tech','Exercise'];
 export const levelNames = {all:'All levels',essentials:'Beginner',intermediate:'Intermediate',nuance:'Advanced'};
 export function phraseLevel(row) {
+  if (['essentials','intermediate','nuance'].includes(row.level)) return row.level;
   const units = row.k.match(/[가-힣]/g)?.length || 0;
-  if (units > 15 || /(?:실 수 있|드릴 수|셨으면|더라고|거든요|더라|잖아|기는 하|지 않으면|ㄹ까요)/u.test(row.k)) return 'nuance';
-  return units <= 8 ? 'essentials' : 'intermediate';
+  if (units > 12 || /(?:실 수 있|드릴 수|셨으면|더라고|거든요|더라|잖아|기는 하|지 않으면|ㄹ까요)/u.test(row.k)) return 'nuance';
+  return units <= 6 ? 'essentials' : 'intermediate';
 }
 export function situationGroups(index) {
   return groups.map(([id,title,description]) => {

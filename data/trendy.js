@@ -74,5 +74,16 @@
     {t:'Trendy',c:'Fun',k:'킹리적 갓심이야.',e:'Very logical guess.',p:'king-li-jeok gat-sim-i-ya',sub:'Fun'},
     {t:'Trendy',c:'Fun',k:'레알이야.',e:'For real.',p:'re-al-i-ya',sub:'Fun'},
     {t:'Trendy',c:'Fun',k:'무야호~',e:'Muu-ya-ho!',p:'mu-ya-ho',sub:'Fun'},
+
+    // Longer, advanced real-life expressions
+    {"t": "Reaction", "c": "Unexpected result", "k": "설마 했는데 진짜 그렇게 될 줄은 몰랐어.", "e": "I thought it was unlikely, but I had no idea it would really happen.", "p": "seolma haenneunde jinjja geureoke doel jureun mollasseo.", "sub": "Reaction", "level": "nuance"},
+    {"t": "Emotion", "c": "Mixed feelings", "k": "기대했던 만큼 잘 안 돼서 좀 아쉽기는 해.", "e": "It is a little disappointing because it did not go as well as I hoped.", "p": "gidaehaetdeon mankeum jal an dwaeseo jom aswipgineun hae.", "sub": "Emotion", "level": "nuance"},
+    {"t": "Daily Talk", "c": "Agree tentatively", "k": "네 말이 무슨 뜻인지는 알겠는데 조금 다르게 생각해.", "e": "I get what you mean, but I see it a little differently.", "p": "ne mari museun tteusinjineun algenneunde jogeum dareuge saenggakae.", "sub": "Daily Talk", "level": "nuance"},
+    {"t": "Online", "c": "Uncertain information", "k": "아직 확실한 정보가 아니라서 조금 더 지켜봐야 할 것 같아.", "e": "It is not confirmed yet, so I think we should wait and see.", "p": "ajik hwaksilhan jeongboga aniraseo jogeum deo jikyeobwaya hal geot gata.", "sub": "Online", "level": "nuance"},
+    {"t": "Support & Life", "c": "Comfort a friend", "k": "지금은 힘들겠지만 지나고 나면 분명 좋은 경험이 될 거야.", "e": "It may be hard now, but it will surely become a valuable experience in hindsight.", "p": "jigeumeun himdeulgetjiman jinago namyeon bunmyeong joeun gyeongheomi doel geoya.", "sub": "Support & Life", "level": "nuance"},
+    {"t": "Fun", "c": "Lighthearted complaint", "k": "괜히 기대했다가 실망할까 봐 마음을 비웠어.", "e": "I let go of my expectations because I was worried I would be disappointed.", "p": "gwaenhi gidaehaetdaga silmanghalkka bwa maeumeul biwosseo.", "sub": "Fun", "level": "nuance"},
+    {"t": "Reaction", "c": "Surprised", "k": "그럴 줄 몰랐어.", "e": "I did not expect that.", "p": "geureol jul mollasseo.", "sub": "Reaction", "level": "intermediate"},
+    {"t": "Daily Talk", "c": "Check plans", "k": "오늘 뭐 할지 정했어?", "e": "Have you decided what to do today?", "p": "oneul mwo halji jeonghaesseo?", "sub": "Daily Talk", "level": "intermediate"},
+    {"t": "Support & Life", "c": "Encouragement", "k": "네가 해낼 줄 알았어.", "e": "I knew you could do it.", "p": "nega haenael jul arasseo.", "sub": "Support & Life", "level": "intermediate"},
   ];
 })();

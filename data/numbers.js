@@ -81,6 +81,15 @@
     {t:'Practice',c:'Countdown',k:'셋, 둘, 하나!',e:'Three, two, one!',p:'set, dul, hana',sub:'Practice'},
     {t:'Practice',c:'Lottery',k:'칠, 팔, 구, 이십일, 삼십이',e:'7, 8, 9, 21, 32',p:'chil, pal, gu, isip-il, samsip-i',sub:'Practice'},
     {t:'Practice',c:'Temperature',k:'오늘은 이십삼 도예요.',e:'It is 23 degrees today.',p:'oneureun isip-sam do-yeyo',sub:'Practice'},
-    {t:'Practice',c:'Address',k:'삼층 삼백호예요.',e:'Room 300 on the third floor.',p:'samcheung sambaegho-yeyo',sub:'Practice'}
+    {t:'Practice',c:'Address',k:'삼층 삼백호예요.',e:'Room 300 on the third floor.',p:'samcheung sambaegho-yeyo',sub:'Practice'},
+
+    // Longer, advanced real-life expressions
+    {"t": "Basic", "c": "Choose the number system", "k": "시간을 말할 때는 고유어 수와 한자어 수를 함께 써요.", "e": "When telling time, we use native Korean and Sino-Korean numbers together.", "p": "siganeul malhal ttaeneun goyueo suwa hanjaeo sureul hamkke sseoyo.", "sub": "Basic", "level": "nuance"},
+    {"t": "Counting", "c": "Order quantities", "k": "같은 메뉴로 세 개 주문하고 음료는 두 병만 주세요.", "e": "Please order three of the same menu item and just two bottles of drinks.", "p": "gateun menyuro se gae jumunhago eumnyoneun du byeongman juseyo.", "sub": "Counting", "level": "nuance"},
+    {"t": "Dates", "c": "Change a date", "k": "십이월 이십오 일에서 이십칠 일로 예약을 변경하고 싶어요.", "e": "I would like to change my reservation from December 25 to December 27.", "p": "sibiwol isibo ireseo isipchil illo yeyageul byeongyeonghago sipeoyo.", "sub": "Dates", "level": "nuance"},
+    {"t": "Money", "c": "Split payment", "k": "총 십이만 원을 세 사람이 똑같이 나눠서 계산할게요.", "e": "The three of us will split the total of 120,000 won equally.", "p": "chong sibi man woneul se sarami ttokgachi nanwoseo gyesanhalgeyo.", "sub": "Money", "level": "nuance"},
+    {"t": "Tens & Hundreds", "c": "Large amount", "k": "삼십오만 원에서 십 퍼센트 할인하면 얼마인가요?", "e": "How much is 350,000 won after a ten percent discount?", "p": "samsibo man woneseo sip peosenteu harinhamyeon eolmaingayo?", "sub": "Tens & Hundreds", "level": "nuance"},
+    {"t": "Practice", "c": "Time calculation", "k": "오후 두 시 반에 출발하면 한 시간 이십 분쯤 걸려요.", "e": "If we leave at 2:30 p.m., it will take about an hour and twenty minutes.", "p": "ohu du si bane chulbalhamyeon han sigan isip bunjjeum geollyeoyo.", "sub": "Practice", "level": "nuance"},
+    {"t": "Tens & Hundreds", "c": "One hundred", "k": "백 원이에요.", "e": "It is 100 won.", "p": "baeg wonieyo.", "sub": "Tens & Hundreds", "level": "essentials"},
   ];
 })();
