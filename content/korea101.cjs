@@ -13,6 +13,43 @@ const originals=[
 ];
 const issues=[
 {
+  "id": "banchan-little-plates",
+  "title": "The little plates that make a Korean meal",
+  "category": "Food & traditions",
+  "published": "2026-11-23",
+  "photo": "assets/photos/jagalchi.jpg",
+  "photoAlt": "Seafood stalls and tanks along an indoor aisle at Jagalchi Market in Busan",
+  "photoContext": "Context photograph: seafood stalls at Jagalchi Market in Busan, not a banchan meal. Photo: Luke Ow / Unsplash, used under the Unsplash License; source listed in Sori’s photo credits.",
+  "excerpt": "The small dishes beside your rice are part of the meal’s rhythm. Here is how to enjoy banchan, and what to say when the kimchi disappears first.",
+  "phrase": "김치 조금 더 주실 수 있나요?",
+  "question": "Which side dish would you happily build a whole meal around?",
+  "figures": [],
+  "sources": [
+    {
+      "label": "Korean Food Promotion Institute: The Roots of Hansik, Home-Cooked Meals",
+      "url": "https://www.hansik.or.kr/magazines/list/magazineDetail/146/3877"
+    },
+    {
+      "label": "National Folk Museum of Korea: Hansik",
+      "url": "https://folkency.nfm.go.kr/en/topic/detail/12224"
+    },
+    {
+      "label": "Korean Culture and Information Service: K-Food, the culture of side dishes",
+      "url": "https://www.korean-culture.org/ebook/access/ecatalogt.jsp?Dir=153&callmode=normal&catimage=&eclang=ko&start=24&um=s"
+    }
+  ],
+  "expressions": [
+    {
+      "ko": "김치 조금 더 주실 수 있나요?",
+      "roman": "gimchi jogeum deo jusil su innayo",
+      "meaning": "May I have a bit more kimchi?",
+      "example": "김치 조금 더 주실 수 있나요?",
+      "translation": "May I have a bit more kimchi?"
+    }
+  ],
+  "body": "Your stew has not arrived, but the table is already busy. Kimchi lands beside a dish of greens, followed by something glossy and braised. If you are waiting for someone to explain which course comes first, here is a pleasant surprise: you do not need a course order.\n\nThese small dishes are banchan (반찬), companions to rice. They help make the meal, rather than serving as a starter you must finish before the main event. The Korean Food Promotion Institute describes everyday Korean meals around bap, or cooked rice, and the dishes eaten alongside it.\n\nTry a little rice, then a bite of kimchi, then some greens. Notice how the same rice feels different with something crisp, soft, sour or savory. You can return to a favorite without working clockwise around the table. Think of the meal as several tastes you can move between.\n\nSmall plates do not mean small effort. One vegetable might be blanched and seasoned; another ingredient might be braised or grilled. Fermentation matters in Korean cooking, but banchan is not another word for fermented food. Nor is there one correct lineup: the kitchen, season and kind of meal all matter.\n\nHere is a quieter surprise: today's shared table is not an unchanged ancient rule. The National Folk Museum of Korea describes how individual dining tables used by men in wealthy households gave way to more communal arrangements as homes and urban life changed. Something that feels timeless can have a history of adaptation.\n\nWhen eating with others, notice which dishes are shared and which bowls belong to each person. Some meals arrive on individual trays, so take your cue from the actual table rather than a drama scene.\n\nIf the kimchi disappears first, try 김치 조금 더 주실 수 있나요? It means ‘May I have a bit more kimchi?’ Ask staff what can be refilled and follow the restaurant's guidance, rather than assuming every plate is unlimited. A small request also makes it easier to finish what you ask for.\n\nThe nicest discovery may be a dish whose name you did not know before sitting down. Let one small plate slow you down enough to notice it. Which side dish would you happily build a whole meal around?"
+},
+{
  id:'first-snow-seoul',title:'Why the first snow in Korea feels like more than snow',category:'Culture',published:'2026-11-21',photo:'assets/photos/first-snow.webp',photoAlt:'An illustrated winter evening in a Seoul hanok neighborhood',photoContext:'AI editorial illustration, not a photograph of the 2026 snowfall.',excerpt:'Seoul saw its first snow unusually early this November. But why does a handful of snowflakes make so many Koreans think about someone they love?',phrase:'첫눈이 왔어요.',question:'Who would you want to see the first snow with?',figures:[pic('palace.jpg','Traditional palace architecture in Seoul','Seoul’s historic architecture, a different view of the city in every season.',3),pic('seoul-coffee.jpg','A cup of coffee','A warm café is an excellent place to pause on a winter walk.',9)],sources:[source('The Korea Herald: Seoul’s first snow in November 2026','https://www.koreaherald.com/article/10929584'),source('Korea.net: First snow in Seoul','https://www.korea.net/NewsFocus/Society/view?articleId=206229'),source('Visit Korea: Winter snacks','https://english.visitkorea.or.kr/svc/contents/contentsView.do?menuSn=219&vcontsId=1595642')],expressions:[
  expression('첫눈이 왔어요.','cheonnuni wasseoyo','The first snow has fallen.','서울에 첫눈이 왔어요.','The first snow has fallen in Seoul.'),
  expression('눈이 와요.','nuni wayo','It is snowing.','밖에 눈이 와요.','It is snowing outside.'),

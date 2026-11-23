@@ -7,7 +7,7 @@ const stories=issues.map(({body,...issue})=>{
  for(const block of body.trim().split(/\n\n+/)){if(block.startsWith('## '))headings.push({before:paragraphs.length,title:block.slice(3)});else paragraphs.push(block);}
  const prev=old.find(s=>s.id===issue.id)||{};
  const words=paragraphs.join(' ').split(/\s+/).length+issue.expressions.map(e=>Object.values(e).join(' ')).join(' ').split(/\s+/).length;
- return {...prev,...issue,photoContext:issue.photoContext||(prev.photoContext===true?'Context photograph; not necessarily the specific place or event described.':typeof prev.photoContext==='string'?prev.photoContext:''),author:prev.author||'Korea 101 by Sori',status:'published',updated:'2026-11-21',minutes:Math.max(5,Math.ceil(words/165)),paragraphs,headings,figures:issue.figures.map(f=>({...f,after:Math.min(f.after,paragraphs.length-1)})),wordCount:words};
+ return {...prev,...issue,photoContext:issue.photoContext||(prev.photoContext===true?'Context photograph; not necessarily the specific place or event described.':typeof prev.photoContext==='string'?prev.photoContext:''),author:prev.author||'Korea 101 by Sori',status:'published',updated:issue.updated||issue.published,minutes:Math.max(1,Math.ceil(words/165)),paragraphs,headings,figures:issue.figures.map(f=>({...f,after:Math.min(f.after,paragraphs.length-1)})),wordCount:words};
 });
 fs.writeFileSync(path.join(root,'data/stories.json'),JSON.stringify(stories,null,2)+'\n');
 fs.writeFileSync(path.join(root,'data/original-issues.json'),JSON.stringify(originals,null,2)+'\n');
