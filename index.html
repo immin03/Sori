@@ -4,7 +4,7 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <title>Sori · Korean language & life in Korea</title>
-<meta name="sori-release" content="2026-11-23-study-atlas">
+<meta name="sori-release" content="2026-11-23-speak-map">
 
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" href="/assets/icons/sori-mark.svg" type="image/svg+xml">
@@ -15,7 +15,7 @@
 <meta name="apple-mobile-web-app-title" content="Sori">
 
 <!-- PWA Manifest -->
-<link rel="manifest" href="/manifest.webmanifest?v=mark2">
+<link rel="manifest" href="/manifest.webmanifest?v=atlas2">
 
 <script defer src="/js/install.js?v=mobile2"></script>
 <script src="js/config.js?v=20261119r6"></script>
@@ -297,9 +297,9 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 <link rel="stylesheet" href="css/sori-v1.css?v=20261121polish"><link rel="stylesheet" href="assets/vendor/leaflet/leaflet.css?v=1.9.4"><link rel="stylesheet" href="css/sori-map.css?v=20261121polish"><link rel="stylesheet" href="css/sori-learning.css?v=20261121polish"><link rel="stylesheet" href="css/sori-stories.css?v=20261121polish">
 <link rel="stylesheet" href="css/sori-speaking.css?v=20261121polish">
 <link rel="stylesheet" href="css/sori-travel.css?v=20261121polish">
-<link rel="stylesheet" href="css/sori-focus.css?v=study1">
-<link rel="stylesheet" href="/css/sori-beta.css?v=study1">
-<link rel="stylesheet" href="/css/sori-mobile.css?v=mobile3"><link rel="stylesheet" href="/css/sori-study.css?v=study1">
+<link rel="stylesheet" href="css/sori-focus.css?v=atlas2">
+<link rel="stylesheet" href="/css/sori-beta.css?v=atlas2">
+<link rel="stylesheet" href="/css/sori-mobile.css?v=mobile3"><link rel="stylesheet" href="/css/sori-study.css?v=atlas2">
 </head>
 <body>
 <header class="header">
@@ -318,7 +318,7 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
   <img src="/apple-touch-icon.png" width="34" height="34" alt=""><button type="button" data-install>Add Sori to home screen</button><button type="button" data-install-later aria-label="Remind me later">×</button>
 </aside>
 <main id="homeView" class="sori-home speak-first">
-  <h1 class="section-page-title" id="homeTitle">Vocabulary</h1>
+  <header class="speak-welcome"><h1 class="section-page-title" id="homeTitle">Vocabulary</h1><span class="sori-bubble-pair" aria-hidden="true"><span class="sori-bubble-pair__friend"><span class="sori-bubble-pair__face"></span></span><span class="sori-bubble-pair__friend"><span class="sori-bubble-pair__face"></span></span></span></header>
   <div id="attendancePanel"></div>
   <div id="journeyPanel"></div>
   <section data-speak-panel="vocabulary" id="dailyVocabulary" aria-label="Daily vocabulary"></section>
@@ -529,8 +529,8 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 </aside>
 
 <!-- data sources -->
-<script defer src="data/daily.js?v=study1"></script>
-<script defer src="data/travel.js?v=study1"></script>
+<script defer src="data/daily.js?v=atlas2"></script>
+<script defer src="data/travel.js?v=atlas2"></script>
 <script defer src="data/drama.js?v=20251017"></script>
 <script defer src="data/trendy.js?v=20261123levels"></script>
 <script defer src="data/numbers.js?v=20261123levels"></script>
@@ -545,8 +545,8 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 <script defer src="js/tts.js?v=20261123relaunch"></script>
 <script defer src="js/app.js?v=20261123restore"></script><script defer src="js/practice.js?v=20261121nav"></script>
 <script defer src="js/sections.js?v=20261123restore"></script><script type="module" src="js/sidebar.js?v=mobile2"></script>
-<script defer src="assets/vendor/leaflet/leaflet.js?v=1.9.4"></script><script type="module" src="js/guide/ui.js?v=study1"></script><script type="module" src="js/learning/ui.js?v=study1"></script><script type="module" src="js/stories/ui.js?v=study1"></script>
-<script type="module" src="js/quiz.js?v=study1"></script>
+<script defer src="assets/vendor/leaflet/leaflet.js?v=1.9.4"></script><script type="module" src="js/guide/ui.js?v=atlas2"></script><script type="module" src="js/learning/ui.js?v=atlas2"></script><script type="module" src="js/stories/ui.js?v=atlas2"></script>
+<script type="module" src="js/quiz.js?v=atlas2"></script>
 
 
 <script>

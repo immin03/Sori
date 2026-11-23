@@ -18,7 +18,7 @@ stories.sort((a,b)=>b.published.localeCompare(a.published));
 fs.writeFileSync(path.join(root,'data/stories.json'),JSON.stringify(stories,null,2)+'\n');
 fs.writeFileSync(path.join(root,'data/original-issues.json'),JSON.stringify(originals,null,2)+'\n');
 // Retired articles must not be readable via previously shared static links.
-const retired=['matjip-secret','seongsu-old-and-new','hongdae-street-stage','small-bow-korean-hello','one-coffee-in-korean','seoul-cafe-table','tteokguk-seollal','busan-two-kinds-of-day','airport-first-journey'];
+const retired=['banchan-little-plates','bibimbap-last-step','noraebang-first-duet','kdrama-one-syllable','matjip-secret','seongsu-old-and-new','hongdae-street-stage','small-bow-korean-hello','one-coffee-in-korean','seoul-cafe-table','tteokguk-seollal','busan-two-kinds-of-day','airport-first-journey'];
 for(const id of retired.filter(id=>!stories.some(s=>s.id===id))){
  const dir=path.join(root,'stories',id);fs.mkdirSync(dir,{recursive:true});
  fs.writeFileSync(path.join(dir,'index.html'),'<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="robots" content="noindex"><meta http-equiv="refresh" content="0;url=/#read"><title>Korea 101 by Sori</title></head><body><a href="/#read">Browse Korea 101</a><script>location.replace("/#read");</script></body></html>\n');

@@ -104,7 +104,7 @@ function readRoute() {
  }
 }
 try {
- const response=await fetch('data/stories.json?v=study1');stories=(await response.json()).filter(s=>s.status==='published');
+ const response=await fetch('data/stories.json?v=atlas2');stories=(await response.json()).filter(s=>s.status==='published');
  actor=local.get('sori:story-actor');if(!/^[A-Za-z0-9_-]{43}$/.test(actor||'')){actor=random();local.set('sori:story-actor',actor);}
  preview();feed();readRoute();
  call('newsletter/status').then(data=>{mailEnabled=data.emailEnabled;if(mailEnabled){const button=root.querySelector('#nativeSubscribe>button');if(button)button.textContent='Subscribe for free';const note=root.querySelector('#nativeSubscribe .small-note');if(note)note.textContent='Confirm the email we send before delivery begins.';}}).catch(()=>{});

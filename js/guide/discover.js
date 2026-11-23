@@ -104,7 +104,7 @@ function card(p,saved){
    <div class="place-picture"><img src="${photo.src}" alt="${esc(photo.label)}" loading="lazy" width="480" height="300">
      <span class="place-photo-label">${esc(photo.kind)}</span><button class="place-bookmark" type="button" data-save-place="${p.id}" aria-label="Save ${esc(p.name)}" aria-pressed="${selected}">${icon('bookmark')}</button></div>
    <div class="place-info"><span class="place-area">${icon('pin')} ${esc(p.area)}</span><h3>${esc(p.name)}</h3><span lang="ko">${esc(p.ko)}</span>
-   ${p.startsOn?seasonDates(p):''}<details><summary>Place details</summary><p>${esc(p.detail)}</p><p>${esc(p.visit)}</p>
+   ${p.startsOn?seasonDates(p):''}<p class="place-signature">${esc(p.detail)}</p><details><summary>Plan a visit</summary><p>${esc(p.visit)}</p>
      <p><strong>Budget</strong> ${esc(p.budget)}${/^₩\d/.test(p.budget)?' / person, estimate':''}</p><p><strong>Address</strong> ${esc(p.address)}</p>
      <nav class="place-actions" aria-label="Maps and links for ${esc(p.name)}">
        <a href="${esc(directions(p))}" target="_blank" rel="noopener noreferrer">${icon('train')} Transit directions</a>
@@ -139,7 +139,7 @@ export function discoverMarkup(hash){
  const typeTiles=types.map(t=>`<a href="#discover=${category}&amp;type=${encodeURIComponent(t)}" ${t===selected?'aria-current="page"':''}>${esc(t)} <span>${options.filter(p=>p.type===t).length}</span></a>`).join('');
  return `<header class="city-intro photo-heading"><img src="assets/photos/${cover}" alt="" width="700" height="320"><h1>${esc(title)}</h1></header>
  ${category==='all'?`<nav class="discover-tiles" aria-label="Explore by category">${tiles}</nav>`:`<a class="discover-back" href="#discover">‹ All places</a><details class="discover-types" ${selected?'':'open'}><summary>${selected?esc(selected):'Browse by type'}</summary><nav aria-label="Place types"><a href="#discover=${category}">All ${options.length} places</a>${typeTiles}</nav></details>`}
- <div class="place-toolbar"><details><summary>${icon('sliders')} Filters</summary>
+ <details class="neighborhood-picker"><summary>Choose a neighborhood on the map</summary><div class="atlas-map" aria-label="Seoul neighborhood map"></div><div class="atlas-actions"><button type="button" data-nearby>Use my location</button><button type="button" data-clear-area>All neighborhoods</button></div><p role="status" data-map-status>Select a neighborhood pin to see its places.</p></details><div class="place-toolbar"><details><summary>${icon('sliders')} Filters</summary>
    <div class="discover-filter" data-discover-category="${category}"><label>Search<input type="search" class="learn-search" id="discoverSearch" placeholder="Place or neighborhood"></label>
    <label>Type<select id="discoverType"><option value="">All types</option>${types.map(t=>`<option ${t===selected?'selected':''}>${esc(t)}</option>`).join('')}</select></label>
    <label>Neighborhood<select id="discoverArea"><option value="">All neighborhoods</option>${[...new Set(options.map(p=>p.area))].sort().map(a=>`<option>${esc(a)}</option>`).join('')}</select></label></div></details>

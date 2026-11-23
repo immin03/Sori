@@ -68,7 +68,7 @@ export function mountSpokenTurn(root,env,{cue,answer,alternatives=[],start=false
     if (disposed) return;
     if(root.setAttribute)root.setAttribute('data-answer-state',kind);
     if(modelLine && ['correct','retry'].includes(kind))paintSpokenLine(modelLine,answer,heard||'',kind);
-    if(turnSignal){root.dataset.turnPhase=kind;status.textContent=({correct:'Correct!',retry:'Try again',unavailable:'Word check unavailable. Try again or type your reply.'})[kind]||'';}
+    if(turnSignal){root.dataset.turnPhase=kind;status.textContent='';}
     onVerdict?.(kind,heard);
   }
   voice=attachVoiceReply(mic,env,answer,alternatives,answerResult,{

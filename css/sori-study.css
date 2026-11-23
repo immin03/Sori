@@ -43,3 +43,61 @@
 .place-photo-label{position:absolute;bottom:5px;left:6px;padding:3px 7px;border-radius:20px;color:white;background:#261b19c9;font:600 .68rem/1.2 sans-serif}
 .season-dates{color:#8b3228;font-weight:650;font-size:.78rem}.discover-more{display:block;margin:18px auto;padding:11px 18px;border:1px solid #b75d50;background:white;color:#873425;border-radius:10px;font-weight:650}
 @media(max-width:540px){.discover-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* Two speech bubbles sharing a greeting. The illustration scales with its host. */
+.sori-bubble-pair {
+  display:inline-block;
+  position:relative;
+  isolation:isolate;
+  width:5.5em;
+  height:3.75em;
+  flex:none;
+  vertical-align:middle;
+  pointer-events:none;
+}
+.sori-bubble-pair__friend {
+  position:absolute;
+  display:block;
+  box-sizing:border-box;
+  border:2px solid #84382d;
+  border-radius:52% 50% 48% 46%;
+  background:var(--sori-bubble-fill);
+}
+.sori-bubble-pair__friend:first-child {
+  --sori-bubble-fill:#ffead8; --sori-bubble-ink:#72382d;
+  width:57%;height:64%;top:5%;left:2%;
+  transform:rotate(-9deg);
+}
+.sori-bubble-pair__friend:last-child {
+  --sori-bubble-fill:#af4639; --sori-bubble-ink:#fff5eb;
+  width:54%;height:61%;bottom:12%;right:2%;
+  transform:rotate(7deg);
+}
+.sori-bubble-pair__friend::after {
+  content:"";position:absolute;
+  width:18%;height:20%;bottom:-9%;left:20%;
+  background:var(--sori-bubble-fill);
+  border-left:2px solid #84382d;border-bottom:2px solid #84382d;
+  border-radius:0 0 0 2px;transform:skew(-14deg,-20deg);
+}
+.sori-bubble-pair__friend:last-child::after {left:65%;transform:scaleX(-1) skew(-14deg,-20deg)}
+.sori-bubble-pair__face {
+  display:block;position:absolute;left:25%;right:25%;top:32%;height:36%;
+  color:var(--sori-bubble-ink);
+  background:radial-gradient(ellipse at center,currentColor 56%,transparent 64%) left top / 20% 49% no-repeat,
+             radial-gradient(ellipse at center,currentColor 56%,transparent 64%) right top / 20% 49% no-repeat;
+}
+.sori-bubble-pair__face::after {
+  content:"";position:absolute;left:34%;bottom:3%;width:32%;height:31%;
+  border:1.6px solid currentColor;border-top:0;border-radius:0 0 50% 50%;
+}
+.sori-bubble-pair__friend:last-child .sori-bubble-pair__face::after {
+  background:currentColor;border:0;border-radius:45% 45% 55% 55%;height:40%;width:23%;left:38%;
+}
+.speak-welcome{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 16px;margin:12px 0;border-radius:20px;background:#fff3e9}.speak-welcome h1{margin:0;padding:0}.speak-welcome .sori-bubble-pair{font-size:14px}
+#practiceSession .syllable-match,.focus-exercise .syllable-match,.vocab-spoken{color:#853426!important;background:transparent}
+.focus-exercise .spoken-turn .vocab-mic .record-action,.focus-exercise .spoken-turn .vocab-mic .record-action:active{box-shadow:none!important;transform:none!important;position:static;margin:0;min-height:46px}
+.spoken-turn .turn-audio-state:empty{display:none}.focus-exercise .spoken-turn[data-answer-state=correct] .record-action{background:white!important;color:#843b30!important;border-color:#d8bcb1!important}
+.speak-first .scene-choice:nth-child(3n+1) .tile-icon{background:#fee3d4}.speak-first .scene-choice:nth-child(3n+2) .tile-icon{background:#ffeac7}
+html{background:#a43d2d;color-scheme:light}body{background:white;min-height:100vh;min-height:100dvh}
+.neighborhood-picker{margin:14px 0;border:1px solid #dfc7bd;border-radius:12px;padding:10px}.neighborhood-picker summary{cursor:pointer;font-weight:700;padding:5px}.atlas-map{height:clamp(235px,34vh,335px);margin-top:8px;isolation:isolate}.atlas-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.atlas-actions button{min-height:42px;background:#fff6f0;color:#833526;border:1px solid #e2c5b9;border-radius:10px;padding:7px 12px}.place-signature{line-height:1.45;font-size:.87rem;margin:.5rem 0}
+.district-dot{display:grid;place-items:center}.district-dot i{width:12px;height:12px;border:2px solid white;background:#9a3c2c;box-shadow:0 1px 4px #58352a99;border-radius:100%}.district-dot:focus i,.district-dot:hover i{background:#51261c;transform:scale(1.3)}

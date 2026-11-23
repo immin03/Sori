@@ -10,7 +10,7 @@ An unattended writer can use the same connected GitHub source operations verifie
 
 ## Editorial format
 
-Write one original English story, approximately 250–450 words, with a strong opening, a specific Korean custom or everyday moment, useful context and a warm question. Use short paragraphs and plain words. Address curious international readers. Avoid stereotypes, treating a habit as universal, invented first-person experiences, fabricated Minwoo quotes and promotional filler. No em dashes. Maintain the voice of Korea 101 by Sori.
+Write one original English story, 900–1,100 words of article body, at least five minutes of reading, with a strong opening, a specific Korean custom or everyday moment, useful context and a warm question. Use short paragraphs and plain words. Address curious international readers. Avoid stereotypes, treating a habit as universal, invented first-person experiences, fabricated Minwoo quotes and promotional filler. No em dashes. Maintain the voice of Korea 101 by Sori.
 
 Rotate culture, food, language, everyday life, current Korean cultural topics and practical travel. Avoid repeating the most recent topics. Prefer 1–3 primary sources, verify changing facts and dates, and preserve exact source URLs. No live prices, schedules, opening hours or legal/health advice without verification. Respect source quotation limits; write original explanations.
 
