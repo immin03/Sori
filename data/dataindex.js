@@ -34,7 +34,7 @@
       var sub = pick(x, ["sub","subCategory","subcategory","section","group"]) || null;
 
       var id = x.id || (cat + ":" + (k || "") + "|" + (e || ""));
-      out.push({ id:id, k:k, e:e, p:p, t:t, c:c, sub:sub });
+      out.push({ id:id, k:k, e:e, p:p, t:t, c:c, sub:sub, level:x.level || null });
     }
     return out;
   }

@@ -4,9 +4,9 @@ import {mountSpokenTurn,spokenTurnControls} from './spoken-turn.js?v=20261123rel
 import {DailyVocabulary} from './vocabulary.js?v=20261121library';
 import {vocabularyCard,mountVocabulary} from './vocabulary-ui.js?v=20261123restore';
 import {showVocabularyLibrary} from './vocabulary-library.js?v=20261123restore';
-import {mountPhraseSearch} from './phrase-search.js?v=20261123restore';
+import {mountPhraseSearch} from './phrase-search.js?v=20261123levels';
 import {sharePublic} from '../share-public.js?v=20261121trip';
-import {situationGroups,matchingLevel,levelNames} from './categories.js?v=20261123restore';
+import {situationGroups,matchingLevel,levelNames} from './categories.js?v=20261123levels';
 import {difficultyControl} from './vocabulary-library.js?v=20261123restore';
 
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

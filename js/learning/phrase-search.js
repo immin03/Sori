@@ -1,4 +1,4 @@
-import {situationGroups,matchingLevel,levelNames} from './categories.js?v=20261123restore';
+import {situationGroups,matchingLevel,levelNames} from './categories.js?v=20261123levels';
 const batch = 16;
 const opening = ['안녕하세요.','만나서 반가워요.','아메리카노 한 잔, 주세요.','얼마예요?','두 명이에요.','지하철역이 어디예요?','도와주셔서 감사합니다.','포장할게요.'];
 

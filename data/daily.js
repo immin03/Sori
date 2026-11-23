@@ -126,6 +126,30 @@
     {t:'Exercise',c:'PT session',k:'피티 예약할 수 있어요?',e:'Can I book a PT session?',p:'piti yeyakhal su isseoyo',sub:'Exercise'},
     {t:'Exercise',c:'Locker',k:'락커 사용 가능해요?',e:'Can I use a locker?',p:'rakkeo sayong ganeunghaeyo',sub:'Exercise'},
     {t:'Exercise',c:'Class time',k:'수업 시간표 볼 수 있어요?',e:'Can I see the class schedule?',p:'sueop siganpyo bol su isseoyo',sub:'Exercise'},
-    {t:'Exercise',c:'Shower items',k:'샴푸랑 타월 있어요?',e:'Do you have shampoo and towels?',p:'syampurang tawol isseoyo',sub:'Exercise'}
+    {t:'Exercise',c:'Shower items',k:'샴푸랑 타월 있어요?',e:'Do you have shampoo and towels?',p:'syampurang tawol isseoyo',sub:'Exercise'},
+
+    // Longer, advanced real-life expressions
+    {"t": "Greeting", "c": "Reconnect", "k": "오랜만에 뵙는데 그동안 잘 지내셨어요?", "e": "It has been a while. How have you been?", "p": "oraenmane boemneunde geudongan jal jinaesyeosseoyo?", "sub": "Greeting", "level": "nuance"},
+    {"t": "Greeting", "c": "Introduce yourself", "k": "직접 인사드릴 기회가 생겨서 정말 기뻐요.", "e": "I am really glad I have the opportunity to greet you in person.", "p": "jikjeop insadeuril gihoega saenggyeoseo jeongmal gippeoyo.", "sub": "Greeting", "level": "nuance"},
+    {"t": "Social", "c": "Make plans", "k": "이번 주말에 시간이 괜찮으시면 같이 저녁 드실래요?", "e": "If you are free this weekend, would you like to have dinner together?", "p": "ibeon jumare sigani gwaenchaneusimyeon gachi jeonyeok deusillaeyo?", "sub": "Social", "level": "nuance"},
+    {"t": "Social", "c": "Keep in touch", "k": "다음에 한국에 오시게 되면 꼭 연락 주세요.", "e": "Please get in touch if you come to Korea again.", "p": "daeume hanguge osige doemyeon kkok yeollak juseyo.", "sub": "Social", "level": "nuance"},
+    {"t": "Love", "c": "Express appreciation", "k": "힘들 때마다 곁에 있어 줘서 정말 고마워요.", "e": "Thank you so much for being by my side whenever things are difficult.", "p": "himdeul ttaemada gyeote isseo jwoseo jeongmal gomawoyo.", "sub": "Love", "level": "nuance"},
+    {"t": "Love", "c": "Reassurance", "k": "서로의 마음을 이해하려고 노력하는 게 중요해요.", "e": "It is important to try to understand each other’s feelings.", "p": "seoroui maeumeul ihaeharyeogo noryeokhaneun ge jungyohaeyo.", "sub": "Love", "level": "nuance"},
+    {"t": "Cafe", "c": "Ask for a recommendation", "k": "커피가 너무 쓰지 않은 걸로 추천해 주실 수 있을까요?", "e": "Could you recommend a coffee that is not too bitter?", "p": "keopiga neomu sseuji aneun geollo chucheonhae jusil su isseulkkayo?", "sub": "Cafe", "level": "nuance"},
+    {"t": "Cafe", "c": "Request customization", "k": "우유 대신 두유로 바꾸고 시럽은 빼 주시겠어요?", "e": "Could you switch the milk to soy milk and leave out the syrup?", "p": "uyu daesin duyuro bakkugo sireobeun ppae jusigesseoyo?", "sub": "Cafe", "level": "nuance"},
+    {"t": "Restaurant", "c": "Dietary question", "k": "혹시 이 음식에 고기나 해산물 육수가 들어가나요?", "e": "Does this dish contain meat or seafood stock by any chance?", "p": "hoksi i eumsige gogina haesanmul yuksuga deureoganayo?", "sub": "Restaurant", "level": "nuance"},
+    {"t": "Restaurant", "c": "Reservation change", "k": "예약한 시간보다 조금 늦을 것 같은데 괜찮을까요?", "e": "I think I will be a little later than my reservation. Would that be okay?", "p": "yeyakhan siganboda jogeum neujeul geot gateunde gwaenchaneulkkayo?", "sub": "Restaurant", "level": "nuance"},
+    {"t": "Shopping", "c": "Return conditions", "k": "구매한 뒤에 사이즈가 맞지 않으면 교환할 수 있나요?", "e": "Can I exchange it after purchase if the size does not fit?", "p": "gumaehan dwie saijeuga matji aneumyeon gyohwanhal su innayo?", "sub": "Shopping", "level": "nuance"},
+    {"t": "Shopping", "c": "Compare products", "k": "두 제품의 차이점을 조금 더 자세히 설명해 주실래요?", "e": "Could you explain the difference between the two products in more detail?", "p": "du jepumui chaijeomeul jogeum deo jasehi seolmyeonghae jusillaeyo?", "sub": "Shopping", "level": "nuance"},
+    {"t": "Health", "c": "Explain symptoms", "k": "어제부터 목이 아프고 열도 조금 나는 것 같아요.", "e": "I have had a sore throat since yesterday and think I have a slight fever.", "p": "eojebuteo mogi apeugo yeoldo jogeum naneun geot gatayo.", "sub": "Health", "level": "nuance"},
+    {"t": "Health", "c": "Ask for instructions", "k": "복용하기 전에 주의해야 할 점이 있는지 알려 주세요.", "e": "Please tell me if there is anything I should be aware of before taking it.", "p": "bogyonghagi jeone juuihaeya hal jeomi inneunji allyeo juseyo.", "sub": "Health", "level": "nuance"},
+    {"t": "Work", "c": "Reschedule a meeting", "k": "다른 일정과 겹쳐서 회의 시간을 조정할 수 있을까요?", "e": "Could we reschedule the meeting because it overlaps with another appointment?", "p": "dareun iljeonggwa gyeopchyeoseo hoeui siganeul jojeonghal su isseulkkayo?", "sub": "Work", "level": "nuance"},
+    {"t": "Work", "c": "Clarify feedback", "k": "말씀하신 내용을 반영해서 수정본을 다시 보내 드리겠습니다.", "e": "I will incorporate your feedback and send the revised version again.", "p": "malsseumhasin naeyongeul banyeonghaeseo sujeongboneul dasi bonae deurigetseumnida.", "sub": "Work", "level": "nuance"},
+    {"t": "Tech", "c": "Connection issue", "k": "와이파이에 연결은 되는데 인터넷이 자꾸 끊겨요.", "e": "I can connect to Wi-Fi, but the internet keeps disconnecting.", "p": "waipaie yeongyeoreun doeneunde inteonesi jakku kkeun-gyeoyo.", "sub": "Tech", "level": "nuance"},
+    {"t": "Tech", "c": "Account help", "k": "비밀번호를 재설정하려고 하는데 인증 문자가 안 와요.", "e": "I am trying to reset my password, but the verification text is not arriving.", "p": "bimilbeonhoreul jaeseoljeongharyeogo haneunde injeung munjaga an wayo.", "sub": "Tech", "level": "nuance"},
+    {"t": "Exercise", "c": "Adjust intensity", "k": "운동을 시작한 지 얼마 안 돼서 강도를 조금 낮추고 싶어요.", "e": "I only recently started exercising, so I would like to lower the intensity a little.", "p": "undongeul sijakhan ji eolma an dwaeseo gangdoreul jogeum natchugo sipeoyo.", "sub": "Exercise", "level": "nuance"},
+    {"t": "Exercise", "c": "Ask about technique", "k": "이 동작을 할 때 허리에 부담이 가지 않도록 자세를 봐 주세요.", "e": "Please check my form so this movement does not strain my lower back.", "p": "i dongjageul hal ttae heorie budami gaji antorok jasereul bwa juseyo.", "sub": "Exercise", "level": "nuance"},
+    {"t": "Work", "c": "At work", "k": "회의가 있어요.", "e": "I have a meeting.", "p": "hoe uiga isseoyo.", "sub": "Work", "level": "essentials"},
+    {"t": "Tech", "c": "Battery", "k": "배터리가 없어요.", "e": "My battery is dead.", "p": "baeteoriga eopseoyo.", "sub": "Tech", "level": "essentials"},
   ];
 })();
