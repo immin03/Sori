@@ -11,13 +11,32 @@ async function api(path,body,user=current){
 function show(){if(!dialog.open)dialog.showModal();}
 function hide(){screen++;dialog.close();}
 function later(){try{sessionStorage.setItem('sori:asked:'+current?.uid,'1');}catch{}hide();}
+let dictation=null;
+function stopDictation(){if(dictation){dictation.abort();dictation=null;}}
+function offerDictation(form){
+ const Recognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+ if(!Recognition)return;
+ const field=form.elements.idea,button=document.createElement('button');
+ button.type='button';button.className='text-button';button.textContent='Dictate an idea';
+ field.parentElement.after(button);
+ button.onclick=()=>{
+  if(dictation){dictation.stop();return;}
+  const recognizer=new Recognition(),status=form.querySelector('[role=status]');
+  recognizer.lang=navigator.language||'en-US';recognizer.interimResults=false;
+  recognizer.onstart=()=>{button.textContent='Stop dictation';status.textContent='Listening. You can edit your words before sending.';};
+  recognizer.onresult=e=>{if(dictation!==recognizer)return;const line=e.results[0]?.[0]?.transcript||'';field.value=[field.value.trim(),line.trim()].filter(Boolean).join(' ').slice(0,600);status.textContent='Review your idea before sending.';};
+  recognizer.onerror=()=>{if(dictation===recognizer)status.textContent='Dictation could not finish. You can type your idea.';};
+  recognizer.onend=()=>{if(dictation===recognizer)dictation=null;button.textContent='Dictate an idea';};
+  dictation=recognizer;try{recognizer.start();}catch{dictation=null;status.textContent='Dictation is unavailable. You can type your idea.';}
+ };
+}
 function survey(){
  screen++;
  const f=profile?.feedback||{};
  content.innerHTML='<h2 id="betaTitle">Help shape Sori</h2><p>Which parts of Korean life brought you here? Share as much or as little as you like.</p><form id="betaSurvey"><label>What would you like to do with Sori?<textarea name="goal" maxlength="600" placeholder="Talk to my partner’s family…">'+esc(f.goal)+'</textarea></label><label>What information would help you most?<textarea name="information" maxlength="600" placeholder="How to order at a neighborhood restaurant…">'+esc(f.information)+'</textarea></label><fieldset><legend>What should we build next?</legend>'+features.map(x=>'<label class="feature-option"><input type="checkbox" name="feature" value="'+x+'" '+(f.features?.includes(x)?'checked':'')+'>'+x+'</label>').join('')+'</fieldset><label>Another idea or request<textarea name="idea" maxlength="600">'+esc(f.idea)+'</textarea></label><small>Optional. Your answers are shared privately with the Sori team.</small><p role="status"></p><button class="sori-primary">Send feedback</button> <button class="text-button" type="button" data-later>Maybe later</button></form>';
- show();content.querySelector('[data-later]').onclick=later;
+ show();offerDictation(content.querySelector('form'));content.querySelector('[data-later]').onclick=later;
  content.querySelector('form').onsubmit=async e=>{
-  e.preventDefault();const form=e.target,button=form.querySelector('button'),status=form.querySelector('[role=status]');
+  e.preventDefault();stopDictation();const form=e.target,button=form.querySelector('.sori-primary'),status=form.querySelector('[role=status]');
   const data=new FormData(form),user=current;
   const values={goal:data.get('goal'),information:data.get('information'),idea:data.get('idea'),features:data.getAll('feature')};
   if(!values.features.length && ![values.goal,values.information,values.idea].some(x=>x.trim())){status.textContent='Choose one feature or write a few words.';return;}
@@ -46,7 +65,8 @@ function openFeedback(forAdmin=false){
 }
 function sync(){
  const user=window.SoriUser?.getCurrentUser()||null;
- if(current?.uid!==user?.uid){current=user;profile=null;updated=lastAttempt=0;refreshing=null;screen++;if(dialog.open && location.hash!=='#admin')hide();document.querySelector('[data-beta-admin]').hidden=true;}
+ if(current?.uid!==user?.uid){current=user;profile=null;updated=lastAttempt=0;refreshing=null;screen++;adminRows=[];cursor=null;stopDictation();
+  if(dialog.open){if(location.hash==='#admin' && current){content.innerHTML='<h2 id="betaTitle">Member dashboard</h2><p>Verifying access…</p>';}else hide();}document.querySelector('[data-beta-admin]').hidden=true;}
  if(!current||document.hidden||Date.now()-updated<5*60000||Date.now()-lastAttempt<30000||refreshing)return;
  const own=current;lastAttempt=Date.now();
  const task=api('/member/visit',{},own).then(r=>{
@@ -55,10 +75,10 @@ function sync(){
   let asked=false;try{asked=sessionStorage.getItem('sori:asked:'+own.uid);}catch{}
   if(location.hash==='#admin'){admin();return;}
   if(!r.answered&&!asked&&!dialog.open&&!document.body.classList.contains('focus-exercise')){survey();try{sessionStorage.setItem('sori:asked:'+own.uid,'1');}catch{}}
- }).catch(()=>{}).finally(()=>{if(refreshing===task)refreshing=null;});refreshing=task;
+ }).catch(()=>{if(own===current && location.hash==='#admin' && dialog.open){content.innerHTML='<h2 id="betaTitle">Member dashboard</h2><p>Could not verify your account. Please retry.</p><button class="sori-secondary">Retry</button>';content.querySelector('button').onclick=()=>admin();}}).finally(()=>{if(refreshing===task)refreshing=null;});refreshing=task;
 }
 dialog.querySelector('[data-beta-close]').onclick=later;
-dialog.addEventListener('close',()=>{screen++;content.replaceChildren();if(location.hash==='#admin')history.replaceState(null,'','#home');});
+dialog.addEventListener('close',()=>{stopDictation();screen++;content.replaceChildren();if(location.hash==='#admin')history.replaceState(null,'','#home');});
 document.querySelector('[data-beta-feedback]').onclick=()=>openFeedback();
 document.querySelector('[data-beta-admin]').onclick=()=>admin();
 window.addEventListener('sori-auth-changed',sync);window.addEventListener('firebaseReady',sync);
