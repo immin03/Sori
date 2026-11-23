@@ -1,4 +1,4 @@
-import {mountSpokenTurn,spokenTurnControls} from './learning/spoken-turn.js?v=20261121polish';
+import {mountSpokenTurn,spokenTurnControls} from './learning/spoken-turn.js?v=20261123relaunch';
 import {optionNames,spokenOption} from './learning/quiz-choice.js?v=20261121nav';
 /* Daily Quiz Functionality */
 (function() {

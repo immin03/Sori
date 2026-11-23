@@ -1,6 +1,6 @@
 import {paintTranscript} from './speech-highlight.js?v=20261121nav';
 import {checkOnDevice, supportsDeviceCheck} from './device-words.js?v=20261120s1';
-import {checkWords, listenForWords, playChime, prepareChime, speechService} from './word-check.js?v=20261121nav';
+import {checkWords, listenForWords, playChime, prepareChime, speechService} from './word-check.js?v=20261123relaunch';
 
 export function recorderControls({exercise = false} = {}) {
   return `<div class="reply-recorder${exercise ? ' vocab-mic' : ''}">

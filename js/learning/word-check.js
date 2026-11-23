@@ -81,7 +81,7 @@ export function prepareChime(env) {
 
 export function playChime(kind) {
   if (!audioContext || audioContext.state !== 'running') return;
-  const pitches = kind === 'correct' ? [523.25, 783.99] : [392, 329.63];
+  const pitches = kind === 'turn' ? [659.25] : kind === 'correct' ? [523.25, 783.99] : [392, 329.63];
   pitches.forEach((hz, i) => {
     const start = audioContext.currentTime + i * .115;
     const note = audioContext.createOscillator();

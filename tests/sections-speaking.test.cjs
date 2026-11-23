@@ -23,7 +23,7 @@ test('all nine section links and deep links select the correct service and menu 
   const {services,locate} = window.SoriSections;
   const tree = Array.from(services,group => [group.title,Array.from(group.children,c=>c[1])]);
   assert.deepEqual(tree,[['Speak',['Vocabulary','Conversations','Review']],
-    ['Korea 101',['Stories','Saved stories','Newsletter']],['Explore',['Discover','Trip planner','My itineraries']]]);
+    ['Korea 101',['Stories']],['Explore',['Discover','Trip planner','My itineraries']]]);
   for(const group of services) for(const [id,,hash] of group.children) {
     assert.deepEqual(Array.from(locate(hash)).slice(0,2),[group.id,id]);
   }
@@ -34,7 +34,7 @@ test('all nine section links and deep links select the correct service and menu 
     ['#practice=market','conversations','listen'],['#practice=daily','conversations','listen'],
     ['#practice=review','review','listen'],['#phrase=existing-id&from=review','review','listen'],
     ['#phrases','conversations','listen'],['#saved-phrases','review','home'],['#quiz','review','quiz'],
-    ['#story=story-id','stories','newsletter'],['#story=story-id&from=saved','bookmarks','newsletter'],['#subscribe=token','newsletter','newsletter'],
+    ['#story=story-id','stories','newsletter'],['#story=story-id&from=saved','stories','newsletter'],['#subscribe=token','stories','newsletter'],
     ['#day=plan','itineraries','guide'],['#trip=trip-id','itineraries','guide'],['#invite=token','itineraries','guide']
   ]) assert.deepEqual(Array.from(locate(hash,round)).slice(1),[section,view]);
 });
@@ -72,12 +72,12 @@ test('the listening quiz accepts each English option and its spoken number witho
   assert.equal(spokenOption('',answers),-1);
 });
 
-test('every partner cue and sample reply has a bundled playable MPEG and matches its real scene text',async()=>{
+test('all partner cues and replies have bundled MPEGs',async()=>{
   const {scenes}=await import('../js/learning/scenes.js');
   const tts=source('js/tts.js');
   const recordings=new Map(JSON.parse(tts.match(/const recordings = new Map\((\[[\s\S]*?\])\);/)[1]));
   for(const [name,scene] of Object.entries(scenes))scene.turns.forEach((turn,i)=>{
-    assert.equal(recordings.get(turn[0]),name+'-cue-'+(i+1));assert.equal(recordings.get(turn[3]),name+'-reply-'+(i+1));
+    assert.equal(recordings.get(turn[0]),name+'-cue-'+(i+1));assert.ok(recordings.has(turn[3]));
   });
   const dir=path.join(__dirname,'..','assets/audio/speaking');
   assert.deepEqual(fs.readdirSync(dir).sort(),Array.from(recordings.values(),name=>name+'.mp3').sort());

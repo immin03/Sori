@@ -282,3 +282,33 @@ body[data-service=speak]:not(.focus-exercise) #homeView { min-height:0; }
  .discover-tabs a { flex-basis:calc(50% - 6px); }
  .story-figure img { max-height:250px; }
 }
+
+/* Situation library and visual discovery cards */
+.conversation-intro {color:var(--muted);margin:0 0 24px}
+.conversation-group {margin:0 0 28px}
+.conversation-group h2 {font-size:1.05rem;margin:0 0 10px}
+.conversation-grid,.discover-card-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.conversation-card {display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:8px;background:white;border:1px solid var(--line);border-radius:16px;padding:16px;color:var(--ink);cursor:pointer}
+.conversation-card .scene-icon {font-size:1.6rem}
+.conversation-card strong {font-size:1rem;line-height:1.25}
+.conversation-card small {color:var(--muted);font-size:.78rem}
+.spoken-turn[data-turn-phase="ready"],.spoken-turn[data-turn-phase="speaking"] {background:#ecf8f0;border:2px solid #3b8b62;padding:12px;border-radius:16px}
+.spoken-turn[data-turn-phase="ready"] .turn-audio-state,.spoken-turn[data-turn-phase="speaking"] .turn-audio-state {font-weight:800;color:#206b49;font-size:1.05rem}
+.spoken-turn[data-turn-phase="correct"] {background:#ecf8f0;border-radius:16px;padding:12px}
+.spoken-turn[data-turn-phase="retry"] {background:#fff2ec;border-radius:16px;padding:12px}
+.discover-place {display:flex;flex-direction:column;padding:0;overflow:hidden;border-radius:16px;margin:0;background:white;gap:0}
+.discover-photo {position:relative;margin:0;aspect-ratio:16/9;overflow:hidden;background:var(--wash)}
+.discover-photo img {width:100%;height:100%;object-fit:cover;display:block}
+.discover-photo figcaption {position:absolute;right:8px;bottom:8px;background:#0009;color:white;font-size:.65rem;padding:4px 6px;border-radius:6px}
+.discover-place-content {padding:15px;flex:1}
+.discover-links {padding:0 15px 15px}
+.discover-more summary {cursor:pointer;color:var(--muted);font-size:.85rem}
+.native-subscribe details summary {cursor:pointer;font-weight:700;color:var(--sori)}
+body[data-service="read"] #sectionNav {display:none}
+@media(max-width:420px){.discover-card-grid{grid-template-columns:1fr}.conversation-card{padding:12px}}
+.story-comments {margin-top:24px;border-top:1px solid var(--line);padding-top:18px}
+.story-comments article {padding:12px 0;border-bottom:1px solid var(--line)}
+.story-comments article p {margin:4px 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.story-comments form {display:grid;gap:12px;margin-top:16px}
+.story-comments label {display:grid;gap:6px;font-size:.85rem;font-weight:600}
+.story-comments input,.story-comments textarea {width:100%;box-sizing:border-box;padding:10px;border:1px solid var(--line);border-radius:8px;font:inherit}
