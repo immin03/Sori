@@ -1,10 +1,11 @@
-import {Journey} from './journey.js?v=20261123beta';
+import {icon} from '../ui-icons.js';
+import {Journey} from './journey.js?v=mobile2';
 import {PracticeProgress} from './progress.js?v=20261123beta';
 import {scenes} from './scenes.js?v=20261123beta';
 import {mountSpokenTurn,spokenTurnControls} from './spoken-turn.js?v=20261123beta';
 import {DailyVocabulary} from './vocabulary.js?v=20261123beta';
-import {vocabularyCard,mountVocabulary} from './vocabulary-ui.js?v=20261123beta';
-import {showVocabularyLibrary} from './vocabulary-library.js?v=20261123beta';
+import {vocabularyCard,mountVocabulary} from './vocabulary-ui.js?v=mobile2';
+import {showVocabularyLibrary} from './vocabulary-library.js?v=mobile2';
 import {mountPhraseSearch} from './phrase-search.js?v=20261123levels';
 import {sharePublic} from '../share-public.js?v=20261121trip';
 import {situationGroups,matchingLevel,levelNames} from './categories.js?v=20261123levels';
@@ -13,7 +14,7 @@ const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;',
 const el = id => document.getElementById(id);
 let rows, byId, byKorean, progress, dailyWords, currentScope, voice, lessonVoice, phrasebook, lastVerdict;
 let journey;
-let sceneExpanded=false;
+let sceneExpanded=false, catalogue='places';
 let sceneGroup='All places';
 const legacyPlaces={cafe:'Café',restaurant:'Restaurant',social:'Meeting friends',shopping:'Shop',airport:'Airport',hotel:'Hotel',transport:'Station',help:'Visitor center',convenience:'Convenience store','street-food':'Food stall',market:'Market',department:'Department store'};
 let libraryGroup='daily', phraseScope=null;
@@ -40,27 +41,31 @@ function reviewRow(href,title,summary) {
 }
 function roleplayCards(){
  const entries=Object.entries(scenes).filter(([key,s])=>sceneGroup==='All places'||sceneGroup===(s.place||legacyPlaces[key]||s.role));
- const visible=sceneGroup==='All places'&&!sceneExpanded?entries.slice(0,6):entries;
- return visible.map(([key,s])=>`<button class="scene-choice" data-scene="${key}"><small>${esc(s.place||legacyPlaces[key]||s.role)}</small><strong>${esc(s.title)}</strong><small>${s.level?levelNames[s.level]+' · ':''}${s.turns.length} turns</small></button>`).join('')+(visible.length<entries.length?'<button class="scene-choice" data-more-scenes>Show all '+entries.length+' conversations</button>':'');
+ const visible=sceneGroup==='All places'&&!sceneExpanded?entries.slice(0,4):entries;
+ return visible.map(([key,s])=>{
+   const place=s.place||legacyPlaces[key]||s.role;
+   return `<button class="scene-choice" data-scene="${key}"><span class="tile-icon">${icon(place,'pin')}</span><strong>${esc(s.title)}</strong><small>${esc(place)} · ${s.level?levelNames[s.level]:s.turns.length+' turns'}</small></button>`;
+ }).join('')+(visible.length<entries.length?`<button class="browse-all" data-more-scenes>View all ${entries.length} conversations ${icon('arrow')}</button>`:'');
 }
-document.addEventListener('change',e=>{if(e.target.matches('[data-scene-group]')){sceneGroup=e.target.value;e.target.closest('details').querySelector('.roleplay-grid').innerHTML=roleplayCards();}});
+document.addEventListener('change',e=>{if(e.target.matches('[data-scene-group]')){sceneGroup=e.target.value;el('practiceDashboard').querySelector('.roleplay-grid').innerHTML=roleplayCards();}});
+document.addEventListener('change',e=>{if(e.target.matches('[data-topic-group]')){libraryGroup=e.target.value;paintHome();el('practiceDashboard').querySelector('[data-topic-group]').focus({preventScroll:true});}});
 function paintHome() {
   if(journey.data.level && journey.data.level!==dailyWords.difficulty())dailyWords.setDifficulty(journey.data.level);
   el('dailyVocabulary').innerHTML = vocabularyCard(dailyWords);
   el('journeyPanel').innerHTML=journey.markup();
-  const level='all', groups=situationGroups(window.SoriDataIndex);
+  const groups=situationGroups(window.SoriDataIndex);
   const selected=groups.find(g=>g.id===libraryGroup)||groups[0];
-  const sceneTopics={Greeting:'social',Social:'social',Cafe:'cafe',Restaurant:'restaurant',Shopping:'shopping',Airport:'airport',Hotel:'hotel',Transport:'transport',Emergency:'help',Convenience:'convenience','Street Food':'street-food',Market:'market',Department:'department'};
   const topicLink=(group,topic)=>'#phrases='+encodeURIComponent(group)+'&amp;topic='+encodeURIComponent(topic);
-  const paths={Greeting:'M4 5h16v11H9l-5 4zM8 9h8M8 12h5',Social:'M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm8-1a3 3 0 1 0 0-6M2 20v-2a6 6 0 0 1 12 0v2M17 14a5 5 0 0 1 5 5',Love:'M12 20 4 12a5 5 0 0 1 8-6 5 5 0 0 1 8 6z',Cafe:'M4 7h12v7a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5zM16 8h3a2 2 0 0 1 0 4h-3M3 22h16',Restaurant:'M5 3v8m4-8v8M7 11v10M18 3v18m0-18a5 5 0 0 0-5 5v3h5',Shopping:'M4 8h16l-1 13H5zM8 8V6a4 4 0 0 1 8 0v2',Health:'M9 3h6v6h6v6h-6v6H9v-6H3V9h6z',Work:'M3 7h18v13H3zM8 7V4h8v3M3 13h18M10 13v3h4v-3',Tech:'M3 4h18v12H3zM8 21h8M12 16v5',Exercise:'M3 9v6m4-9v12m10-12v12m4-9v6M7 12h10',Airport:'m2 12 20-8-7 18-3-7-7-3zM12 15 22 4',Hotel:'M3 5v16m18-10v10M3 16h18M3 9h7v7m0-4h11v4',Transport:'M4 4h16v14H4zM7 7h10M6 14h3m6 0h3M7 18l-2 3m12-3 2 3',Emergency:'M12 3 2 21h20zM12 9v5m0 3v1',Payment:'M3 5h18v14H3zM3 10h18M6 15h4',Sightseeing:'M12 22s7-8 7-14a7 7 0 0 0-14 0c0 6 7 14 7 14zm0-17a3 3 0 1 0 0 6 3 3 0 0 0 0-6'};
-  const icon=name=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${paths[name]||paths.Greeting}"/></svg>`;
-  el('practiceDashboard').innerHTML=`<div class="learning-intro"><h2>Learn Korean for real life</h2><p>${rows.length} expressions across ${groups.reduce((n,g)=>n+g.topics.length,0)} situations. Choose a topic and learn at your own pace.</p></div>
-    <details class="scene-catalog" open><summary>Role-play by place · ${Object.keys(scenes).length} conversations</summary><label class="scene-location">Place <select data-scene-group>${['All places',...new Set(Object.entries(scenes).map(([id,s])=>s.place||legacyPlaces[id]||s.role))].map(p=>`<option ${p===sceneGroup?'selected':''}>${esc(p)}</option>`).join('')}</select></label><div class="roleplay-grid">${roleplayCards()}</div></details>
-    <nav class="learning-groups" aria-label="Learning categories">${groups.map(g=>`<button data-library-group="${g.id}" aria-pressed="${g.id===selected.id}"><strong>${esc(g.title)}</strong><small>${g.topics.length} topics</small></button>`).join('')}</nav>
-    <section class="conversation-group"><h2>${esc(selected.title)}</h2><p class="conversation-intro">${esc(selected.description)}</p><div class="conversation-grid">${selected.topics.map(t=>{
-      const matches=matchingLevel(t.rows,level), scene=sceneTopics[t.name], roleplay=scene&&matchingLevel(scenes[scene].turns.map(t=>byKorean.get(t[3])).filter(Boolean),level).length>0&&selected.id!=='drama'&&selected.id!=='trendy'&&selected.id!=='numbers';
-      return `<article class="conversation-card"><span class="scene-icon">${icon(t.name)}</span><strong>${esc(t.name)}</strong><small>${matches.length} expressions · ${levelNames[level]}</small>${matches.length?`<a class="topic-open" href="${topicLink(selected.id,t.name)}">View expressions <span>›</span></a>`:'<span class="small-note">Choose another level</span>'}${roleplay?`<button class="topic-roleplay" data-scene="${scene}">Role-play</button>`:''}</article>`;
-    }).join('')}</div></section><div class="section-rows"><button class="section-row" data-practice-start><strong>Mixed everyday practice</strong><span>›</span></button><a class="section-row" href="#phrases"><strong>Search all expressions</strong><span>›</span></a></div>${saveNotice()}`;
+  const places=Object.entries(scenes).map(([id,s])=>s.place||legacyPlaces[id]||s.role);
+  el('practiceDashboard').innerHTML=`
+    <nav class="catalogue-switch" aria-label="Conversation library">
+      <button data-catalogue="places" aria-pressed="${catalogue==='places'}">${icon('pin')} Role-play</button>
+      <button data-catalogue="topics" aria-pressed="${catalogue==='topics'}">${icon('speech')} Expressions</button>
+    </nav>
+    ${catalogue==='places'?`<section><div class="browse-heading"><h2>By place</h2><select aria-label="Filter conversations by place" data-scene-group>${['All places',...new Set(places)].map(p=>`<option ${p===sceneGroup?'selected':''}>${esc(p)}</option>`).join('')}</select></div><div class="roleplay-grid tile-grid">${roleplayCards()}</div></section>`:
+    `<section><div class="browse-heading"><h2>By topic</h2><select data-topic-group aria-label="Expression category">${groups.map(g=>`<option value="${g.id}" ${selected.id===g.id?'selected':''}>${esc(g.title)}</option>`).join('')}</select></div>
+      <div class="tile-grid">${selected.topics.map(t=>`<a class="topic-tile" href="${topicLink(selected.id,t.name)}"><span class="tile-icon">${icon(t.name)}</span><strong>${esc(t.name)}</strong><small>${t.rows.length} expressions</small></a>`).join('')}</div></section>`}
+    <div class="browse-tools"><button data-practice-start>${icon('review')} Mixed practice</button><a href="#phrases">${icon('book')} Phrasebook</a></div>${saveNotice()}`;
   const shelf=dailyWords.shelf(), saved=(window.SoriSaved?.list || []).filter(id=>byId.has(id)), {due,last}=progress.stats();
   const again=progress.sessionFor('review');
   el('speakReview').innerHTML=`<div class="section-rows">
@@ -267,8 +272,8 @@ document.addEventListener('click',event => {
     paintHome();el('journeyPanel').querySelector('h2')?.scrollIntoView({block:'nearest'});return;
   }
   if(b.hasAttribute('data-path-continue')){changeHash('#practice=path');view('path',{play:true});return;}
-  if(b.hasAttribute('data-more-scenes')){sceneExpanded=true;b.closest('.roleplay-grid').innerHTML=roleplayCards();return;}
-  if(b.dataset.libraryGroup){libraryGroup=b.dataset.libraryGroup;paintHome();return;}
+  if(b.hasAttribute('data-more-scenes')){sceneExpanded=true;const grid=b.closest('.roleplay-grid');grid.innerHTML=roleplayCards();grid.querySelectorAll('[data-scene]')[4]?.focus();return;}
+  if(b.dataset.catalogue){catalogue=b.dataset.catalogue;paintHome();el('practiceDashboard').querySelector('[aria-pressed=true]').focus({preventScroll:true});return;}
   if (b.hasAttribute('data-vocab-difficulty')) {
     if (dailyWords.difficulty() !== b.dataset.vocabDifficulty) {
       dailyWords.setDifficulty(b.dataset.vocabDifficulty); paintHome();

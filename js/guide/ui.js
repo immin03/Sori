@@ -1,10 +1,11 @@
+import {icon} from '../ui-icons.js';
 import {routes, readPublicItinerary, itineraryParams, itineraryShareUrl, datedDays, presetDays} from './public-day.js?v=20261121polish';
-import {esc, chooser, areaChoices, cover, stopList, moreDays, placeMap, mountPlaceMap, koreaDate} from './postcards.js?v=20261121editorial';
+import {esc, chooser, areaChoices, cover, stopList, moreDays, placeMap, mountPlaceMap, koreaDate} from './postcards.js?v=mobile2';
 import {sharePublic} from '../share-public.js?v=20261121trip';
 import {generatePlan, AREAS, PHRASES, mapLink, placeEmbed, naverLink, phraseForPlace, CITIES, cityForArea} from './planner.js?v=20261121trip';
 import {AIRPORTS, CITY_CENTRES, isKoreaPoint, kmBetween, googleLeg, basePoint, routePoints, nearbyOrder, transferHint} from './geo.js?v=20261121trip';
 import {createJourneyMap} from './map.js?v=20261121polish';
-import {discoverMarkup,refreshDiscover,savePlace} from './discover.js?v=20261123beta';
+import {discoverMarkup,refreshDiscover,savePlace} from './discover.js?v=mobile2';
 const root = document.getElementById('guideView');
 const storage={get(k){try{return JSON.parse(localStorage.getItem(k));}catch{return null;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true;}catch{return false;}}};
 let mapOpen = false, activeDay = 0, selectedStop = null, map = null;
@@ -126,10 +127,11 @@ function itineraries() {
   const saved=recentDays(), shared=storage.get('sori:last-trip');
   const entries=saved.map(x=>{
     const day=readPublicItinerary(new URLSearchParams(x.hash.slice(1)),catalog);
-    return `<a class="section-row" href="${esc(x.hash)}"><strong>${esc(day.title)}</strong><span>${day.days.length} ${day.days.length===1?'day':'days'}</span></a>`;
+    const first=catalog.find(p=>p.id===day.days.find(d=>d.stops.length)?.stops[0]);
+    return `<a class="saved-itinerary" href="${esc(x.hash)}"><img src="${esc(first.photo)}" width="70" height="56" loading="lazy" alt=""><strong>${esc(day.title)}</strong><span>${day.days.length} ${day.days.length===1?'day':'days'}</span></a>`;
   }).join('');
-  root.querySelector('#tripContent').innerHTML=`<h1 class="section-page-title">My itineraries</h1><div class="section-rows">${shared?'<button type="button" class="section-row" data-resume-trip><strong>My shared trip</strong><span>Open the trip saved on this browser</span></button>':''}${entries}</div>
-    ${shared||saved.length?'':'<p class="empty-note">Choose a city in the trip planner. The itinerary you build will appear here.</p>'}<a class="section-back" href="#guide">Open trip planner</a>`;
+  root.querySelector('#tripContent').innerHTML=`<h1 class="section-page-title">My itineraries</h1><div class="section-rows">${shared?'<button type="button" class="saved-itinerary" data-resume-trip><strong>Open my shared trip</strong></button>':''}${entries}</div>
+    ${shared||saved.length?'':'<p class="empty-note">Choose a city to start your first itinerary.</p>'}<a class="itinerary-plan" href="#guide">${icon('map')} Open trip planner</a>`;
   window.SoriNav?.show('guide');window.scrollTo({top:0,behavior:'instant'});
 }
 function showPreview(city, days, draft) {

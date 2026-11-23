@@ -1,3 +1,4 @@
+import {icon} from '../ui-icons.js';
 import {romanize} from './romanize.js?v=20261123restore';
 import {topics, levels, vocabulary} from './vocabulary-catalog.js?v=20261123beta';
 
@@ -22,13 +23,11 @@ function resume(round) {
   return round && round.index < round.words.length ? `<a class="vocab-resume" href="${base}&amp;view=round">Continue your set (word ${round.index + 1} of ${round.words.length})</a>` : '';
 }
 function topicsPage(daily, round) {
-  return `<h1 tabindex="-1">Vocabulary topics</h1><p class="vocab-subtitle">${vocabulary.length} Korean words, from everyday essentials to expressions with nuance.</p>
+  return `<h1 tabindex="-1">Vocabulary topics</h1>
     ${round?.kind === 'topic' && round.level === daily.difficulty() ? resume(round) : ''}
-    <div class="vocab-topic-grid">${topics.map(t => {
+    <div class="tile-grid">${topics.map(t => {
       const words = vocabulary.filter(q => q.topic === t.id), seen = words.filter(q => daily.entry(q.id)).length;
-      const sample = words.find(q => q.level === 'nuance') || words[0];
-      return `<a class="vocab-topic-tile" href="${topicHref(t.id)}"><span class="vocab-topic-sample" lang="ko">${sample.term}</span><small>${romanize(sample.term)} · ${sample.gloss}</small>
-        <strong>${t.title}</strong><span class="vocab-topic-desc">${t.description}</span><span class="vocab-topic-count">${seen} / ${words.length} practised</span></a>`;
+      return `<a class="topic-tile" href="${topicHref(t.id)}"><span class="tile-icon">${icon(t.id)}</span><strong>${t.title}</strong><small>${seen} / ${words.length} practised</small></a>`;
     }).join('')}</div>`;
 }
 function topicPage(daily, topic, level, round) {

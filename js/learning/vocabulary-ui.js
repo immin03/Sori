@@ -1,5 +1,6 @@
+import {icon} from '../ui-icons.js';
 import {sameTopicChoices, levels, topics, vocabulary} from './vocabulary.js?v=20261123beta';
-import {difficultyControl, topicTitle} from './vocabulary-library.js?v=20261123beta';
+import {difficultyControl, topicTitle} from './vocabulary-library.js?v=mobile2';
 import {paintSpokenQuestion} from './speech-highlight.js?v=20261123beta';
 import {attachVoiceReply, recorderControls} from './voice-reply.js?v=20261123beta';
 import {attachQuestionAudio, attachSynthesizedQuestion} from './question-audio.js?v=20261123beta';
@@ -14,13 +15,12 @@ function prompt(question) {
 export function vocabularyCard(daily) {
   const {words, index} = daily.today();
   const complete = index === words.length;
-  const level = daily.difficulty?.() || 'all';
-  return `<article class="vocab-card daily-start"><div class="daily-symbol" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="8" y="9" width="32" height="30" rx="8"/><path d="M16 25h16M24 17v16M16 5v8M32 5v8"/></svg></div>
-    <h2>Today’s vocabulary</h2><p>${index} / ${words.length} words</p>
+  return `<article class="vocab-card daily-start"><div class="daily-symbol">${icon('book')}</div>
+    <h2>Today’s words</h2><p>${index} of ${words.length} practised</p>
     <progress max="${words.length}" value="${index}" aria-label="Today's progress"></progress>
-    <button type="button" class="sori-primary" data-open-vocabulary>${complete ? 'Review today’s words' : index ? 'Continue' : 'Start lesson'}</button>
-    </article><a class="section-row topic-entry" href="#practice=vocabulary&amp;view=topics"><strong>Vocabulary topics</strong><span aria-hidden="true">›</span></a>
-    <div class="home-vocab-topics"><h2>Choose a vocabulary topic</h2><div class="conversation-grid">${topics.map(topic=>{const count=vocabulary.filter(w=>w.topic===topic.id).length;return `<a class="conversation-card" href="#practice=vocabulary&amp;view=topic&amp;topic=${topic.id}"><strong>${topic.title}</strong><small>${count} words</small><span class="topic-open">Practise ›</span></a>`;}).join('')}</div></div>`;
+    <button type="button" class="sori-primary" data-open-vocabulary>${complete ? 'Review today’s words' : index ? 'Continue' : 'Start lesson'} ${icon('arrow')}</button></article>
+    <section class="home-vocab-topics"><div class="browse-heading"><h2>Word topics</h2><a href="#practice=vocabulary&amp;view=topics">View all ${topics.length} ${icon('arrow')}</a></div>
+    <div class="tile-grid">${topics.slice(0,6).map(topic=>`<a class="topic-tile" href="#practice=vocabulary&amp;view=topic&amp;topic=${topic.id}"><span class="tile-icon">${icon(topic.id)}</span><strong>${topic.title}</strong></a>`).join('')}</div></section>`;
 }
 
 export function mountVocabulary(target, daily, env, {start = false, onProgress, custom = false} = {}) {
