@@ -1,3 +1,4 @@
+import {romanize} from './romanize.js?v=20261123restore';
 import {topics, levels, vocabulary} from './vocabulary-catalog.js?v=20261121library';
 
 const base = '#practice=vocabulary';
@@ -14,7 +15,7 @@ function wordRow(q, daily, level = 'all') {
   const past = daily.entry(q.id);
   const status = daily.isTricky(q.id) ? 'Try again' : past ? 'Practised' : '';
   return `<li><button type="button" data-vocab-start="${q.topic}" data-vocab-level="${level}" data-vocab-word="${q.id}">
-    <span><strong lang="ko">${q.term}</strong><span class="vocab-gloss">${q.gloss}</span></span>
+    <span><strong lang="ko">${q.term}</strong><span class="vocab-gloss">${romanize(q.term)} · ${q.gloss}</span></span>
     <span class="vocab-word-meta">${levels[q.level]}${status ? '<small>' + status + '</small>' : ''}</span></button></li>`;
 }
 function resume(round) {
@@ -26,7 +27,7 @@ function topicsPage(daily, round) {
     <div class="vocab-topic-grid">${topics.map(t => {
       const words = vocabulary.filter(q => q.topic === t.id && (daily.difficulty() === 'all' || daily.difficulty() === q.level)), seen = words.filter(q => daily.entry(q.id)).length;
       const sample = words.find(q => q.level === 'nuance') || words[0];
-      return `<a class="vocab-topic-tile" href="${topicHref(t.id)}"><span class="vocab-topic-sample" lang="ko">${sample.term}</span>
+      return `<a class="vocab-topic-tile" href="${topicHref(t.id)}"><span class="vocab-topic-sample" lang="ko">${sample.term}</span><small>${romanize(sample.term)} · ${sample.gloss}</small>
         <strong>${t.title}</strong><span class="vocab-topic-desc">${t.description}</span><span class="vocab-topic-count">${seen} / ${words.length} practised</span></a>`;
     }).join('')}</div>`;
 }

@@ -4,7 +4,7 @@ import {sharePublic} from '../share-public.js?v=20261121trip';
 import {generatePlan, AREAS, PHRASES, mapLink, placeEmbed, naverLink, phraseForPlace, CITIES, cityForArea} from './planner.js?v=20261121trip';
 import {AIRPORTS, CITY_CENTRES, isKoreaPoint, kmBetween, googleLeg, basePoint, routePoints, nearbyOrder, transferHint} from './geo.js?v=20261121trip';
 import {createJourneyMap} from './map.js?v=20261121polish';
-import {discoverMarkup,refreshDiscover} from './discover.js?v=20261123relaunch';
+import {discoverMarkup,refreshDiscover} from './discover.js?v=20261123restore';
 const root = document.getElementById('guideView');
 const storage={get(k){try{return JSON.parse(localStorage.getItem(k));}catch{return null;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true;}catch{return false;}}};
 let mapOpen = false, activeDay = 0, selectedStop = null, map = null;

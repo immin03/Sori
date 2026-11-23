@@ -38,3 +38,25 @@ Jagalchi Market: `assets/photos/jagalchi.jpg`, Luke Ow, https://unsplash.com/pho
 The café practice cover, `assets/photos/cafe-conversation.webp`, is an AI-generated illustration of a coffee handoff made for Sori. It does not identify a particular café.
 
 The seasonal covers, `assets/photos/first-snow.webp` and `assets/photos/christmas-seoul.webp`, are AI-generated editorial illustrations commissioned for Sori. They are not documentary photographs of the 2026 snowfall or a named Christmas venue. The covers and travel directory label them accordingly.
+
+## Explore venue and dish photography
+
+Images resized and JPEG-compressed. Dish photos illustrate the food category, and building photographs depict the named venue or adjacent complex.
+
+| File | Photographer | Source | Licence |
+|---|---|---|---|
+| assets/photos/starfield.jpg | Sean Young (@assanges) | https://commons.wikimedia.org/wiki/File%3AStarfield_Library_COEX_20240218.jpg | CC BY 4.0 |
+| assets/photos/seolleongtang.jpg | 이동원 | https://commons.wikimedia.org/wiki/File%3ASeolleongtang.jpg | CC0 |
+| assets/photos/baeksuk.jpg | hyun chun kim | https://commons.wikimedia.org/wiki/File%3ABaeksuk.jpg | CC0 |
+| assets/photos/naengmyeon.jpg | Mobius6 | https://commons.wikimedia.org/wiki/File%3APyongyang_Naengmyeon_20190608_001.jpg | CC BY-SA 4.0 |
+| assets/photos/kongguksu.jpg | chomjong | https://commons.wikimedia.org/wiki/File%3AKong-guksu_1.jpg | CC BY 2.0 |
+| assets/photos/doenjang.jpg | Suohros | https://commons.wikimedia.org/wiki/File%3ADoenjang_Jjigae.jpg | CC0 |
+| assets/photos/nationalmuseum.jpg | Ethan Doyle White | https://commons.wikimedia.org/wiki/File%3AExterior_of_the_National_Museum_of_Korea_in_Seoul.jpg | CC BY-SA 4.0 |
+| assets/photos/mandu.jpg | by denver935 | https://commons.wikimedia.org/wiki/File%3AKorean.cuisine-Kimchi.jjigae-02.jpg | CC BY 2.0 |
+| assets/photos/bibimbap.jpg | Shene81 | https://commons.wikimedia.org/wiki/File%3AKorean_Bibimbap.jpg | CC BY 3.0 |
+| assets/photos/lotteworld.jpg | Christophe95 | https://commons.wikimedia.org/wiki/File%3ALotte_World_Mall_in_Seoul.jpg | CC BY-SA 4.0 |
+| assets/photos/craftmuseum.jpg | *Youngjin | https://commons.wikimedia.org/wiki/File%3ASeoul_Museum_of_Craft_Art.jpg | CC BY-SA 4.0 |
+| assets/photos/shinsegae.jpg | Minseong Kim | https://commons.wikimedia.org/wiki/File%3AShinsegae_Department_Store_in_Seoul.jpg | CC BY-SA 4.0 |
+| assets/photos/galbi.jpg | donchili | https://commons.wikimedia.org/wiki/File%3AGalbi_1.jpg | CC BY-SA 2.0 |
+| assets/photos/jjukkumi.jpg | joannaisabellaabril | https://commons.wikimedia.org/wiki/File%3AJjukkumi-samgyeopsal.jpg | CC0 |
+| assets/photos/lottedepartment.jpg | Abasaa | https://commons.wikimedia.org/wiki/File%3ALotte_Department_Main_Store.JPG | Public domain |

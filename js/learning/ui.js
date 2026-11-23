@@ -2,16 +2,18 @@ import {PracticeProgress} from './progress.js?v=20261120s1';
 import {scenes} from './scenes.js?v=20261123relaunch';
 import {mountSpokenTurn,spokenTurnControls} from './spoken-turn.js?v=20261123relaunch';
 import {DailyVocabulary} from './vocabulary.js?v=20261121library';
-import {vocabularyCard,mountVocabulary} from './vocabulary-ui.js?v=20261121polish';
-import {showVocabularyLibrary} from './vocabulary-library.js?v=20261121nav';
-import {mountPhraseSearch} from './phrase-search.js?v=20261120s1';
+import {vocabularyCard,mountVocabulary} from './vocabulary-ui.js?v=20261123restore';
+import {showVocabularyLibrary} from './vocabulary-library.js?v=20261123restore';
+import {mountPhraseSearch} from './phrase-search.js?v=20261123restore';
 import {sharePublic} from '../share-public.js?v=20261121trip';
-import {autoNext} from './auto-next.js?v=20261121polish';
+import {situationGroups,matchingLevel,levelNames} from './categories.js?v=20261123restore';
+import {difficultyControl} from './vocabulary-library.js?v=20261123restore';
 
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const el = id => document.getElementById(id);
 let rows, byId, byKorean, progress, dailyWords, currentScope, voice, lessonVoice, phrasebook, lastVerdict;
-let phraseModel='', repeatStep=0, repeatTimer, sessionAdvance;
+let libraryGroup='daily', phraseScope=null;
+let phraseModel='', repeatStep=0, repeatTimer;
 let phraseAuto=false, openingPhrase=false, sessionMode='voice';
 const viewRoot = () => el('mainContent');
 function saveNotice() {
@@ -33,15 +35,19 @@ function reviewRow(href,title,summary) {
 }
 function paintHome() {
   el('dailyVocabulary').innerHTML = vocabularyCard(dailyWords);
-  const groups=[
-    ['Food & drink',['cafe','restaurant','market','street-food']],
-    ['Travel & transport',['airport','hotel','transport']],
-    ['Shopping & daily life',['shopping','department','convenience']],
-    ['People & help',['social','help']]
-  ];
-  const icons={cafe:'☕',restaurant:'🍜',market:'🛍️','street-food':'🍢',airport:'✈',hotel:'🏨',transport:'🚇',shopping:'👕',department:'🎁',convenience:'🛒',social:'💬',help:'🤝'};
-  const sceneList=groups.map(([label,keys])=>`<section class="conversation-group"><h2>${label}</h2><div class="conversation-grid">${keys.map(kind=>`<button class="conversation-card" data-scene="${kind}"><span class="scene-icon" aria-hidden="true">${icons[kind]}</span><strong>${esc(scenes[kind].title)}</strong><small>${scenes[kind].turns.length} turns · ${esc(scenes[kind].role)}</small></button>`).join('')}</div></section>`).join('');
-  el('practiceDashboard').innerHTML=`<p class="conversation-intro">Choose a real-life situation and practise your side of the conversation.</p>${sceneList}<div class="section-rows"><button class="section-row focus-scene" data-practice-start><strong>Everyday expressions</strong><span>›</span></button><a class="section-row focus-scene" href="#phrases"><strong>Phrasebook</strong><span>›</span></a></div>${saveNotice()}`;
+  const level=dailyWords.difficulty(), groups=situationGroups(window.SoriDataIndex);
+  const selected=groups.find(g=>g.id===libraryGroup)||groups[0];
+  const sceneTopics={Greeting:'social',Social:'social',Cafe:'cafe',Restaurant:'restaurant',Shopping:'shopping',Airport:'airport',Hotel:'hotel',Transport:'transport',Emergency:'help',Convenience:'convenience','Street Food':'street-food',Market:'market',Department:'department'};
+  const topicLink=(group,topic)=>'#phrases='+encodeURIComponent(group)+'&amp;topic='+encodeURIComponent(topic);
+  const paths={Greeting:'M4 5h16v11H9l-5 4zM8 9h8M8 12h5',Social:'M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm8-1a3 3 0 1 0 0-6M2 20v-2a6 6 0 0 1 12 0v2M17 14a5 5 0 0 1 5 5',Love:'M12 20 4 12a5 5 0 0 1 8-6 5 5 0 0 1 8 6z',Cafe:'M4 7h12v7a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5zM16 8h3a2 2 0 0 1 0 4h-3M3 22h16',Restaurant:'M5 3v8m4-8v8M7 11v10M18 3v18m0-18a5 5 0 0 0-5 5v3h5',Shopping:'M4 8h16l-1 13H5zM8 8V6a4 4 0 0 1 8 0v2',Health:'M9 3h6v6h6v6h-6v6H9v-6H3V9h6z',Work:'M3 7h18v13H3zM8 7V4h8v3M3 13h18M10 13v3h4v-3',Tech:'M3 4h18v12H3zM8 21h8M12 16v5',Exercise:'M3 9v6m4-9v12m10-12v12m4-9v6M7 12h10',Airport:'m2 12 20-8-7 18-3-7-7-3zM12 15 22 4',Hotel:'M3 5v16m18-10v10M3 16h18M3 9h7v7m0-4h11v4',Transport:'M4 4h16v14H4zM7 7h10M6 14h3m6 0h3M7 18l-2 3m12-3 2 3',Emergency:'M12 3 2 21h20zM12 9v5m0 3v1',Payment:'M3 5h18v14H3zM3 10h18M6 15h4',Sightseeing:'M12 22s7-8 7-14a7 7 0 0 0-14 0c0 6 7 14 7 14zm0-17a3 3 0 1 0 0 6 3 3 0 0 0 0-6'};
+  const icon=name=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${paths[name]||paths.Greeting}"/></svg>`;
+  el('practiceDashboard').innerHTML=`<div class="learning-intro"><h2>Learn Korean for real life</h2><p>${rows.length} expressions across ${groups.reduce((n,g)=>n+g.topics.length,0)} situations. Choose a topic and learn at your own pace.</p></div>
+    ${difficultyControl(level)}
+    <nav class="learning-groups" aria-label="Learning categories">${groups.map(g=>`<button data-library-group="${g.id}" aria-pressed="${g.id===selected.id}"><strong>${esc(g.title)}</strong><small>${g.topics.length} topics</small></button>`).join('')}</nav>
+    <section class="conversation-group"><h2>${esc(selected.title)}</h2><p class="conversation-intro">${esc(selected.description)}</p><div class="conversation-grid">${selected.topics.map(t=>{
+      const matches=matchingLevel(t.rows,level), scene=sceneTopics[t.name], roleplay=scene&&matchingLevel(scenes[scene].turns.map(t=>byKorean.get(t[3])).filter(Boolean),level).length>0&&selected.id!=='drama'&&selected.id!=='trendy'&&selected.id!=='numbers';
+      return `<article class="conversation-card"><span class="scene-icon">${icon(t.name)}</span><strong>${esc(t.name)}</strong><small>${matches.length} expressions · ${levelNames[level]}</small>${matches.length?`<a class="topic-open" href="${topicLink(selected.id,t.name)}">View expressions <span>›</span></a>`:'<span class="small-note">Choose another level</span>'}${roleplay?`<button class="topic-roleplay" data-scene="${scene}">Role-play</button>`:''}</article>`;
+    }).join('')}</div></section><div class="section-rows"><button class="section-row" data-practice-start><strong>Mixed everyday practice</strong><span>›</span></button><a class="section-row" href="#phrases"><strong>Search all expressions</strong><span>›</span></a></div>${saveNotice()}`;
   const shelf=dailyWords.shelf(), saved=(window.SoriSaved?.list || []).filter(id=>byId.has(id)), {due,last}=progress.stats();
   const again=progress.sessionFor('review');
   el('speakReview').innerHTML=`<div class="section-rows">
@@ -55,7 +61,7 @@ function paintHome() {
   el('learnPracticeEntry').innerHTML='<button class="sori-secondary" data-browse-collection>Browse categories</button>'+(last?'<button class="text-button" data-practice-resume>Last expression</button>':'');
   homePanel();
 }
-function discardVoice() { sessionAdvance?.cancel(); voice?.dispose(); voice = null; }
+function discardVoice() {  voice?.dispose(); voice = null; }
 function stopRepeats(message = '') {
   clearTimeout(repeatTimer);
   if(!repeatStep)return;
@@ -108,25 +114,27 @@ function changeHash(hash) {
   if (location.hash !== hash) history.pushState(null,'',hash);
   window.SoriNav?.refresh();
 }
-function browse(push = true) {
+function browse(push = true, group = "", topic = "", level = dailyWords.difficulty()) {
   if (push) changeHash('#phrases');
   phraseAuto=false;library(); closeLessonVoice(); viewRoot().classList.add('phrase-index'); window.SoriNav?.show('listen');
-  window.scrollTo({top:0,behavior:'instant'}); phrasebook?.focus();
+  window.scrollTo({top:0,behavior:'instant'}); phrasebook?.setScope(group,topic,level);
+  if(!group)phrasebook?.focus();
 }
 function collection() {
   phraseAuto=false;library(); window.SoriNav?.show('listen'); viewRoot().classList.add('collection');
   setupLessonVoice(); window.scrollTo({top:0,behavior:'instant'});
 }
-function openPhrase(id, push = true, from = '') {
+function openPhrase(id, push = true, from = '', scope = null) {
   if (!byId.has(id)) { browse(false); return; }
-  if (push) changeHash('#phrase=' + encodeURIComponent(id) + (from ? '&from='+from : ''));
+  if(push) phraseScope=scope;
+  if (push) changeHash('#phrase=' + encodeURIComponent(id) + (from ? '&from='+from : '')+(scope?.group?'&group='+encodeURIComponent(scope.group)+'&topic='+encodeURIComponent(scope.topic)+'&level='+encodeURIComponent(scope.level):''));
   window.SoriNav?.show('listen');
   openingPhrase=true;
-  try { if (!window.SoriLearn?.openId(id)) return; } finally {openingPhrase=false;}
+  try { if (!window.SoriLearn?.openId(id,phraseScope?.ids)) return; } finally {openingPhrase=false;}
   viewRoot().classList.add('single-phrase');
   const parent=new URLSearchParams(location.hash.slice(1)).get('from');
   const back=el('lessonCard').querySelector('.lesson-back');
-  back.textContent='×';back.setAttribute('aria-label',parent==='review'?'Back to saved phrases':'Back to phrasebook');back.href=parent==='review'?'#saved-phrases':'#phrases';
+  back.textContent='×';back.setAttribute('aria-label',parent==='review'?'Back to saved phrases':'Back to phrasebook');back.href=parent==='review'?'#saved-phrases':phraseScope?.group?'#phrases='+encodeURIComponent(phraseScope.group)+'&topic='+encodeURIComponent(phraseScope.topic)+'&level='+encodeURIComponent(phraseScope.level):'#phrases';
   phraseAuto=push;
   setupLessonVoice(push);
   progress.setLast(id);window.scrollTo({top:0,behavior:'instant'});
@@ -147,11 +155,12 @@ function openVocabulary(start = false) {
 }
 function view(kind, {fresh = false, pool, play = false} = {}) {
   closeLessonVoice();
-  const choices = pool || (Object.hasOwn(scenes,kind) ? scenes[kind].turns.map(t => byKorean.get(t[3])?.id).filter(Boolean) :
-    kind === 'review' ? progress.due() : dailyPool());
-  if (!choices.length && !progress.sessionFor(kind)) { window.SoriNav.go('#review'); return; }
+  const choices = pool || (Object.hasOwn(scenes,kind) ? matchingLevel(scenes[kind].turns.map(t => byKorean.get(t[3])).filter(Boolean),dailyWords.difficulty()).map(p=>p.id) :
+    kind === 'review' ? progress.due() : dailyPool().filter(id=>matchingLevel([byId.get(id)],dailyWords.difficulty()).length));
+  if (!choices.length) { window.SoriNav.go('#conversations'); return; }
   sessionMode='voice';
-  progress.start(choices,{kind,fresh}); window.SoriNav?.show('listen');
+  const previous=progress.sessionFor(kind);
+  progress.start(choices,{kind,fresh:fresh||Boolean(previous&&Object.hasOwn(scenes,kind)&&previous.ids.some(id=>!choices.includes(id)))}); window.SoriNav?.show('listen');
   viewRoot().classList.remove('single-phrase','collection','phrase-index');
   viewRoot().classList.add('practice-session-active');
   el('practiceSession').hidden = false;
@@ -176,27 +185,27 @@ function renderSession(play = false) {
   const phrase = byId.get(session.ids[session.index]), scene = scenes[session.kind];
   const turn = scene?.turns.find(t => t[3] === phrase.k);
   const cue = turn ? `<section class="speaker-cue"><div class="turn-cap"><span>${esc(scene.role)}</span></div>
-    <p lang="ko">${esc(turn[0])}</p></section>` : '';
+    <p lang="ko">${esc(turn[0])}</p><p class="roman-line">${esc(turn[5])}</p><p class="meaning-line">${esc(turn[1])}</p></section>` : '';
   target.innerHTML = `<header class="session-header"><a class="section-back focus-exit" aria-label="Exit practice" href="${session.kind === 'review' ? '#review' : '#conversations'}">×</a>
     <span>${session.index+1} / ${session.ids.length}</span></header>
     <progress max="${session.ids.length}" value="${session.index + 1}" aria-label="Current turn"></progress>
     <h1>${turn?'Listen and reply':'Say it in Korean'}</h1>${cue}
     <section class="session-answer"><div class="turn-cap"><span>Your reply</span></div>
-    <div id="replyExample"><h2 lang="ko" data-spoken-model>${esc(phrase.k)}</h2></div>
+    <p class="reply-intent">${esc(turn?.[2]||phrase.e)}</p><div id="replyExample"><h2 lang="ko" data-spoken-model>${esc(phrase.k)}</h2><p class="roman-line">${esc(phrase.p)}</p><p class="meaning-line">${esc(phrase.e)}</p></div>
     ${spokenTurnControls({compare:true})}
-    <div class="recall-actions"><button class="text-button" data-practice-answer="again">Skip</button><button class="sori-primary" data-practice-answer="remembered" hidden>${session.index + 1 === session.ids.length ? 'Finish' : 'Continue'}</button></div>
-    <details class="speaking-tip"><summary>Hint &amp; translation</summary>${turn?`<p>${esc(turn[1])}</p><p>${esc(turn[2])}</p>`:''}<p class="meaning-line">${esc(phrase.e)}</p><p class="roman-line">${esc(phrase.p)}</p><div class="audio-choices">${audioButton(phrase.k,'Example')}${audioButton(phrase.k,'Slow',0.65)}</div>${turn?`<p>${esc(turn[4])}</p>`:''}<button class="text-button" aria-expanded="true" aria-controls="replyExample" data-memory>Try from memory</button></details></section>${saveNotice()}`;
+    <div class="recall-actions"><button class="text-button" data-practice-answer="again">Skip</button><button class="sori-primary" data-practice-answer="remembered" hidden>${session.index + 1 === session.ids.length ? 'Finish' : 'Next'}</button></div>
+    <div class="audio-choices review-audio">${audioButton(phrase.k,'Hear reply')}${audioButton(phrase.k,'Slow',0.65)}</div><details class="speaking-tip"><summary>Practice tips</summary>${turn?`<p>${esc(turn[4])}</p>`:''}<button class="text-button" aria-expanded="true" aria-controls="replyExample" data-memory>Try from memory</button></details></section>${saveNotice()}`;
   const next=target.querySelector('[data-practice-answer="remembered"]');
-  sessionAdvance=autoNext(window,()=>{if(next.isConnected)next.click();});
+
   voice=mountSpokenTurn(target.querySelector('.spoken-turn'),window,{cue:turn?turn[0]:phrase.k,answer:phrase.k,alternatives:turn?.[6]||[],
-    modelLine:target.querySelector('[data-spoken-model]'),start:play,turnSignal:true,typed:sessionMode==='type',onMode:mode=>{sessionAdvance?.cancel();sessionMode=mode;},
+    modelLine:target.querySelector('[data-spoken-model]'),start:play,turnSignal:true,typed:sessionMode==='type',onMode:mode=>{sessionMode=mode;},
     onVerdict(kind){
       lastVerdict=kind;
-      if(kind==='retry')progress.markMissed();
+      if(kind==='retry'){progress.markMissed();next.hidden=false;}
       if(kind==='correct'){
         next.hidden=false;
         target.querySelector('[data-practice-answer="again"]').hidden=true;
-        sessionAdvance.schedule();
+        next.focus({preventScroll:true});
       }
     }});
 
@@ -206,8 +215,8 @@ function route() {
   const params = new URLSearchParams(location.hash.slice(1));
   if (params.get('practice') === 'vocabulary') openVocabulary();
   else if (Object.hasOwn(scenes,params.get('practice')) || ['daily','review'].includes(params.get('practice'))) view(params.get('practice'));
-  else if (params.has('phrase')) openPhrase(params.get('phrase'),false);
-  else if (['#phrases','#speak'].includes(location.hash)) browse(false);
+  else if (params.has('phrase')) {const group=params.get('group'),topic=params.get('topic')||'',level=params.get('level')||'all';phraseScope=group?{group,topic,level,ids:matchingLevel((window.SoriDataIndex[group]||[]).filter(r=>!topic||(r.sub||r.t)===topic),level).map(r=>r.id)}:null;openPhrase(params.get('phrase'),false);}
+  else if (params.has('phrases') || ['#phrases','#speak'].includes(location.hash)) browse(false,params.get('phrases')||'',params.get('topic')||'',params.get('level')||dailyWords.difficulty());
   else if (location.hash === '#collection') collection();
   else if (['','#home','#conversations','#review','#saved-phrases'].includes(location.hash)) { homePanel();window.scrollTo({top:0,behavior:'instant'}); }
 }
@@ -220,13 +229,14 @@ function boot() {
   window.SoriPractice = {library,openPhrase,browse,repeatPhrase,hasPhraseVoice:()=>Boolean(lessonVoice),roundKind:()=>dailyWords.custom()?.kind};
   for (const root of document.querySelectorAll('[data-phrase-finder]')) {
     const home = root.dataset.phraseFinder === 'home';
-    const control = mountPhraseSearch(root,rows,{home,open:openPhrase,browse});
+    const control = mountPhraseSearch(root,rows,{home,open:openPhrase,browse,index:window.SoriDataIndex});
     if (!home) phrasebook = control;
   }
   paintHome(); route();
 }
 document.addEventListener('click',event => {
   const b = event.target.closest('button'); if (!b || !progress) return;
+  if(b.dataset.libraryGroup){libraryGroup=b.dataset.libraryGroup;paintHome();return;}
   if (b.hasAttribute('data-vocab-difficulty')) {
     if (dailyWords.difficulty() !== b.dataset.vocabDifficulty) {
       dailyWords.setDifficulty(b.dataset.vocabDifficulty); paintHome();
@@ -262,7 +272,7 @@ document.addEventListener('click',event => {
     b.setAttribute('aria-expanded',String(!answer.hidden)); b.textContent = answer.hidden ? 'Show example' : 'Try from memory';
   }
   if (b.dataset.practiceAnswer) {
-    sessionAdvance?.cancel();
+
     if (b.dataset.practiceAnswer === 'again') progress.markMissed();
     progress.answer(lastVerdict === 'retry' ? 'again' : b.dataset.practiceAnswer);
     renderSession(true); paintHome(); window.scrollTo({top:0,behavior:'instant'});
@@ -276,10 +286,10 @@ window.addEventListener('sori-view',event => {
   if (event.detail.view !== 'listen') { phraseAuto=false;library(); closeLessonVoice(); }
   if (event.detail.view === 'home' && dailyWords) paintHome();
 });
-window.addEventListener('sori-model-start',()=>{sessionAdvance?.cancel();stopRepeats();voice?.onModel();lessonVoice?.onModel();});
+window.addEventListener('sori-model-start',()=>{stopRepeats();voice?.onModel();lessonVoice?.onModel();});
 window.addEventListener('savedListChanged',()=>{if(dailyWords)paintHome();});
 window.addEventListener('pagehide',() => { discardVoice(); closeLessonVoice(); });
-document.addEventListener('visibilitychange',() => { if (document.hidden) { sessionAdvance?.cancel();stopRepeats();voice?.onModel(); lessonVoice?.onModel(); window.SORI?.TTS?.cancel(); } });
+document.addEventListener('visibilitychange',() => { if (document.hidden) { stopRepeats();voice?.onModel(); lessonVoice?.onModel(); window.SORI?.TTS?.cancel(); } });
 window.addEventListener('sori-phrase-shown',event => {
   if (!progress || openingPhrase) return;
   const shown=viewRoot().style.display!=='none' && (viewRoot().classList.contains('single-phrase') || viewRoot().classList.contains('collection'));
@@ -290,7 +300,7 @@ window.addEventListener('sori-phrase-shown',event => {
     progress.setLast(event.detail.id);
     if (viewRoot().classList.contains('single-phrase') && location.hash.startsWith('#phrase=')) {
       const from=new URLSearchParams(location.hash.slice(1)).get('from');
-      history.replaceState(null,'','#phrase=' + encodeURIComponent(event.detail.id)+(from?'&from='+encodeURIComponent(from):''));
+      history.replaceState(null,'','#phrase=' + encodeURIComponent(event.detail.id)+(from?'&from='+encodeURIComponent(from):'')+(phraseScope?.group?'&group='+encodeURIComponent(phraseScope.group)+'&topic='+encodeURIComponent(phraseScope.topic)+'&level='+encodeURIComponent(phraseScope.level):''));
     }
   }
   paintHome();

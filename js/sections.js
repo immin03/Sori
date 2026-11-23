@@ -19,7 +19,7 @@
       const review = view === 'words' || (view === 'round' && roundKind === 'review');
       return ['speak',review ? 'review' : 'vocabulary','listen'];
     }
-    if (practice || p.has('phrase') || ['#phrases','#speak','#collection'].includes(hash)) {
+    if (practice || p.has('phrase') || p.has('phrases') || ['#phrases','#speak','#collection'].includes(hash)) {
       return ['speak',practice === 'review' || p.get('from') === 'review' ? 'review' : 'conversations','listen'];
     }
     if (hash === '#read=saved' || (p.has('story') && p.get('from') === 'saved')) return ['read','stories','newsletter'];

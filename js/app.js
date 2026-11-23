@@ -387,7 +387,7 @@
     });
   }
 
-  function openId(id) {
+  function openId(id, allowedIds) {
     for (const [category, list] of Object.entries(getAllData())) {
       if (!list.some(p => p.id === id)) continue;
       window.SoriPractice?.library();
@@ -395,6 +395,7 @@
       currentSub = null;
       rebuildSubFilters();
       applyFilter();
+      if(Array.isArray(allowedIds)&&allowedIds.includes(id))phrases=phrases.filter(p=>allowedIds.includes(p.id));
       currentIndex = phrases.findIndex(p => p.id === id);
       setActiveTab(category);
       renderPhrase();
