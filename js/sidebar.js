@@ -1,3 +1,4 @@
+import {icon} from './ui-icons.js';
 /* Navigation shared by learning, guide, quiz and newsletter. */
 (function(){
   const views={home:'homeView',guide:'guideView',listen:'mainContent',quiz:'quizView',newsletter:'newsletterView'};
@@ -5,9 +6,9 @@
   const {services,locate} = window.SoriSections;
   const toggle = document.getElementById('menuToggle'), sectionNav = document.getElementById('sectionNav');
   const menu = sidebar.querySelector('.sidebar-menu');
-  const links = service => service.children.map(([id,title,hash]) =>
-    `<a data-section-link="${id}" href="${hash}">${title}</a>`).join('');
-  menu.innerHTML = services.map(s => `<section class="menu-group" data-service-group="${s.id}"><h3><a data-section-home href="${s.children[0][2]}">${s.title}</a></h3><div>${links(s)}</div></section>`).join('');
+  const links = (service,withIcon=false) => service.children.map(([id,title,hash]) =>
+    `<a data-section-link="${id}" href="${hash}">${withIcon?icon(id):''}<span>${title}</span></a>`).join('');
+  menu.innerHTML = services.map(s => `<section class="menu-group" data-service-group="${s.id}"><h3>${s.title}</h3><div>${links(s,true)}</div></section>`).join('');
   let visibleView;
   function close(restoreFocus = false) {
     const wasOpen = sidebar.classList.contains('open');
@@ -74,7 +75,7 @@
     if(!sidebar.classList.contains('open'))return;
     if(e.key==='Escape'){close(true);return;}
     if(e.key==='Tab'){
-      const controls=sidebar.querySelectorAll('button,a[href]'), first=controls[0], last=controls[controls.length-1];
+      const controls=[...sidebar.querySelectorAll('button,a[href]')].filter(el=>el.getClientRects().length), first=controls[0], last=controls[controls.length-1];
       if(e.shiftKey && document.activeElement===first){e.preventDefault();last.focus();}
       else if(!e.shiftKey && document.activeElement===last){e.preventDefault();first.focus();}
     }

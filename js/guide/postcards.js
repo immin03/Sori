@@ -1,3 +1,4 @@
+import {icon} from '../ui-icons.js';
 import {AREAS, CITIES, cityForArea, mapLink, placeEmbed} from './planner.js?v=20261121trip';
 import {cityPicks, matchRoute, routes} from './public-day.js?v=20261121polish';
 
@@ -23,7 +24,7 @@ export function chooser(lastTrip) {
       <span class="city-card-text"><strong>${CITIES[city]}</strong><span>${cityLines[city]}</span></span>
     </button><div class="city-durations" aria-label="${CITIES[city]} itinerary length">${[1,2,3].map(n=>`<button type="button" data-city-preset="${city}" data-length="${n}" aria-label="${CITIES[city]}, ${n} ${n===1?'day':'days'}">${n} ${n===1?'day':'days'}</button>`).join('')}</div></article>`).join('');
   return `<header class="city-intro"><h1>Where to in Korea?</h1>
-    <p>Choose a city and how many days.</p><a class="sori-secondary" href="#discover">Browse Seoul's places, food &amp; seasonal guides ›</a></header>
+    <p>Choose your city and trip length.</p></header>
     <div class="city-postcards">${cards}</div>
     <details class="custom-plan"><summary>Customize my trip</summary>
       <form id="tripForm" class="quick-form">
@@ -64,7 +65,7 @@ export function stopList(day, catalog, selected, city, inline = false) {
     const p = catalog.find(place => place.id === id);
     return `<li data-stop-row="${p.id}"><div class="stop-row-main"><button type="button" data-select-stop="${p.id}" aria-pressed="${selected === id}"${inline?' aria-expanded="false"':''}>
       <span class="stop-number">${i + 1}</span><span class="stop-words"><strong>${esc(p.name)}</strong>
-      <small>${inline?esc(p.ko):esc(p.description)}</small></span><img src="${esc(p.photo)}" alt="" width="68" height="64" loading="lazy"></button>${inline?`<a class="stop-map" href="${esc(mapLink(p))}" target="_blank" rel="noopener noreferrer" aria-label="Open ${esc(p.name)} in Google Maps">Map</a>`:''}</div></li>`;
+      <small>${inline?esc(p.ko):esc(p.description)}</small></span><img src="${esc(p.photo)}" alt="" width="68" height="64" loading="lazy"></button>${inline?`<a class="stop-map" href="${esc(mapLink(p))}" target="_blank" rel="noopener noreferrer" aria-label="Open ${esc(p.name)} in Google Maps">${icon('map')}</a>`:''}</div></li>`;
   }).join('');
   return `<section class="postcard-stops"><h2 id="stopsHeading" tabindex="-1">Your stops in ${CITIES[city]}</h2><ol>${rows}</ol></section>`;
 }

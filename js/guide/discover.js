@@ -1,4 +1,5 @@
-import {esc} from './postcards.js?v=20261121editorial';
+import {icon} from '../ui-icons.js';
+import {esc} from './postcards.js?v=mobile2';
 
 // Public recommendations adapted from Sori's November 19 Seoul guide.
 const entry=(id,category,type,name,ko,area,address,detail,visit,budget,source='')=>({id,category,type,name,ko,area,address,detail,visit,budget,source});
@@ -47,18 +48,18 @@ const placePhotos={
  miseongok:['seolleongtang','Seolleongtang · dish photo'],sarangbang:['baeksuk','Baeksuk · dish photo'],
  joseonok:['galbi','Galbi · dish photo'],wooraeok:['naengmyeon','Pyongyang naengmyeon · dish photo'],
  jjukkumi:['jjukkumi','Jjukkumi and pork belly · dish photo'],mokmyeoksanbang:['bibimbap','Bibimbap · dish photo'],
- koong:['mandu','Manduguk · dish photo'],jinjujip:['kongguksu','Kongguksu · dish photo'],
+ jinjujip:['kongguksu','Kongguksu · dish photo'],
  hanilkwan:['galbi','Galbi · dish photo'],ttukbaegijip:['doenjang','Doenjang jjigae · dish photo'],
  muds:['nationalmuseum','National Museum of Korea'],craftmuseum:['craftmuseum','Seoul Museum of Craft Art']
 };
-function photoMarkup(p){
+function photoFor(p){
  const match=placePhotos[p.id], info=match&&photoCredits[match[0]];
- if(!info)return `<figure class="discover-photo"><img src="assets/photos/${areaPhotos[p.area]||'seoul-hero-480.webp'}" alt="${esc(p.area)} area" loading="lazy" width="480" height="300"><figcaption>Area photo</figcaption></figure>`;
- return `<figure class="discover-photo"><img src="assets/photos/${match[0]}.jpg" alt="${esc(match[1])}" loading="lazy" width="480" height="300"><figcaption>${esc(match[1])} · <a href="${esc(info.source)}" target="_blank" rel="noopener noreferrer" title="${esc(info.artist+' · '+info.license+' · resized')}">${esc(info.artist)} · ${esc(info.license)}</a></figcaption></figure>`;
+ if(info)return {src:'assets/photos/'+match[0]+'.jpg',label:match[1],credit:`<a href="${esc(info.source)}" target="_blank" rel="noopener noreferrer">${esc(info.artist)} · ${esc(info.license)}</a>`};
+ const area=areaPhotos[p.area];
+ return {src:'assets/photos/'+(area||'seoul-hero-480.webp'),label:area?'Seoul neighborhood photo':'Seoul city photo',credit:''};
 }
 function imageSearch(p){return 'https://www.google.com/search?tbm=isch&q='+encodeURIComponent(p.ko+' '+p.area+' Seoul');}
 
-const categoryIcons={christmas:'✦',food:'♨',culture:'◇'};
 const shortlistKey='sori:explore:saved:1';
 function shortlist(){try {return new Set(JSON.parse(localStorage.getItem(shortlistKey)||'[]'));}catch{return new Set();}}
 const destination=p=>p.ko+' '+p.address;
@@ -71,11 +72,38 @@ export function savePlace(root,id){
  const next=root.querySelector('[data-save-place="'+id+'"]')||root.querySelector('#discoverSaved');
  next?.focus({preventScroll:true});
 }
-const card=(p,saved)=>`<article class="discover-place">${photoMarkup(p)}<div class="discover-place-content"><span class="eyebrow">${categoryIcons[p.category]} ${esc(p.area)} · ${esc(p.type)}</span><h3>${esc(p.name)}</h3><p class="discover-ko" lang="ko">${esc(p.ko)}</p><p>${esc(p.detail)}</p><p class="discover-budget">${esc(p.budget)}${p.category==='food'?' / person, estimate':''}</p><details class="discover-more"><summary>Visiting tips &amp; address</summary><p class="discover-tip">${esc(p.visit)}</p><p class="discover-address">${esc(p.address)}</p></details></div><div class="discover-links"><button type="button" class="sori-secondary" data-save-place="${p.id}" aria-pressed="${saved.has(p.id)}">${saved.has(p.id)?'Saved ✓':'Save place'}</button><a class="text-button" href="${esc(directions(p))}" target="_blank" rel="noopener noreferrer">Transit directions</a><a class="text-button" href="https://map.naver.com/p/search/${encodeURIComponent(p.ko+' '+p.area)}" target="_blank" rel="noopener noreferrer">Naver Map</a><a class="sori-secondary" href="${esc(googleMap(p))}" target="_blank" rel="noopener noreferrer">Google Maps ↗</a><a class="text-button" href="${esc(imageSearch(p))}" target="_blank" rel="noopener noreferrer">Venue photos ↗</a>${p.source?`<a class="text-button" href="${esc(p.source)}" target="_blank" rel="noopener noreferrer">Venue guide ↗</a>`:''}</div></article>`;
+function card(p,saved){
+ const photo=photoFor(p),selected=saved.has(p.id);
+ return `<article class="place-card">
+   <div class="place-picture"><img src="${photo.src}" alt="${esc(photo.label)}" loading="lazy" width="480" height="300">
+     <button class="place-bookmark" type="button" data-save-place="${p.id}" aria-label="Save ${esc(p.name)}" aria-pressed="${selected}">${icon('bookmark')}</button></div>
+   <div class="place-info"><span class="place-area">${icon('pin')} ${esc(p.area)}</span><h3>${esc(p.name)}</h3><span lang="ko">${esc(p.ko)}</span>
+   <details><summary>Place details</summary><p>${esc(p.detail)}</p><p>${esc(p.visit)}</p>
+     <p><strong>Budget</strong> ${esc(p.budget)}${p.category==='food'?' / person, estimate':''}</p><p><strong>Address</strong> ${esc(p.address)}</p>
+     <nav class="place-actions" aria-label="Maps and links for ${esc(p.name)}">
+       <a href="${esc(directions(p))}" target="_blank" rel="noopener noreferrer">${icon('train')} Transit directions</a>
+       <a href="${esc(googleMap(p))}" target="_blank" rel="noopener noreferrer">Google Maps</a><a href="https://map.naver.com/p/search/${encodeURIComponent(p.ko+' '+p.area)}" target="_blank" rel="noopener noreferrer">Naver Map</a>
+       <a href="${esc(imageSearch(p))}" target="_blank" rel="noopener noreferrer">Venue photos</a>${p.source?`<a href="${esc(p.source)}" target="_blank" rel="noopener noreferrer">Venue guide</a>`:''}
+     </nav><p class="photo-credit">${esc(photo.label)}${photo.credit?' · '+photo.credit:''}</p></details></div></article>`;
+}
+const covers={
+ all:['namsan.jpg','Explore Seoul'],christmas:['lottedepartment.jpg','Christmas in Seoul'],
+ food:['bibimbap.jpg','Eat like a local'],culture:['craftmuseum.jpg','Shopping & culture']
+};
 export function discoverMarkup(hash){
- const category=categories.some(([id])=>id===new URLSearchParams(hash.slice(1)).get('discover'))?new URLSearchParams(hash.slice(1)).get('discover'):'all';
- const types=[...new Set(filterPlaces(category).map(p=>p.type))];
- return `<header class="city-intro discover-intro"><h1>${category==='food'?'Eat like a local.':category==='culture'?'Shop, sip & explore.':'Find your Seoul.'}</h1><p>${category==='food'?'Ten real restaurants, grouped by what you want to eat.':category==='culture'?'Crafts, tea, design and gifts to take home.':'Real places, local favorites and seasonal ideas. Choose what you love.'}</p></header>${category==='all'||category==='christmas'?`<div class="discover-hero"><img src="assets/photos/christmas-seoul.webp" alt="Illustration of a festive Seoul street at night" width="960" height="640"><div><span class="eyebrow">Seasonal guide · Winter 2026</span><h2>Christmas in Seoul</h2><a href="#discover=christmas" class="sori-primary">Explore the lights</a></div><small>Editorial illustration</small></div>`:''}<nav class="discover-tabs" aria-label="Discover categories">${categories.map(([id,label])=>`<a href="#discover=${id}" ${category===id?'aria-current="page"':''}>${label}</a>`).join('')}</nav><details class="discover-routes"><summary>Easy day routes · 5 ideas</summary>${dayRoutes.map(r=>`<article><h3>${esc(r.title)}</h3><p>${esc(r.note)}</p><ol>${r.ids.map(id=>places.find(p=>p.id===id)).map(p=>`<li><a href="${esc(googleMap(p))}" target="_blank" rel="noopener noreferrer">${esc(p.name)} ↗</a></li>`).join('')}</ol></article>`).join('')}<a class="sori-primary" href="#guide">Build my own itinerary</a></details><div class="discover-shortlist"><label><input type="checkbox" id="discoverSaved"> Saved places on this device <span id="savedPlaceCount"></span></label><span role="status" data-save-status></span></div><section class="discover-filter" data-discover-category="${category}"><label for="discoverSearch">Search places or neighborhoods<input type="search" class="learn-search" id="discoverSearch" placeholder="e.g. noodles, Yeouido, 우래옥"></label><label for="discoverType">Type<select id="discoverType"><option value="">All types</option>${types.map(t=>`<option>${esc(t)}</option>`).join('')}</select></label><label for="discoverArea">Neighborhood<select id="discoverArea"><option value="">All neighborhoods</option>${[...new Set(filterPlaces(category).map(p=>p.area))].sort().map(a=>`<option>${esc(a)}</option>`).join('')}</select></label></section><div class="discover-results" id="discoverResults" aria-live="polite"></div><p class="small-note">Curated from Sori's Seoul guide, reviewed November 19, 2026. Budgets are estimates, not live quotes. Holiday displays, entry rules, menus and closures can change; confirm before visiting. <a href="https://english.visitkorea.or.kr/svc/contents/contentsView.do?menuSn=219&amp;vcontsId=1595020" target="_blank" rel="noopener noreferrer">Winter travel information ↗</a></p>`;
+ const choice=new URLSearchParams(hash.slice(1)).get('discover');
+ const category=categories.some(([id])=>id===choice)?choice:'all';
+ const options=filterPlaces(category), types=[...new Set(options.map(p=>p.type))], [cover,title]=covers[category];
+ return `<header class="city-intro photo-heading"><img src="assets/photos/${cover}" alt="" width="700" height="320"><h1>${esc(title)}</h1></header>
+ <nav class="place-categories" aria-label="Discover categories">${categories.map(([id,label])=>`<a href="#discover=${id}" ${category===id?'aria-current="page"':''}>${icon(id)}<span>${id==='culture'?'Culture':label}</span></a>`).join('')}</nav>
+ <div class="place-toolbar"><details><summary>${icon('sliders')} Filters</summary>
+   <div class="discover-filter" data-discover-category="${category}"><label>Search<input type="search" class="learn-search" id="discoverSearch" placeholder="Place or neighborhood"></label>
+   <label>Type<select id="discoverType"><option value="">All types</option>${types.map(t=>`<option>${esc(t)}</option>`).join('')}</select></label>
+   <label>Neighborhood<select id="discoverArea"><option value="">All neighborhoods</option>${[...new Set(options.map(p=>p.area))].sort().map(a=>`<option>${esc(a)}</option>`).join('')}</select></label></div></details>
+   <label class="saved-filter"><input type="checkbox" id="discoverSaved">${icon('bookmark')} Saved <span id="savedPlaceCount"></span></label><span role="status" data-save-status></span></div>
+ <div class="discover-results" id="discoverResults" aria-live="polite"></div>
+ <details class="discover-routes"><summary>Day routes · ${dayRoutes.length} ideas</summary>${dayRoutes.map(r=>`<article><h3>${esc(r.title)}</h3><p>${esc(r.note)}</p><ol>${r.ids.map(id=>places.find(p=>p.id===id)).map(p=>`<li><a href="${esc(googleMap(p))}" target="_blank" rel="noopener noreferrer">${esc(p.name)}</a></li>`).join('')}</ol></article>`).join('')}<a class="sori-primary" href="#guide">Build my itinerary</a></details>
+ <details class="guide-notes"><summary>About this guide &amp; photos</summary><p>Reviewed November 19, 2026. Budgets are estimates. Confirm seasonal dates, menus and entry rules before visiting.</p><a href="https://english.visitkorea.or.kr/svc/contents/contentsView.do?menuSn=219&amp;vcontsId=1595020" target="_blank" rel="noopener noreferrer">Winter travel information</a><p>Cover photo · ${category==='all'?'<a href="https://unsplash.com/photos/fCsZgoFjqs4">Wonhong Jang / Unsplash</a>':(()=>{const source=photoCredits[cover.split('.')[0]];return `<a href="${esc(source.source)}">${esc(source.artist)} · ${esc(source.license)}</a>`})()}</p></details>`;
 }
 export function refreshDiscover(root){
  const filter=root.querySelector('.discover-filter');if(!filter)return;

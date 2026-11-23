@@ -1,5 +1,5 @@
 {
-  "name": "Sori \u00b7 Everyday Korean",
+  "name": "Sori · Everyday Korean",
   "short_name": "Sori",
   "start_url": "/",
   "display": "standalone",
@@ -7,17 +7,18 @@
   "theme_color": "#a43d2d",
   "icons": [
     {
-      "src": "/assets/icons/sori-wave-192.png",
+      "src": "/assets/icons/sori-mark-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/assets/icons/sori-wave-512.png",
+      "src": "/assets/icons/sori-mark-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
     }
   ],
-  "id": "/"
+  "id": "/",
+  "scope": "/"
 }
