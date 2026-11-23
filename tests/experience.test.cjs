@@ -28,7 +28,7 @@ test('practice is resumable, spaced, unique per day and isolated across accounts
 });
 test('community reactions toggle without exposing voters; waitlist never sends mail or claims confirmation',async()=>{
  const {createCommunity}=await import('../server/community.js');const bucket=createDevBucket();let requests=0;const service=createCommunity({bucket,storyIds:['one-story'],fetcher:async()=>{requests++;throw Error('Must not send');}}),token='a'.repeat(43);
- let r=await service({path:'/stories/one-story/reaction',method:'POST',body:{token,value:'useful'},peer:'test'});assert.equal(r.data.useful,1);r=await service({path:'/stories/one-story/reaction',method:'POST',body:{token,value:'curious'},peer:'test'});assert.deepEqual(r.data,{useful:0,curious:1});assert.equal(JSON.stringify([...bucket.rows||[]]).includes(token),false);
+ let r=await service({path:'/stories/one-story/reaction',method:'POST',body:{token,value:'useful'},peer:'test'});assert.equal(r.data.useful,1);r=await service({path:'/stories/one-story/reaction',method:'POST',body:{token,value:'curious'},peer:'test'});assert.deepEqual(r.data,{useful:0,curious:1,comments:[]});assert.equal(JSON.stringify([...bucket.rows||[]]).includes(token),false);
  const joined=await service({path:'/newsletter/signup',method:'POST',body:{email:'reader@example.com',consent:true},peer:'test'});assert.equal(joined.data.status,'waitlist');assert.equal(requests,0);assert.ok(joined.data.cancelToken);const removed=await service({path:'/newsletter/unsubscribe',method:'POST',body:{token:joined.data.cancelToken}});assert.equal(removed.data.status,'unsubscribed');
  assert.equal((await service({path:'/newsletter/signup',method:'POST',body:{email:'bad',consent:true},peer:'test'})).status,400);
 });
@@ -44,4 +44,17 @@ test('published stories use unique public URLs, real learning phrases and existi
 test('the actual packaged Worker initializes and serves health without Node build-time helpers',async()=>{
  const {spawnSync}=require('node:child_process'),fs=require('node:fs'),path=require('node:path');const cwd=path.join(__dirname,'../hosting/trips-api');const build=spawnSync(process.execPath,['scripts/build.mjs'],{cwd,encoding:'utf8'});assert.equal(build.status,0,build.stderr);
  const source=fs.readFileSync(path.join(cwd,'dist/server/index.js'),'utf8');const {default:worker}=await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));const r=await worker.fetch(new Request('https://example.com/api/health'),{BUCKET:createDevBucket()});assert.equal(r.status,200);assert.equal((await r.json()).collaboration,true);
+});
+
+test('story comments persist alongside existing reactions and expose only public comment fields',async()=>{
+ const {createCommunity}=await import('../server/community.js');
+ const service=createCommunity({bucket:createDevBucket(),storyIds:['sample']});
+ const token='a'.repeat(43),path='/stories/sample';
+ assert.equal((await service({path:path+'/reaction',method:'POST',body:{token,value:'useful'}})).status,200);
+ assert.equal((await service({path:path+'/comment',method:'POST',body:{token,name:'Reader',text:'Lovely story!'}})).status,201);
+ const {data}=await service({path:path+'/activity',method:'GET'});
+ assert.equal(data.useful,1);
+ assert.equal(data.comments[0].name,'Reader');assert.equal(data.comments[0].text,'Lovely story!');
+ assert.deepEqual(Object.keys(data.comments[0]).sort(),['created','name','text']);
+ assert.equal((await service({path:path+'/comment',method:'POST',body:{token,name:'Reader',text:' '}})).status,400);
 });

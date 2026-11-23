@@ -5,7 +5,7 @@
       ['vocabulary','Vocabulary','#home'], ['conversations','Conversations','#conversations'], ['review','Review','#review']
     ]},
     {id:'read', title:'Korea 101', view:'newsletter', children:[
-      ['stories','Stories','#read'], ['bookmarks','Saved stories','#read=saved'], ['newsletter','Newsletter','#read=newsletter']
+      ['stories','Stories','#read']
     ]},
     {id:'explore', title:'Explore', view:'guide', children:[
       ['discover','Discover','#discover'], ['planner','Trip planner','#guide'], ['itineraries','My itineraries','#itineraries']
@@ -22,8 +22,8 @@
     if (practice || p.has('phrase') || ['#phrases','#speak','#collection'].includes(hash)) {
       return ['speak',practice === 'review' || p.get('from') === 'review' ? 'review' : 'conversations','listen'];
     }
-    if (hash === '#read=saved' || (p.has('story') && p.get('from') === 'saved')) return ['read','bookmarks','newsletter'];
-    if (hash === '#read=newsletter' || p.has('subscribe') || p.has('unsubscribe')) return ['read','newsletter','newsletter'];
+    if (hash === '#read=saved' || (p.has('story') && p.get('from') === 'saved')) return ['read','stories','newsletter'];
+    if (hash === '#read=newsletter' || p.has('subscribe') || p.has('unsubscribe')) return ['read','stories','newsletter'];
     if (hash === '#read' || p.has('story')) return ['read','stories','newsletter'];
     if (hash === '#itineraries' || p.has('day') || p.has('trip') || p.has('invite')) return ['explore','itineraries','guide'];
     if (p.has('discover')) return ['explore','discover','guide'];

@@ -3,7 +3,7 @@ import {difficultyControl, topicTitle} from './vocabulary-library.js?v=20261121n
 import {paintSpokenQuestion} from './speech-highlight.js?v=20261121nav';
 import {attachVoiceReply, recorderControls} from './voice-reply.js?v=20261121focus';
 import {attachQuestionAudio} from './question-audio.js?v=20261121q1';
-import {checkWords} from './word-check.js?v=20261121nav';
+import {checkWords} from './word-check.js?v=20261123relaunch';
 import {autoNext} from './auto-next.js?v=20261121polish';
 
 function prompt(question) {

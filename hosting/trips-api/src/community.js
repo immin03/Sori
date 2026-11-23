@@ -5,11 +5,17 @@ export function createCommunity({bucket,storyIds,fetcher=fetch,mailKey='',mailFr
  const read=async key=>{const r=await bucket.get(key);return r?{etag:r.etag,data:await r.json()}:null;};
  async function edit(key,fn){for(let i=0;i<8;i++){const old=await read(key),result=fn(old?.data);if(!result.write)return result.value;const r=await bucket.put(key,JSON.stringify(result.write),{onlyIf:old?{etagMatches:old.etag}:{etagDoesNotMatch:'*'}});if(r)return result.value;}throw Object.assign(Error('Please try again in a moment.'),{status:409});}
  async function budget(peer){const key='sori/v1/public-budget/'+await digest(peer||'unknown');return edit(key,old=>{const b=!old||old.until<=clock()?{count:0,until:clock()+3600000}:old;if(b.count>=30)throw Object.assign(Error('Please try again later.'),{status:429});b.count++;return {write:b,value:true};});}
- const counts=row=>({useful:Object.values(row?.votes||{}).filter(v=>v==='useful').length,curious:Object.values(row?.votes||{}).filter(v=>v==='curious').length});
+ const counts=row=>({useful:Object.values(row?.votes||{}).filter(v=>v==='useful').length,curious:Object.values(row?.votes||{}).filter(v=>v==='curious').length,comments:(row?.comments||[]).slice(-50).map(({name,text,created})=>({name,text,created}))});
  return async ({path,method,body={},peer=''})=>{
   if(path==='/newsletter/status'&&method==='GET')return {status:200,data:{emailEnabled:!!(mailKey&&mailFrom),waitlistEnabled:true}};
-  const match=path.match(/^\/stories\/([a-z0-9-]{1,80})\/(activity|reaction)$/);
+  const match=path.match(/^\/stories\/([a-z0-9-]{1,80})\/(activity|reaction|comment)$/);
   if(match){if(!storyIds.includes(match[1])){const cached=await read('sori/v1/published-story-ids');let ids=cached?.data.until>clock()?cached.data.ids:null;if(!ids){try{const r=await fetcher('https://sorikorea.com/data/stories.json',{signal:AbortSignal.timeout(5000)}),list=await r.json();ids=Array.isArray(list)?list.filter(s=>s.status==='published').map(s=>s.id):[];await bucket.put('sori/v1/published-story-ids',JSON.stringify({ids,until:clock()+10*60000}));}catch{ids=[];}}if(!ids.includes(match[1]))return {status:404,data:{error:'Story not found.'}};}const key='sori/v1/story-reactions/'+match[1];if(match[2]==='activity'&&method==='GET'){const row=await read(key);return {status:200,data:counts(row?.data)};}
+   if(match[2]==='comment'&&method==='POST'){
+    if(!/^[A-Za-z0-9_-]{43}$/.test(body.token||'')||typeof body.text!=='string'||!body.text.trim()||body.text.length>500||typeof body.name!=='string'||!body.name.trim()||body.name.length>40)return {status:400,data:{error:'Enter a name and a comment of up to 500 characters.'}};
+    await budget(peer);
+    const data=await edit(key,old=>{const row=old||{votes:{}};row.comments||=[];if(row.comments.length>=500)throw Object.assign(Error('Comment limit reached.'),{status:409});row.comments.push({name:body.name.trim(),text:body.text.trim(),created:new Date(clock()).toISOString()});return {write:row,value:counts(row)};});
+    return {status:201,data};
+   }
    if(match[2]==='reaction'&&method==='POST'){
     if(!/^[A-Za-z0-9_-]{43}$/.test(body.token||'')||![null,'useful','curious'].includes(body.value))return {status:400,data:{error:'Choose a valid reaction.'}};
     await budget(peer);const actor=await digest(body.token);const data=await edit(key,old=>{const row=old||{votes:{}};if(Object.keys(row.votes).length>=5000&&!row.votes[actor])throw Object.assign(Error('This story has reached its reaction limit.'),{status:409});if(body.value===null)delete row.votes[actor];else row.votes[actor]=body.value;return {write:row,value:counts(row)};});return {status:200,data};
