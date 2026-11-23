@@ -36,3 +36,33 @@ test('member visits deduplicate, survey stays private, and only the verified adm
  assert.equal(data.members[0].visits,2);assert.equal(data.members[0].feedback.goal,'Study');
  await assert.rejects(()=>svc({request:new Request('https://example.test'),path:'/admin/members',method:'GET'}),e=>e.status===401);
 });
+
+test('the menu follows the server-verified account, including logout and late responses', async()=>{
+ const fs=require('node:fs'),vm=require('node:vm');
+ const events={},calls=[],control={},body={classList:{contains:()=>false}};
+ const content={innerHTML:'',querySelector:()=>null,replaceChildren(){}};
+ const dialog={open:false,dataset:{},querySelector:s=>s==='[data-beta-body]'?content:control,
+  addEventListener:(name,fn)=>{events['dialog:'+name]=fn;},showModal(){this.open=true;},
+  close(){this.open=false;events['dialog:close']();}};
+ const menu={append(group){this.item=group;group.isConnected=true;}};
+ const group={isConnected:false,remove(){this.isConnected=false;menu.item=null;}};
+ const document={body,hidden:false,getElementById:()=>dialog,createElement:()=>group,
+  querySelector:s=>s==='#sidebar .sidebar-menu'?menu:control,addEventListener(){}};
+ const location={hash:'#admin'},history={replaceState:(_,__,hash)=>{location.hash=hash;}};
+ let user=null,finishOld;
+ const window={SoriUser:{getCurrentUser:()=>user},SoriConfig:{tripsApiBase:'/api'},addEventListener:(name,fn)=>{events[name]=fn;}};
+ const fetch=async(url,opts)=>{
+  calls.push(url);
+  const token=opts.headers.Authorization;
+  if(token==='Bearer pending')await new Promise(done=>{finishOld=done;});
+  return {ok:true,json:async()=>url.includes('/admin/members')?{members:[],cursor:null}:{answered:true,isAdmin:['Bearer owner','Bearer pending'].includes(token)}};
+ };
+ const login=async id=>{user=id?{uid:id,getIdToken:async()=>id}:null;events['sori-auth-changed']();await new Promise(resolve=>setImmediate(resolve));};
+ vm.runInNewContext(fs.readFileSync(require.resolve('../js/beta-members.js'),'utf8'),{window,document,location,history,fetch});
+ assert.ok(!menu.item);assert.equal(dialog.open,false);
+ await login('member');assert.ok(!menu.item);assert.equal(dialog.open,false);assert.ok(!calls.includes('/api/admin/members'));
+ await login('pending');await login('member');finishOld();await new Promise(resolve=>setImmediate(resolve));assert.ok(!menu.item);
+ await login('owner');assert.match(menu.item.innerHTML,/href="#admin">관리자/);
+ location.hash='#admin';events.hashchange();await new Promise(resolve=>setImmediate(resolve));assert.equal(dialog.open,true);assert.ok(calls.includes('/api/admin/members'));
+ await login(null);assert.ok(!menu.item);assert.equal(dialog.open,false);
+});

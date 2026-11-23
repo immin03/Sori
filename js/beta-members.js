@@ -45,13 +45,26 @@ function survey(){
   catch(err){status.textContent=err.message;button.disabled=false;}
  };
 }
+// The member API verifies the Google account before this link enters the menu.
+const adminGroup=document.createElement('section');
+adminGroup.className='menu-group';
+adminGroup.innerHTML='<h3 lang="ko"><a href="#admin">관리자</a></h3>';
+const canOpenAdmin=()=>Boolean(current && current.uid===window.SoriUser?.getCurrentUser()?.uid && profile?.isAdmin===true);
+function updateAdminMenu(){
+ if(canOpenAdmin()){
+  if(!adminGroup.isConnected)document.querySelector('#sidebar .sidebar-menu').append(adminGroup);
+ }else{
+  adminGroup.remove();adminRows=[];cursor=null;
+ }
+}
 const date=n=>n?new Date(n).toLocaleDateString():'';
 async function admin(append=false){
- const own=++screen;show();if(!append){adminRows=[];cursor=null;}
+ if(!canOpenAdmin())return;
+ const own=++screen;dialog.dataset.panel='admin';show();if(!append){adminRows=[];cursor=null;}
  content.innerHTML='<h2 id="betaTitle">Beta members</h2><p role="status">Loading members…</p>';
  try {
   const res=await api('/admin/members'+(cursor?'?cursor='+encodeURIComponent(cursor):''));
-  if(own!==screen||!dialog.open)return;
+  if(own!==screen||!dialog.open||!canOpenAdmin())return;
   adminRows.push(...res.members);cursor=res.cursor;
   const sorted=[...adminRows].sort((a,b)=>b.lastSeen-a.lastSeen),week=Date.now()-7*86400000;
   const votes=features.map(name=>[name,sorted.filter(r=>r.feedback?.features.includes(name)).length]).filter(([,count])=>count).sort((a,b)=>b[1]-a[1]);
@@ -59,29 +72,41 @@ async function admin(append=false){
   content.querySelector('[data-more]')?.addEventListener('click',()=>admin(true));
  }catch(err){if(own===screen)content.querySelector('[role=status]').textContent=err.message;}
 }
-function openFeedback(forAdmin=false){
- if(current){survey();return;}content.innerHTML='<h2 id="betaTitle">Beta feedback</h2><p>Sign in with Google to share a suggestion.</p><button class="sori-primary">Sign in with Google</button><p role="status"></p>';if(forAdmin){content.querySelector('h2').textContent='Member dashboard';content.querySelector('p').textContent='Sign in with the administrator’s Google account to view beta members.';}show();
+function openFeedback(){
+ if(current){survey();return;}content.innerHTML='<h2 id="betaTitle">Beta feedback</h2><p>Sign in with Google to share a suggestion.</p><button class="sori-primary">Sign in with Google</button><p role="status"></p>';show();
  content.querySelector('button').onclick=async()=>{try{await window.SoriUser.login();}catch{content.querySelector('[role=status]').textContent='Sign-in could not finish. Please try again.';}};
 }
 function sync(){
  const user=window.SoriUser?.getCurrentUser()||null;
  if(current?.uid!==user?.uid){current=user;profile=null;updated=lastAttempt=0;refreshing=null;screen++;adminRows=[];cursor=null;stopDictation();
-  if(dialog.open){if(location.hash==='#admin' && current){content.innerHTML='<h2 id="betaTitle">Member dashboard</h2><p>Verifying access…</p>';}else hide();}document.querySelector('[data-beta-admin]').hidden=true;}
+  updateAdminMenu();
+  if(dialog.open)hide();
+ }
  if(!current||document.hidden||Date.now()-updated<5*60000||Date.now()-lastAttempt<30000||refreshing)return;
  const own=current;lastAttempt=Date.now();
  const task=api('/member/visit',{},own).then(r=>{
   if(own!==current)return;
-  updated=Date.now();profile=r;document.querySelector('[data-beta-admin]').hidden=!r.isAdmin;
+  updated=Date.now();profile=r;updateAdminMenu();
   let asked=false;try{asked=sessionStorage.getItem('sori:asked:'+own.uid);}catch{}
-  if(location.hash==='#admin'){admin();return;}
+  if(location.hash==='#admin'){
+   if(canOpenAdmin()){if(!dialog.open)admin();}
+   else {if(dialog.open)hide();history.replaceState(null,'','#home');}
+   return;
+  }
   if(!r.answered&&!asked&&!dialog.open&&!document.body.classList.contains('focus-exercise')){survey();try{sessionStorage.setItem('sori:asked:'+own.uid,'1');}catch{}}
- }).catch(()=>{if(own===current && location.hash==='#admin' && dialog.open){content.innerHTML='<h2 id="betaTitle">Member dashboard</h2><p>Could not verify your account. Please retry.</p><button class="sori-secondary">Retry</button>';content.querySelector('button').onclick=()=>admin();}}).finally(()=>{if(refreshing===task)refreshing=null;});refreshing=task;
+ }).catch(()=>{
+  if(own!==current)return;
+  profile=null;updateAdminMenu();if(location.hash==='#admin' && dialog.open)hide();
+ }).finally(()=>{if(refreshing===task)refreshing=null;});refreshing=task;
 }
 dialog.querySelector('[data-beta-close]').onclick=later;
-dialog.addEventListener('close',()=>{stopDictation();screen++;content.replaceChildren();if(location.hash==='#admin')history.replaceState(null,'','#home');});
+dialog.addEventListener('close',()=>{delete dialog.dataset.panel;stopDictation();screen++;content.replaceChildren();if(location.hash==='#admin')history.replaceState(null,'','#home');});
 document.querySelector('[data-beta-feedback]').onclick=()=>openFeedback();
-document.querySelector('[data-beta-admin]').onclick=()=>admin();
 window.addEventListener('sori-auth-changed',sync);window.addEventListener('firebaseReady',sync);
 document.addEventListener('visibilitychange',sync);document.addEventListener('pointerdown',sync,{passive:true});
-function adminLink(){if(location.hash==='#admin'){if(current)admin();else openFeedback(true);}}
+function adminLink(){
+ if(location.hash==='#admin'){
+  if(canOpenAdmin())admin();else sync();
+ }else if(dialog.open && dialog.dataset.panel==='admin')hide();
+}
 window.addEventListener('hashchange',adminLink);sync();adminLink();
