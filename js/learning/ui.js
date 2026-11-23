@@ -3,7 +3,7 @@ import {icon} from '../ui-icons.js';
 import {Journey} from './journey.js?v=study1';
 import {PracticeProgress} from './progress.js?v=20261123beta';
 import {scenes} from './scenes.js?v=study1';
-import {mountSpokenTurn,spokenTurnControls} from './spoken-turn.js?v=20261123beta';
+import {mountSpokenTurn,spokenTurnControls} from './spoken-turn.js?v=atlas2';
 import {DailyVocabulary} from './vocabulary.js?v=study1';
 import {vocabularyCard,mountVocabulary} from './vocabulary-ui.js?v=study1';
 import {showVocabularyLibrary} from './vocabulary-library.js?v=mobile2';
@@ -47,7 +47,9 @@ function reviewRow(href,title,summary) {
 }
 function roleplayCards(){
  const entries=Object.entries(scenes).filter(([key,s])=>sceneGroup==='All places'||sceneGroup===(s.place||legacyPlaces[key]||s.role));
- const visible=sceneGroup==='All places'&&!sceneExpanded?entries.slice(0,4):entries;
+ const day=new Date();
+ const offset=(Date.UTC(day.getFullYear(),day.getMonth(),day.getDate())/86400000*7)%entries.length;
+ const visible=sceneGroup==='All places'&&!sceneExpanded?Array.from({length:4},(_,i)=>entries[(offset+i*Math.floor(entries.length/4))%entries.length]):entries;
  return visible.map(([key,s])=>{
    const place=s.place||legacyPlaces[key]||s.role;
    return `<button class="scene-choice" data-scene="${key}"><span class="tile-icon">${icon(place,'pin')}</span><strong>${esc(s.title)}</strong><small>${esc(place)} · ${s.level?levelNames[s.level]:s.turns.length+' turns'}</small></button>`;

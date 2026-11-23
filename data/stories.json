@@ -1,231 +1,101 @@
 [
   {
-    "id": "bibimbap-last-step",
-    "title": "Who gets the last job in a bibimbap kitchen?",
+    "id": "how-to-make-a-ssam",
+    "title": "Why is there a basket of lettuce at Korean barbecue?",
     "category": "Food & traditions",
     "published": "2026-11-23",
-    "photo": "assets/photos/bibimbap.jpg",
-    "photoAlt": "A bowl of bibimbap with toppings arranged over rice",
-    "photoContext": "Bibimbap photographed by Shene81, Wikimedia Commons, CC BY 3.0. Cropped and resized for Sori.",
-    "excerpt": "The kitchen arranges the toppings so carefully. Then someone hands you a spoon. How much of the red paste should go in?",
-    "phrase": "고추장은 따로 주세요.",
-    "question": "Which ingredient would you want in your very first spoonful?",
+    "photo": "assets/photos/seoul/samgyeopsal.jpg",
+    "photoAlt": "Grilled pork belly served Korean barbecue style",
+    "photoContext": "Samgyeopsal, grilled pork belly. Photograph by jinsoo jang, CC0, via Wikimedia Commons.",
+    "excerpt": "One leaf, a little rice and a piece of pork. Learn how to make a ssam, offer one to someone else and negotiate the last bite in Korean.",
+    "phrase": "밥 더 주세요.",
+    "question": "What would you put in a wrap for someone you know well?",
     "figures": [],
     "sources": [
       {
-        "label": "Korea Tourism Organization, Jeonju Bibimbap",
-        "url": "https://english.visitkorea.or.kr/svc/contents/contentsView.do?vcontsId=231469"
+        "label": "National Folk Museum of Korea, Ssam (leaf wraps)",
+        "url": "https://folkency.nfm.go.kr/en/topic/detail/7831"
       },
       {
-        "label": "Photograph by Shene81, Wikimedia Commons",
-        "url": "https://commons.wikimedia.org/wiki/File:Korean_Bibimbap.jpg"
+        "label": "Korea Tourism Organization, Leaf Wraps and Rice",
+        "url": "https://english.visitkorea.or.kr/svc/contents/contentsView.do?vcontsId=231701"
+      },
+      {
+        "label": "Ministry of Culture, Sports and Tourism, Korea’s food-wrapping tradition",
+        "url": "https://www.mcst.go.kr/english/policy/kocis/newsView.jsp?pSeq=93"
       }
     ],
     "expressions": [
       {
-        "ko": "고추장은 따로 주세요.",
-        "roman": "gochujangeun ttaro juseyo",
-        "meaning": "Please put the chili paste on the side.",
-        "example": "비빔밥 하나 주세요. 고추장은 따로 주세요.",
-        "translation": "One bibimbap, please, with the chili paste on the side."
+        "ko": "이거 어떻게 싸 먹어요?",
+        "roman": "igeo eotteoke ssa meogeoyo?",
+        "meaning": "How do you wrap this to eat it?",
+        "example": "깻잎은 어떻게 싸 먹어요?",
+        "translation": "How do you make a wrap with a perilla leaf?"
       },
       {
-        "ko": "이렇게 비비면 돼요?",
-        "roman": "ireoke bibimyeon dwaeyo",
-        "meaning": "Do I mix it like this?",
-        "example": "처음 먹어 봐요. 이렇게 비비면 돼요?",
-        "translation": "It's my first time trying this. Do I mix it like this?"
+        "ko": "쌈 하나 싸 드릴까요?",
+        "roman": "ssam hana ssa deurilkkayo?",
+        "meaning": "Shall I make you a wrap?",
+        "example": "마늘 빼고 싸 드릴까요?",
+        "translation": "Shall I make yours without garlic?"
+      },
+      {
+        "ko": "마지막 한 점 드실래요?",
+        "roman": "majimak han jeom deusillaeyo?",
+        "meaning": "Would you like the last piece?",
+        "example": "이 고기 한 점 드실래요?",
+        "translation": "Would you like a piece of this meat?"
+      },
+      {
+        "ko": "밥 더 주세요.",
+        "roman": "bap deo juseyo",
+        "meaning": "More rice, please.",
+        "example": "여기 밥 더 주세요.",
+        "translation": "Could we have more rice here, please?"
       }
     ],
     "author": "Korea 101 by Sori",
     "status": "published",
     "updated": "2026-11-23",
-    "minutes": 2,
+    "minutes": 7,
     "paragraphs": [
-      "A bowl arrives with little piles of green spinach, pale bean sprouts and strips of beef arranged around the center. Someone at the next table takes a photo. A moment later their spoon goes straight through the arrangement. There is rice underneath, and the name of the dish gives away who has the last job in this kitchen. You do.",
-      "비비다 (bibida) means to mix, and 밥 (bap) is cooked rice. Before that final stir, a cook may have prepared each topping separately. Think of a bean sprout that still crunches beside a piece of soft spinach. A good spoonful lets you taste both. Look closely at a Jeonju-style bowl and you might spot something yellow that looks a little like egg. It could be yellow mung bean jelly, a traditional ingredient in the city's version.",
-      "If you're curious about the red paste, ask for it on the side when you order. 고추장은 따로 주세요 (gochujangeun ttaro juseyo) gives the cook a clear request. Add a little gochujang, pull some rice up from the bottom with your spoon and taste. It's much easier to put another dab in than to fish the first one back out.",
-      "Eating with a friend gives you another line to try. Lift your spoon and ask 이렇게 비비면 돼요? (ireoke bibimyeon dwaeyo), meaning “Do I mix it like this?” See what your friend does next. They might show you their favorite way to mix it or confess that they always take a bite of the egg first. Which ingredient would you want in your very first spoonful?"
+      "Someone puts a basket of lettuce beside the grill. You reach for a leaf, then pause. There is no salad bowl. Across the table, your friend has a leaf open on her palm. She adds a piece of pork, barely a spoonful of rice and a dab of reddish paste. She folds the edges in and eats the whole thing. By the time you have decided what to put in yours, she is already making another.",
+      "Welcome to Korea 101. Today we’re pulling up a chair at a Korean barbecue table. We’ll make one very small dinner decision together: what goes into a single leaf? Along the way, you’ll learn how to ask a friend to show you, how to offer someone a bite, and what to say when the last piece of pork is still sitting on the grill.",
+      "The little parcel is a 쌈 (ssam). The verb 싸다 (ssada) means “to wrap.” You can hear the same verb when someone talks about wrapping a present. At dinner, though, the object might be a slippery piece of grilled pork belly. If you are making your first ssam, try a leaf about the size of your palm. Put the meat in the middle, fold the bottom edge up and bring the sides together. If the first one falls apart, eat what you have and try a smaller filling on the next round.",
+      "Now try two with exactly the same pork. Make the first with lettuce, 상추 (sangchu). For the second, pick a 깻잎 (kkaennip), a perilla leaf. The lettuce gives a cool crunch and then gets out of the way. The perilla has a scent that stays with you after the meat is gone. You may understand why the person beside you has been carefully peeling those leaves apart all evening. Or you may go straight back to the lettuce. Either way, you’ve learned something about your own order.",
+      "If your introduction to ssam was a barbecue restaurant, it is easy to imagine that grilled meat came first and someone invented a leafy wrapper to go with it. A cookbook published in 1924 offers a different picture. As the National Folk Museum of Korea notes, it described napa cabbage as a common wrapper. You could bring leaves and cooked rice to a table and already have the beginnings of a meal.",
+      "That older idea is still right there on a restaurant sign. Look for 쌈밥 (ssambap). You already know 쌈, and 밥 is cooked rice. At a ssambap restaurant, the selection of leaves can be worth paying attention to in its own right. One might be crisp and raw, another cabbage leaf tender enough to fold over with a fingertip. The Korea Tourism Organization describes versions with fish as well as meat. A piece of fish tucked into soft cabbage makes a very different lunch from pork hot off the grill.",
+      "Back at our barbecue table, the reddish-brown paste is 쌈장 (ssamjang). It is usually made with 된장 (doenjang, fermented soybean paste) and 고추장 (gochujang, red pepper paste). Recipes vary. Start with a little on the tip of a chopstick. That leaves room to taste the pork, and you can always add more to the next bite. Garlic, sliced chillies or kimchi might be within reach too. You can leave every one of them on its plate.",
+      "There is a practical reason to start small. Once your friend has folded a generous leaf around two pieces of pork, rice and a whole garlic clove, that is exactly when someone will ask her a question. Give her a moment. A nod and a laugh are usually all she can manage. When it is your turn to talk, try 이거 어떻게 싸 먹어요? (igeo eotteoke ssa meogeoyo?), “How do you wrap this to eat it?” Someone can answer that question with their hands even if you don’t catch every word.",
+      "Suppose your friend sets a finished wrap on your plate. She remembered you skipped the raw garlic last time. Without saying much, she has made something that is yours down to the last ingredient. If you’d like to return the gesture, ask 쌈 하나 싸 드릴까요? (ssam hana ssa deurilkkayo?), “Shall I make you a wrap?” The ending 드릴까요 makes the offer polite. You can use the same ending when offering to pour someone water. Pause for the answer, especially if you’ve only just met.",
+      "Later, there is one piece of pork left. Everyone can see it. If you want to offer it around, 마지막 한 점 드실래요? (majimak han jeom deusillaeyo?) means “Would you like the last piece?” Listen for 점 (jeom). It is a handy word for a piece of meat or fish. A friend might say 반씩 먹어요 (banssik meogeoyo), “Let’s have half each.” If someone offers it to you and you want it, 네, 잘 먹을게요 (ne, jal meogeulgeyo), “Yes, thank you, I’ll enjoy it,” gives them an answer and lets dinner carry on.",
+      "You can practise this at home with one lettuce leaf and a little leftover rice. Say 쌈 as you pick up the leaf. Ask someone whether they’d like one before you start choosing their filling. Then let them make one for you. Even people eating from exactly the same dishes rarely end up with the same bite.",
+      "If someone at your table offered to make you a ssam tonight, what would you ask them to put inside? And is there anything you would quietly ask them to leave out?"
     ],
     "headings": [
       {
         "before": 2,
-        "title": "Make one bowl your own"
-      }
-    ],
-    "wordCount": 322
-  },
-  {
-    "id": "noraebang-first-duet",
-    "title": "The easiest line to sing at a Korean karaoke night",
-    "category": "Everyday culture",
-    "published": "2026-11-23",
-    "photo": "assets/photos/hongdae.jpg",
-    "photoAlt": "A street scene in Seoul's Hongdae neighborhood",
-    "photoContext": "Hongdae neighborhood photograph by Paul Ast on Unsplash. The scene is outside the singing rooms.",
-    "excerpt": "You know the chorus. Your friend knows the verses. Here are the words that get you both to the microphone.",
-    "phrase": "같이 부를까요?",
-    "question": "Which song would you choose if a friend took the second microphone?",
-    "figures": [],
-    "sources": [
-      {
-        "label": "Visit Seoul, Singing rooms in Seoul",
-        "url": "https://english.visitseoul.net/hallyu/Sing-and-Dance-Like-a-Star-at-a-Noraebang-Singing-Room/ENN000165"
+        "title": "One leaf, one bite"
       },
       {
-        "label": "Korea.net, A decade of Korean karaoke charts",
-        "url": "https://www.korea.net/NewsFocus/Culture/view?articleId=249627&koreanId=249597"
-      }
-    ],
-    "expressions": [
-      {
-        "ko": "같이 부를까요?",
-        "roman": "gachi bureulkkayo",
-        "meaning": "Shall we sing together?",
-        "example": "이 노래 같이 부를까요?",
-        "translation": "Shall we sing this song together?"
+        "before": 4,
+        "title": "How the grill got into the picture"
       },
       {
-        "ko": "후렴은 알아요.",
-        "roman": "huryeomeun arayo",
-        "meaning": "I know the chorus.",
-        "example": "가사는 잘 모르지만 후렴은 알아요.",
-        "translation": "I don't really know the lyrics, but I know the chorus."
-      }
-    ],
-    "author": "Korea 101 by Sori",
-    "status": "published",
-    "updated": "2026-11-23",
-    "minutes": 2,
-    "paragraphs": [
-      "Imagine that a friend has put your favorite Korean song in the queue. You take the microphone with complete confidence. Then the introduction ends and it dawns on you that every clip you've heard online starts forty seconds further into the song. Luckily, there's a second microphone.",
-      "같이 부를까요? (gachi bureulkkayo) means “Shall we sing together?” It's a useful first line because it gives your friend a part in the evening. A 노래방 (noraebang) is literally a singing room. In a private room, you and your friends choose your own music. Someone can sing a verse, someone else can wait for the chorus, and the person who picked the song can handle that impossible high note.",
-      "If you're picturing nothing but dance hits, the old song charts have a surprise. Circle Chart researcher Kim Jin-woo looked at Korean karaoke rankings from 2014 through 2023. Seventy of the hundred highest-ranked songs were ballads. Yoon Jong-shin's 2017 breakup ballad “Like It” came first. So the person reaching for the remote may have a whole story to sing before anyone gets to your favorite choreography.",
-      "When your song comes around again, try 후렴은 알아요 (huryeomeun arayo), “I know the chorus.” Hand the first verse to your friend. Listen for how the singer stretches the vowels, then come in on the bit you both remember. The same exchange works at home with a friend, a playlist and two spoons standing in for microphones. Which song would you choose if a friend took the second microphone?"
-    ],
-    "headings": [
-      {
-        "before": 2,
-        "title": "What would you put in the queue?"
-      }
-    ],
-    "wordCount": 293
-  },
-  {
-    "id": "kdrama-one-syllable",
-    "title": "The K-drama plot twist hiding in one syllable",
-    "category": "Useful Korean",
-    "published": "2026-11-23",
-    "photo": "assets/photos/seoul-coffee.jpg",
-    "photoAlt": "A cup of coffee photographed by Andreea Rusu",
-    "photoContext": "Coffee photograph by Andreea Rusu on Unsplash, used to illustrate the imagined café conversation.",
-    "excerpt": "Two people ask the same question. The English subtitles can look identical. Listen to the very end and you might hear their relationship change.",
-    "phrase": "밥 먹었어요?",
-    "question": "What's a sign in your language that two people have become friends?",
-    "figures": [],
-    "sources": [
-      {
-        "label": "National Institute of Korean Language, 말을 놓다 (to speak informally)",
-        "url": "https://krdict.korean.go.kr/eng/dicSearch/SearchView?ParaWordNo=27260"
+        "before": 6,
+        "title": "The brown pot between the chopsticks"
       },
       {
-        "label": "National Institute of Korean Language, 반말 (informal speech)",
-        "url": "https://krdict.korean.go.kr/eng/dicSearch/SearchView?ParaWordNo=15843"
-      }
-    ],
-    "expressions": [
-      {
-        "ko": "밥 먹었어요?",
-        "roman": "bap meogeosseoyo",
-        "meaning": "Have you eaten? (polite)",
-        "example": "점심은 먹었어요?",
-        "translation": "Have you had lunch?"
+        "before": 8,
+        "title": "When someone makes one for you"
       },
       {
-        "ko": "밥 먹었어?",
-        "roman": "bap meogeosseo",
-        "meaning": "Have you eaten? (casual)",
-        "example": "밥 먹었어? 우리 같이 먹을래?",
-        "translation": "Have you eaten? Want to eat together?"
-      },
-      {
-        "ko": "우리 말 놓을까요?",
-        "roman": "uri mal noeulkkayo",
-        "meaning": "Shall we speak casually to each other?",
-        "example": "우리 동갑인데 말 놓을까요?",
-        "translation": "We're the same age. Shall we speak casually?"
+        "before": 10,
+        "title": "Something to try at your next meal"
       }
     ],
-    "author": "Korea 101 by Sori",
-    "status": "published",
-    "updated": "2026-11-23",
-    "minutes": 3,
-    "paragraphs": [
-      "Picture two characters who keep running into each other at the same café. Early in the story, one saves a chair and asks, 밥 먹었어요? (bap meogeosseoyo). A few episodes later the question comes up again, this time on the walk home. 밥 먹었어? (bap meogeosseo). Both lines could have exactly the same English subtitle. Have you eaten?",
-      "Play those two questions back in your head. The first ends with 요 (yo). The second stops just before it. In this pair, that small change takes an everyday polite question into the casual Korean you might hear between close friends. The speaker still wants to know about dinner. You also learn something about how those two people feel around each other.",
-      "Sometimes the scene that explains the change is easy to miss. Imagine the two classmates discovering that they're the same age. One asks 우리 말 놓을까요? (uri mal noeulkkayo). The everyday English is “Shall we speak casually to each other?” The invitation itself is still polite. The other person gets to say yes and decide how comfortable the new closeness feels.",
-      "Try the two dinner questions aloud. Start with the polite version as if you were checking in on a new classmate. Then picture an old friend who worked through lunch. Say the shorter version to them. Save that second one for someone you already speak casually with. Tone, age, setting and the relationship all help people hear what you mean.",
-      "On your next drama night, pick a pair of characters to follow for one episode. Can you catch the moment they start sounding comfortable around each other, even before the subtitles tell you anything has changed? What's a sign in your language that two people have become friends?"
-    ],
-    "headings": [
-      {
-        "before": 2,
-        "title": "Listen for the invitation"
-      }
-    ],
-    "wordCount": 348
-  },
-  {
-    "id": "banchan-little-plates",
-    "title": "The little plates that make a Korean meal",
-    "category": "Food & traditions",
-    "published": "2026-11-23",
-    "photo": "assets/photos/jagalchi.jpg",
-    "photoAlt": "Seafood stalls and tanks along an indoor aisle at Jagalchi Market in Busan",
-    "photoContext": "Context photograph: seafood stalls at Jagalchi Market in Busan, not a banchan meal. Photo: Luke Ow / Unsplash, used under the Unsplash License; source listed in Sori’s photo credits.",
-    "excerpt": "The small dishes beside your rice are part of the meal’s rhythm. Here is how to enjoy banchan, and what to say when the kimchi disappears first.",
-    "phrase": "김치 조금 더 주실 수 있나요?",
-    "question": "Which side dish would you happily build a whole meal around?",
-    "figures": [],
-    "sources": [
-      {
-        "label": "Korean Food Promotion Institute: The Roots of Hansik, Home-Cooked Meals",
-        "url": "https://www.hansik.or.kr/magazines/list/magazineDetail/146/3877"
-      },
-      {
-        "label": "National Folk Museum of Korea: Hansik",
-        "url": "https://folkency.nfm.go.kr/en/topic/detail/12224"
-      },
-      {
-        "label": "Korean Culture and Information Service: K-Food, the culture of side dishes",
-        "url": "https://www.korean-culture.org/ebook/access/ecatalogt.jsp?Dir=153&callmode=normal&catimage=&eclang=ko&start=24&um=s"
-      }
-    ],
-    "expressions": [
-      {
-        "ko": "김치 조금 더 주실 수 있나요?",
-        "roman": "gimchi jogeum deo jusil su innayo",
-        "meaning": "May I have a bit more kimchi?",
-        "example": "김치 조금 더 주실 수 있나요?",
-        "translation": "May I have a bit more kimchi?"
-      }
-    ],
-    "author": "Korea 101 by Sori",
-    "status": "published",
-    "updated": "2026-11-23",
-    "minutes": 3,
-    "paragraphs": [
-      "Your stew has not arrived, but the table is already busy. Kimchi lands beside a dish of greens, followed by something glossy and braised. If you are waiting for someone to explain which course comes first, here is a pleasant surprise: you do not need a course order.",
-      "These small dishes are banchan (반찬), companions to rice. They help make the meal, rather than serving as a starter you must finish before the main event. The Korean Food Promotion Institute describes everyday Korean meals around bap, or cooked rice, and the dishes eaten alongside it.",
-      "Try a little rice, then a bite of kimchi, then some greens. Notice how the same rice feels different with something crisp, soft, sour or savory. You can return to a favorite without working clockwise around the table. Think of the meal as several tastes you can move between.",
-      "Small plates do not mean small effort. One vegetable might be blanched and seasoned; another ingredient might be braised or grilled. Fermentation matters in Korean cooking, but banchan is not another word for fermented food. Nor is there one correct lineup: the kitchen, season and kind of meal all matter.",
-      "Here is a quieter surprise: today's shared table is not an unchanged ancient rule. The National Folk Museum of Korea describes how individual dining tables used by men in wealthy households gave way to more communal arrangements as homes and urban life changed. Something that feels timeless can have a history of adaptation.",
-      "When eating with others, notice which dishes are shared and which bowls belong to each person. Some meals arrive on individual trays, so take your cue from the actual table rather than a drama scene.",
-      "If the kimchi disappears first, try 김치 조금 더 주실 수 있나요? It means ‘May I have a bit more kimchi?’ Ask staff what can be refilled and follow the restaurant's guidance, rather than assuming every plate is unlimited. A small request also makes it easier to finish what you ask for.",
-      "The nicest discovery may be a dish whose name you did not know before sitting down. Let one small plate slow you down enough to notice it. Which side dish would you happily build a whole meal around?"
-    ],
-    "headings": [],
-    "wordCount": 404
+    "wordCount": 1016
   },
   {
     "id": "first-snow-seoul",

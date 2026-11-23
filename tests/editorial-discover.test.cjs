@@ -15,13 +15,13 @@ test('Korea 101 preserves approved seasonal issues and the complete original arc
   assert.match(page,/noindex/);assert.match(page,/location.replace\("\/#read"\)/);assert.doesNotMatch(page,/<article>/);
  }
 });
-test('new Korea 101 stories meet the short publication contract and retain working social previews',()=>{
+test('new Korea 101 stories meet the long-form publication contract and retain working social previews',()=>{
  const stories=require('../data/stories.json');
  const added=stories.filter(s=>!s.bodyFile&&!['first-snow-seoul','christmas-in-korea'].includes(s.id));
  const categories=['Useful Korean','Everyday culture','Food & traditions','Places','Getting around'];
  for(const s of added){
   const words=s.paragraphs.join(' ').trim().split(/\s+/).length;
-  assert.ok(words>=250&&words<=450,s.id);
+  assert.ok(words>=825&&s.minutes>=5,s.id);
   assert.ok(categories.includes(s.category),s.id);
   assert.equal(s.author,'Korea 101 by Sori');assert.equal(s.status,'published');
   assert.match(s.published,/^\d{4}-\d{2}-\d{2}$/);assert.equal(s.updated,s.published);

@@ -1,3 +1,4 @@
+import {mountNeighborhoodPicker} from './neighborhood-picker.js';
 import {icon} from '../ui-icons.js';
 import {routes, readPublicItinerary, itineraryParams, itineraryShareUrl, datedDays, presetDays} from './public-day.js?v=20261121polish';
 import {esc, chooser, areaChoices, cover, stopList, moreDays, placeMap, mountPlaceMap, koreaDate} from './postcards.js?v=mobile2';
@@ -5,7 +6,7 @@ import {sharePublic} from '../share-public.js?v=20261121trip';
 import {generatePlan, AREAS, PHRASES, mapLink, placeEmbed, naverLink, phraseForPlace, CITIES, cityForArea} from './planner.js?v=20261121trip';
 import {AIRPORTS, CITY_CENTRES, isKoreaPoint, kmBetween, googleLeg, basePoint, routePoints, nearbyOrder, transferHint} from './geo.js?v=20261121trip';
 import {createJourneyMap} from './map.js?v=20261121polish';
-import {discoverMarkup,refreshDiscover,savePlace} from './discover.js?v=study1';
+import {discoverMarkup,refreshDiscover,savePlace} from './discover.js?v=atlas2';
 const root = document.getElementById('guideView');
 const storage={get(k){try{return JSON.parse(localStorage.getItem(k));}catch{return null;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true;}catch{return false;}}};
 let mapOpen = false, activeDay = 0, selectedStop = null, map = null;
@@ -31,8 +32,9 @@ async function api(path,method='GET',body,token=identity?.token){
  if(!response.ok)throw Object.assign(Error(data.error||'Could not save this change.'),{status:response.status});return data;
 }
 async function safe(fn){if(busy)return;busy=true;root.setAttribute('aria-busy','true');try{message('');await fn();}catch(e){message(e.message);}finally{busy=false;root.removeAttribute('aria-busy');}}
-function destroyMap(){map?.destroy();map=null;picking=false;}
-function discover(){destroyMap();current=identity=joinInvite=null;root.className='map-guide discover-home';root.querySelector('#tripContent').innerHTML=discoverMarkup(location.hash);message('');refreshDiscover(root);window.SoriNav?.show('guide');window.scrollTo({top:0,behavior:'instant'});}
+let disposeNeighborhood;
+function destroyMap(){disposeNeighborhood?.();disposeNeighborhood=null;map?.destroy();map=null;picking=false;}
+function discover(){destroyMap();current=identity=joinInvite=null;root.className='map-guide discover-home';root.querySelector('#tripContent').innerHTML=discoverMarkup(location.hash);disposeNeighborhood=mountNeighborhoodPicker(root,()=>refreshDiscover(root));message('');refreshDiscover(root);window.SoriNav?.show('guide');window.scrollTo({top:0,behavior:'instant'});}
 root.addEventListener('input',e=>{if(e.target.id==='discoverSearch')refreshDiscover(root);});
 root.addEventListener('change',e=>{if(['discoverType','discoverArea','discoverSaved'].includes(e.target.id))refreshDiscover(root);});
 root.addEventListener('click',e=>{const button=e.target.closest('[data-save-place]');if(button)savePlace(root,button.dataset.savePlace);});
