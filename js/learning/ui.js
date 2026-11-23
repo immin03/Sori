@@ -32,7 +32,11 @@ function dailyPool() {
 function homePanel() {
   const hash=location.hash;
   const panel=hash==='#conversations'?'conversations':hash==='#saved-phrases'?'saved':hash==='#review'?'review':'vocabulary';
-  el('journeyPanel').hidden=!['conversations','vocabulary'].includes(panel);
+  const path=el('journeyPanel'), vocabulary=el('dailyVocabulary');
+  const conversations=el('practiceDashboard').parentElement;
+  if(panel==='conversations' && path.previousElementSibling!==conversations)conversations.after(path);
+  if(panel==='vocabulary' && path.nextElementSibling!==vocabulary)vocabulary.before(path);
+  path.hidden=!['conversations','vocabulary'].includes(panel);
   el('homeTitle').textContent=({vocabulary:'Vocabulary',conversations:'Conversations',review:'Review',saved:'Saved phrases'})[panel];
   for (const section of el('homeView').querySelectorAll('[data-speak-panel]')) section.hidden=section.dataset.speakPanel!==panel;
 }
