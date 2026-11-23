@@ -1,4 +1,4 @@
-import {scenes} from './scenes.js?v=20261123beta';
+import {scenes} from './scenes.js?v=study1';
 function readSession(raw, ids) {
  if (!raw || !Array.isArray(raw.ids) || !raw.ids.length || raw.ids.length > 5 ||
      raw.ids.some(id => !ids.has(id)) || new Set(raw.ids).size !== raw.ids.length ||

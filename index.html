@@ -4,7 +4,7 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <title>Sori · Korean language & life in Korea</title>
-<meta name="sori-release" content="2026-11-23-mobile-catalogue-2">
+<meta name="sori-release" content="2026-11-23-study-atlas">
 
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" href="/assets/icons/sori-mark.svg" type="image/svg+xml">
@@ -297,9 +297,9 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 <link rel="stylesheet" href="css/sori-v1.css?v=20261121polish"><link rel="stylesheet" href="assets/vendor/leaflet/leaflet.css?v=1.9.4"><link rel="stylesheet" href="css/sori-map.css?v=20261121polish"><link rel="stylesheet" href="css/sori-learning.css?v=20261121polish"><link rel="stylesheet" href="css/sori-stories.css?v=20261121polish">
 <link rel="stylesheet" href="css/sori-speaking.css?v=20261121polish">
 <link rel="stylesheet" href="css/sori-travel.css?v=20261121polish">
-<link rel="stylesheet" href="css/sori-focus.css?v=20261123beta">
-<link rel="stylesheet" href="/css/sori-beta.css?v=20261123beta">
-<link rel="stylesheet" href="/css/sori-mobile.css?v=mobile3">
+<link rel="stylesheet" href="css/sori-focus.css?v=study1">
+<link rel="stylesheet" href="/css/sori-beta.css?v=study1">
+<link rel="stylesheet" href="/css/sori-mobile.css?v=mobile3"><link rel="stylesheet" href="/css/sori-study.css?v=study1">
 </head>
 <body>
 <header class="header">
@@ -319,6 +319,7 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 </aside>
 <main id="homeView" class="sori-home speak-first">
   <h1 class="section-page-title" id="homeTitle">Vocabulary</h1>
+  <div id="attendancePanel"></div>
   <div id="journeyPanel"></div>
   <section data-speak-panel="vocabulary" id="dailyVocabulary" aria-label="Daily vocabulary"></section>
   <div data-speak-panel="conversations" hidden><section id="practiceDashboard" aria-label="Conversation practice"></section>
@@ -456,7 +457,7 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
         </div></details>
       </div>
       
-      <div id="quizVoice"></div><p id="quizFeedback" role="status" aria-live="polite"></p><div class="quiz-options">
+      <div id="quizVoice"></div><p id="quizFeedback" class="answer-verdict" tabindex="-1" hidden role="status" aria-live="polite"></p><div class="quiz-options">
         <button class="quiz-option">Hello</button>
         <button class="quiz-option">Goodbye</button>
         <button class="quiz-option">Thank you</button>
@@ -470,6 +471,7 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
         <button id="quizNextBtn" class="quiz-nav-btn">Next</button>
       </div>
     </div>
+    <section id="quizResults" class="vocab-finish" hidden></section>
   </section>
 </div>
 
@@ -527,8 +529,8 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 </aside>
 
 <!-- data sources -->
-<script defer src="data/daily.js?v=20261123beta"></script>
-<script defer src="data/travel.js?v=20261123beta"></script>
+<script defer src="data/daily.js?v=study1"></script>
+<script defer src="data/travel.js?v=study1"></script>
 <script defer src="data/drama.js?v=20251017"></script>
 <script defer src="data/trendy.js?v=20261123levels"></script>
 <script defer src="data/numbers.js?v=20261123levels"></script>
@@ -543,8 +545,8 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 <script defer src="js/tts.js?v=20261123relaunch"></script>
 <script defer src="js/app.js?v=20261123restore"></script><script defer src="js/practice.js?v=20261121nav"></script>
 <script defer src="js/sections.js?v=20261123restore"></script><script type="module" src="js/sidebar.js?v=mobile2"></script>
-<script defer src="assets/vendor/leaflet/leaflet.js?v=1.9.4"></script><script type="module" src="js/guide/ui.js?v=mobile2"></script><script type="module" src="js/learning/ui.js?v=mobile3"></script><script type="module" src="js/stories/ui.js?v=20261123beta"></script>
-<script type="module" src="js/quiz.js?v=20261123beta"></script>
+<script defer src="assets/vendor/leaflet/leaflet.js?v=1.9.4"></script><script type="module" src="js/guide/ui.js?v=study1"></script><script type="module" src="js/learning/ui.js?v=study1"></script><script type="module" src="js/stories/ui.js?v=study1"></script>
+<script type="module" src="js/quiz.js?v=study1"></script>
 
 
 <script>

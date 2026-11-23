@@ -39,7 +39,7 @@ test('email subscriptions require a sent confirmation before becoming active',as
 });
 test('published stories use unique public URLs, real learning phrases and existing local photos',async()=>{
  const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),stories=require('../data/stories.json');const c={window:{},console:{log(){}}};vm.createContext(c);for(const name of ['daily','travel','drama','trendy','numbers','dataindex'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../data/'+name+'.js'),'utf8'),c);const korean=new Set(Object.values(c.window.SoriDataIndex).flat().map(p=>p.k));assert.equal(new Set(stories.map(s=>s.id)).size,stories.length);
- for(const s of stories){assert.match(s.id,/^[a-z0-9-]{1,80}$/);assert.ok(korean.has(s.phrase));assert.ok(fs.existsSync(path.join(__dirname,'..',s.photo)));assert.ok(s.paragraphs.length>=3);assert.ok(s.sources.every(x=>x.url.startsWith('https://')));}
+ for(const s of stories){assert.match(s.id,/^[a-z0-9-]{1,80}$/);if(s.bodyFile){assert.ok(fs.existsSync(path.join(__dirname,'..',s.bodyFile)));assert.equal(new URL(s.photo).hostname,'media.beehiiv.com');}else{assert.ok(korean.has(s.phrase));assert.ok(fs.existsSync(path.join(__dirname,'..',s.photo)));}assert.ok(s.paragraphs.length>=3);assert.ok(s.sources.every(x=>x.url.startsWith('https://')));}
 });
 test('the actual packaged Worker initializes and serves health without Node build-time helpers',async()=>{
  const {spawnSync}=require('node:child_process'),fs=require('node:fs'),path=require('node:path');const cwd=path.join(__dirname,'../hosting/trips-api');const build=spawnSync(process.execPath,['scripts/build.mjs'],{cwd,encoding:'utf8'});assert.equal(build.status,0,build.stderr);

@@ -16,7 +16,7 @@ Rotate culture, food, language, everyday life, current Korean cultural topics an
 
 Every entry has id (unique lowercase letters/numbers/hyphens, <=80), title, category, excerpt, photo (existing licensed local asset), photoAlt, minutes, question, phrase, paragraphs, sources[{label,url}], published (actual Seoul date YYYY-MM-DD), author ('Korea 101 by Sori'), photoContext and status ('published'). Prepend the new entry. Run `node scripts/build-stories.cjs` and commit its generated `stories/<id>/index.html` too; those static pages supply social previews and open the native reader. A category is Useful Korean, Everyday culture, Food & traditions, Places or Getting around. The Korean phrase must exactly match an existing expression in the normalized daily/travel/drama/trendy/numbers data so Listen & practise opens a real lesson. Label any contextual image accurately and reuse the documented photo credits.
 
-The initial launch articles are original editorial stories, not recovered copies of the old newsletter archive. Older Beehiiv articles and subscribers have not been imported.
+The six founder newsletters are published in the same dated feed as the newer stories. Their complete article bodies are in content/newsletters. Subscriber records are separate from editorial content.
 
 ## Email boundary
 

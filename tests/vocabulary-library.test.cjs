@@ -86,3 +86,19 @@ test('speech highlights only recognised syllables and follows revisions, word-on
     ['제 친구는',4,0,0],['눈',0,1,0],['눈치'.normalize('NFD'),0,2,0],['다른 단어',0,0,0]
   ]) assert.deepEqual(spokenRange(q,heard),{before:b,word:w,after:a},heard);
 });
+
+test('round retry includes only first-attempt misses in the completed set',async()=>{
+ const f=await fixture(),daily=f.make(),round=daily.today();
+ assert.equal(daily.retryMisses(round.token),null);
+ for(const [i,kind] of ['retry','correct','reveal'].entries()){
+  daily.record(round.token,i,kind);
+  daily.record(round.token,i,'correct');
+  daily.advance(round.token,i);
+ }
+ const retry=f.make().retryMisses(round.token);
+ assert.deepEqual(retry.slots.map(s=>s.id),[round.slots[0].id,round.slots[2].id]);
+ assert.deepEqual(retry.words.map(w=>w.sentence),[round.words[0].sentence,round.words[2].sentence]);
+ assert.ok(retry.slots.every(s=>!s.result));
+ for(const i of [0,1]){daily.record(retry.token,i,'correct');daily.advance(retry.token,i);}
+ assert.equal(daily.retryMisses(retry.token),null);
+});

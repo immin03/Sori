@@ -1,10 +1,11 @@
+import {Attendance} from './attendance.js';
 import {icon} from '../ui-icons.js';
-import {Journey} from './journey.js?v=mobile2';
+import {Journey} from './journey.js?v=study1';
 import {PracticeProgress} from './progress.js?v=20261123beta';
-import {scenes} from './scenes.js?v=20261123beta';
+import {scenes} from './scenes.js?v=study1';
 import {mountSpokenTurn,spokenTurnControls} from './spoken-turn.js?v=20261123beta';
-import {DailyVocabulary} from './vocabulary.js?v=20261123beta';
-import {vocabularyCard,mountVocabulary} from './vocabulary-ui.js?v=mobile2';
+import {DailyVocabulary} from './vocabulary.js?v=study1';
+import {vocabularyCard,mountVocabulary} from './vocabulary-ui.js?v=study1';
 import {showVocabularyLibrary} from './vocabulary-library.js?v=mobile2';
 import {mountPhraseSearch} from './phrase-search.js?v=20261123levels';
 import {sharePublic} from '../share-public.js?v=20261121trip';
@@ -13,7 +14,7 @@ import {situationGroups,matchingLevel,levelNames} from './categories.js?v=202611
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const el = id => document.getElementById(id);
 let rows, byId, byKorean, progress, dailyWords, currentScope, voice, lessonVoice, phrasebook, lastVerdict;
-let journey;
+let journey, attendance;
 let sceneExpanded=false, catalogue='places';
 let sceneGroup='All places';
 const legacyPlaces={cafe:'Café',restaurant:'Restaurant',social:'Meeting friends',shopping:'Shop',airport:'Airport',hotel:'Hotel',transport:'Station',help:'Visitor center',convenience:'Convenience store','street-food':'Food stall',market:'Market',department:'Department store'};
@@ -37,6 +38,7 @@ function homePanel() {
   if(panel==='conversations' && path.previousElementSibling!==conversations)conversations.after(path);
   if(panel==='vocabulary' && path.nextElementSibling!==vocabulary)vocabulary.before(path);
   path.hidden=!['conversations','vocabulary'].includes(panel);
+  el('attendancePanel').hidden=panel!=='vocabulary';
   el('homeTitle').textContent=({vocabulary:'Vocabulary',conversations:'Conversations',review:'Review',saved:'Saved phrases'})[panel];
   for (const section of el('homeView').querySelectorAll('[data-speak-panel]')) section.hidden=section.dataset.speakPanel!==panel;
 }
@@ -55,6 +57,7 @@ document.addEventListener('change',e=>{if(e.target.matches('[data-scene-group]')
 document.addEventListener('change',e=>{if(e.target.matches('[data-topic-group]')){libraryGroup=e.target.value;paintHome();el('practiceDashboard').querySelector('[data-topic-group]').focus({preventScroll:true});}});
 function paintHome() {
   if(journey.data.level && journey.data.level!==dailyWords.difficulty())dailyWords.setDifficulty(journey.data.level);
+  el('attendancePanel').innerHTML=attendance.markup(el('attendancePanel').querySelector('details')?.open);
   el('dailyVocabulary').innerHTML = vocabularyCard(dailyWords);
   el('journeyPanel').innerHTML=journey.markup();
   const groups=situationGroups(window.SoriDataIndex);
@@ -124,7 +127,7 @@ function setupLessonVoice(start = false) {
   phraseModel=model;
   slot.innerHTML=spokenTurnControls({externalButton:true,compare:true});
   lessonVoice=mountSpokenTurn(slot,window,{cue:model,answer:model,start,externalButton:el('playBtn'),modelLine:el('korean'),
-    rate:()=>Number(el('speed').value)||.8,onMode:mode=>{phraseAuto=mode==='voice';if(!phraseAuto)stopRepeats();},onVerdict:kind=>{if(kind==='correct'){const id=byKorean.get(model)?.id;if(id)journey.complete(id);}repeatVerdict(kind);},
+    rate:()=>Number(el('speed').value)||.8,onMode:mode=>{phraseAuto=mode==='voice';if(!phraseAuto)stopRepeats();},onVerdict:kind=>{if(['correct','retry'].includes(kind))attendance.stamp('phrase:'+(byKorean.get(model)?.id||model));if(kind==='correct'){const id=byKorean.get(model)?.id;if(id)journey.complete(id);}repeatVerdict(kind);},
     onPlayed:()=>window.dispatchEvent(new CustomEvent('sori-repeat-ended',{detail:{text:model}}))});
 }
 function library() {
@@ -226,6 +229,7 @@ function renderSession(play = false) {
     modelLine:target.querySelector('[data-spoken-model]'),start:play,turnSignal:true,typed:sessionMode==='type',onMode:mode=>{sessionMode=mode;},
     onVerdict(kind){
       lastVerdict=kind;
+      if(['correct','retry'].includes(kind))attendance.stamp('phrase:'+phrase.id);
       if(kind==='retry'){progress.markMissed();next.hidden=false;}
       if(kind==='correct'){
         journey.complete(phrase.id);
@@ -257,6 +261,7 @@ function boot() {
   try { storage = localStorage; } catch { storage = {getItem(){return null;},setItem(){throw Error('Storage unavailable');}}; }
   progress = new PracticeProgress({storage,ids:byId.keys()}); currentScope = window.firebaseAuth?.currentUser?.uid || null; progress.setUser(currentScope);
   journey = new Journey(storage,currentScope,prioritizePath(rows));
+  attendance=new Attendance(storage,currentScope,journey.data.activity);
   dailyWords = new DailyVocabulary(storage, currentScope);
   window.SoriPractice = {library,openPhrase,browse,repeatPhrase,hasPhraseVoice:()=>Boolean(lessonVoice),roundKind:()=>dailyWords.custom()?.kind};
   for (const root of document.querySelectorAll('[data-phrase-finder]')) {
@@ -283,6 +288,16 @@ document.addEventListener('click',event => {
       dailyWords.setDifficulty(b.dataset.vocabDifficulty); paintHome();
       if (new URLSearchParams(location.hash.slice(1)).get('practice') === 'vocabulary') openVocabulary();
     }
+    return;
+  }
+  if(b.hasAttribute('data-check-in')||b.hasAttribute('data-month')){
+    if(b.hasAttribute('data-check-in'))attendance.stamp();
+    else attendance.monthOffset=Math.min(0,attendance.monthOffset+Number(b.dataset.month));
+    const panel=el('attendancePanel');panel.innerHTML=attendance.markup(true);
+    (panel.querySelector('[data-month="'+b.dataset.month+'"]:not(:disabled)')||panel.querySelector('summary')).focus({preventScroll:true});return;
+  }
+  if(b.dataset.vocabMisses){
+    if(dailyWords.retryMisses(b.dataset.vocabMisses)){changeHash('#practice=vocabulary&view=round');openVocabulary(true);}
     return;
   }
   if (b.hasAttribute('data-vocab-start') || b.hasAttribute('data-vocab-review')) {
@@ -351,7 +366,10 @@ window.addEventListener('sori-auth-changed',() => {
   if (!progress || next === currentScope) return;
   currentScope = next; library(); closeLessonVoice(); progress.setUser(next);
   journey=new Journey(progress.storage,next,prioritizePath(rows));
+  attendance=new Attendance(progress.storage,next,journey.data.activity);
   dailyWords = new DailyVocabulary(progress.storage, next); paintHome(); route();
 });
 
 window.addEventListener('sori-word-learned',e=>journey?.complete(e.detail,true));
+
+window.addEventListener('sori-study-answer',event=>{if(typeof event.detail==='string')attendance?.stamp(event.detail);});

@@ -1,3 +1,4 @@
+import {extraScenes} from './extra-scenes.js';
 // Each reply is an exact expression in the Sori lesson collection.
 import {placeScenes} from "./place-scenes.js?v=20261123beta";
 export const scenes = {
@@ -425,5 +426,6 @@ export const scenes = {
         []
       ]
     ]
-  }
+  },
+  ...extraScenes
 };

@@ -1,0 +1,45 @@
+/* Learning feedback stays in the page until the learner moves on. */
+.answer-verdict:not([hidden]) {display:grid;gap:3px;padding:14px 16px;margin:12px 0;background:#faf0eb;color:#6d291e;border:1px solid #dfc1b6;border-radius:13px;line-height:1.4;scroll-margin:12px}
+.answer-verdict[data-kind=correct] {animation:answer-mark 1s ease-out}
+.answer-verdict[data-kind=retry] {background:#fff7f4;border-left:4px solid #a43d2d}
+.answer-verdict [lang=ko] {font-size:1.15rem;font-weight:650}
+@keyframes answer-mark {0%{box-shadow:0 0 0 4px #c773582f;transform:scale(.98)}35%{transform:scale(1.01)}100%{box-shadow:0 0 0 0 transparent;transform:none}}
+@media(prefers-reduced-motion:reduce){.answer-verdict[data-kind=correct]{animation:none}}
+[data-next-word]:disabled,#quizNextBtn:disabled {opacity:.55;cursor:default}
+#quizResults ul,.vocab-finish ul {list-style:none;padding:0}
+#quizResults li,.vocab-finish li {display:grid;gap:4px;padding:10px 0;border-bottom:1px solid var(--line)}
+.round-score {line-height:1.55;color:var(--muted)}
+.round-score strong {color:var(--sori);font-size:1.5rem}
+#quizView .quiz-option[data-verdict=correct] {border:2px solid var(--sori);color:#6e291f;background:#f9ece5}
+#quizView .quiz-option[data-verdict=retry] {border:1px dashed #a43d2d;color:#682b25;background:#fff8f6}
+#quizView .quiz-option[data-verdict=correct]::before {content:'✓ ';font-weight:750}
+#quizView .quiz-option[data-verdict=retry]::before {content:'× ';font-weight:750}
+.attendance {margin:8px 0 14px;padding:12px 15px;border:1px solid var(--line);border-radius:14px}
+.attendance-top,.attendance-month {display:flex;align-items:center;justify-content:space-between;gap:8px}
+.attendance-top small {display:block;color:var(--muted);font-size:.8rem}
+.attendance button {min-height:42px;min-width:44px;border:1px solid #dfc1b6;border-radius:9px;background:#fff4ee;color:var(--sori);padding:6px 12px;font:650 .86rem/1.3 var(--type)}
+.attendance button:disabled {background:transparent;border-color:var(--line);color:var(--muted)}
+.attendance summary {font-size:.85rem;color:var(--sori);min-height:37px;align-content:center;cursor:pointer}
+.attendance-month {margin:4px 0 8px}.attendance-grid {display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px;text-align:center}
+.attendance-grid small {padding:4px 0;color:var(--muted)}
+.attendance-day {display:grid;place-content:center;grid-auto-flow:column;gap:1px;min-height:32px;border-radius:7px;font-size:.84rem}
+.attendance-day[data-checked=true] {background:#f7e8e1;color:#7b2d21}
+.attendance-day[data-goal=true] {color:white;background:var(--sori)}
+.attendance-day[aria-current=date] {outline:1px solid var(--sori)}
+.attendance-day b {font-size:.66rem}
+.attendance p {color:var(--muted);font-size:.8rem;margin:.5em 0}
+.story-body img {max-width:100%;height:auto;display:block;margin:12px auto}
+#newsletterView .story-body :is(a,p,li) {overflow-wrap:anywhere}
+#practiceSession .syllable-match {font-weight:750}
+.discover-tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:14px 0 18px}
+.discover-tiles a{display:block;background:white;border:1px solid var(--line);border-radius:12px;overflow:hidden;color:var(--ink);text-decoration:none;font-weight:700;min-width:0}
+.discover-tiles img{width:100%;height:clamp(68px,15vw,110px);object-fit:cover;display:block}
+.discover-tiles span{display:block;padding:8px;font-size:.9rem}.discover-tiles small{display:block;font-size:.74rem;color:var(--muted);font-weight:500;margin-top:2px}
+.discover-tiles svg{width:16px;height:16px;color:#a33528;vertical-align:middle}
+.discover-back{display:inline-flex;align-items:center;min-height:44px;color:#922f26;font-weight:650;text-decoration:none}
+.discover-types summary{cursor:pointer;font-weight:700;padding:8px 0}.discover-types nav{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:6px;margin:4px 0 12px}
+.discover-types nav a{display:flex;align-items:center;justify-content:space-between;gap:6px;border-radius:9px;border:1px solid #eadedb;padding:8px;font-size:.84rem;line-height:1.24;color:#493a37;text-decoration:none;min-height:40px;box-sizing:border-box}
+.discover-types nav a[aria-current]{color:#8c281d;background:#fff1ed}.discover-types nav span{color:#974234}
+.place-photo-label{position:absolute;bottom:5px;left:6px;padding:3px 7px;border-radius:20px;color:white;background:#261b19c9;font:600 .68rem/1.2 sans-serif}
+.season-dates{color:#8b3228;font-weight:650;font-size:.78rem}.discover-more{display:block;margin:18px auto;padding:11px 18px;border:1px solid #b75d50;background:white;color:#873425;border-radius:10px;font-weight:650}
+@media(max-width:540px){.discover-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
