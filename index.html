@@ -4,52 +4,16 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <title>Sori · Korean language & life in Korea</title>
-<meta name="sori-release" content="2026-11-20-conversations-itineraries-reading">
-<meta name="theme-color" content="#ffffff"/>
+<meta name="sori-release" content="2026-11-23-sori-beta-journey">
 
-<!-- Favicon / Shortcut icon -->
-<link rel="icon" type="image/svg+xml"
-  href='data:image/svg+xml;utf8,
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-    <circle cx="32" cy="32" r="30" fill="#7b2d21"/>
-    <text x="32" y="42" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700" fill="white" text-anchor="middle">S</text>
-  </svg>'/>
-<link rel="shortcut icon" href='data:image/svg+xml;utf8,
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-    <circle cx="32" cy="32" r="30" fill="#7b2d21"/>
-    <text x="32" y="42" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700" fill="white" text-anchor="middle">S</text>
-  </svg>'/>
-
-<!-- PNG fallbacks for older browsers -->
-<link rel="icon" type="image/png" sizes="32x32" href='data:image/svg+xml;utf8,
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-    <circle cx="16" cy="16" r="15" fill="#7b2d21"/>
-    <text x="16" y="21" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" fill="white" text-anchor="middle">S</text>
-  </svg>'/>
-<link rel="icon" type="image/png" sizes="16x16" href='data:image/svg+xml;utf8,
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
-    <circle cx="8" cy="8" r="7" fill="#7b2d21"/>
-    <text x="8" y="11" font-family="Arial, Helvetica, sans-serif" font-size="7" font-weight="700" fill="white" text-anchor="middle">S</text>
-  </svg>'/>
-
-<!-- Safari pinned tab (선택) -->
-<link rel="mask-icon" color="#7b2d21" href='data:image/svg+xml;utf8,
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-    <circle cx="32" cy="32" r="30" fill="black"/>
-    <text x="32" y="42" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700" fill="white" text-anchor="middle">S</text>
-  </svg>'/>
-
-<!-- iOS home screen icon -->
-<link rel="apple-touch-icon" sizes="180x180" href='data:image/svg+xml;utf8,
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180">
-    <rect width="180" height="180" rx="36" ry="36" fill="#7b2d21"/>
-    <text x="90" y="118" font-family="Arial, Helvetica, sans-serif" font-size="64" font-weight="800" fill="white" text-anchor="middle">Sori</text>
-  </svg>'/>
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/sori-wave-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/sori-wave-180.png">
+<meta name="theme-color" content="#a43d2d">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Sori">
 
 <!-- PWA Manifest -->
-<link rel="manifest" href="/manifest.webmanifest">
+<link rel="manifest" href="/manifest.webmanifest?v=wave1">
 
 <script src="js/config.js?v=20261119r6"></script>
 <script>window.GA_ID='G-X1Q98DBKR5';</script>
@@ -330,11 +294,12 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 <link rel="stylesheet" href="css/sori-v1.css?v=20261121polish"><link rel="stylesheet" href="assets/vendor/leaflet/leaflet.css?v=1.9.4"><link rel="stylesheet" href="css/sori-map.css?v=20261121polish"><link rel="stylesheet" href="css/sori-learning.css?v=20261121polish"><link rel="stylesheet" href="css/sori-stories.css?v=20261121polish">
 <link rel="stylesheet" href="css/sori-speaking.css?v=20261121polish">
 <link rel="stylesheet" href="css/sori-travel.css?v=20261121polish">
-<link rel="stylesheet" href="css/sori-focus.css?v=20261123restore">
+<link rel="stylesheet" href="css/sori-focus.css?v=20261123beta">
+<link rel="stylesheet" href="/css/sori-beta.css?v=20261123beta">
 </head>
 <body>
 <header class="header">
-  <button type="button" class="logo-home" aria-label="Sori, speaking home"><span class="soundmark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>sori</button>
+  <button type="button" class="logo-home" aria-label="Sori, speaking home"><span class="soundmark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>sori <small class="sori-beta">Beta</small></button>
   <div class="header-actions">
     <button id="shareSori" class="top-btn">Share Sori</button>
     <button id="openLogin" class="top-btn primary">Login</button>
@@ -347,6 +312,7 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 <nav id="sectionNav" class="section-nav" aria-label="Speak sections"></nav>
 <main id="homeView" class="sori-home speak-first">
   <h1 class="section-page-title" id="homeTitle">Vocabulary</h1>
+  <div id="journeyPanel"></div>
   <section data-speak-panel="vocabulary" id="dailyVocabulary" aria-label="Daily vocabulary"></section>
   <div data-speak-panel="conversations" hidden><section id="practiceDashboard" aria-label="Conversation practice"></section>
   </div>
@@ -533,6 +499,7 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
       </span>
       Continue with Google
     </button>
+    <p class="small-note">During beta, Sori records your account name, email and signed-in visits. You can also share optional feedback privately with the Sori team.</p>
   </div>
 </div>
 
@@ -552,8 +519,8 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 </aside>
 
 <!-- data sources -->
-<script defer src="data/daily.js?v=20261123levels"></script>
-<script defer src="data/travel.js?v=20261123levels"></script>
+<script defer src="data/daily.js?v=20261123beta"></script>
+<script defer src="data/travel.js?v=20261123beta"></script>
 <script defer src="data/drama.js?v=20251017"></script>
 <script defer src="data/trendy.js?v=20261123levels"></script>
 <script defer src="data/numbers.js?v=20261123levels"></script>
@@ -568,8 +535,8 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
 <script defer src="js/tts.js?v=20261123relaunch"></script>
 <script defer src="js/app.js?v=20261123restore"></script><script defer src="js/practice.js?v=20261121nav"></script>
 <script defer src="js/sections.js?v=20261123restore"></script><script defer src="js/sidebar.js?v=20261121editorial"></script>
-<script defer src="assets/vendor/leaflet/leaflet.js?v=1.9.4"></script><script type="module" src="js/guide/ui.js?v=20261123restore"></script><script type="module" src="js/learning/ui.js?v=20261123levels"></script><script type="module" src="js/stories/ui.js?v=20261123relaunch"></script>
-<script type="module" src="js/quiz.js?v=20261123restore"></script>
+<script defer src="assets/vendor/leaflet/leaflet.js?v=1.9.4"></script><script type="module" src="js/guide/ui.js?v=20261123beta"></script><script type="module" src="js/learning/ui.js?v=20261123beta"></script><script type="module" src="js/stories/ui.js?v=20261123beta"></script>
+<script type="module" src="js/quiz.js?v=20261123beta"></script>
 
 
 <script>
@@ -1038,8 +1005,10 @@ document.addEventListener('DOMContentLoaded', function(){
 
 <footer id="appFooter">
   <p class="footer-tagline">Made in Seoul, for everyone who loves Korea.</p>
-  <div class="footer-links"><span>© 2026 Sori</span><a href="mailto:sori.korea.official@gmail.com">Contact</a><a href="https://www.threads.com/@sori_by_minwoo" target="_blank" rel="noopener noreferrer">Threads</a></div>
+  <div class="footer-links"><span>© 2026 Sori</span><button type="button" class="text-button" data-beta-feedback>Beta feedback</button><button type="button" class="text-button" data-beta-admin hidden>Member dashboard</button><a href="mailto:sori.korea.official@gmail.com">Contact</a><a href="https://www.threads.com/@sori_by_minwoo" target="_blank" rel="noopener noreferrer">Threads</a></div>
 </footer>
 
+<dialog id="betaDialog" aria-labelledby="betaTitle"><button type="button" aria-label="Close" class="beta-close" data-beta-close>×</button><div data-beta-body></div></dialog>
+<script type="module" src="/js/beta-members.js?v=20261123beta"></script>
 </body>
 </html>

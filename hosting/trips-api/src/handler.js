@@ -4,7 +4,7 @@ const hash=async value=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',
 const secret=()=>btoa(String.fromCharCode(...crypto.getRandomValues(new Uint8Array(32)))).replaceAll('+','-').replaceAll('/','_').replaceAll('=','');
 const uuid=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
 const fail=(status,message)=>{throw Object.assign(Error(message),{status});};
-export function createHandler({url,key,catalog,fetcher=fetch,placeSearch,community}){
+export function createHandler({url,key,catalog,fetcher=fetch,placeSearch,community,members}){
  return async request=>{
   const origin=request.headers.get('origin');
   const headers={'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Vary':'Origin'};
@@ -24,6 +24,7 @@ export function createHandler({url,key,catalog,fetcher=fetch,placeSearch,communi
     try{body=JSON.parse(new TextDecoder().decode(bytes)||'{}');}catch{fail(400,'Invalid JSON.');}
     if(!body||typeof body!=='object'||Array.isArray(body))fail(400,'Invalid request.');
    }
+   if(/^\/(member|admin)\//.test(path)&&members){const result=await members({request,path,method:request.method,body});return reply(result.status,result.data);}
    if(/^\/(stories\/|newsletter\/)/.test(path)&&community){const result=await community({path,method:request.method,body,peer:request.headers.get('x-forwarded-for')||'unknown-peer'});return reply(result.status,result.data);}
    let action,trip=null,token='',newToken=null,newHash='';
    const auth=request.headers.get('authorization')||'';

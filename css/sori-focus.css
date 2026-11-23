@@ -81,7 +81,7 @@ body.focus-exercise { padding:0 clamp(18px,6vw,34px) 24px; max-width:760px; }
 .focus-exercise .recall-actions { margin-top:8px; padding:8px 0 0; border:0; justify-content:center; }
 .focus-exercise .speaking-tip { margin:12px 0 0; padding:0 4px; }
 .focus-exercise .speaking-tip summary { min-height:36px; text-align:center; font-size:.86rem; }
-.focus-exercise .session-answer:has([data-answer-state=correct]) :is(.vocab-mic .record-action,[data-turn-type],.focus-listen,.voice-info) { display:none; }
+.focus-exercise .session-answer:has([data-answer-state=correct]) .voice-info { display:none; }
 .focus-exercise :is(.check-result.correct,.check-result.retry) { border:0; border-radius:12px; padding:10px 12px; }
 .focus-exercise .check-result.correct { background:#f7eae5; color:#7b2d21; }
 .focus-exercise .check-result.retry { background:#f9e6dd; color:#8c3c28; }

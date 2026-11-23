@@ -1,5 +1,7 @@
 // Each reply is an exact expression in the Sori lesson collection.
+import {placeScenes} from "./place-scenes.js?v=20261123beta";
 export const scenes = {
+  ...placeScenes,
   "cafe": {
     "title": "Order at a café",
     "role": "Barista",

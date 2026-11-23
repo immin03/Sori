@@ -1,10 +1,10 @@
-import {scenes} from './scenes.js?v=20261123relaunch';
+import {scenes} from './scenes.js?v=20261123beta';
 function readSession(raw, ids) {
  if (!raw || !Array.isArray(raw.ids) || !raw.ids.length || raw.ids.length > 5 ||
      raw.ids.some(id => !ids.has(id)) || new Set(raw.ids).size !== raw.ids.length ||
      !Number.isInteger(raw.index) || raw.index < 0 || raw.index > raw.ids.length) return null;
  const kind = raw.kind ?? 'daily';
- if (!['daily', 'review', ...Object.keys(scenes)].includes(kind)) return null;
+ if (!['daily', 'review','path', ...Object.keys(scenes)].includes(kind)) return null;
  const session = {kind, ids:[...raw.ids], index:raw.index};
  const missed = Array.isArray(raw.missed) ? [...new Set(raw.missed.filter(id => raw.ids.includes(id)))] : [];
  if (missed.length) session.missed = missed;
@@ -29,13 +29,13 @@ export class PracticeProgress{
  due(pool=[...this.ids]){return pool.filter(id=>this.ids.has(id)&&this.data.reviews[id]?.due<=this.clock()).sort((a,b)=>this.data.reviews[a].due-this.data.reviews[b].due);}
  sessionFor(kind){const s=this.active();return s?.kind===kind?s:this.data.paused[kind]||null;}
  start(pool,{kind='daily',fresh=false}={}){
-  if(!['daily','review',...Object.keys(scenes)].includes(kind))throw Error('Unknown practice.');
+  if(!['daily','review','path',...Object.keys(scenes)].includes(kind))throw Error('Unknown practice.');
   const active=this.active();
   if(active?.kind===kind&&!fresh)return active;
   if(active&&active.kind!==kind)this.data.paused[active.kind]=active;
   const parked=this.data.paused[kind];delete this.data.paused[kind];
   if(parked&&!fresh){this.data.session=parked;this.save();return parked;}
-  if(Object.hasOwn(scenes,kind)){const ids=[...new Set(pool.filter(id=>this.ids.has(id)))].slice(0,5);this.data.session={kind,ids,index:0};this.save();return this.data.session;}
+  if(kind==='path'||Object.hasOwn(scenes,kind)){const ids=[...new Set(pool.filter(id=>this.ids.has(id)))].slice(0,5);this.data.session={kind,ids,index:0};this.save();return this.data.session;}
   const due=this.due(pool),unseen=pool.filter(id=>this.ids.has(id)&&!this.data.reviews[id]),later=pool.filter(id=>this.ids.has(id)&&!due.includes(id)&&!unseen.includes(id)).sort((a,b)=>(this.data.reviews[a]?.due||0)-(this.data.reviews[b]?.due||0));const ids=[...new Set([...due,...unseen,...later])].slice(0,5);this.data.session={kind,ids,index:0};this.save();return this.data.session;}
  active(){const s=this.data.session;return s&&s.index<s.ids.length?s:null;}
  markMissed() {

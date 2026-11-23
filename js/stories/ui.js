@@ -102,7 +102,7 @@ function readRoute() {
  }
 }
 try {
- const response=await fetch('data/stories.json?v=20261121curated');stories=(await response.json()).filter(s=>s.status==='published');
+ const response=await fetch('data/stories.json?v=20261123beta');stories=(await response.json()).filter(s=>s.status==='published');
  originals=await fetch('data/original-issues.json?v=20261121editorial').then(r=>r.json()).catch(()=>[]);
  actor=local.get('sori:story-actor');if(!/^[A-Za-z0-9_-]{43}$/.test(actor||'')){actor=random();local.set('sori:story-actor',actor);}
  preview();feed();readRoute();

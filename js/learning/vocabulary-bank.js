@@ -1,3 +1,5 @@
+import {expandedTopics} from './vocabulary-expansion.js?v=20261123beta';
+
 // Each bracketed word is replaced by the chime in its matching question recording.
 export const topicBank = [
   {id:"food", title:"Food & cafés", description:"From ordering to describing a flavour", entries:[
@@ -208,4 +210,5 @@ export const topicBank = [
       ["I'd like to see the photography exhibition.", "사진 [전시]를 보고 싶어요.", "사진 전시회", "사진 전시를 보고 싶어요", "전시회"],
       ["The exhibition opens this Saturday.", "이번 토요일에 [전시]가 열려요.", "이번 토요일에 전시회가 열려요", "전시회"]],
   ]},
+  ...expandedTopics,
 ];

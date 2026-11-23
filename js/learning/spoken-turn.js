@@ -1,6 +1,6 @@
-import {attachVoiceReply,recorderControls} from './voice-reply.js?v=20261121focus';
+import {attachVoiceReply,recorderControls} from './voice-reply.js?v=20261123beta';
 import {checkWords,prepareChime,playChime} from './word-check.js?v=20261123relaunch';
-import {paintSpokenLine} from './speech-highlight.js?v=20261121nav';
+import {paintSpokenLine} from './speech-highlight.js?v=20261123beta';
 
 // One playback owns one microphone handoff. A later turn, stop or failed cue invalidates it.
 export function cueHandoff({speak,cancel,listen,stopVoice,visible,show}) {
@@ -42,6 +42,7 @@ export function spokenTurnControls({externalButton=false,choice=false,compare=fa
 export function mountSpokenTurn(root,env,{cue,answer,alternatives=[],start=false,typed=false,externalButton,
   rate=() => 1,language='ko-KR',modelLine,onMode,onVerdict,onHeard,onPlayed,choice=false,turnSignal=false}={}) {
   const get=s=>root.querySelector(s);
+  if(externalButton && get('.turn-recording')){const replay=env.document.createElement('button');replay.type='button';replay.className='text-button';replay.dataset.audio=answer;replay.textContent='Hear the example again';root.append(replay);}
   const button=externalButton || get('[data-turn-cue]'), status=get('[data-turn-audio]');
   const mic=get('.vocab-mic'), type=get('[data-turn-type]'), form=get('[data-turn-form]');
   const details=get('.turn-recording');
@@ -51,12 +52,12 @@ export function mountSpokenTurn(root,env,{cue,answer,alternatives=[],start=false
     speak:onPlaying=>env.SORI.TTS.speak(cue,{rate:rate(),onPlaying}),cancel:()=>env.SORI.TTS.cancel(),
     stopVoice:()=>{clearSignal();voice?.onModel();manual?.onModel();},
     visible:()=>!disposed && !env.document.hidden && !typed && root.isConnected,
-    listen:()=>{ onPlayed?.();if(!turnSignal){voice.start();return;} status.textContent='Your turn · Get ready to speak';root.dataset.turnPhase='ready';playChime('turn');signalTimer=setTimeout(()=>{if(!disposed && root.isConnected && !env.document.hidden){voice.start();status.textContent='Your turn · Speak now';root.dataset.turnPhase='speaking';}},350); },
+    listen:()=>{ onPlayed?.();if(!turnSignal){voice.start();return;} status.textContent='Your turn · Get ready to speak';root.dataset.turnPhase='ready';playChime('turn');signalTimer=setTimeout(()=>{if(!disposed && root.isConnected && !env.document.hidden){voice.start();}},350); },
     show(state) {
       if (disposed) return;
       if(turnSignal) root.dataset.turnPhase=state;
       const busy=state==='loading'||state==='playing';
-      button.textContent=busy?'Stop audio':'Listen';
+      button.textContent=busy?'Stop audio':'Listen again';
       button.setAttribute('aria-label',button.textContent);
       button.setAttribute('aria-busy',String(state==='loading'));
       status.textContent=({loading:'Loading…',playing:turnSignal?'Listen to your partner…':'Playing…',error:'Audio couldn’t play. Tap to retry.'})[state] || '';
@@ -66,12 +67,13 @@ export function mountSpokenTurn(root,env,{cue,answer,alternatives=[],start=false
   function answerResult(kind,heard) {
     if (disposed) return;
     if(root.setAttribute)root.setAttribute('data-answer-state',kind);
+    if(modelLine && ['correct','retry'].includes(kind))paintSpokenLine(modelLine,answer,heard||'',kind);
     if(turnSignal){root.dataset.turnPhase=kind;status.textContent=({correct:'Correct!',retry:'Try again',unavailable:'Word check unavailable. Try again or type your reply.'})[kind]||'';}
     onVerdict?.(kind,heard);
   }
   voice=attachVoiceReply(mic,env,answer,alternatives,answerResult,{
     exercise:true,language,choice,fullSentence:true,
-    onBegin(){handoff.stop(); if(root.removeAttribute)root.removeAttribute('data-answer-state'); onMode?.('voice');},
+    onBegin(){handoff.stop(); if(modelLine)paintSpokenLine(modelLine,answer,''); if(root.removeAttribute)root.removeAttribute('data-answer-state'); onMode?.('voice');},
     onTranscript(text){ if(modelLine)paintSpokenLine(modelLine,answer,text);onHeard?.(text); }
   });
   function mirrorInput(focus=false) {
@@ -103,7 +105,7 @@ export function mountSpokenTurn(root,env,{cue,answer,alternatives=[],start=false
     handoff.stop();
     if(!manual){const slot=get('[data-recording-slot]');slot.innerHTML=recorderControls();manual=attachVoiceReply(slot,env,answer,alternatives,answerResult);}
   };
-  handoff.stop(); mirrorInput();
+  handoff.stop(); mirrorInput(); if(modelLine)paintSpokenLine(modelLine,answer,'');
   if(start){if(turnSignal)prepareChime(env);handoff.play();}
   return {play,onModel:handoff.stop,dispose(){
     disposed=true;handoff.stop();voice.dispose();manual?.dispose();button.removeEventListener('click',play);

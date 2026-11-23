@@ -72,11 +72,12 @@ test('the listening quiz accepts each English option and its spoken number witho
   assert.equal(spokenOption('',answers),-1);
 });
 
-test('all partner cues and replies have bundled MPEGs',async()=>{
+test('bundled roleplays retain their MPEGs and new place roleplays declare cloud speech',async()=>{
   const {scenes}=await import('../js/learning/scenes.js');
   const tts=source('js/tts.js');
   const recordings=new Map(JSON.parse(tts.match(/const recordings = new Map\((\[[\s\S]*?\])\);/)[1]));
   for(const [name,scene] of Object.entries(scenes))scene.turns.forEach((turn,i)=>{
+    if(scene.audio==='cloud'){assert.ok(scene.place && scene.level && turn[0] && turn[3] && turn[5]);return;}
     assert.equal(recordings.get(turn[0]),name+'-cue-'+(i+1));assert.ok(recordings.has(turn[3]));
   });
   const dir=path.join(__dirname,'..','assets/audio/speaking');

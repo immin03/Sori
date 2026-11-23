@@ -11,7 +11,7 @@ const originals=[
  original('The Strangest Thing in Korean Cafés','2026-01-25',6,'korea-101-the-strangest-thing-in-korean-caf-s'),
  original('Seollal: When the Year Begins with a Bowl of Soup','2026-02-28',7,'korea-101-seollal-when-the-year-begins-with-a-bowl-of-soup')
 ];
-const issues=[
+const issues=[...require('./beta-stories.json'),
 {
   "id": "banchan-little-plates",
   "title": "The little plates that make a Korean meal",

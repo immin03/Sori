@@ -1,4 +1,4 @@
-import {paintTranscript} from './speech-highlight.js?v=20261121nav';
+import {paintTranscript} from './speech-highlight.js?v=20261123beta';
 import {checkOnDevice, supportsDeviceCheck} from './device-words.js?v=20261120s1';
 import {checkWords, listenForWords, playChime, prepareChime, speechService} from './word-check.js?v=20261123relaunch';
 
@@ -71,7 +71,8 @@ export function attachVoiceReply(container, env = window, example = '', alternat
   const canUseDevice = language === 'ko-KR' && canRecord && supportsDeviceCheck(env);
   let deviceMode = canUseDevice && preference(env,'device',undefined,false);
   let model = example, clip = null, lastBlob = null, active = null, version = 0, disposed = false;
-  let microphoneBlocked = false;
+  let microphoneBlocked = false, attempted = false;
+  function live(value) { if (container.dataset) container.dataset.micLive=String(value); }
   const interim = get('[data-interim]');
   if (interim) interim.lang = language;
   function updateTranscript(text) { paintTranscript(interim,text); onTranscript?.(text); }
@@ -92,7 +93,7 @@ export function attachVoiceReply(container, env = window, example = '', alternat
     check.disabled = sound.disabled = Boolean(active);
     if (!active) {
       record.disabled = !canSpeak();
-      record.textContent = exercise ? 'Speak' : enabled && check.checked ? (clip ? 'Try speaking again' : 'Speak & check') : (clip ? 'Record again' : 'Record my reply');
+      record.textContent = exercise ? (attempted ? 'Try again' : 'Speak') : enabled && check.checked ? (clip ? 'Try speaking again' : 'Speak & check') : (clip ? 'Record again' : 'Record my reply');
     }
     note.textContent = (deviceMode && check.checked || active?.controller) ? 'Words are checked on this device. Up to 15 seconds.' : enabled && check.checked ? 'Your browser’s Korean speech service may process audio online. Up to 15 seconds.' :
       (enabled ? 'Record and listen on this device. Up to 15 seconds.' : 'Automatic word checking is unavailable here. You can record and compare your reply.');
@@ -137,7 +138,7 @@ export function attachVoiceReply(container, env = window, example = '', alternat
     if (take !== active || !take.recorded || (take.checking && !take.verdict)) return;
     env.clearTimeout(take.waitTimer);
     take.listener?.cancel();
-    active = null;
+    active = null; live(false);
     const verdict = take.verdict;
     if (verdict) {
       const messages = {
@@ -169,7 +170,7 @@ export function attachVoiceReply(container, env = window, example = '', alternat
   }
   function stop(take) {
     if (!take || take !== active || take.stopping) return;
-    take.stopping = true;
+    take.stopping = true; live(false);
     take.stopWatching?.();
     env.clearTimeout(take.limit);
     record.disabled = true;
@@ -185,7 +186,7 @@ export function attachVoiceReply(container, env = window, example = '', alternat
     release(take.stream); take.stream = null;
   }
   function cancelTake() {
-    version++;
+    version++; live(false);
     const take = active;
     if (!take) return;
     active = null;
@@ -278,7 +279,7 @@ export function attachVoiceReply(container, env = window, example = '', alternat
         reason => verdict({kind:reason === 'no-speech' ? 'unclear' : 'unavailable'}, '', reason),
         {
           language,
-          onStart() { if (exercise && take === active && !take.stopping) status.textContent = 'Listening…'; },
+          onStart() { if (take === active && !take.stopping) { live(true); status.textContent = 'Listening · Speak now'; } },
           onInterim(text) { if (take === active) updateTranscript(text); },
           onSpeechEnd() { if (exercise) stop(take); }
         });
@@ -287,7 +288,7 @@ export function attachVoiceReply(container, env = window, example = '', alternat
   record.onclick = async () => {
     if (active) { if (active.recorder || active.listener) stop(active); return; }
     if (!canSpeak() || disposed) return;
-    microphoneBlocked = false;
+    microphoneBlocked = false; attempted = true;
     version++; clearClip(); hideResult(); interruptExamples();
     onBegin?.();
     const method = check.checked && model ? (deviceMode ? 'device' : canCheck ? 'browser' : null) : null;
@@ -326,7 +327,7 @@ export function attachVoiceReply(container, env = window, example = '', alternat
         }
       };
       recorder.onerror = () => { if (active === take) { cancelTake(); status.textContent = 'Recording stopped. You can try again.'; } };
-      recorder.start();
+      recorder.start(); live(true);
       record.disabled = false; record.textContent = 'Stop recording';
       status.textContent = take.method === 'device' ? 'Listening. Pause when you finish, or tap Stop recording.' :
         take.checking ? 'Listening. Say the Korean reply.' : 'Recording your reply. It stops after 15 seconds.';
