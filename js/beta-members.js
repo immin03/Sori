@@ -58,19 +58,51 @@ function updateAdminMenu(){
  }
 }
 const date=n=>n?new Date(n).toLocaleDateString():'';
-async function admin(append=false){
+let adminView='overview',adminSearch='',adminFilter='all';
+const adminTime=n=>n?new Date(n).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'}):'기록 없음';
+function downloadMembers(){
+ const cells=v=>'"'+String(v??'').replace(/^[=+@-]/,"'$&").replaceAll('"','""')+'"';
+ const rows=[['이름','이메일','가입일','마지막 방문','방문 수','활동 일수','학습 목표','필요한 정보','요청 기능','기타 의견','응답일'],...filteredMembers().map(r=>[r.name,r.email,adminTime(r.joined),adminTime(r.lastSeen),r.visits,r.activeDays,r.feedback?.goal,r.feedback?.information,r.feedback?.features?.join(' | '),r.feedback?.idea,adminTime(r.feedback?.updated)])];
+ const url=URL.createObjectURL(new Blob(['\ufeff'+rows.map(row=>row.map(cells).join(',')).join('\r\n')],{type:'text/csv;charset=utf-8'}));
+ const a=document.createElement('a');a.href=url;a.download='sori-members-'+new Date().toISOString().slice(0,10)+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+function filteredMembers(){
+ const q=adminSearch.toLowerCase().trim(),week=Date.now()-7*86400000;
+ return adminRows.filter(r=>(adminView!=='survey'||r.feedback)&&(!q||[r.name,r.email,r.feedback?.goal,r.feedback?.information,r.feedback?.idea,...(r.feedback?.features||[])].join(' ').toLowerCase().includes(q))&&(adminFilter==='all'||adminFilter==='answered'&&r.feedback||adminFilter==='unanswered'&&!r.feedback||adminFilter==='active'&&r.lastSeen>=week||adminFilter==='returned'&&r.visits>1)).sort((a,b)=>b.lastSeen-a.lastSeen);
+}
+function renderAdmin(){
+ const now=Date.now(),week=now-7*86400000,month=now-30*86400000,total=adminRows.length,answered=adminRows.filter(r=>r.feedback).length;
+ const stats=[['전체 회원',total],['최근 7일 활동',adminRows.filter(r=>r.lastSeen>=week).length],['최근 30일 활동',adminRows.filter(r=>r.lastSeen>=month).length],['재방문 회원',adminRows.filter(r=>r.visits>1).length],['총 방문',adminRows.reduce((n,r)=>n+(Number(r.visits)||0),0)],['설문 응답',answered+' / '+total]];
+ content.innerHTML='<header class="admin-heading"><div><h2 id="betaTitle">Sori 관리자</h2><p>회원 · 이용 현황 · 고객 의견</p></div><button class="sori-secondary" data-refresh>새로고침</button></header><nav class="admin-tabs" aria-label="관리자 메뉴">'+[['overview','대시보드'],['members','회원 관리'],['survey','설문 응답'],['requests','기능 요청']].map(([id,label])=>'<button aria-pressed="'+(adminView===id)+'" data-view="'+id+'">'+label+'</button>').join('')+'</nav><p class="admin-note">로그인 회원의 베타 추적 기록 기준입니다. 30분 이상 간격의 접속을 새 방문으로 집계합니다. 시간은 한국 기준이며 비회원 방문·페이지별 이용·학습 성적은 현재 수집되지 않습니다.</p><div class="admin-stats">'+stats.map(([label,value])=>'<article><small>'+label+'</small><strong>'+value+'</strong></article>').join('')+'</div><section data-admin-panel></section><p role="status">전체 '+total+'명 로드 완료 · '+adminTime(now)+'</p>';
+ const panel=content.querySelector('[data-admin-panel]');
+ if(adminView==='overview'){
+  const days=Array.from({length:14},(_,i)=>{const start=new Date(now+(i-13)*86400000).toLocaleDateString('en-CA',{timeZone:'Asia/Seoul'});return [start,adminRows.filter(r=>new Date(r.joined).toLocaleDateString('en-CA',{timeZone:'Asia/Seoul'})===start).length];});
+  const max=Math.max(1,...days.map(x=>x[1]));
+  panel.innerHTML='<h3>최근 14일 가입</h3><div class="admin-chart">'+days.map(([day,n])=>'<div><span>'+esc(day.slice(5))+'</span><meter min="0" max="'+max+'" value="'+n+'">'+n+'</meter><strong>'+n+'</strong></div>').join('')+'</div><h3>설문 참여</h3><p>응답률 '+(total?Math.round(answered/total*100):0)+'% · 미응답 '+(total-answered)+'명</p><h3>최근 방문 회원</h3>'+[...adminRows].sort((a,b)=>b.lastSeen-a.lastSeen).slice(0,5).map(r=>'<p>'+esc(r.name||r.email)+' <small>'+esc(adminTime(r.lastSeen))+'</small></p>').join('');
+ }else if(adminView==='requests'){
+  const votes=features.map(name=>[name,adminRows.filter(r=>r.feedback?.features?.includes(name)).length]).sort((a,b)=>b[1]-a[1]);
+  panel.innerHTML='<h3>개발 요청 순위</h3><p>복수 선택 설문 · 응답자 '+answered+'명 기준</p>'+votes.map(([name,n])=>'<div class="admin-vote"><span>'+esc(name)+'</span><strong>'+n+'명</strong><progress max="'+Math.max(1,answered)+'" value="'+n+'"></progress></div>').join('')+'<h3>직접 남긴 제안</h3>'+adminRows.filter(r=>r.feedback?.idea).map(r=>'<article class="admin-answer"><strong>'+esc(r.name||r.email)+'</strong><p>'+esc(r.feedback.idea)+'</p><small>'+adminTime(r.feedback.updated)+'</small></article>').join('');
+ }else{
+  panel.innerHTML='<div class="admin-filters"><label>회원·응답 검색<input type="search" data-search placeholder="이름, 이메일, 의견" value="'+esc(adminSearch)+'"></label><label>회원 상태<select data-filter>'+[['all','전체'],['answered','설문 응답'],['unanswered','설문 미응답'],['active','최근 7일 활동'],['returned','재방문']].map(([v,l])=>'<option value="'+v+'" '+(v===adminFilter?'selected':'')+'>'+l+'</option>').join('')+'</select></label><button class="sori-secondary" data-export>현재 목록 CSV</button></div><div data-member-list></div>';
+  const list=panel.querySelector('[data-member-list]');
+  const draw=()=>{const rows=filteredMembers().filter(r=>adminView!=='survey'||r.feedback);list.innerHTML='<p>'+rows.length+'명</p>'+(rows.length?rows.map(r=>'<details class="member-record"><summary><strong>'+esc(r.name||'이름 없음')+'</strong><span>'+esc(r.email)+'</span><small>'+r.visits+'회 방문 · '+(r.feedback?'설문 응답':'설문 미응답')+'</small></summary><dl><dt>가입</dt><dd>'+adminTime(r.joined)+'</dd><dt>최초 수집</dt><dd>'+adminTime(r.firstSeen)+'</dd><dt>최근 방문</dt><dd>'+adminTime(r.lastSeen)+'</dd><dt>활동 일수</dt><dd>'+Number(r.activeDays||0)+'일</dd></dl>'+(r.feedback?'<h4>설문 응답</h4>'+[['학습 목표',r.feedback.goal],['필요한 정보',r.feedback.information],['희망 기능',r.feedback.features?.join(', ')],['기타 의견',r.feedback.idea],['응답일',adminTime(r.feedback.updated)]].map(([label,value])=>'<div class="admin-answer"><strong>'+label+'</strong><p>'+esc(value||'응답 없음')+'</p></div>').join(''):'<p>아직 설문을 제출하지 않았습니다.</p>')+'</details>').join(''):'<p>조건에 맞는 회원이 없습니다.</p>');};
+  panel.querySelector('[data-search]').oninput=e=>{adminSearch=e.target.value;draw();};panel.querySelector('[data-filter]').onchange=e=>{adminFilter=e.target.value;draw();};panel.querySelector('[data-export]').onclick=downloadMembers;draw();
+ }
+ content.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{adminView=b.dataset.view;renderAdmin();});content.querySelector('[data-refresh]').onclick=()=>admin();
+}
+async function admin(){
  if(!canOpenAdmin())return;
- const own=++screen;dialog.dataset.panel='admin';show();if(!append){adminRows=[];cursor=null;}
- content.innerHTML='<h2 id="betaTitle">Beta members</h2><p role="status">Loading members…</p>';
- try {
-  const res=await api('/admin/members'+(cursor?'?cursor='+encodeURIComponent(cursor):''));
-  if(own!==screen||!dialog.open||!canOpenAdmin())return;
-  adminRows.push(...res.members);cursor=res.cursor;
-  const sorted=[...adminRows].sort((a,b)=>b.lastSeen-a.lastSeen),week=Date.now()-7*86400000;
-  const votes=features.map(name=>[name,sorted.filter(r=>r.feedback?.features.includes(name)).length]).filter(([,count])=>count).sort((a,b)=>b[1]-a[1]);
-  content.innerHTML='<h2 id="betaTitle">Beta members</h2><p>Signed-in activity since beta tracking began. A visit starts after 30 minutes away.</p><strong>'+sorted.length+' members loaded · '+sorted.filter(r=>r.lastSeen>=week).length+' active in 7 days · '+sorted.filter(r=>r.visits>1).length+' returned</strong>'+(votes.length?'<h3>Requested features</h3>'+votes.map(([x,n])=>'<p>'+esc(x)+' · '+n+'</p>').join(''):'')+sorted.map(r=>'<details class="member-record"><summary>'+esc(r.name||r.email)+' · '+r.visits+' visits</summary><p>'+esc(r.email)+'</p><p>Joined '+date(r.joined)+' · Last seen '+date(r.lastSeen)+' · '+r.activeDays+' active days</p>'+(r.feedback?'<p>Goals · '+esc(r.feedback.goal)+'</p><p>Information · '+esc(r.feedback.information)+'</p><p>Requests · '+esc(r.feedback.features.join(', '))+'</p><p>Other ideas · '+esc(r.feedback.idea)+'</p>':'<p>No survey response yet.</p>')+'</details>').join('')+(cursor?'<button class="sori-secondary" data-more>Load more members</button>':'');
-  content.querySelector('[data-more]')?.addEventListener('click',()=>admin(true));
- }catch(err){if(own===screen)content.querySelector('[role=status]').textContent=err.message;}
+ const own=++screen;dialog.dataset.panel='admin';show();adminRows=[];cursor=null;
+ content.innerHTML='<h2 id="betaTitle">Sori 관리자</h2><p role="status">전체 회원 정보를 불러오는 중…</p>';
+ try{
+  do{
+   const res=await api('/admin/members'+(cursor?'?cursor='+encodeURIComponent(cursor):''));
+   if(own!==screen||!dialog.open||!canOpenAdmin())return;
+   adminRows.push(...res.members);cursor=res.cursor;
+   content.querySelector('[role=status]').textContent=adminRows.length+'명 불러옴…';
+  }while(cursor);
+  renderAdmin();
+ }catch(err){if(own===screen){content.innerHTML='<h2 id="betaTitle">Sori 관리자</h2><p role="alert">'+esc(err.message)+'</p><button class="sori-secondary" data-retry>다시 시도</button>';content.querySelector('[data-retry]').onclick=()=>admin();}}
 }
 function openFeedback(){
  if(current){survey();return;}content.innerHTML='<h2 id="betaTitle">Beta feedback</h2><p>Sign in with Google to share a suggestion.</p><button class="sori-primary">Sign in with Google</button><p role="status"></p>';show();
