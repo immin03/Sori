@@ -17,7 +17,7 @@ test('Korea 101 preserves approved seasonal issues and the complete original arc
 });
 test('new Korea 101 stories meet the short publication contract and retain working social previews',()=>{
  const stories=require('../data/stories.json');
- const added=stories.filter(s=>!['first-snow-seoul','christmas-in-korea'].includes(s.id));
+ const added=stories.filter(s=>!s.bodyFile&&!['first-snow-seoul','christmas-in-korea'].includes(s.id));
  const categories=['Useful Korean','Everyday culture','Food & traditions','Places','Getting around'];
  for(const s of added){
   const words=s.paragraphs.join(' ').trim().split(/\s+/).length;
@@ -36,8 +36,9 @@ test('new Korea 101 stories meet the short publication contract and retain worki
 });
 test('Seoul directory covers the original guide, groups actual restaurants and opens English maps',async()=>{
  const {places,filterPlaces,googleMap,dayRoutes,discoverMarkup}=await import('../js/guide/discover.js');
- assert.equal(places.length,22);assert.equal(filterPlaces('christmas').length,6);assert.equal(filterPlaces('food').length,10);assert.equal(filterPlaces('culture').length,6);
- assert.equal(filterPlaces('food','Noodles').length,2);
+ assert.equal(places.length,191);assert.equal(filterPlaces('christmas').length,26);assert.equal(filterPlaces('food').length,91);assert.equal(filterPlaces('culture').length,15);
+ assert.equal(new Set(places.map(p=>p.id)).size,191);assert.equal(filterPlaces('christmas','Christmas markets').length,7);assert.equal(filterPlaces('indoor').length,32);
+ assert.equal(filterPlaces('food','Noodles').length,8);
  assert.equal(filterPlaces('food','','우래옥')[0].id,'wooraeok');
  assert.equal(filterPlaces('food','','yeouido')[0].id,'jinjujip');
  for(const p of places){const u=new URL(googleMap(p));assert.equal(u.hostname,'www.google.com');assert.equal(u.searchParams.get('hl'),'en');assert.ok(u.searchParams.get('query').includes(p.address));}

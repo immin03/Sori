@@ -292,9 +292,9 @@ body[data-service=speak]:not(.focus-exercise) #homeView { min-height:0; }
 .conversation-card .scene-icon {font-size:1.6rem}
 .conversation-card strong {font-size:1rem;line-height:1.25}
 .conversation-card small {color:var(--muted);font-size:.78rem}
-.spoken-turn[data-turn-phase="ready"],.spoken-turn[data-turn-phase="speaking"] {background:#ecf8f0;border:2px solid #3b8b62;padding:12px;border-radius:16px}
-.spoken-turn[data-turn-phase="ready"] .turn-audio-state,.spoken-turn[data-turn-phase="speaking"] .turn-audio-state {font-weight:800;color:#206b49;font-size:1.05rem}
-.spoken-turn[data-turn-phase="correct"] {background:#ecf8f0;border-radius:16px;padding:12px}
+.spoken-turn[data-turn-phase="ready"],.spoken-turn[data-turn-phase="speaking"] {background:#fbf1ed;border:2px solid #a43d2d;padding:12px;border-radius:16px}
+.spoken-turn[data-turn-phase="ready"] .turn-audio-state,.spoken-turn[data-turn-phase="speaking"] .turn-audio-state {font-weight:800;color:#783022;font-size:1.05rem}
+.spoken-turn[data-turn-phase="correct"] {background:#fbf1ed;border-radius:16px;padding:12px}
 .spoken-turn[data-turn-phase="retry"] {background:#fff2ec;border-radius:16px;padding:12px}
 .discover-place {display:flex;flex-direction:column;padding:0;overflow:hidden;border-radius:16px;margin:0;background:white;gap:0}
 .discover-photo {position:relative;margin:0;aspect-ratio:16/9;overflow:hidden;background:var(--wash)}

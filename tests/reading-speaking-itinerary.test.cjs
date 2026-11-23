@@ -89,8 +89,8 @@ test('all original phrase situations remain discoverable at all levels', async()
  for(const n of ['daily','travel','drama','trendy','numbers','dataindex'])vm.runInContext(fs.readFileSync(path.resolve(__dirname,'../data',n+'.js'),'utf8'),c);
  const groups=situationGroups(c.window.SoriDataIndex);
  const rows=groups.flatMap(g=>g.topics.flatMap(t=>t.rows));
- assert.equal(groups.length,5);assert.equal(rows.length,504);
- assert.equal(groups.reduce((n,g)=>n+g.topics.length,0),69);
+ assert.equal(groups.length,5);assert.equal(rows.length,623);
+ assert.equal(groups.reduce((n,g)=>n+g.topics.length,0),93);
  assert.equal(groups[0].topics[0].name,'Greeting');
  assert.equal(['essentials','intermediate','nuance'].reduce((n,l)=>n+matchingLevel(rows,l).length,0),rows.length);
  assert.ok(rows.every(r=>r.p&&r.e));

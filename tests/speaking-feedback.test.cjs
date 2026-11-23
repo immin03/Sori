@@ -40,7 +40,7 @@ test('each partner prompt has a reading and each authored alternative fits its l
 
 test('phrasebook searches Korean, English, romanization, topics and the complete collection',async () => {
   const {findExpressions} = await import('../js/learning/phrase-search.js');
-  assert.equal(findExpressions(rows,'').length,504);
+  assert.equal(findExpressions(rows,'').length,623);
   assert.equal(findExpressions(rows,'')[0].k,'안녕하세요.');
   for (const query of ['AMERICANO','아메리카노한잔','amerikano han jan','café']) {
     assert.ok(findExpressions(rows,query).some(p => p.k === model),query);
@@ -302,6 +302,11 @@ test('opening vocabulary from home plays the question before listening, and the 
   audio.ended = true; audio.onended(); assert.equal(f.readers.length, 1);
   f.readers[0].final(daily.today().words[0].word);
   f.query('[data-next-word]').onclick();
+  assert.equal(plays,1);
+  assert.equal(f.query('[data-next-word]').disabled,true);
+  [...f.timers.values()].find(t=>t.ms===1000).fn();
+  assert.equal(plays,1);
+  f.query('[data-next-word]').onclick();
   assert.ok(target.markup.includes(daily.today().words[1].audioId + '.mp3'));
   assert.equal(plays, 2); assert.equal(f.readers.length, 1);
   audio.onplaying(); audio.ended = true; audio.onended(); assert.equal(f.readers.length, 2);
@@ -352,6 +357,11 @@ test('mixed word review accepts a spoken choice, then listens on the next fill-i
   finishCue();assert.equal(f.readers.length,1);
   f.readers[0].final(round.words[0].word);assert.equal(f.query('[data-choice-result]').textContent,'Correct!');
   assert.equal(daily.entry(round.words[0].id).reviews,1);
+  f.query('[data-next-word]').onclick();
+  assert.equal(plays,1);
+  assert.equal(f.query('[data-next-word]').disabled,true);
+  [...f.timers.values()].find(t=>t.ms===1000).fn();
+  assert.equal(plays,1);
   f.query('[data-next-word]').onclick();assert.equal(plays,2);assert.doesNotMatch(target.html,/Say the missing Korean word or tap/);
   finishCue();assert.equal(f.readers.length,2);ui.dispose();assert.ok(f.readers[1].aborted);
 });

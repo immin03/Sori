@@ -33,16 +33,18 @@ import {optionNames,spokenOption} from './learning/quiz-choice.js?v=20261121nav'
     let currentQuestions = [];
     let currentQuestionIndex = -1;
     let currentStreak = 0;
-    let turn=null, armed=false, retryTimer, advanceTimer;
+    let turn=null, armed=false, unlockTimer, locked=false, finished=false;
+    const picks=new Map(),optionsByIndex=new Map();
+    const results=document.getElementById('quizResults'), playPanel=document.querySelector('#quizView .quiz-content');
     const solved=new Set();
     const visible=()=>document.getElementById('quizView').style.display==='block';
-    function clearTimers(){clearTimeout(retryTimer);clearTimeout(advanceTimer);}
+    function clearTimers(){clearTimeout(unlockTimer);locked=false;}
     function setupVoice(start=false) {
       turn?.dispose();turn=null;
-      if(!visible() || !currentQuestionData)return;
+      if(!visible() || finished || !currentQuestionData)return;
       const answers=Array.from(quizOptions,o=>o.dataset.answer);
       const correct=Array.from(quizOptions).findIndex(o=>o.dataset.isCorrect==='true');
-      if(correct<0 || solved.has(currentQuestionIndex)){voiceSlot.replaceChildren();return;}
+      if(correct<0 || picks.has(currentQuestionIndex)){voiceSlot.replaceChildren();return;}
       voiceSlot.innerHTML=spokenTurnControls({choice:true,externalButton:true});
       turn=mountSpokenTurn(voiceSlot,window,{cue:currentQuestionData.k,answer:answers[correct],alternatives:optionNames(correct),
         language:'en-US',choice:true,externalButton:quizPlayBtn,start,rate:()=>currentSpeed,onMode:()=>{armed=true;},
@@ -56,10 +58,10 @@ import {optionNames,spokenOption} from './learning/quiz-choice.js?v=20261121nav'
     }
     window.SoriQuiz={start(){if(!turn)setupVoice();turn?.play();}};
     window.addEventListener('sori-view',e=>{
-      if(e.detail.view==='quiz'){if(!turn)setupVoice();return;}
+      if(e.detail.view==='quiz'){if(!turn)setupVoice();updateNavButtons();return;}
       clearTimers();armed=false;turn?.dispose();turn=null;
     });
-    document.addEventListener('visibilitychange',()=>{if(document.hidden){clearTimers();armed=false;turn?.onModel();}});
+    document.addEventListener('visibilitychange',()=>{if(document.hidden){clearTimers();updateNavButtons();armed=false;turn?.onModel();}});
     window.addEventListener('pagehide',()=>{clearTimers();armed=false;turn?.dispose();turn=null;});
     
     const quizAudio = window.SORI.TTS;
@@ -101,7 +103,12 @@ import {optionNames,spokenOption} from './learning/quiz-choice.js?v=20261121nav'
       
       // Get 10 random questions
       const shuffled = [...data].sort(() => Math.random() - 0.5);
-      currentQuestions = shuffled.slice(0, 10);solved.clear();
+      startRound(shuffled.slice(0,10));
+    }
+    function startRound(items){
+      currentQuestions=items;solved.clear();picks.clear();optionsByIndex.clear();clearTimers();
+      finished=false;results.hidden=true;playPanel.hidden=false;
+      results.replaceChildren();
       document.getElementById('quizScore').textContent='0';
       currentQuestionIndex = 0;
       document.getElementById("quizTotal").textContent = currentQuestions.length;
@@ -194,17 +201,17 @@ import {optionNames,spokenOption} from './learning/quiz-choice.js?v=20261121nav'
       if (categoryData && quizOptions.length >= 4) {
         // Shuffle all items and pick 3 wrong answers
         const shuffled = [...categoryData].sort(() => Math.random() - 0.5);
-        const wrongAnswers = shuffled
+        const wrongAnswers = [...new Set(shuffled
           .filter(item => item.e !== questionData.e)
-          .slice(0, 3)
-          .map(item => item.e);
+          .map(item => item.e))].slice(0,3);
         
         // Create answer options: correct answer + 3 wrong answers
-        const answers = [questionData.e, ...wrongAnswers];
-        answers.sort(() => Math.random() - 0.5);
+        const answers=optionsByIndex.get(currentQuestionIndex)||[questionData.e,...wrongAnswers].sort(()=>Math.random()-.5);
+        optionsByIndex.set(currentQuestionIndex,answers);
         
         // Update option buttons and reset styles
         quizOptions.forEach((option, index) => {
+          option.hidden=!answers[index];option.disabled=false;
           if (answers[index]) {
             option.textContent = (index+1) + '. ' + answers[index];
             option.dataset.answer = answers[index];
@@ -216,11 +223,8 @@ import {optionNames,spokenOption} from './learning/quiz-choice.js?v=20261121nav'
           }
         });
         
-        if(solved.has(currentQuestionIndex)){
-          feedback.textContent='You answered this question correctly.';
-          for(const option of quizOptions)if(option.dataset.isCorrect==='true')option.classList.add('selected');
-          quizPlayBtn.hidden=true;
-        }
+        feedback.hidden=true;
+        if(picks.has(currentQuestionIndex))showGrade(picks.get(currentQuestionIndex));
         setupVoice(armed);
         // Update navigation buttons
         updateNavButtons();
@@ -233,7 +237,8 @@ import {optionNames,spokenOption} from './learning/quiz-choice.js?v=20261121nav'
         quizPrevBtn.disabled = currentQuestionIndex === 0;
       }
       if (quizNextBtn) {
-        quizNextBtn.disabled = currentQuestionIndex >= currentQuestions.length - 1;
+        quizNextBtn.disabled = locked || !picks.has(currentQuestionIndex);
+        quizNextBtn.textContent=currentQuestionIndex===currentQuestions.length-1?'See results':'Next';
       }
     }
     
@@ -250,6 +255,8 @@ import {optionNames,spokenOption} from './learning/quiz-choice.js?v=20261121nav'
     // Next question
     if (quizNextBtn) {
       quizNextBtn.addEventListener('click', () => {
+        if(locked || !picks.has(currentQuestionIndex))return;
+        if(currentQuestionIndex===currentQuestions.length-1){showResults();return;}
         if (currentQuestionIndex < currentQuestions.length - 1) {
           currentQuestionIndex++;
           loadCurrentQuestion();
@@ -257,25 +264,50 @@ import {optionNames,spokenOption} from './learning/quiz-choice.js?v=20261121nav'
       });
     }
     
-    function grade(option) {
-      if(!visible() || solved.has(currentQuestionIndex))return;
-      turn?.onModel();clearTimers();
-      const correct=option.dataset.isCorrect==='true';
-      for(const b of quizOptions){b.classList.toggle('selected',b===option);b.removeAttribute('data-verdict');}
-      option.dataset.verdict=correct?'correct':'retry';
-      if(correct){
-        solved.add(currentQuestionIndex);currentStreak++;updateStreakDisplay();
-        document.getElementById('quizScore').textContent=String(solved.size);quizPlayBtn.hidden=true;
-        feedback.textContent=currentQuestionIndex===currentQuestions.length-1?'Quiz complete. '+solved.size+' of '+currentQuestions.length+' answered correctly.':'Correct!';
-        turn?.dispose();turn=null;voiceSlot.replaceChildren();
-
-      }else{
-        currentStreak=0;updateStreakDisplay();
-        feedback.textContent='Not quite. Try another meaning.';
-        retryTimer=setTimeout(()=>{if(!visible())return;option.removeAttribute('data-verdict');option.classList.remove('selected');},1200);
+    function showGrade(answer){
+      const correct=answer===currentQuestionData.e;
+      feedback.hidden=false;feedback.dataset.kind=correct?'correct':'retry';
+      feedback.textContent=(correct?'✓ Correct! Nicely done. ':'Not quite. The answer is ')+currentQuestionData.e;
+      for(const b of quizOptions){
+        b.disabled=true;b.classList.toggle('selected',b.dataset.answer===answer);
+        if(b.dataset.isCorrect==='true')b.dataset.verdict='correct';
+        else if(b.dataset.answer===answer)b.dataset.verdict='retry';
       }
+      quizPlayBtn.hidden=false;voiceSlot.replaceChildren();
     }
-
+    function grade(option) {
+      if(!visible() || finished || picks.has(currentQuestionIndex))return;
+      const answer=option.dataset.answer,correct=answer===currentQuestionData.e;
+      turn?.dispose();turn=null;clearTimers();picks.set(currentQuestionIndex,answer);
+      if(correct)solved.add(currentQuestionIndex);
+      currentStreak=correct?currentStreak+1:0;updateStreakDisplay();
+      document.getElementById('quizScore').textContent=String(solved.size);
+      window.dispatchEvent(new CustomEvent('sori-study-answer',{detail:'quiz:'+currentQuestionData.k}));
+      showGrade(answer);feedback.focus({preventScroll:true});feedback.scrollIntoView({block:'nearest'});
+      locked=true;updateNavButtons();
+      unlockTimer=setTimeout(()=>{locked=false;updateNavButtons();},1000);
+    }
+    function showResults(){
+      finished=true;armed=false;turn?.dispose();turn=null;clearTimers();
+      const missed=currentQuestions.filter((q,i)=>picks.get(i)!==q.e);
+      playPanel.hidden=true;results.hidden=false;
+      results.innerHTML='<h1 tabindex="-1">Quiz results</h1><p class="round-score"><strong>'+solved.size+' / '+currentQuestions.length+'</strong> correct on the first try · '+missed.length+' to review</p><ul></ul><div class="vocab-hub-actions"></div>';
+      for(const [i,q] of currentQuestions.entries()){
+        const li=document.createElement('li'),ko=document.createElement('strong'),line=document.createElement('span');
+        ko.lang='ko';ko.textContent=q.k;line.textContent=(solved.has(i)?'✓ Correct':'↻ Review')+' · '+(q.p?q.p+' · ':'')+q.e;
+        li.append(ko,line);results.querySelector('ul').append(li);
+      }
+      const actions=results.querySelector('div');
+      function action(label,fn){
+        const b=document.createElement('button');b.type='button';b.className='sori-secondary';b.textContent=label;b.onclick=fn;actions.append(b);
+      }
+      if(missed.length)action('Retry missed questions ('+missed.length+')',()=>startRound(missed));
+      action('New quiz',()=>loadQuestions(document.querySelector('.quiz-category.active')?.dataset.category||'daily'));
+      action('Back to review',()=>window.SoriNav.go('#review'));results.querySelector('h1').focus();window.scrollTo({top:0});
+    }
+    quizPlayBtn.addEventListener('click',()=>{
+      if(!finished && picks.has(currentQuestionIndex))quizAudio.speak(currentQuestionData.k,{rate:currentSpeed});
+    });
     // Update streak display with animation
     function updateStreakDisplay() {
       const streakEl = document.getElementById('quizStreak');

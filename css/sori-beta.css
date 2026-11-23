@@ -6,10 +6,10 @@
 .path-card p{line-height:1.5;margin:.4em 0 1em}
 .path-card progress{display:block;width:100%;height:8px;accent-color:#a43d2d}
 .path-metrics{display:flex;gap:24px;flex-wrap:wrap;margin:17px 0}.path-metrics strong{font:700 1.25rem/1.4 system-ui}.path-metrics small{display:block;font:500 .82rem/1.3 system-ui}
-.path-week{display:flex;gap:4px;margin:10px 0 18px}.path-week span{flex:1;text-align:center;border-top:4px solid #e8d6cd;font-size:.75rem;padding-top:4px}.path-week [data-active=true]{border-color:#248461}
+.path-week{display:flex;gap:4px;margin:10px 0 18px}.path-week span{flex:1;text-align:center;border-top:4px solid #e8d6cd;font-size:.75rem;padding-top:4px}.path-week [data-active=true]{border-color:#a43d2d}
 .path-choices,.roleplay-grid{display:grid;gap:8px}.path-choices button,.scene-choice{background:white;border:1px solid #e5d6cf;color:#322724;border-radius:10px;text-align:left;padding:12px 14px;min-height:46px;font:inherit;cursor:pointer}
 .roleplay-grid{grid-template-columns:repeat(auto-fit,minmax(min(170px,100%),1fr));margin:12px 0}.scene-choice small,.scene-choice strong{display:block}.scene-choice small{margin-top:4px;font-weight:500}
-.scene-catalog{margin:16px 0}.scene-catalog summary{font-weight:650;cursor:pointer}.syllable-pending{color:#77736e}.syllable-match{color:#14704f}.syllable-miss{color:#a3222b;text-decoration:underline wavy;text-underline-offset:.16em}
+.scene-catalog{margin:16px 0}.scene-catalog summary{font-weight:650;cursor:pointer}.syllable-pending{color:#77736e}.syllable-match{color:#713426}.syllable-miss{color:#a3222b;text-decoration:underline wavy;text-underline-offset:.16em}
 [data-mic-live=true] .record-action:before{content:"";display:inline-block;width:.78em;height:.78em;border-radius:100%;background:#fff;vertical-align:middle;margin-right:10px;box-shadow:0 0 0 4px #ffffff40;animation:sori-mic-pulse 1s ease-in-out infinite alternate}
 @keyframes sori-mic-pulse{to{box-shadow:0 0 0 8px #ffffff08;opacity:.62}}
 @media(prefers-reduced-motion:reduce){[data-mic-live=true] .record-action:before{animation:none}}
@@ -17,6 +17,6 @@
 .focus-exercise .spoken-turn[data-answer-state=correct] .vocab-type :is(label,button){display:block}
 #betaDialog{position:fixed;inset:0;margin:auto;border:1px solid #e6d6ce;border-radius:18px;width:min(490px,92vw);max-height:84dvh;overflow:auto;background:white;color:#322724;padding:26px;box-sizing:border-box}
 #betaDialog::backdrop{background:#30241fa8}#betaDialog h2{margin:0 35px 9px 0}#betaDialog p{line-height:1.5}.beta-close{position:absolute;right:12px;top:9px;background:none;border:0;font-size:26px;cursor:pointer;min-height:40px;min-width:40px}#betaDialog form>label,#betaDialog legend{display:block;font-weight:650;margin:15px 0 5px}#betaDialog textarea{display:block;width:100%;box-sizing:border-box;min-height:63px;margin-top:5px;font:inherit;border-radius:8px;border:1px solid #b9aaa2;padding:8px}#betaDialog fieldset{border:0;padding:0;margin:0 0 14px}.feature-option{display:flex;align-items:center;gap:8px;min-height:34px}.feature-option input{width:18px;height:18px}.member-record{border-bottom:1px solid #e8dfdc;padding:12px 0;overflow-wrap:anywhere}
-.discover-shortlist{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin:12px 0}.discover-shortlist button,.discover-links button{cursor:pointer}.discover-links [aria-pressed=true]{color:#187351}
+.discover-shortlist{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin:12px 0}.discover-shortlist button,.discover-links button{cursor:pointer}.discover-links [aria-pressed=true]{color:#873523}
 
 .scene-location{display:flex;gap:12px;align-items:center;margin:12px 0}.scene-location select{font:inherit;padding:8px;border:1px solid #d8c9c0;border-radius:8px;color:#322724;background:white}

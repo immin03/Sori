@@ -141,6 +141,13 @@ export class DailyVocabulary {
     const slots = words.map((q,i) => this.newSlot(q.id, (i + this.entry(q.id).reviews) % 2 ? 'cloze' : 'choice'));
     return this.makeRound('review',slots,{scope,level:this.difficulty()});
   }
+  retryMisses(token) {
+    this.refresh();
+    const round=this.active(token);
+    if(!round || round.index!==round.slots.length)return null;
+    const missed=round.slots.filter(s=>s.result==='retry'||s.result==='reveal');
+    return this.makeRound('review',missed.map(s=>slot(s.id,s.alternate,s.format)),{scope:'this-round',level:round.level||this.difficulty()});
+  }
   active(token) {
     return [this.state.daily,this.state.round].find(r => validRound(r) && r.token === token &&
       (r.kind !== 'daily' || r.day === this.day()));

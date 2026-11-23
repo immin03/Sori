@@ -1,10 +1,10 @@
 import {icon} from '../ui-icons.js';
-import {sameTopicChoices, levels, topics, vocabulary} from './vocabulary.js?v=20261123beta';
+import {sameTopicChoices, levels, topics, vocabulary} from './vocabulary.js?v=study1';
 import {difficultyControl, topicTitle} from './vocabulary-library.js?v=mobile2';
 import {paintSpokenQuestion} from './speech-highlight.js?v=20261123beta';
 import {attachVoiceReply, recorderControls} from './voice-reply.js?v=20261123beta';
 import {attachQuestionAudio, attachSynthesizedQuestion} from './question-audio.js?v=20261123beta';
-import {checkWords} from './word-check.js?v=20261123relaunch';
+import {checkWords,prepareChime,playChime} from './word-check.js?v=20261123relaunch';
 import {romanize} from './romanize.js?v=20261123restore';
 
 function prompt(question) {
@@ -24,21 +24,27 @@ export function vocabularyCard(daily) {
 }
 
 export function mountVocabulary(target, daily, env, {start = false, onProgress, custom = false} = {}) {
-  let voice, cue;
+  let voice, cue, unlockTimer;
   function interrupt() { cue?.stop(); voice?.onModel(); }
   const get = selector => target.querySelector(selector);
   function render(mode = 'ready', playOnOpen = true) {
+    env.clearTimeout(unlockTimer);
     cue?.stop(); cue = null; voice?.dispose(); voice = null;
     env.SORI?.TTS?.cancel();
     const round = custom ? daily.custom() : daily.today();
     if (!round) return;
     const {words,index,day,token} = round;
-    const title = round.kind === 'daily' ? 'Today’s vocabulary' : round.kind === 'topic' ? topicTitle(round.topic) : round.scope === 'tricky' ? 'Tricky word review' : 'Mixed review';
+    const title = round.kind === 'daily' ? 'Today’s vocabulary' : round.kind === 'topic' ? topicTitle(round.topic) : round.scope === 'this-round' ? 'Missed words' : round.scope === 'tricky' ? 'Tricky word review' : 'Mixed review';
     const parent = round.kind === 'review' ? ['My words','#practice=vocabulary&amp;view=words'] : round.kind === 'topic' ? [topicTitle(round.topic),'#practice=vocabulary&amp;view=topic&amp;topic='+round.topic] : ['Vocabulary','#home'];
     const header = `<header class="session-header"><a class="section-back focus-exit" href="${parent[1]}" aria-label="Exit to ${parent[0]}">×</a><span>${Math.min(index+1,words.length)} / ${words.length}</span></header>`;
     if (index === words.length) {
+      const correct=round.slots.filter(s=>s.result==='correct').length;
+      const missed=round.slots.filter(s=>['retry','reveal'].includes(s.result)).length;
+      const seen=words.length-correct-missed;
       target.innerHTML = `${header}<section class="vocab-finish">
         <h1 tabindex="-1">${round.kind === 'daily' ? 'Today’s vocabulary complete.' : title + ' complete.'}</h1>
+        <p class="round-score"><strong>${correct} / ${words.length}</strong> correct on the first try · ${missed} to review${seen?' · '+seen+' previously seen':''}</p>
+        ${missed?`<button type="button" class="sori-primary" data-vocab-misses="${token}">Retry missed words (${missed})</button>`:''}
         <ul>${words.map((q,i) => `<li><strong lang="ko">${q.term}</strong><span>${romanize(q.term)} · ${q.gloss}${['retry','reveal'].includes(round.slots[i].result) ? ' · Saved for another try' : ''}</span></li>`).join('')}</ul>
         <div class="vocab-hub-actions"><a class="sori-primary" href="#practice=vocabulary&amp;view=words">Open my words</a>
         ${round.kind === 'topic' ? `<button type="button" class="sori-secondary" data-vocab-start="${round.topic}" data-vocab-level="${round.level}">Another set</button>` :
@@ -73,7 +79,7 @@ export function mountVocabulary(target, daily, env, {start = false, onProgress, 
           <p role="status" data-typed-result></p></form>
         <div class="vocab-options"><button type="button" class="text-button" data-switch-input>Type instead</button>
           <button type="button" class="text-button" data-reveal-word>Show answer</button></div>
-        <div class="vocab-next" data-after-answer hidden><button type="button" class="sori-primary" data-next-word>${index + 1 === words.length ? 'Finish practice' : 'Next word'}</button>
+        <div class="answer-verdict" role="status" aria-live="polite" aria-atomic="true" tabindex="-1" hidden data-verdict-panel></div><div class="vocab-next" data-after-answer hidden><button type="button" class="sori-primary" data-next-word>${index + 1 === words.length ? 'Finish practice' : 'Next word'}</button>
           <button type="button" class="text-button" data-hear-word>Hear the answer</button></div>
       </section>`;
     const blank = get('[data-blank]'), mic = get('.vocab-mic'), recordButton = get('[data-record-reply]');
@@ -81,7 +87,13 @@ export function mountVocabulary(target, daily, env, {start = false, onProgress, 
     const switchButton = get('[data-switch-input]'), reveal = get('[data-reveal-word]'), after = get('[data-after-answer]');
     const cueButton = get('[data-hear-question]'), cueLabel = get('[data-question-label]'), cueStatus = get('[data-question-status]');
     const parts = {before:get('[data-vocab-before]'), blank, after:get('[data-vocab-after]')};
-    let continueMode = mode, heardQuestion = false;
+    let continueMode = mode, heardQuestion = false, answered = false;
+    const verdictPanel=get('[data-verdict-panel]'), next=get('[data-next-word]');
+    next.disabled=true;
+    function sound(kind){
+      try { if(env.localStorage.getItem('sori:voice:sound')==='off')return; }catch{}
+      prepareChime(env);playChime(kind);
+    }
     const typing = !choice && mode === 'type';
     function showPlayback(state) {
       const playing = state === 'playing' || state === 'loading';
@@ -109,6 +121,8 @@ export function mountVocabulary(target, daily, env, {start = false, onProgress, 
     showPlayback('idle');
     function reset() {
 
+      answered=false;next.disabled=true;env.clearTimeout(unlockTimer);
+      verdictPanel.hidden=true;
       blank.innerHTML = '<span class="sr-only" lang="en">blank</span>';
       delete blank.dataset.heard;
       paintSpokenQuestion(parts,question,'');
@@ -117,10 +131,22 @@ export function mountVocabulary(target, daily, env, {start = false, onProgress, 
       delete form.dataset.result;
       switchButton.hidden = choice; typedResult.textContent = '';
     }
-    function result(kind, automatic = true) {
+    function result(kind, fresh = true) {
       if (!['correct','retry','reveal'].includes(kind)) return;
-      daily.record(token,index,kind);
-      if(automatic && kind==='correct')env.dispatchEvent?.(new CustomEvent('sori-word-learned',{detail:question.id}));
+      if(answered)return;
+      answered=true;
+      if(fresh){
+        daily.record(token,index,kind);
+        if(kind!=='reveal')env.dispatchEvent?.(new CustomEvent('sori-study-answer',{detail:'word:'+question.id}));
+      }
+      next.disabled=fresh;
+      env.clearTimeout(unlockTimer);
+      if(fresh)unlockTimer=env.setTimeout(()=>{if(answered)next.disabled=false;},1000);
+      verdictPanel.hidden=false;verdictPanel.dataset.kind=kind;
+      verdictPanel.innerHTML=(kind==='correct'?'<strong>✓ Correct! Nicely done.</strong>':kind==='retry'?'<strong>Try that one again.</strong>':'<strong>Here’s the answer.</strong>')+'<span lang="ko">'+question.word+'</span><small>'+romanize(question.word)+' · '+question.gloss+'</small>';
+      if(fresh)verdictPanel.focus({preventScroll:true});
+      if(fresh)verdictPanel.scrollIntoView?.({block:'nearest'});
+      if(fresh && kind==='correct')env.dispatchEvent?.(new CustomEvent('sori-word-learned',{detail:question.id}));
       form.dataset.result=kind;
       blank.textContent = question.word; blank.dataset.result = kind;
       get('.vocab-reading').textContent=romanize(question.sentence);
@@ -140,10 +166,10 @@ export function mountVocabulary(target, daily, env, {start = false, onProgress, 
       }
     }
     switchButton.onclick = () => render(typing ? 'voice' : 'type', typing);
-    reveal.onclick = () => { interrupt(); result('reveal'); showPlayback('idle'); get('[data-next-word]').focus(); };
-    const next = get('[data-next-word]');
+    reveal.onclick = () => { interrupt(); result('reveal'); showPlayback('idle');  };
     next.onclick = () => {
-      daily.advance(token,index); onProgress?.(); render(continueMode);
+      if(!answered||next.disabled)return;
+      next.disabled=true;daily.advance(token,index); onProgress?.(); render(continueMode);
     };
     if (choice) {
       switchButton.hidden = true;
@@ -152,8 +178,9 @@ export function mountVocabulary(target, daily, env, {start = false, onProgress, 
         button.onclick = () => {
           interrupt();
           if (word !== question.word) button.dataset.wrong = 'true';
+          sound(word===question.word?'correct':'retry');
           result(word === question.word ? 'correct' : 'retry');
-          get('[data-next-word]').focus({preventScroll:true});
+
         };
       });
       target.querySelector('h1').focus({preventScroll:true});
@@ -169,11 +196,12 @@ export function mountVocabulary(target, daily, env, {start = false, onProgress, 
         cue.stop();
         const verdict = checkWords(question.sentence, input.value, question.accepted);
         typedResult.textContent = verdict.kind === 'correct' ? 'Correct!' : 'Not quite. Try the highlighted word.';
+        if(['correct','retry'].includes(verdict.kind))sound(verdict.kind);
         result(verdict.kind);
-        if (verdict.kind === 'correct') get('[data-next-word]').focus({preventScroll:true});
+
       };
     } else {
-      voice = attachVoiceReply(mic, env, question.sentence, question.accepted, result, {
+      voice = attachVoiceReply(mic, env, question.sentence, question.accepted, kind=>result(kind), {
         exercise:true, choice, onBegin() { cue.stop(); heardQuestion = true; continueMode = 'voice'; reset(); },
         onTranscript(text) { if (after.hidden) paintSpokenQuestion(parts,question,text); }
       });
@@ -183,5 +211,5 @@ export function mountVocabulary(target, daily, env, {start = false, onProgress, 
     else if (playOnOpen) hearQuestion(mode === 'voice');
   }
   render(start ? 'voice' : 'ready');
-  return {onModel:interrupt, dispose() { cue?.stop(); voice?.dispose(); }};
+  return {onModel:interrupt, dispose() { env.clearTimeout(unlockTimer);cue?.stop(); voice?.dispose(); }};
 }
