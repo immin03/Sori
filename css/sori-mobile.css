@@ -1,7 +1,11 @@
 /* Shared mobile controls and the four-bar Sori identity. */
 .ui-icon {display:inline-block;flex:none;width:22px;height:22px;vertical-align:middle}
 #sectionNav > div {min-width:0;max-width:100%;box-sizing:border-box}
-#sectionNav a {white-space:normal;text-align:center;line-height:1.2;overflow-wrap:anywhere}
+#sectionNav a {flex:1 1 auto;padding-inline:3px;white-space:normal;text-align:center;line-height:1.2;overflow-wrap:normal}
+#sectionNav a span {min-width:0}
+#sectionNav[data-service=speak] > div {display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.28fr) minmax(0,.73fr)}
+#sectionNav[data-service=speak] a {word-break:normal}
+@media(max-width:360px) {#sectionNav a {font-size:.79rem}}
 .mobile-nav {background:var(--sori);border-color:var(--sori);padding:5px 8px max(5px,env(safe-area-inset-bottom));gap:4px}
 .mobile-nav button {min-width:0;min-height:52px;border:0;color:#fff;border-radius:10px;line-height:1.2}
 .mobile-nav button.active {background:#fff;color:var(--sori);border:0}
@@ -113,7 +117,7 @@
  .sidebar-menu [data-section-link] {white-space:normal}
  .place-toolbar .discover-filter {grid-template-columns:minmax(0,1fr)}
 }
-@media(max-width:380px) {
+@media(max-width:430px) {
  #homeView .daily-start {grid-template-columns:32px minmax(0,1fr);padding:12px}
  #homeView .daily-start .daily-symbol {width:32px;height:32px}
  #homeView .daily-start .sori-primary {grid-area:4/1/5/-1;width:100%;margin-top:8px}
