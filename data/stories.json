@@ -1,5 +1,115 @@
 [
   {
+    "id": "seoul-station-exit-meetups",
+    "title": "Why ‘meet me at the station’ needs one more number in Seoul",
+    "category": "Getting around",
+    "published": "2026-11-25",
+    "photo": "assets/photos/myeongdong.jpg",
+    "photoAlt": "Pedestrians on a Myeongdong shopping street beneath closely packed shop signs",
+    "photoContext": "Myeongdong street scene, photographed by Harry Angara. Unsplash License: https://unsplash.com/license . Source: https://unsplash.com/photos/HAI-xwFpFg4 . Context photograph, not the station exit or imagined bakery in this story.",
+    "excerpt": "You and your friend have reached the same station. So why can’t you find each other? A small Seoul meeting habit, three useful Korean lines and a better way to start your walk.",
+    "phrase": "역 앞 빵집에서 봬요.",
+    "question": "What is the easiest meeting point to explain to a newcomer in your city?",
+    "figures": [
+      {
+        "photo": "assets/photos/insadong.jpg",
+        "alt": "A narrow Seoul lane lined with restaurant signs and tiled roofs",
+        "caption": "A Seoul restaurant lane. Context photograph by Skyler W, Unsplash License: https://unsplash.com/license . Source: https://unsplash.com/photos/tg6uE64lEJs . This is not a photograph of the story’s imagined meeting place.",
+        "after": 7
+      },
+      {
+        "photo": "assets/photos/hongdae.jpg",
+        "alt": "People and illuminated shop signs on a Hongdae street at night",
+        "caption": "Hongdae street scene at night. Context photograph by Paul Ast, Unsplash License: https://unsplash.com/license . Source: https://unsplash.com/photos/74ii3BHkPtw . No particular station exit is shown.",
+        "after": 15
+      }
+    ],
+    "sources": [
+      {
+        "label": "Seoul Tourism Organization, Transportation: numbered exits and subway signs",
+        "url": "https://english.visitseoul.net/transportation"
+      },
+      {
+        "label": "Institute for Basic Science, Living in Korea: station exits as meeting points",
+        "url": "https://centers.ibs.re.kr/html/living_en/transport/subway.html"
+      },
+      {
+        "label": "Seoul Metropolitan Government, Subway Accessibility Facilities",
+        "url": "https://english.seoul.go.kr/service/movement/public-transportation/subway-accessibility-facilities/"
+      }
+    ],
+    "expressions": [
+      {
+        "ko": "몇 번 출구예요?",
+        "roman": "myeot beon chulguyeyo?",
+        "meaning": "Which exit is it?",
+        "example": "만나는 곳이 몇 번 출구예요?",
+        "translation": "Which exit are we meeting at?"
+      },
+      {
+        "ko": "3번 출구 밖에서 만나요.",
+        "roman": "sam beon chulgu bakkeseo mannayo.",
+        "meaning": "Let’s meet outside Exit 3.",
+        "example": "3번 출구 밖에서 기다릴게요.",
+        "translation": "I’ll wait outside Exit 3."
+      },
+      {
+        "ko": "역 앞 빵집에서 봬요.",
+        "roman": "yeok ap ppangjibeseo bwaeyo.",
+        "meaning": "See you at the bakery in front of the station.",
+        "example": "내일 역 앞 빵집에서 봬요.",
+        "translation": "See you tomorrow at the bakery in front of the station."
+      }
+    ],
+    "author": "Korea 101 by Sori",
+    "status": "published",
+    "updated": "2026-11-25",
+    "minutes": 7,
+    "paragraphs": [
+      "Imagine this: you have arrived at a Seoul subway station, right on time. Your friend sends a message saying she has arrived too. You scan the pavement, lift your phone and turn around. No friend. She sends a photograph of a bakery. You send a photograph of a bus stop. Both pictures have the same station name in them. Somehow, you have managed to be in the same place and nowhere near each other.",
+      "The missing detail might be a single number. In Seoul, a plan to meet at a station often comes with an exit number attached. That number can be the difference between spotting a familiar face immediately and spending your first conversation describing whatever shop happens to be behind you.",
+      "Think of a station as a building with several front doors opening onto different streets. The train gets you to the building; choosing an exit gets you to the right doorstep. Seoul’s official tourism guide explains that subway exits are numbered and station signs use Korean and English. Once you start looking for those numbers, the station becomes easier to read. You are choosing a particular way up to the street.",
+      "That is why ‘I’m at the station’ can leave so much unsaid. Are you still on the platform? Beside a ticket gate? Already outdoors? An exit number narrows the search, but one more detail helps: above ground or below? The Institute for Basic Science’s guide for international residents describes station exits as common meeting points, with street level the usual assumption unless people agree otherwise.",
+      "Keep the line number and exit number separate. Line 2 tells you which train service you are using; Exit 2 tells you which opening you are looking for at a particular station. Write the station name alongside the exit when sharing a plan. Just sending “Exit 2” is rather like sending someone a house number without the street.",
+      "This is a useful bit of everyday Korean life to notice. A friend can send a station name, an exit and a time without writing a full address. For someone familiar with that station, the message may feel perfectly complete. A newcomer may need a photograph or a map pin as well. Asking for one is sensible, especially when the person giving directions has walked that route for years.",
+      "If your friend writes 3번 출구, you can recognise the number before you can read the whole phrase. 번 (beon) marks the numbered item. Try spotting that short combination on a sign, then compare it with the message on your phone. It is a satisfying little reading exercise with an immediate answer.",
+      "The habit also gives an outing a gentle beginning. You can meet before deciding which restaurant to try, rather than making one person search the lanes alone. Picture two friends comparing dinner ideas beside an exit sign. One has saved a noodle shop; the other has noticed a bakery. Before either person has ordered anything, they already have something to talk about.",
+      "Here is a short practice conversation. For this example, imagine a bakery beside your agreed exit. It is an invented meeting place, not a recommendation for a real shop. You have reached the station and want to check where to go next.",
+      "You: 몇 번 출구예요? (myeot beon chulguyeyo?) ‘Which exit is it?’",
+      "Friend: 3번 출구 밖에서 만나요. (sam beon chulgu bakkeseo mannayo.) ‘Let’s meet outside Exit 3.’",
+      "You: 역 앞 빵집에서 봬요. (yeok ap ppangjibeseo bwaeyo.) ‘See you at the bakery in front of the station.’",
+      "Listen for 출구 (chulgu), meaning exit, and 밖 (bak), meaning outside. The number 3 here is 삼 (sam), so 3번 is sam beon. You may have learned 셋 (set) when counting three things. Exit numbers use the other Korean number set, the same one used for numbered labels. You can practise the whole bakery sentence in Sori’s existing lesson rather than trying to remember every word separately.",
+      "Before leaving the station, take a moment to look at the neighborhood map. Find your destination and the exit nearest to it, then follow the signs. An exit number identifies an opening, not your whole walking route. When you reach the pavement, check which way the shop or meeting point lies. Turning around once to compare the street with your map is much easier than confidently walking several blocks in the wrong direction.",
+      "There is a similar distinction when you need an elevator. The exit closest to your destination may not be the entrance that suits your journey. Seoul’s city website lists station accessibility facilities, including elevators and escalators. Check the station’s current signs or ask staff about the route from platform to street, particularly with a suitcase, stroller or wheelchair. A facility count alone does not tell you exactly where to emerge.",
+      "If the meeting needs to move to another entrance, send the new location before either person sets off. A clear photograph of the sign and a message saying whether you are upstairs or downstairs can resolve a surprising amount. Stand somewhere that leaves the entrance clear while you wait. There is no advantage to being easy to spot if everyone else has to squeeze around you.",
+      "Back at our imaginary bakery, your friend finally appears. Now 빵집 (ppangjip), bakery, means something you can see through a window. Perhaps you point at 소보로빵 (soboroppang), the bun with a crumbly topping, and ask whether to buy one for the walk. The location that caused all that confusion has become the first small stop of the afternoon.",
+      "That is the pleasant part of learning these practical phrases. A sentence about directions can become a sentence about seeing someone. Keep the station name, check the exit number and agree on which side of the stairs you mean. Then put the phone away when your friend arrives. What is the meeting point in your own city that everyone understands, until someone visits for the first time?"
+    ],
+    "headings": [
+      {
+        "before": 2,
+        "title": "The station has several front doors"
+      },
+      {
+        "before": 5,
+        "title": "A small habit of making plans"
+      },
+      {
+        "before": 8,
+        "title": "Three lines before you climb the stairs"
+      },
+      {
+        "before": 13,
+        "title": "The last part of the journey"
+      },
+      {
+        "before": 16,
+        "title": "Give the meeting point a name"
+      }
+    ],
+    "wordCount": 1066
+  },
+  {
     "id": "how-to-make-a-ssam",
     "title": "Why is there a basket of lettuce at Korean barbecue?",
     "category": "Food & traditions",
